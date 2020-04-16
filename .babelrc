@@ -1,0 +1,9 @@
+{
+  "presets": ["next/babel"],
+  "plugins": ["transform-flow-strip-types", "graphql-tag"],
+  "env": {
+    "test": {
+      "plugins": ["transform-dynamic-import"]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "plugins": ["react", "react-hooks"],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/prop-types": [1], // @todo: Delete this line when checked proptypes everywhere
+    "react/no-unused-prop-types": [1] // @todo: Delete this line when checked proptypes everywhere
+  },
+  "overrides": [
+    {
+      "files": ["*.test.jsx"], // Tests use lot of mocked props, defined manually
+      "rules": {
+        "react/jsx-props-no-spreading": [0]
+      }
+    }
+  ]
+}

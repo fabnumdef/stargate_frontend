@@ -1,0 +1,13 @@
+#Dependences
+node_modules/
+
+flow-typed/
+
+#Conf
+.env
+#build
+.next/
+
+.vscode/
+
+.DS_Store
