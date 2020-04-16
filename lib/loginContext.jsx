@@ -4,6 +4,7 @@ import React, {
 import { useRouter } from 'next/router';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
+import { useSnackBar } from './snackbar';
 
 const AUTH_RENEW = gql`
     mutation jwtRefresh {
@@ -19,6 +20,7 @@ export const useLogin = () => useContext(LoginContext);
 export function LoginContextProvider(props) {
   const { children, client } = props;
   const router = useRouter();
+  const { addAlert } = useSnackBar();
 
   const [isLoggedUser, setIsLoggedUser] = useState(
     typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
@@ -29,11 +31,12 @@ export function LoginContextProvider(props) {
     localStorage.setItem('token', token);
   };
 
-  const signOut = () => {
+  const signOut = (alert = false) => {
     router.push('/login');
     setIsLoggedUser(false);
     localStorage.clear();
     client.resetStore();
+    if (alert) addAlert(alert);
   };
 
   const authRenew = async () => {
@@ -45,7 +48,7 @@ export function LoginContextProvider(props) {
     const renewTrigger = duration / 2;
     const expIn = exp - cur;
     if (expIn <= 0) {
-      signOut();
+      signOut('Session expirée');
       // TODO toast session expiré
     } else if (expIn <= renewTrigger) {
       try {
@@ -54,8 +57,7 @@ export function LoginContextProvider(props) {
         authRenew();
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          // TODO error message toast
-          signOut();
+          signOut('Erreur lors du renouvellement de session');
         }
         setTimeout(authRenew, 60 * 1000);
       }
@@ -97,7 +99,7 @@ export function LoginContextProvider(props) {
 
 LoginContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
-  client: PropTypes.objectOf({
+  client: PropTypes.shape({
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
   }).isRequired,
