@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLogin } from '../../lib/loginContext';
+import { useSnackBar } from '../../lib/snackbar';
 
 const useStyles = makeStyles(() => ({
   formLogin: {
@@ -18,11 +19,12 @@ export const LOGIN = gql`
     }
 `;
 
-export default function LoginForm() {
+export default function LoginForm({ Button }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [login] = useMutation(LOGIN);
   const ctx = useLogin();
+  const { addAlert } = useSnackBar();
 
   const classes = useStyles();
 
@@ -33,7 +35,8 @@ export default function LoginForm() {
       ctx.signIn(jwt);
     } catch (error) {
       // TODO put toast messages for errors
-      console.log(error);
+      addAlert('Mauvais identifiant et/ou mot de passe');
+      console.log('error', error);
     }
   };
 
@@ -47,6 +50,7 @@ export default function LoginForm() {
             data-testid="login-form-email"
             placeholder="Identifiant"
             value={email}
+            required
             onChange={(evt) => setEmail(evt.target.value)}
           />
         </label>
@@ -57,10 +61,11 @@ export default function LoginForm() {
             data-testid="login-form-password"
             placeholder="Mot de passe"
             value={password}
+            required
             onChange={(evt) => setPassword(evt.target.value)}
           />
         </label>
-        <button type="submit" aria-label="submit-login-form" />
+        <Button text="Login" label="submit-login-form" />
       </form>
     </div>
   );

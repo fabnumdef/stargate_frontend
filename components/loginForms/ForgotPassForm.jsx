@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ForgotPassForm() {
+export default function ForgotPassForm({ Button }) {
   const [email, setEmail] = useState('');
 
   const classes = useStyles();
@@ -31,7 +31,7 @@ export default function ForgotPassForm() {
           Si votre identifiant est enregistré dans notre base de données,
           vous recevrez un e-mail pour réinitialiser votre mot de passe.
         </p>
-        <button type="submit" aria-label="submit-form-password" />
+        <Button text="Envoyer" label="submit-form-password" />
       </form>
     </div>
   );

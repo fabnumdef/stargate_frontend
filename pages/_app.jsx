@@ -7,6 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
 import { SnackBarProvider } from '../lib/snackbar';
+import Footer from '../components/styled/footer';
 
 class MyApp extends App {
   componentDidMount() {
@@ -34,6 +35,7 @@ class MyApp extends App {
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Component {...pageProps} />
           </SnackBarProvider>
+          <Footer />
         </ThemeProvider>
       </>
     );
