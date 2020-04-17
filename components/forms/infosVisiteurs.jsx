@@ -191,7 +191,7 @@ export default function FormInfoVisiteur({ dataToProps }) {
   };
 
   const minArmOrNot = () => {
-    if (watch('origineVisiteur') === 'MINARM') addAlert("Les informations sur l'identité sont à rentrer par le visiteur");
+    if (watch('origineVisiteur') === 'MINARM') addAlert({ message: "Les informations sur l'identité sont à rentrer par le visiteur", severity: 'info' });
   };
 
   const onSubmit = (data) => {

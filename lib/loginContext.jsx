@@ -48,8 +48,7 @@ export function LoginContextProvider(props) {
     const renewTrigger = duration / 2;
     const expIn = exp - cur;
     if (expIn <= 0) {
-      signOut('Session expirée');
-      // TODO toast session expiré
+      signOut({ message: 'Session expirée', severity: 'warning' });
     } else if (expIn <= renewTrigger) {
       try {
         const { data: { jwtRefresh: { jwt } } } = await client.mutate({ mutation: AUTH_RENEW });
@@ -57,7 +56,7 @@ export function LoginContextProvider(props) {
         authRenew();
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          signOut('Erreur lors du renouvellement de session');
+          signOut({ message: 'Erreur lors du renouvellement de session', severity: 'warning' });
         }
         setTimeout(authRenew, 60 * 1000);
       }

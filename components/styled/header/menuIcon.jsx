@@ -99,7 +99,7 @@ export default function MenuIcon() {
           <ListItemText primary="Paramétrer" />
         </StyledMenuItem>
 
-        <StyledMenuItem onClick={() => signOut('Vous avez bien été déconnecté')}>
+        <StyledMenuItem onClick={() => signOut({ message: 'Vous avez bien été déconnecté', severity: 'success' })}>
           <ListItemIcon>
             <LinkOffOutlinedIcon fontSize="default" />
           </ListItemIcon>

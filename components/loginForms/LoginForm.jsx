@@ -34,9 +34,16 @@ export default function LoginForm({ Button }) {
       const { data: { login: { jwt } } } = await login({ variables: { email, password } });
       ctx.signIn(jwt);
     } catch (error) {
-      // TODO put toast messages for errors
-      addAlert('Mauvais identifiant et/ou mot de passe');
-      console.log('error', error);
+      switch (error.message) {
+        case `GraphQL error: Email "${email}" and password do not match.`:
+          addAlert({ message: 'Mauvais identifiant et/ou mot de passe', severity: 'warning' });
+          break;
+        case 'GraphQL error: Password expired':
+          addAlert({ message: 'Mot de passe expirée', severity: 'warning' });
+          break;
+        default:
+          addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
+      }
     }
   };
 

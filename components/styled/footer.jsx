@@ -27,7 +27,7 @@ export default function Footer() {
     <div className={classes.footer}>
       <img
         className={classes.footerImg}
-        src="/img/footermarinenat.png"
+        src="/img/footermarnat.png"
         alt="Footer Marine Nationale"
       />
     </div>
