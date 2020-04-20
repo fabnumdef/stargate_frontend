@@ -10,10 +10,10 @@ import Typography from '@material-ui/core/Typography';
 
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
-import NoSsr from '../lib/noSSR';
+import NoSsr from '../lib/nossr';
 
 import Template from './template';
-import { FormInfosClaimant, FormInfosVisiteur, FormInfosRecapDemande } from '../components';
+import { FormInfosClaimant, FormInfosVisitor, FormInfosRecapDemande } from '../components';
 
 const AntTab = withStyles((theme) => ({
   root: {
@@ -121,7 +121,7 @@ export default function RequestAccesForm() {
           </TabPanel>
           <TabPanel value={activeStep} index={1}>
             <NoSsr>
-              <FormInfosVisiteur
+              <FormInfosVisitor
                 formData={formData}
                 setForm={setForm}
                 handleNext={handleNext}

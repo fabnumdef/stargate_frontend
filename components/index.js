@@ -5,7 +5,7 @@ export { default as Footer } from './styled/footer';
 // Forms
 export { default as FormInfosClaimant } from './requestForms/infosClaimant';
 export { default as FormInfosRecapDemande } from './requestForms/infosRecapDemande';
-export { default as FormInfosVisiteur } from './requestForms/infosVisiteurs';
+export { default as FormInfosVisitor } from './requestForms/infosVisitor';
 
 // Tabs
 export { default as TabDemandesTraitees } from './tabs/tabDemandesTraitees';

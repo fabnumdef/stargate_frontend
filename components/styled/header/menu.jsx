@@ -13,7 +13,7 @@ import Slide from '@material-ui/core/Slide';
 
 function getMenus() {
   return [
-    { label: 'Mes Demandes', link: '/mes-demandes' },
+    { label: 'Mes Demandes', link: '/' },
     { label: 'Nouvelle Demande', link: '/nouvelle-demande' },
     { label: 'A propos', link: '/no-route' },
     { label: 'Contactez Nous', link: '/no-route' },
@@ -71,8 +71,8 @@ export default function MenuItems(props) {
   const router = useRouter();
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <HideOnScroll {...props}>
         <Toolbar className={classes.appBar}>
           <div className={classes.grow} />

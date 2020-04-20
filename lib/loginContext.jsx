@@ -85,11 +85,11 @@ export function LoginContextProvider(props) {
       router.push('/');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedUser]);
+  }, []);
 
 
   return (
-    <LoginContext.Provider value={{ signIn, signOut }}>
+    <LoginContext.Provider value={{ isLoggedUser, signIn, signOut }}>
       {children}
     </LoginContext.Provider>
   );

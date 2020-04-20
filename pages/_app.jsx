@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps }) {
 
 MyApp.propTypes = {
   Component: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  pageProps: PropTypes.objectOf(PropTypes.object).isRequired,
+  pageProps: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default MyApp;

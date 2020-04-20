@@ -1,10 +1,14 @@
 import React from 'react';
-import { Home } from '../containers';
+import { MenuRequest } from '../containers';
 import { withApollo } from '../lib/apollo';
 
-function IndexPage() {
-  // TODO switch dinamicaly containers for good profiles
-  return <Home />;
+function MyRequestsPage() {
+  // TODO check profile and load the good container
+  return (
+    <>
+      <MenuRequest />
+    </>
+  );
 }
 
-export default withApollo()(IndexPage);
+export default withApollo()(MyRequestsPage);
