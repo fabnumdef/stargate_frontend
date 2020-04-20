@@ -1,10 +1,10 @@
-// @flow
 import React from 'react';
-import { Accueil } from '../containers';
+import { Home } from '../containers';
 import { withApollo } from '../lib/apollo';
 
 function IndexPage() {
-  return <Accueil />;
+  // TODO switch dinamicaly containers for good profiles
+  return <Home />;
 }
 
-export default withApollo({ ssr: true })(IndexPage);
+export default withApollo()(IndexPage);

@@ -1,6 +1,6 @@
-// @flow
 import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -10,10 +10,10 @@ import Typography from '@material-ui/core/Typography';
 
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
-import NoSsr from '../lib/nossr';
+import NoSsr from '../lib/noSSR';
 
 import Template from './template';
-import { FormInfosDemandeur, FormInfosVisiteur, FormInfosRecapDemande } from '../components';
+import { FormInfosClaimant, FormInfosVisiteur, FormInfosRecapDemande } from '../components';
 
 const AntTab = withStyles((theme) => ({
   root: {
@@ -51,16 +51,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type TabPanelProps = {
-  children: any,
-  value: number,
-  index: number,
-  ...
-};
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index } = props;
-
+function TabPanel({ children, value, index }) {
   return (
     <Typography
       component="div"
@@ -74,14 +66,21 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function getSteps(): Array<string> {
+TabPanel.propTypes = {
+  children: PropTypes.node.isRequired,
+  value: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+};
+
+function getSteps() {
   return ['Demande', 'Visiteur', 'Recapitulatif'];
 }
 
-export default function FormDemandeAcces() {
+export default function RequestAccesForm() {
   const classes = useStyles();
-  // Moteur du Stepper
-  const [activeStep, setActiveStep] = useState<number>(0);
+
+  // Stepper's functions
+  const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
 
   const handleNext = () => {
@@ -92,17 +91,10 @@ export default function FormDemandeAcces() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // Data finale du form
+  // FormState
   const [formData, setForm] = useState({
     listVisiteurs: [],
   });
-
-  const dataToProps = {
-    formData,
-    setForm,
-    handleNext,
-    handleBack,
-  };
 
   return (
     <Template>
@@ -124,17 +116,27 @@ export default function FormDemandeAcces() {
         <Grid item sm={12} xs={12}>
           <TabPanel value={activeStep} index={0}>
             <NoSsr>
-              <FormInfosDemandeur dataToProps={dataToProps} />
+              <FormInfosClaimant setForm={setForm} handleNext={handleNext} />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={1}>
             <NoSsr>
-              <FormInfosVisiteur dataToProps={dataToProps} />
+              <FormInfosVisiteur
+                formData={formData}
+                setForm={setForm}
+                handleNext={handleNext}
+                handleBack={handleBack}
+              />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={2}>
             <NoSsr>
-              <FormInfosRecapDemande dataToProps={dataToProps} />
+              <FormInfosRecapDemande
+                formData={formData}
+                setForm={setForm}
+                handleNext={handleNext}
+                handleBack={handleBack}
+              />
             </NoSsr>
           </TabPanel>
         </Grid>

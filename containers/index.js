@@ -1,5 +1,5 @@
-export { default as Accueil } from './accueil';
+export { default as Home } from './home';
 
-export { default as DemandeDetail } from './demandeDetail';
-export { default as GestionDemande } from './gestionDemande';
-export { default as DemandeAcces } from './demandeAcces';
+export { default as RequestDetail } from './requestDetail';
+export { default as MenuRequest } from './menuRequest';
+export { default as RequestAcces } from './requestAcces';

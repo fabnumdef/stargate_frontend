@@ -5,7 +5,8 @@ import React, {
   useContext,
 } from 'react';
 
-import SnackBar from '../components/styled/snackbar';
+import PropTypes from 'prop-types';
+import SnackBar from '../../components/styled/snackbar';
 
 export const SnackBarContext = React.createContext();
 
@@ -13,7 +14,6 @@ const AUTO_DISMISS = 5000;
 
 export function SnackBarProvider({ children }) {
   const [alerts, setAlerts] = useState([]);
-
   const activeAlertIds = alerts.join(',');
   useEffect(() => {
     if (activeAlertIds.length > 0) {
@@ -24,9 +24,9 @@ export function SnackBarProvider({ children }) {
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [activeAlertIds]);
+  }, [activeAlertIds, alerts]);
 
-  const addAlert = useCallback((content) => setAlerts(() => [content, ...alerts]), []);
+  const addAlert = useCallback((content) => setAlerts(() => [content, ...alerts]), [alerts]);
 
   const value = { addAlert };
 
@@ -39,6 +39,10 @@ export function SnackBarProvider({ children }) {
     </SnackBarContext.Provider>
   );
 }
+
+SnackBarProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 export function useSnackBar() {
   const snackbar = useContext(SnackBarContext);

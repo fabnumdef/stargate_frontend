@@ -7,7 +7,7 @@ import {
   act,
   waitForElement,
 } from '../../../lib/test-utils';
-import FormInfosDemandeur from '../infosDemandeur';
+import FormInfosClaimant from '../infosClaimant';
 
 const mockItemsPro = {
   formData: {},
@@ -16,17 +16,16 @@ const mockItemsPro = {
   handleBack: jest.fn(),
 };
 
-describe('FormInfosDemandeur', () => {
+describe('FormInfosClaimant', () => {
   afterEach(cleanup);
 
   it('renders without error', () => {
-    render(<FormInfosDemandeur dataToProps={mockItemsPro} />);
+    render(<FormInfosClaimant {...mockItemsPro} />);
   });
 
   it('test validation false', async () => {
     // exception for testing, where props object is define
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    const { getByText, getByTestId } = render(<FormInfosDemandeur dataToProps={mockItemsPro} />);
+    const { getByText, getByTestId } = render(<FormInfosClaimant {...mockItemsPro} />);
     await act(async () => {
       fireEvent.submit(getByTestId(/form-demandeur/i));
     });
@@ -42,7 +41,7 @@ describe('FormInfosDemandeur', () => {
 
   it('test validation true', async () => {
     const { getByTestId, getByLabelText } = render(
-      <FormInfosDemandeur dataToProps={mockItemsPro} />,
+      <FormInfosClaimant {...mockItemsPro} />,
     );
 
     await act(async () => {

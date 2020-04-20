@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import dynamic from 'next/dynamic';
 
@@ -9,14 +8,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
-type Props = {
-  children: any,
-  window?: any
-};
+const MenuItems = dynamic(() => import('./menu'));
 
 const MenuIcon = dynamic(() => import('./menuIcon'));
 
-function ElevationScroll(props: Props) {
+function ElevationScroll(props) {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -44,22 +40,25 @@ export default () => {
   const classes = useStyles();
 
   return (
-    <ElevationScroll>
-      <AppBar>
-        <Toolbar variant="regular">
-          <Button
-            edge="start"
-            size="small"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="logo"
-          >
-            <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
-          </Button>
-          <div className={classes.grow} />
-          <MenuIcon />
-        </Toolbar>
-      </AppBar>
-    </ElevationScroll>
+    <>
+      <ElevationScroll>
+        <AppBar>
+          <Toolbar variant="regular">
+            <Button
+              edge="start"
+              size="small"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="logo"
+            >
+              <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
+            </Button>
+            <div className={classes.grow} />
+            <MenuIcon />
+          </Toolbar>
+        </AppBar>
+      </ElevationScroll>
+      <MenuItems />
+    </>
   );
 };

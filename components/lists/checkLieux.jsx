@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 
 import Checkbox from '@material-ui/core/Checkbox';
@@ -31,15 +30,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.primary.main, 0.02),
   },
 }));
-
-type ListLieuxProps = {
-  lieux: Array<any>,
-  label: string,
-  name: string,
-  expanded: any,
-  setValue: any,
-  setState: any
-};
 
 const ExpansionPanelStyled = withStyles(() => ({
   root: {
@@ -82,7 +72,7 @@ const ListStyled = withStyles(() => ({
   },
 }))(List);
 
-export default function ListLieux(props: ListLieuxProps) {
+export default function ListLieux(props) {
   const {
     options, label, expanded, onChange, setExpanded,
   } = props;

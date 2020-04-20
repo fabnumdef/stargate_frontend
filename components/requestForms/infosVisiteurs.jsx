@@ -24,7 +24,7 @@ import CardAutocomplete from '../styled/cardAutocomplete';
 
 import DatePicker from '../styled/date';
 import Nationalite from '../../lib/insee/pays2019.json';
-import { useSnackBar } from '../../lib/snackbar';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 import CheckAnimation from '../styled/animations/checked';
 
 import InputFile from '../styled/inputFile';

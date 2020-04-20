@@ -1,22 +1,25 @@
-// @flow
-import React, { useState, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
+// React Hook Form Validations
 import { useForm, Controller } from 'react-hook-form';
+
+// Material UI Imports
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
-
 import Button from '@material-ui/core/Button';
-
-import { isValid } from 'date-fns';
-
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+
+// Date Validators
+import { isValid } from 'date-fns';
+
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
 
@@ -110,8 +113,9 @@ function getTypeEmploie() {
   ];
 }
 
-export default function FormInfosDemandeur({ dataToProps }) {
-  const { setForm, handleNext } = dataToProps;
+export default function FormInfosClaimant({
+  setForm, handleNext,
+}) {
   const classes = useStyles();
   // Date Values
 
@@ -124,16 +128,6 @@ export default function FormInfosDemandeur({ dataToProps }) {
     'Port Militaire': false,
     'Zone Protégée': false,
   });
-
-  // Select Emploie
-  // eslint-disable-next-line no-unused-vars
-  const [labelWidth, setLabelWidth] = useState(0);
-
-  const inputLabel = useRef(null);
-
-  useEffect(() => {
-    if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
 
   const onSubmit = (data) => {
     setForm((formData) => ({ ...formData, ...data }));
@@ -158,12 +152,18 @@ export default function FormInfosDemandeur({ dataToProps }) {
               </Grid>
               <Grid className={classes.comps} item xs={12} sm={12}>
                 <FormControl
-                  error={Object.prototype.hasOwnProperty.call(errors, 'natureVisite')}
+                  error={Object.prototype.hasOwnProperty.call(
+                    errors,
+                    'natureVisite',
+                  )}
                   component="div"
                 >
                   <Controller
                     as={(
-                      <RadioGroup className={classes.radioNature} aria-label="nature">
+                      <RadioGroup
+                        className={classes.radioNature}
+                        aria-label="nature"
+                      >
                         <FormControlLabel
                           value="Professionnelle"
                           control={<Radio color="primary" />}
@@ -177,7 +177,7 @@ export default function FormInfosDemandeur({ dataToProps }) {
                           labelPlacement="start"
                         />
                       </RadioGroup>
-                    )}
+                                   )}
                     control={control}
                     rules={{
                       required: 'La nature de la visite est obligatoire.',
@@ -186,7 +186,7 @@ export default function FormInfosDemandeur({ dataToProps }) {
                     defaultValue=""
                   />
                   {errors.natureVisite && (
-                    <FormHelperText>{errors.natureVisite.message}</FormHelperText>
+                  <FormHelperText>{errors.natureVisite.message}</FormHelperText>
                   )}
                 </FormControl>
               </Grid>
@@ -204,15 +204,20 @@ export default function FormInfosDemandeur({ dataToProps }) {
                       as={(
                         <DatePicker
                           label="du"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'dateStartVisite')}
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'dateStartVisite',
+                          )}
                           disablePast
-                          helperText={errors.dateStartVisite && errors.dateStartVisite.message}
+                          helperText={
+                                           errors.dateStartVisite && errors.dateStartVisite.message
+                                         }
                           fullWidth
                           inputProps={{
                             'data-testid': 'datedebut-visite',
                           }}
                         />
-                      )}
+                                     )}
                       control={control}
                       name="dateStartVisite"
                       rules={{
@@ -230,15 +235,20 @@ export default function FormInfosDemandeur({ dataToProps }) {
                         <DatePicker
                           minDate={watch('dateStartVisite')}
                           label="au (inclus)"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'dateEndVisite')}
-                          helperText={errors.dateEndVisite && errors.dateEndVisite.message}
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'dateEndVisite',
+                          )}
+                          helperText={
+                                           errors.dateEndVisite && errors.dateEndVisite.message
+                                         }
                           disablePast
                           fullWidth
                           inputProps={{
                             'data-testid': 'datefin-visite',
                           }}
                         />
-                      )}
+                                     )}
                       control={control}
                       name="dateEndVisite"
                       rules={{
@@ -328,7 +338,9 @@ export default function FormInfosDemandeur({ dataToProps }) {
                   defaultValue={[]}
                 />
                 {errors.zone1 && (
-                  <FormHelperText className={classes.error}>{errors.zone1.message}</FormHelperText>
+                <FormHelperText className={classes.error}>
+                  {errors.zone1.message}
+                </FormHelperText>
                 )}
               </Grid>
               <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
@@ -348,14 +360,18 @@ export default function FormInfosDemandeur({ dataToProps }) {
           <Grid item sm={12} xs={12}>
             <Grid container justify="flex-end">
               {watch('zone2') && watch('zone2').length > 0 && (
-                <Typography variant="body2" gutterBottom>
-                  <WarningRoundedIcon className={classes.icon} />
-                  Un accompagnateur sera exigé lors de la visite
-                </Typography>
+              <Typography variant="body2" gutterBottom>
+                <WarningRoundedIcon className={classes.icon} />
+                Un accompagnateur sera exigé lors de la visite
+              </Typography>
               )}
             </Grid>
             <Grid container justify="flex-end">
-              <Button variant="outlined" color="primary" className={classes.buttonCancel}>
+              <Button
+                variant="outlined"
+                color="primary"
+                className={classes.buttonCancel}
+              >
                 Annuler
               </Button>
               <Button type="submit" variant="contained" color="primary">
@@ -369,3 +385,8 @@ export default function FormInfosDemandeur({ dataToProps }) {
     </div>
   );
 }
+
+FormInfosClaimant.propTypes = {
+  setForm: PropTypes.func.isRequired,
+  handleNext: PropTypes.func.isRequired,
+};

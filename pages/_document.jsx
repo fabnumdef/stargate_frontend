@@ -1,34 +1,34 @@
 // @flow
 import React from 'react';
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, {
+  Html, Head, Main, NextScript,
+} from 'next/document';
 
 import { ServerStyleSheets } from '@material-ui/core/styles';
-import theme from '../styles/theme';
 import 'typeface-roboto';
 
 export default class MyDocument extends Document {
   render() {
     return (
-      <html lang="fr">
+      <Html lang="fr">
         <Head>
           <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
           />
-          <meta name="theme-color" content={theme.palette.primary.main} />
         </Head>
         <body>
           <Main />
           <NextScript />
-          <style jsx>
-            {`
+        </body>
+        <style jsx>
+          {`
             body {
               height: auto;
             }
           `}
-          </style>
-        </body>
-      </html>
+        </style>
+      </Html>
     );
   }
 }

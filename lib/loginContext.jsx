@@ -30,7 +30,6 @@ export function LoginContextProvider(props) {
   };
 
   const signOut = () => {
-    router.push('/login');
     setIsLoggedUser(false);
     localStorage.clear();
     client.resetStore();
@@ -85,6 +84,7 @@ export function LoginContextProvider(props) {
     if (isLoggedUser && router.pathname === '/login') {
       router.push('/');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedUser]);
 
 

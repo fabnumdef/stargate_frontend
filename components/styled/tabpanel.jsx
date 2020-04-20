@@ -1,16 +1,9 @@
-// @flow
 import React from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
-type TabPanelProps = {
-  children: any,
-  value: number,
-  index: number,
-  ...
-};
 
-export default function TabPanel(props: TabPanelProps) {
+export default function TabPanel(props) {
   const {
     children, value, index,
   } = props;

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 // Import Material
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function NestedList({ children }) {
+export default function Template({ children }) {
   const classes = useStyles();
 
   return (
@@ -27,3 +27,7 @@ export default function NestedList({ children }) {
     </div>
   );
 }
+
+Template.propTypes = {
+  children: PropTypes.node.isRequired,
+};

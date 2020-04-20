@@ -122,6 +122,7 @@ export const initOnContext = (ctx) => {
  * @returns {(PageComponent: ReactNode) => ReactNode}
  */
 export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
+  // eslint-disable-next-line react/prop-types
   const WithApollo = ({ apolloClient, apolloState, ...pageProps }) => {
     let client;
     if (apolloClient) {
