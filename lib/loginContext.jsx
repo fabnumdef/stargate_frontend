@@ -84,12 +84,12 @@ export function LoginContextProvider(props) {
     if (isLoggedUser && router.pathname === '/login') {
       router.push('/');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedUser]);
 
 
   return (
-    <LoginContext.Provider value={{ isLoggedUser, signIn, signOut }}>
+    <LoginContext.Provider value={{ signIn, signOut }}>
       {children}
     </LoginContext.Provider>
   );

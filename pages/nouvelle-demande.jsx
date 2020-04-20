@@ -6,4 +6,4 @@ function NewRequestPage() {
   return <RequestAcces />;
 }
 
-export default withApollo()(NewRequestPage);
+export default withApollo({ ssr: false })(NewRequestPage);

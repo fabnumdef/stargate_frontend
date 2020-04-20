@@ -1,14 +1,32 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import { useLogin } from '../../lib/loginContext';
 
-const useStyles = makeStyles(() => ({
-  formLogin: {
-    marginTop: '30%',
+export const CssTextField = withStyles({
+  root: {
+    '& label.Mui-focused': {
+      color: 'white',
+    },
+    '& .MuiFormLabel-root': {
+      color: 'white',
+    },
+    '& .MuiInput-underline:before': {
+      borderBottomColor: 'grey',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: 'white',
+    },
+    '& label.Mui-root': {
+      color: 'white',
+    },
+    '& .MuiInputBase-input': {
+      color: 'white',
+    },
   },
-}));
+})(TextField);
 
 export const LOGIN = gql`
     mutation login($email: EmailAddress!, $password: String!) {
@@ -24,8 +42,6 @@ export default function LoginForm() {
   const [login] = useMutation(LOGIN);
   const ctx = useLogin();
 
-  const classes = useStyles();
-
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     try {
@@ -33,33 +49,27 @@ export default function LoginForm() {
       ctx.signIn(jwt);
     } catch (error) {
       // TODO put toast messages for errors
-      console.log(error);
     }
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit} data-testid="login-form" className={classes.formLogin}>
-        <label htmlFor="email">
-          <input
-            type="email"
-            name="email"
-            data-testid="login-form-email"
-            placeholder="Identifiant"
-            value={email}
-            onChange={(evt) => setEmail(evt.target.value)}
-          />
-        </label>
-        <label htmlFor="password">
-          <input
-            type="password"
-            name="password"
-            data-testid="login-form-password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(evt) => setPassword(evt.target.value)}
-          />
-        </label>
+      <form onSubmit={handleSubmit} data-testid="login-form">
+        <CssTextField
+          type="email"
+          name="email"
+          inputProps={{ 'data-testid': 'login-form-email' }}
+          label="Email"
+          value={email}
+          onChange={(evt) => setEmail(evt.target.value)}
+        />
+        <CssTextField
+          type="password"
+          inputProps={{ 'data-testid': 'login-form-password' }}
+          label="Mot de passe"
+          value={password}
+          onChange={(evt) => setPassword(evt.target.value)}
+        />
         <button type="submit" aria-label="submit-login-form" />
       </form>
     </div>

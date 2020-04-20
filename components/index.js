@@ -14,5 +14,5 @@ export { default as TabRecapDemande } from './tabs/tabRecapDemande';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
 
 // Login Forms
-export { default as LoginForm } from './loginForms/LoginForm';
-export { default as ForgotPassForm } from './loginForms/ForgotPassForm';
+export { default as LoginForm } from './loginForms/loginForm';
+export { default as ForgotPassForm } from './loginForms/forgotPassForm';

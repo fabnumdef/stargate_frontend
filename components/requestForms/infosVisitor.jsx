@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 // React hook form validators
 import { useForm, Controller } from 'react-hook-form';
 // Material UI components
@@ -1010,3 +1011,9 @@ export default function FormInfoVisitor({
     </div>
   );
 }
+
+FormInfoVisitor.propTypes = {
+  setForm: PropTypes.func.isRequired,
+  handleNext: PropTypes.func.isRequired,
+  handleBack: PropTypes.func.isRequired,
+};

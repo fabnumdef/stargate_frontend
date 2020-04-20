@@ -32,7 +32,6 @@ function HideOnScroll({ children, window }) {
   // will default to window.
   // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger({
-    disableHysteresis: true,
     threshold: 0,
     target: window ? window() : undefined,
   });
@@ -77,13 +76,13 @@ export default function MenuItems(props) {
         <Toolbar className={classes.appBar}>
           <div className={classes.grow} />
           {menu.map((item) => (
-            <Link href={item.link}>
+            <Link href={item.link} key={item.label}>
               {router.pathname === item.link ? (
-                <ButtonMenu variant="contained" color="secondary">
+                <ButtonMenu size="small" variant="contained" color="secondary">
                   {item.label}
                 </ButtonMenu>
               ) : (
-                <ButtonMenu variant="contained" color="primary">
+                <ButtonMenu size="small" variant="contained" color="primary">
                   {item.label}
                 </ButtonMenu>
               )}

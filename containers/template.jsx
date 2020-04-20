@@ -7,7 +7,7 @@ import { Header } from '../components';
 
 const useStyles = makeStyles(() => ({
   container: {
-    paddingTop: '8vh',
+    paddingTop: '15vh',
   },
 }));
 

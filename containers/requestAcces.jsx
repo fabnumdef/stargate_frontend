@@ -68,7 +68,7 @@ function TabPanel({ children, value, index }) {
 
 TabPanel.propTypes = {
   children: PropTypes.node.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
 };
 
@@ -100,7 +100,7 @@ export default function RequestAccesForm() {
     <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
+          <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
               Nouvelle Demande
             </Typography>

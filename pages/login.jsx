@@ -1,3 +1,4 @@
+// @flow
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { LoginForm, ForgotPassForm } from '../components';
@@ -23,18 +24,13 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: '5px 5px 6px 0 rgba(0, 0, 0, 0.16)',
     position: 'relative',
     '& form': {
-      '& input': {
-        display: 'block',
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        border: 'none',
-        borderBottom: '1px solid white',
-        margin: '35px auto',
-        fontSize: '1.1rem',
-        maxWidth: '180px',
-        '& button': {
-          display: 'none',
-        },
+      marginTop: '22%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      '& button': {
+        display: 'none',
       },
     },
     '& button': {
@@ -50,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: {
     height: '10vh',
+  },
+  buttonStyle: {
+    outline: 'none',
   },
 }));
 
@@ -71,7 +70,7 @@ function LoginPage() {
         {forgottenPass
           ? <ForgotPassForm />
           : <LoginForm />}
-        <button type="button" onClick={switchForms}>{forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}</button>
+        <button className={classes.buttonStyle} type="button" onClick={switchForms}>{forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}</button>
       </div>
     </div>
   );

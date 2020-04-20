@@ -127,13 +127,6 @@ export default function NestedList() {
             <Typography variant="h5" className={classes.pageTitle}>
               Mes Demandes
             </Typography>
-            <div className={classes.pageTitleControl}>
-              <Link href="/formulaire">
-                <Button variant="contained" color="primary">
-                  Nouvelle demande
-                </Button>
-              </Link>
-            </div>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>

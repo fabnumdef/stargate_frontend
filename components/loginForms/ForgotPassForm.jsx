@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { CssTextField } from './LoginForm';
+
 const useStyles = makeStyles(() => ({
   formPasswordContainer: {
-    marginTop: '25%',
+    marginTop: '22%',
     maxWidth: '80%',
     margin: 'auto',
     '& p': {
@@ -23,10 +25,8 @@ export default function ForgotPassForm() {
 
   return (
     <div className={classes.formPasswordContainer}>
-      <form onSubmit={handleSubmit} className={classes.formPassword}>
-        <label htmlFor="email">
-          <input type="email" name="email" placeholder="Identifiant" value={email} onChange={(evt) => setEmail(evt.target.value)} />
-        </label>
+      <form onSubmit={handleSubmit}>
+        <CssTextField type="email" label="Identifiant" value={email} onChange={(evt) => setEmail(evt.target.value)} />
         <p>
           Si votre identifiant est enregistré dans notre base de données,
           vous recevrez un e-mail pour réinitialiser votre mot de passe.
