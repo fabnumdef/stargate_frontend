@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+import { useSnackBar } from '../../lib/snackbar';
 
 const useStyles = makeStyles(() => ({
   formPasswordContainer: {
@@ -12,13 +16,37 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+export const RESET_PASSWORD = gql`
+    mutation resetPassword($email: EmailAddress!) {
+        resetPassword(email: $email) {
+            id
+        }
+    }
+`;
+
 export default function ForgotPassForm({ Button }) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState();
+  const [resetPassword] = useMutation(RESET_PASSWORD);
+  const { addAlert } = useSnackBar();
 
   const classes = useStyles();
 
-  const handleSubmit = (evt) => {
+  const handleSubmit = async (evt) => {
     evt.preventDefault();
+    if (!email) {
+      addAlert({ message: 'Merci d\'entrer un identifiant', severity: 'warning' });
+      return;
+    }
+    try {
+      await resetPassword({ variables: { email } });
+      addAlert({ message: 'Demande enregistrée', severity: 'success' });
+      setEmail('');
+    } catch (error) {
+      if (error.message === 'GraphQL error: User not found') {
+        addAlert({ message: 'Demande enregistrée', severity: 'success' });
+        setEmail('');
+      }
+    }
   };
 
   return (
@@ -28,7 +56,8 @@ export default function ForgotPassForm({ Button }) {
           <input type="email" name="email" placeholder="Identifiant" value={email} onChange={(evt) => setEmail(evt.target.value)} />
         </label>
         <p>
-          Si votre identifiant est enregistré dans notre base de données,
+          Merci d&apos;entrer votre identifiant.
+          S&apos;il est enregistré dans notre base de données,
           vous recevrez un e-mail pour réinitialiser votre mot de passe.
         </p>
         <Button text="Envoyer" label="submit-form-password" />
@@ -36,3 +65,7 @@ export default function ForgotPassForm({ Button }) {
     </div>
   );
 }
+
+ForgotPassForm.propTypes = {
+  Button: PropTypes.element.isRequired,
+};

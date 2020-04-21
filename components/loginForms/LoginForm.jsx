@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { makeStyles } from '@material-ui/core/styles';
@@ -77,3 +78,7 @@ export default function LoginForm({ Button }) {
     </div>
   );
 }
+
+LoginForm.propTypes = {
+  Button: PropTypes.element.isRequired,
+};
