@@ -3,7 +3,7 @@ import React from 'react';
 import {
   render, cleanup, fireEvent, act,
 } from '../../../lib/test-utils';
-import LoginForm, { LOGIN } from '../LoginForm';
+import LoginForm, { LOGIN } from '../loginForm';
 
 const mocksItemProps = {
   handleSubmit: jest.fn(),

@@ -32,6 +32,7 @@ function HideOnScroll({ children, window }) {
   // will default to window.
   // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger({
+    disableHysteresis: true,
     threshold: 0,
     target: window ? window() : undefined,
   });
