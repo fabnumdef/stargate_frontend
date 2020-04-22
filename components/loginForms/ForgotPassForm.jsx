@@ -18,9 +18,7 @@ const useStyles = makeStyles(() => ({
 
 export const RESET_PASSWORD = gql`
     mutation resetPassword($email: EmailAddress!) {
-        resetPassword(email: $email) {
-            id
-        }
+        resetPassword(email: $email)
     }
 `;
 
@@ -41,11 +39,8 @@ export default function ForgotPassForm({ Button }) {
       await resetPassword({ variables: { email } });
       addAlert({ message: 'Demande enregistrée', severity: 'success' });
       setEmail('');
-    } catch (error) {
-      if (error.message === 'GraphQL error: User not found') {
-        addAlert({ message: 'Demande enregistrée', severity: 'success' });
-        setEmail('');
-      }
+    } catch (e) {
+      addAlert({ message: 'Une erreur est survenue', severity: 'warning'});
     }
   };
 
