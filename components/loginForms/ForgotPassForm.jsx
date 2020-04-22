@@ -40,7 +40,7 @@ export default function ForgotPassForm({ Button }) {
       addAlert({ message: 'Demande enregistrée', severity: 'success' });
       setEmail('');
     } catch (e) {
-      addAlert({ message: 'Une erreur est survenue', severity: 'warning'});
+      addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
     }
   };
 
