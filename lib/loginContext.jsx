@@ -56,7 +56,7 @@ export function LoginContextProvider(props) {
         authRenew();
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          signOut({ message: 'Erreur lors du renouvellement de session', severity: 'warning' });
+          signOut({ message: 'Erreur lors du renouvellement de session, merci de vous reconnecter', severity: 'warning' });
         }
         setTimeout(authRenew, 60 * 1000);
       }
