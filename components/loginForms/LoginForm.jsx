@@ -40,7 +40,7 @@ export default function LoginForm({ Button }) {
           addAlert({ message: 'Mauvais identifiant et/ou mot de passe', severity: 'warning' });
           break;
         case 'GraphQL error: Password expired':
-          addAlert({ message: 'Mot de passe expirée', severity: 'warning' });
+          addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
           break;
         default:
           addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
