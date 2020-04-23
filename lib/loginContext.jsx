@@ -5,6 +5,14 @@ import { useRouter } from 'next/router';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 
+export const LOGIN = gql`
+    mutation login($email: EmailAddress!, $password: String, $token: String) {
+        login(email: $email, password: $password, token: $token) {
+            jwt
+        }
+    }
+`;
+
 const AUTH_RENEW = gql`
     mutation jwtRefresh {
         jwtRefresh {
@@ -64,14 +72,32 @@ export function LoginContextProvider(props) {
     }
   };
 
-  const signIn = (token) => {
-    setToken(token);
-    setIsLoggedUser(true);
-    authRenew(setToken, signOut, client);
-    setAuthRenew(true);
+  const signIn = async (email, password, resetToken = null) => {
+    try {
+      const { data: { login: { jwt } } } = await client.mutate({
+        mutation: LOGIN,
+        variables: { email, password, resetToken },
+      });
+      setToken(jwt);
+      setIsLoggedUser(true);
+      await authRenew(setToken, signOut, client);
+      return setAuthRenew(true);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   };
 
   useEffect(() => {
+    async function resetPassSignIn(email, token) {
+      await signIn(email, token);
+    }
+
+    if (router.query.token) {
+      const { email, token } = router.query;
+      resetPassSignIn(email, token);
+    }
+
     const token = localStorage.getItem('token');
     if (!token) {
       signOut();
