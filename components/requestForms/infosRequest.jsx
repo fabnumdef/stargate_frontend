@@ -18,10 +18,15 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 
 // Date Validators
-import { isValid } from 'date-fns';
+import {
+  isValid, differenceInDays, isBefore, isThursday, isFriday,
+} from 'date-fns';
 
+
+import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
+
 
 const useStyles = makeStyles((theme) => ({
   radioGroup: {
@@ -71,17 +76,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// eslint-disable-next-line no-unused-vars
-function getUser() {
-  return {
-    nom: 'Durand',
-    prenom: 'Henry',
-    grade: 'MP',
-    unite: 'Etat Major',
-    email: 'henry.durand@intradef.gouv.fr',
-  };
-}
-
 const lieux1 = [
   { value: 'HOMET' },
   { value: 'INBS HOMET' },
@@ -111,6 +105,16 @@ function getTypeEmploie() {
     'Famille',
     'Autorité',
   ];
+}
+
+// is not a business day
+function isDeadlineRespected(value) {
+  const today = new Date();
+  const days = differenceInDays(value, today);
+  if (isThursday(today) || isFriday(today)) {
+    return days >= 4;
+  }
+  return days >= 2;
 }
 
 export default function FormInfosClaimant({
@@ -152,42 +156,34 @@ export default function FormInfosClaimant({
               </Grid>
               <Grid className={classes.comps} item xs={12} sm={12}>
                 <FormControl
-                  error={Object.prototype.hasOwnProperty.call(
-                    errors,
-                    'natureVisite',
-                  )}
+                  error={Object.prototype.hasOwnProperty.call(errors, 'object')}
                   component="div"
                 >
                   <Controller
                     as={(
-                      <RadioGroup
-                        className={classes.radioNature}
-                        aria-label="nature"
-                      >
+                      <RadioGroup className={classes.radioNature} aria-label="object">
                         <FormControlLabel
-                          value="Professionnelle"
+                          value={REQUEST_OBJECT.PROFESSIONAL}
                           control={<Radio color="primary" />}
                           label="Professionnelle"
                           labelPlacement="start"
                         />
                         <FormControlLabel
-                          value="Privee"
+                          value={REQUEST_OBJECT.PRIVATE}
                           control={<Radio color="primary" />}
                           label="Privée"
                           labelPlacement="start"
                         />
                       </RadioGroup>
-                                   )}
+                    )}
                     control={control}
                     rules={{
                       required: 'La nature de la visite est obligatoire.',
                     }}
-                    name="natureVisite"
+                    name="object"
                     defaultValue=""
                   />
-                  {errors.natureVisite && (
-                  <FormHelperText>{errors.natureVisite.message}</FormHelperText>
-                  )}
+                  {errors.object && <FormHelperText>{errors.object.message}</FormHelperText>}
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -204,26 +200,22 @@ export default function FormInfosClaimant({
                       as={(
                         <DatePicker
                           label="du"
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'dateStartVisite',
-                          )}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'from')}
                           disablePast
-                          helperText={
-                                           errors.dateStartVisite && errors.dateStartVisite.message
-                                         }
+                          helperText={errors.from && errors.from.message}
                           fullWidth
                           inputProps={{
                             'data-testid': 'datedebut-visite',
                           }}
                         />
-                                     )}
+                      )}
                       control={control}
-                      name="dateStartVisite"
+                      name="from"
                       rules={{
                         required: 'La date de début est obligatoire.',
                         validate: {
-                          valide: (value) => isValid(value) || 'Format invalide',
+                          format: (value) => isValid(value) || 'Format invalide',
+                          valide: (value) => isDeadlineRespected(value) || 'Attention aux durées minimum.',
                         },
                       }}
                       defaultValue={null}
@@ -233,28 +225,24 @@ export default function FormInfosClaimant({
                     <Controller
                       as={(
                         <DatePicker
-                          minDate={watch('dateStartVisite')}
+                          minDate={watch('from')}
                           label="au (inclus)"
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'dateEndVisite',
-                          )}
-                          helperText={
-                                           errors.dateEndVisite && errors.dateEndVisite.message
-                                         }
+                          error={Object.prototype.hasOwnProperty.call(errors, 'to')}
+                          helperText={errors.to && errors.to.message}
                           disablePast
                           fullWidth
                           inputProps={{
                             'data-testid': 'datefin-visite',
                           }}
                         />
-                                     )}
+                      )}
                       control={control}
-                      name="dateEndVisite"
+                      name="to"
                       rules={{
                         required: 'La date de fin est obligatoire',
                         validate: {
-                          valide: (value) => isValid(value) || 'Format invalide',
+                          format: (value) => isValid(value) || 'Format invalide',
+                          valide: (value) => !isBefore(value, watch('from')) || 'Date éronee',
                         },
                       }}
                       defaultValue={null}
@@ -296,9 +284,9 @@ export default function FormInfosClaimant({
               <Grid className={classes.comps} item sm={12} xs={12}>
                 <TextField
                   className={classes.testBlue}
-                  name="motifVisite"
-                  error={Object.prototype.hasOwnProperty.call(errors, 'motifVisite')}
-                  helperText={errors.motifVisite && errors.motifVisite.message}
+                  name="reason"
+                  error={Object.prototype.hasOwnProperty.call(errors, 'reason')}
+                  helperText={errors.reason && errors.reason.message}
                   variant="outlined"
                   fullWidth
                   multiline
@@ -331,23 +319,21 @@ export default function FormInfosClaimant({
                     },
                   }}
                   control={control}
-                  name="zone1"
+                  name="placeS"
                   options={lieux1}
                   onChange={(checked) => checked}
                   label="Port Militaire"
                   defaultValue={[]}
                 />
-                {errors.zone1 && (
-                <FormHelperText className={classes.error}>
-                  {errors.zone1.message}
-                </FormHelperText>
+                {errors.placeS && (
+                  <FormHelperText className={classes.error}>{errors.placeS.message}</FormHelperText>
                 )}
               </Grid>
               <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
                 <Controller
                   as={<ListLieux expanded={expanded} setExpanded={setExpanded} />}
                   control={control}
-                  name="zone2"
+                  name="placeP"
                   options={lieux2}
                   onChange={(checked) => checked}
                   label="Zone Protégée"
@@ -359,19 +345,15 @@ export default function FormInfosClaimant({
 
           <Grid item sm={12} xs={12}>
             <Grid container justify="flex-end">
-              {watch('zone2') && watch('zone2').length > 0 && (
-              <Typography variant="body2" gutterBottom>
-                <WarningRoundedIcon className={classes.icon} />
-                Un accompagnateur sera exigé lors de la visite
-              </Typography>
+              {watch('placeS') && watch('placeP').length > 0 && (
+                <Typography variant="body2" gutterBottom>
+                  <WarningRoundedIcon className={classes.icon} />
+                  Un accompagnateur sera exigé lors de la visite
+                </Typography>
               )}
             </Grid>
             <Grid container justify="flex-end">
-              <Button
-                variant="outlined"
-                color="primary"
-                className={classes.buttonCancel}
-              >
+              <Button variant="outlined" color="primary" className={classes.buttonCancel}>
                 Annuler
               </Button>
               <Button type="submit" variant="contained" color="primary">

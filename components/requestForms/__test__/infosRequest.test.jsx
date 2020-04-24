@@ -7,7 +7,7 @@ import {
   act,
   waitForElement,
 } from '../../../lib/test-utils';
-import FormInfosClaimant from '../infosClaimant';
+import FormInfosClaimant from '../infosRequest';
 
 const mockItemsPro = {
   formData: {},

@@ -3,7 +3,7 @@ export { default as TabPanel } from './styled/tabpanel';
 export { default as Footer } from './styled/footer';
 
 // Forms
-export { default as FormInfosClaimant } from './requestForms/infosClaimant';
+export { default as FormInfosRequest } from './requestForms/infosRequest';
 export { default as FormInfosRecapDemande } from './requestForms/infosRecapDemande';
 export { default as FormInfosVisitor } from './requestForms/infosVisitor';
 

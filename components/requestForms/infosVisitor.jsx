@@ -23,10 +23,11 @@ import validator from 'validator';
 import { isValid } from 'date-fns';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
+import { REQUEST_OBJECT } from '../../utils/constants/enums';
+
 import DatePicker from '../styled/date';
-import Nationalite from '../../lib/insee/pays2019.json';
+import Nationalite from '../../utils/constants/insee/pays2019.json';
 import CheckAnimation from '../styled/animations/checked';
-import CardAutocomplete from '../styled/cardAutocomplete';
 import InputFile from '../styled/inputFile';
 
 const useStyles = makeStyles((theme) => ({
@@ -78,40 +79,6 @@ function getTypeEmploie(type) {
   return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
 }
 
-function getSomeone() {
-  return [
-    {
-      prenomVisiteur: 'Robin',
-      nomVisiteur: 'Labouille',
-      nomNaissanceVisiteur: 'Labouille',
-      gradeVisiteur: 'MP',
-      nidVisiteur: '1111111111',
-      emailVisiteur: 'robin.labrouille@intra.go.fr',
-      uniteVisiteur: 'CDBD Toulon',
-      typeVisiteur: 'Militaire actif',
-      dateNaissanceVisiteur: '16/09/1986',
-      nationaliteVisiteur: 'Française',
-      typeDocumentVisiteur: 'Passeport',
-      lieuNaissanceVisiteur: 'Lyon',
-      numeroDocumentVisiteur: '91897zqo39q1q70911',
-    },
-    {
-      prenomVisiteur: 'Robert',
-      nomVisiteur: 'Latour',
-      gradeVisiteur: 'ASC1',
-      nidVisiteur: '9999999999',
-      emailVisiteur: 'robert.latour@gmail.com',
-      typeVisiteur: 'Civil de la Defense',
-      uniteVisiteur: 'CDBD Toulon',
-      dateNaissanceVisiteur: '07/26/1967',
-      nationaliteVisiteur: 'Française',
-      typeDocumentVisiteur: 'Passeport',
-      lieuNaissanceVisiteur: 'Toulouse',
-      numeroDocumentVisiteur: '9e8393eei93170911',
-    },
-  ];
-}
-
 export default function FormInfoVisitor({
   formData, setForm, handleNext, handleBack,
 }) {
@@ -126,19 +93,18 @@ export default function FormInfoVisitor({
     setValue,
     clearError,
   } = useForm({
-    defaultValues: {
-      nomDemandeur: '',
-    },
   });
 
-  const [nature, setNature] = useState(formData.natureVisite || '');
+  const [object, setObject] = useState(formData.object || '');
 
   useEffect(() => {
-    setNature(formData.natureVisite);
+    setObject(formData.object);
 
-    if (formData.visiteur) {
+    if (formData.selectVisitor) {
       // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(formData.visiteur)) {
+      for (const [key, value] of Object.entries(
+        formData.selectVisitor,
+      )) {
         setValue(key, value);
       }
     }
@@ -146,61 +112,21 @@ export default function FormInfoVisitor({
 
   const { addAlert } = useSnackBar();
 
-  const handleNomVisiteurChange = (event) => {
-    clearError('nomVisiteur');
-    setValue('nomVisiteur', event.target.value);
-  };
-
-  const handleNomDemandeurChange = (event) => {
-    clearError('nomDemandeur');
-    setValue('nomDemandeur', event.target.value);
-  };
-
-  const handleNationaliteChange = (event, value) => {
-    clearError('nationaliteVisiteur');
-    setValue('nationaliteVisiteur', value);
-  };
-
-  const handleAutoComplete = (event, value) => {
-    clearError();
-
-    if (!value) return;
-
-    setValue('nidVisiteur', value.nidVisiteur);
-    setValue('gradeVisiteur', value.gradeVisiteur);
-    setValue('nomNaissanceVisiteur', value.nomNaissanceVisiteur);
-
-    setValue('nomVisiteur', value.nomVisiteur);
-    setValue('prenomVisiteur', value.prenomVisiteur);
-    setValue('nomuniteVisiteurVisiteur', value.uniteVisiteur);
-    setValue('emailVisiteur', value.emailVisiteur);
-    setValue('uniteVisiteur', value.uniteVisiteur);
-    setValue('typeDocumentVisiteur', value.typeDocumentVisiteur);
-    setValue('numeroDocumentVisiteur', value.numeroDocumentVisiteur);
-    setValue('nationaliteVisiteur', value.nationaliteVisiteur);
-    setValue('dateNaissanceVisiteur', value.dateNaissanceVisiteur);
-    setValue('lieuNaissanceVisiteur', value.lieuNaissanceVisiteur);
-    setValue('typeVisiteur', value.typeVisiteur);
-    setValue('origineVisiteur', value.gradeVisiteur ? 'MINARM' : 'HORS MINARM');
-    setValue('vipVisiteur', value.vipVisiteur ? 'OUI' : 'NON');
-    setValue('justificationVipVisiteur', value.justificationVipVisiteur);
+  const handleNationalityChange = (event, value) => {
+    clearError('nationality');
+    setValue('nationality', value);
   };
 
   useEffect(() => {
-    register({ name: 'nomDemandeur' }, { required: nature === 'Privee' });
     register(
-      { name: 'nomVisiteur' },
-      { required: 'le nom du visiteur est obligatoire' },
-    );
-    register(
-      { name: 'nationaliteVisiteur' },
+      { name: 'nationality' },
       { required: watch('origineVisiteur') !== 'MINARM' },
     );
-  }, [nature, register, watch]);
+  }, [object, register, watch]);
 
-  const handleClickAnnuler = () => {
-    // if (formData.listVisiteurs.length > 0) handleNext();
-    // else handleBack();
+  const handleClickCancel = () => {
+    if (formData.visitors.length > 0) handleNext();
+    else handleBack();
   };
 
   const minArmOrNot = () => {
@@ -211,29 +137,24 @@ export default function FormInfoVisitor({
     // snackbar if minarm
     minArmOrNot();
 
-    let visiteurs = [...formData.listVisiteurs];
+    let visitors = [...formData.visitors];
     // remove the old element if exits
-    visiteurs = visiteurs.filter(
-      (value) => data.emailVisiteur && data.emailVisiteur !== value.emailVisiteur,
+    visitors = visitors.filter(
+      (value) => data.email && data.email !== value.email,
     );
 
-    visiteurs.push(data);
+    visitors.push(data);
 
     // update the form
-    setForm({ ...formData, listVisiteurs: visiteurs, visiteur: undefined });
+    setForm({ ...formData, visitors, visiteur: undefined });
     handleNext();
   };
 
-  const inputLabelCiv = useRef(null);
   const inputLabel = useRef(null);
 
-  // TODO delete eslint-disable when labelWidthCiv will be used
-  // eslint-disable-next-line no-unused-vars
-  const [labelWidthCiv, setLabelWidthCiv] = useState(0);
   const [labelWidth, setLabelWidth] = useState(0);
 
   useEffect(() => {
-    if (inputLabelCiv.current) setLabelWidthCiv(inputLabelCiv.current.offsetWidth);
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
@@ -246,148 +167,85 @@ export default function FormInfoVisitor({
         <Grid container spacing={6}>
           <Grid item sm={12} xs={12} md={6}>
             <Grid container justify="space-between" spacing={2}>
-              {nature === 'Professionnelle' && (
-              <>
-                <Grid item xs={12} sm={12}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Origine visiteurs
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12} className={classes.comps}>
-                  <FormControl
-                    error={Object.prototype.hasOwnProperty.call(
-                      errors,
-                      'origineVisiteur',
+              <Grid item xs={12} sm={12}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Origine visitors
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} className={classes.comps}>
+                <FormControl
+                  error={Object.prototype.hasOwnProperty.call(errors, 'origineVisiteur')}
+                  component="div"
+                >
+                  <Controller
+                    as={(
+                      <RadioGroup className={classes.radioGroup} aria-label="origine">
+                        <FormControlLabel
+                          value="MINARM"
+                          control={<Radio color="primary" data-testid="minarm-button" />}
+                          label="MINARM"
+                        />
+                        <FormControlLabel
+                          color="primary"
+                          value="HORS MINARM"
+                          control={<Radio color="primary" />}
+                          label="HORS MINARM"
+                        />
+                      </RadioGroup>
                     )}
-                    component="div"
-                  >
-                    <Controller
-                      as={(
-                        <RadioGroup
-                          className={classes.radioGroup}
-                          aria-label="origine"
-                        >
-                          <FormControlLabel
-                            value="MINARM"
-                            control={
-                              <Radio color="primary" data-testid="minarm-button" />
-                                             }
-                            label="MINARM"
-                          />
-                          <FormControlLabel
-                            color="primary"
-                            value="HORS MINARM"
-                            control={<Radio color="primary" />}
-                            label="HORS MINARM"
-                          />
-                        </RadioGroup>
-                                       )}
-                      control={control}
-                      name="origineVisiteur"
-                      rules={{ required: "L'origine est obligatoire." }}
-                      defaultValue=""
-                    />
-                    {errors.origineVisiteur && (
-                    <FormHelperText>
-                      {errors.origineVisiteur.message}
-                    </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={12} className={classes.comps}>
-                  <FormControl
-                    data-testid="test-employe"
-                    variant="outlined"
-                    error={Object.prototype.hasOwnProperty.call(
-                      errors,
-                      'typeVisiteur',
-                    )}
-                    fullWidth
-                  >
-                    <InputLabel ref={inputLabel} id="select-outlined-label">
-                      Type d&apos;employé
-                    </InputLabel>
-                    <Controller
-                      as={(
-                        <Select
-                          SelectDisplayProps={{
-                            'data-testid': 'list-employe',
-                          }}
-                          fullWidth
-                          labelId="typeEmployeDemande"
-                          id="simple-select-outlined"
-                          labelWidth={labelWidth}
-                        >
-                          {getTypeEmploie(watch('origineVisiteur')).map((type) => (
-                            <MenuItem key={type} value={type}>
-                              {type}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                                       )}
-                      control={control}
-                      name="typeVisiteur"
-                      rules={{
-                        required: 'Le type du visiteur est obligatoire.',
-                      }}
-                      defaultValue=""
-                    />
-                    {errors.typeVisiteurs && (
-                    <FormHelperText>
-                      {errors.typeVisiteurs.message}
-                    </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-              </>
-              )}
-
-              {nature === 'Privee' && (
-              <>
-                <Grid item xs={12} sm={12}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Lien du demandeur
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12} className={classes.comps}>
-                  <Autocomplete
-                    freeSolo
-                    options={getSomeone()}
-                    inputValue={watch('nomDemandeur') || ''}
-                    getOptionLabel={(option) => `${option.gradeVisiteur} ${option.nomVisiteur} ${option.prenomVisiteur}`
-                                       || ''}
-                    renderInput={(params) => (
-                      <TextField
-                                         // TODO to delete with AutoComplete
-                                         // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...params}
-                        label="Demandeur"
-                        fullWidth
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'nomDemandeur',
-                        )}
-                        onChange={handleNomDemandeurChange}
-                        helperText={
-                                           errors.nomDemandeur && errors.nomDemandeur.message
-                                         }
-                      />
-                    )}
-                    renderOption={(option, index) => (
-                      <CardAutocomplete option={option} index={index} />
-                    )}
+                    control={control}
+                    name="origineVisiteur"
+                    rules={{ required: "L'origine est obligatoire." }}
+                    defaultValue=""
                   />
-                </Grid>
-              </>
-              )}
+                  {errors.origineVisiteur && (
+                    <FormHelperText>{errors.origineVisiteur.message}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} className={classes.comps}>
+                <FormControl
+                  data-testid="test-employe"
+                  variant="outlined"
+                  error={Object.prototype.hasOwnProperty.call(errors, 'typeVisiteur')}
+                  fullWidth
+                >
+                  <InputLabel ref={inputLabel} id="select-outlined-label">
+                    Type d&apos;employé
+                  </InputLabel>
+                  <Controller
+                    as={(
+                      <Select
+                        SelectDisplayProps={{
+                          'data-testid': 'list-employe',
+                        }}
+                        fullWidth
+                        labelId="typeEmployeDemande"
+                        id="simple-select-outlined"
+                        labelWidth={labelWidth}
+                      >
+                        {getTypeEmploie(watch('origineVisiteur')).map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                    control={control}
+                    name="typeVisiteur"
+                    rules={{
+                      required: 'Le type du visiteur est obligatoire.',
+                    }}
+                    defaultValue=""
+                  />
+                  {errors.typevisitors && (
+                    <FormHelperText>{errors.typevisitors.message}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
             </Grid>
 
-            <Grid
-              container
-              spacing={1}
-              alignItems="flex-end"
-              className={classes.subTitle}
-            >
+            <Grid container spacing={1} alignItems="flex-end" className={classes.subTitle}>
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
                   Civilité du visiteur
@@ -396,81 +254,53 @@ export default function FormInfoVisitor({
 
               <Grid container className={classes.comps} spacing={2}>
                 {watch('origineVisiteur') !== 'HORS MINARM'
-                                 && nature === 'Professionnelle' && (
-                                   <>
-                                     <Grid item md={6} sm={6} xs={12}>
-                                       <Controller
-                                         as={(
-                                           <TextField
-                                             label="NID"
-                                             inputProps={{ 'data-testid': 'visiteur-nid' }}
-                                             error={Object.prototype.hasOwnProperty.call(
-                                               errors,
-                                               'nidVisiteur',
-                                             )}
-                                             helperText={
-                                               errors.nidVisiteur && errors.nidVisiteur.message
-                                             }
-                                             fullWidth
-                                           />
-                                         )}
-                                         rules={{ required: 'Le NID est obligatoire' }}
-                                         control={control}
-                                         name="nidVisiteur"
-                                         defaultValue=""
-                                       />
-                                     </Grid>
-                                     <Grid item md={6} sm={6} xs={12}>
-                                       <Controller
-                                         as={(
-                                           <TextField
-                                             label="Grade"
-                                             inputProps={{ 'data-testid': 'visiteur-grade' }}
-                                             error={Object.prototype.hasOwnProperty.call(
-                                               errors,
-                                               'gradeVisiteur',
-                                             )}
-                                             helperText={
-                                               errors.gradeVisiteur && errors.gradeVisiteur.message
-                                             }
-                                             fullWidth
-                                           />
-                                         )}
-                                         rules={{ required: 'Le grade est obligatoire' }}
-                                         control={control}
-                                         name="gradeVisiteur"
-                                         defaultValue=""
-                                       />
-                                     </Grid>
-                                   </>
+                  && object === REQUEST_OBJECT.PROFESSIONAL && (
+                    <>
+                      <Grid item md={6} sm={6} xs={12}>
+                        <Controller
+                          as={(
+                            <TextField
+                              label="NID"
+                              inputProps={{ 'data-testid': 'visiteur-nid' }}
+                              error={Object.prototype.hasOwnProperty.call(errors, 'nid')}
+                              helperText={errors.nid && errors.nid.message}
+                              fullWidth
+                            />
+                          )}
+                          rules={{ required: 'Le NID est obligatoire' }}
+                          control={control}
+                          name="nid"
+                          defaultValue=""
+                        />
+                      </Grid>
+                      <Grid item md={6} sm={6} xs={12}>
+                        <Controller
+                          as={(
+                            <TextField
+                              label="Grade"
+                              inputProps={{ 'data-testid': 'visiteur-grade' }}
+                              error={Object.prototype.hasOwnProperty.call(errors, 'rank')}
+                              helperText={errors.rank && errors.rank.message}
+                              fullWidth
+                            />
+                          )}
+                          rules={{ required: 'Le grade est obligatoire' }}
+                          control={control}
+                          name="rank"
+                          defaultValue=""
+                        />
+                      </Grid>
+                    </>
                 )}
 
                 <Grid item md={12} sm={12} xs={12}>
-                  <Autocomplete
-                    freeSolo
-                    options={getSomeone()}
-                    inputValue={watch('nomVisiteur') || ''}
-                    onChange={handleAutoComplete}
-                    getOptionLabel={(option) => option.nomVisiteur || ''}
-                    renderInput={(params) => (
-                      <TextField
-                                       // TODO to delete with AutoComplete
-                                       // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...params}
-                        label="Nom d'usage"
-                        fullWidth
-                        name="nomVisiteur"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'nomVisiteur',
-                        )}
-                        onChange={handleNomVisiteurChange}
-                        helperText={errors.nomVisiteur && errors.nomVisiteur.message}
-                      />
-                    )}
-                    renderOption={(option, index) => (
-                      <CardAutocomplete option={option} index={index} />
-                    )}
+                  <TextField
+                    label="Nom d'usage"
+                    fullWidth
+                    name="usageLastname"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'usageLastname')}
+                    helperText={errors.usageLastname && errors.usageLastname.message}
+                    inputRef={register({ required: 'Le nom est obligatoire' })}
                   />
                 </Grid>
                 <Grid item md={6} sm={6} xs={12}>
@@ -478,21 +308,16 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
-                        label="Nom Naissance"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'nomNaisanceVisiteur',
-                        )}
+                        label="Nom de Naissance"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'birthdayLastname')}
                         fullWidth
                       />
-                                   )}
+                    )}
                     control={control}
-                    name="nomNaisanceVisiteur"
+                    name="birthdayLastname"
                     defaultValue=""
                   />
-                  <FormHelperText className={classes.instruction}>
-                    optionnel
-                  </FormHelperText>
+                  <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
                 </Grid>
 
                 <Grid item md={6} sm={6} xs={12}>
@@ -501,19 +326,14 @@ export default function FormInfoVisitor({
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-prenom' }}
                         label="Prénom"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'prenomVisiteur',
-                        )}
-                        helperText={
-                                         errors.prenomVisiteur && errors.prenomVisiteur.message
-                                       }
+                        error={Object.prototype.hasOwnProperty.call(errors, 'preusageLastname')}
+                        helperText={errors.preusageLastname && errors.preusageLastname.message}
                         fullWidth
                       />
-                                   )}
+                    )}
                     control={control}
                     rules={{ required: 'Le prénom est oblitoire' }}
-                    name="prenomVisiteur"
+                    name="preusageLastname"
                     defaultValue=""
                   />
                 </Grid>
@@ -523,16 +343,11 @@ export default function FormInfoVisitor({
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-unite' }}
                         label="Unité/Société"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'uniteVisiteur',
-                        )}
-                        helperText={
-                                         errors.uniteVisiteur && errors.uniteVisiteur.message
-                                       }
+                        error={Object.prototype.hasOwnProperty.call(errors, 'uniteVisiteur')}
+                        helperText={errors.uniteVisiteur && errors.uniteVisiteur.message}
                         fullWidth
                       />
-                                   )}
+                    )}
                     control={control}
                     name="uniteVisiteur"
                     defaultValue=""
@@ -546,31 +361,25 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         label="Email"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'emailVisiteur',
-                        )}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'email')}
                         InputProps={
-                                         watch('emailVisiteur')
-                                         && validator.isEmail(watch('emailVisiteur'))
-                                           ? {
-                                             endAdornment: (
-                                               <InputAdornment position="end">
-                                                 <CheckAnimation />
-                                               </InputAdornment>
-                                             ),
-                                             inputProps: { 'data-testid': 'visiteur-email' },
-                                           }
-                                           : { inputProps: { 'data-testid': 'visiteur-email' } }
-                                       }
-                        helperText={
-                                         errors.emailVisiteur && errors.emailVisiteur.message
-                                       }
+                          watch('email') && validator.isEmail(watch('email'))
+                            ? {
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <CheckAnimation />
+                                </InputAdornment>
+                              ),
+                              inputProps: { 'data-testid': 'visiteur-email' },
+                            }
+                            : { inputProps: { 'data-testid': 'visiteur-email' } }
+                        }
+                        helperText={errors.email && errors.email.message}
                         fullWidth
                       />
-                                   )}
+                    )}
                     control={control}
-                    name="emailVisiteur"
+                    name="email"
                     defaultValue=""
                     rules={{
                       required: "L'email du visiteur est obligatoire",
@@ -607,384 +416,352 @@ export default function FormInfoVisitor({
                         labelPlacement="start"
                       />
                     </RadioGroup>
-                                 )}
+                  )}
                   control={control}
                   name="vipVisiteur"
                   rules={{
-                    required: 'La nature de la visite est obligatoire.',
+                    required: 'La object de la visite est obligatoire.',
                   }}
                   defaultValue="NON"
                 />
                 {watch('vipVisiteur') === 'OUI' && (
-                <Grid item xs={12} sm={12}>
-                  <Controller
-                    as={(
-                      <TextField
-                        label="Veuillez justifier"
-                        multiline
-                        rowsMax="4"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'justificationVipVisiteur',
-                        )}
-                        helperText={
-                                           errors.justificationVipVisiteur
-                                           && errors.justificationVipVisiteur.type === 'required'
-                                           && 'La justification est obligatoire.'
-                                         }
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    name="justificationVipVisiteur"
-                    rules={{
-                      required: watch('vipVisiteur') || '' === 'OUI',
-                    }}
-                    defaultValue=""
-                  />
-                </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Controller
+                      as={(
+                        <TextField
+                          label="Veuillez justifier"
+                          multiline
+                          rowsMax="4"
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'justificationVipVisiteur',
+                          )}
+                          helperText={
+                            errors.justificationVipVisiteur
+                            && errors.justificationVipVisiteur.type === 'required'
+                            && 'La justification est obligatoire.'
+                          }
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      name="justificationVipVisiteur"
+                      rules={{
+                        required: watch('vipVisiteur') || '' === 'OUI',
+                      }}
+                      defaultValue=""
+                    />
+                  </Grid>
                 )}
               </FormControl>
             </Grid>
           </Grid>
 
-          {(watch('origineVisiteur') === 'HORS MINARM' || nature === 'Privee') && (
-          <Grid item sm={12} xs={12} md={6}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Identité
-                </Typography>
-              </Grid>
-              <Grid container spacing={2} className={classes.comps}>
-                <Grid item xs={12} sm={12} md={12}>
-                  <Autocomplete
-                    freeSolo
-                    id="combo-box-naissance"
-                    options={getNationalite()}
-                    getOptionLabel={(option) => option}
-                    onChange={handleNationaliteChange}
-                    inputValue={watch('nationaliteVisiteur') || ''}
-                    defaultValue=""
-                    renderInput={(params) => (
-                      <TextField
-                        variant="outlined"
-                                         // TODO to delete with AutoComplete
-                                         // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...params}
-                        label="Nationalité"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'nationaliteVisiteur',
-                        )}
-                        helperText={
-                                           errors.nationaliteVisiteur
-                                           && errors.nationaliteVisiteur.type === 'required'
-                                           && 'La nationalité est obligatoire'
-                                         }
-                        fullWidth
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12} md={12}>
-                  <FormControl
-                    variant="outlined"
-                    error={Object.prototype.hasOwnProperty.call(
-                      errors,
-                      'typeDocumentVisiteur',
-                    )}
-                    fullWidth
-                  >
-                    <InputLabel ref={inputLabel} id="select-outlined-label">
-                      Type Document
-                    </InputLabel>
-                    <Controller
-                      as={(
-                        <Select
-                          fullWidth
-                          labelId="typeDocumentVisiteur"
-                          id="typeDocuement"
-                          labelWidth={labelWidth}
-                        >
-                          {getTypeDocument().map((type) => (
-                            <MenuItem key={type} value={type}>
-                              {type}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                                       )}
-                      control={control}
-                      name="typeDocumentVisiteur"
-                      defaultValue=""
-                      rules={{
-                        required:
-                                           watch('origineVisiteur')
-                                           || '' === 'HORS MINARM'
-                                           || nature === 'Privee',
-                      }}
-                    />
-                    {errors.typeDocumentVisiteur
-                                       && errors.typeDocumentVisiteur.type === 'required' && (
-                                         <FormHelperText>
-                                           Le type de document est obligatoire
-                                         </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={6}>
-                  <Controller
-                    as={(
-                      <TextField
-                        label="Numéro"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'numeroDocumentVisiteur',
-                        )}
-                        helperText={
-                                           errors.numeroDocumentVisiteur
-                                           && errors.numeroDocumentVisiteur.type === 'required'
-                                           && 'Le numéro de document est obligatoire'
-                                         }
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    name="numeroDocumentVisiteur"
-                    defaultValue=""
-                    rules={{
-                      required:
-                                         watch('origineVisiteur')
-                                         || '' === 'HORS MINARM'
-                                         || nature === 'Privee',
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={6}>
-                  <Controller
-                    as={(
-                      <DatePicker
-                        label="Date de naissance"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'dateNaissanceVisiteur',
-                        )}
-                        helperText={
-                                           errors.dateNaissanceVisiteur
-                                           && errors.dateNaissanceVisiteur.type === 'required'
-                                           && 'La date de naissance est obligatoire'
-                                         }
-                        disableFuture
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    name="dateNaissanceVisiteur"
-                    rules={{
-                      required:
-                                         watch('origineVisiteur')
-                                         || '' === 'HORS MINARM'
-                                         || nature === 'Privee',
-                    }}
-                    defaultValue={null}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={12} md={12}>
-                  <Controller
-                    as={(
-                      <TextField
-                        label="Lieu de naissance"
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'lieuNaissanceVisiteur',
-                        )}
-                        helperText={
-                                           errors.lieuNaissanceVisiteur
-                                           && errors.lieuNaissanceVisiteur.type === 'required'
-                                           && 'Le lieu de naissance est obligatoire'
-                                         }
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    name="lieuNaissanceVisiteur"
-                    defaultValue=""
-                    rules={{
-                      required:
-                                         watch('origineVisiteur')
-                                         || '' === 'HORS MINARM'
-                                         || nature === 'Privee',
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            {watch('nationaliteVisiteur') !== 'Française' && (
-            <Grid
-              container
-              spacing={2}
-              className={classes.subTitle}
-              justify="space-between"
-            >
-              <Grid item xs={12} sm={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Scan papier identité: (obligatoire pour étranger)
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                <Controller
-                  as={InputFile}
-                  rules={{
-                    required: watch('nationaliteVisiteur') !== 'Française',
-                  }}
-                  control={control}
-                  defaultValue=""
-                  name="file"
-                  onChange={(file) => file}
-                  label="Fichier"
-                  error={Object.prototype.hasOwnProperty.call(errors, 'file')}
-                />
-              </Grid>
-            </Grid>
-            )}
-          </Grid>
-          )}
-          {formData.zone2 && formData.zone2.length > 0 && (
-          <>
+          {(watch('origineVisiteur') === 'HORS MINARM' || object === REQUEST_OBJECT.PRIVATE) && (
             <Grid item sm={12} xs={12} md={6}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
                   <Typography variant="subtitle2" gutterBottom>
-                    Zone DGA
+                    Identité
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                  <Controller
-                    as={(
-                      <TextField
-                        label="Réf Habilitation"
-                        inputProps={{
-                          'data-testid': 'visiteur-refHabilitation',
-                        }}
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'refHabilitation',
+                <Grid container spacing={2} className={classes.comps}>
+                  <Grid item xs={12} sm={12} md={12}>
+                    <Autocomplete
+                      freeSolo
+                      id="combo-box-naissance"
+                      options={getNationalite()}
+                      getOptionLabel={(option) => option}
+                      onChange={handleNationalityChange}
+                      inputValue={watch('nationality') || ''}
+                      defaultValue=""
+                      renderInput={(params) => (
+                        <TextField
+                          variant="outlined"
+                          // TODO to delete with AutoComplete
+                          // eslint-disable-next-line react/jsx-props-no-spreading
+                          {...params}
+                          label="Nationalité"
+                          error={Object.prototype.hasOwnProperty.call(errors, 'nationality')}
+                          helperText={
+                            errors.nationality
+                            && errors.nationality.type === 'required'
+                            && 'La nationalité est obligatoire'
+                          }
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12}>
+                    <FormControl
+                      variant="outlined"
+                      error={Object.prototype.hasOwnProperty.call(errors, 'typeDocumentVisiteur')}
+                      fullWidth
+                    >
+                      <InputLabel ref={inputLabel} id="select-outlined-label">
+                        Type Document
+                      </InputLabel>
+                      <Controller
+                        as={(
+                          <Select
+                            fullWidth
+                            labelId="typeDocumentVisiteur"
+                            id="typeDocuement"
+                            labelWidth={labelWidth}
+                          >
+                            {getTypeDocument().map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+                          </Select>
                         )}
-                        helperText={
-                                           errors.refHabilitation && errors.refHabilitation.message
-                                         }
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    rules={{
-                      required: "La référence de l'habilitation est obligatoire",
-                    }}
-                    name="refHabilitation"
-                    defaultValue=""
-                  />
-                  <FormHelperText className={classes.instruction}>
-                    le cas échéant
-                  </FormHelperText>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                  <Controller
-                    as={(
-                      <DatePicker
-                        label="Date de fin habilitation"
-                        inputProps={{
-                          'data-testid': 'visiteur-dateFinHabilitation',
+                        control={control}
+                        name="typeDocumentVisiteur"
+                        defaultValue=""
+                        rules={{
+                          required:
+                            watch('origineVisiteur')
+                            || '' === 'HORS MINARM'
+                            || object === REQUEST_OBJECT.PRIVATE,
                         }}
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'dateFinHabilitation',
-                        )}
-                        disablePast
-                        helperText={
-                                           errors.dateFinHabilitation
-                                           && errors.dateFinHabilitation.message
-                                         }
-                        fullWidth
                       />
-                                     )}
-                    control={control}
-                    name="dateFinHabilitation"
-                    rules={{
-                      required: "La date de fin d'habilitation est obligatoire.",
-                      validate: {
-                        valide: (value) => isValid(value) || 'Format invalide',
-                      },
-                    }}
-                    defaultValue={null}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                  <Controller
-                    as={(
-                      <TextField
-                        label="Réf Contrôle Élémentaire"
-                        inputProps={{
-                          'data-testid': 'visiteur-refControleElementaire',
-                        }}
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'refControleElementaire',
-                        )}
-                        helperText={
-                                           errors.refControleElementaire
-                                           && errors.refControleElementaire.message
-                                         }
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    rules={{
-                      required:
-                                         'La référence du contrôle élémentaire est obligatoire',
-                    }}
-                    name="refControleElementaire"
-                    defaultValue=""
-                  />
-                  <FormHelperText className={classes.instruction}>
-                    le cas échéant
-                  </FormHelperText>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                  <Controller
-                    as={(
-                      <DatePicker
-                        label="Date demande contrôle"
-                        inputProps={{
-                          'data-testid': 'visiteur-dateDemandeControle',
-                        }}
-                        error={Object.prototype.hasOwnProperty.call(
-                          errors,
-                          'dateDemandeControle',
-                        )}
-                        helperText={
-                                           errors.dateDemandeControle
-                                           && errors.dateDemandeControle.message
-                                         }
-                        fullWidth
-                      />
-                                     )}
-                    control={control}
-                    name="dateDemandeControle"
-                    rules={{
-                      required: 'La date de demande de contrôle est obligatoire.',
-                      validate: {
-                        valide: (value) => isValid(value) || 'Format invalide',
-                      },
-                    }}
-                    defaultValue={null}
-                  />
+                      {errors.typeDocumentVisiteur
+                        && errors.typeDocumentVisiteur.type === 'required' && (
+                          <FormHelperText>Le type de document est obligatoire</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={6}>
+                    <Controller
+                      as={(
+                        <TextField
+                          label="Numéro"
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'numeroDocumentVisiteur',
+                          )}
+                          helperText={
+                            errors.numeroDocumentVisiteur
+                            && errors.numeroDocumentVisiteur.type === 'required'
+                            && 'Le numéro de document est obligatoire'
+                          }
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      name="numeroDocumentVisiteur"
+                      defaultValue=""
+                      rules={{
+                        required:
+                          watch('origineVisiteur') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={6}>
+                    <Controller
+                      as={(
+                        <DatePicker
+                          label="Date de naissance"
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'dateNaissanceVisiteur',
+                          )}
+                          helperText={
+                            errors.dateNaissanceVisiteur
+                            && errors.dateNaissanceVisiteur.type === 'required'
+                            && 'La date de naissance est obligatoire'
+                          }
+                          disableFuture
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      name="dateNaissanceVisiteur"
+                      rules={{
+                        required:
+                          watch('origineVisiteur') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                      }}
+                      defaultValue={null}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={12} md={12}>
+                    <Controller
+                      as={(
+                        <TextField
+                          label="Lieu de naissance"
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'lieuNaissanceVisiteur',
+                          )}
+                          helperText={
+                            errors.lieuNaissanceVisiteur
+                            && errors.lieuNaissanceVisiteur.type === 'required'
+                            && 'Le lieu de naissance est obligatoire'
+                          }
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      name="lieuNaissanceVisiteur"
+                      defaultValue=""
+                      rules={{
+                        required:
+                          watch('origineVisiteur') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                      }}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
+              {watch('nationality') !== 'Française' && (
+                <Grid container spacing={2} className={classes.subTitle} justify="space-between">
+                  <Grid item xs={12} sm={12}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Scan papier identité: (obligatoire pour étranger)
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                    <Controller
+                      as={InputFile}
+                      rules={{
+                        required: watch('nationality') !== 'Française',
+                      }}
+                      control={control}
+                      defaultValue=""
+                      name="file"
+                      onChange={(file) => file}
+                      label="Fichier"
+                      error={Object.prototype.hasOwnProperty.call(errors, 'file')}
+                    />
+                  </Grid>
+                </Grid>
+              )}
             </Grid>
-          </>
+          )}
+          {formData.zone2 && formData.zone2.length > 0 && (
+            <>
+              <Grid item sm={12} xs={12} md={6}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={12}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Zone DGA
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                    <Controller
+                      as={(
+                        <TextField
+                          label="Réf Habilitation"
+                          inputProps={{
+                            'data-testid': 'visiteur-refHabilitation',
+                          }}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'refHabilitation')}
+                          helperText={errors.refHabilitation && errors.refHabilitation.message}
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      rules={{
+                        required: "La référence de l'habilitation est obligatoire",
+                      }}
+                      name="refHabilitation"
+                      defaultValue=""
+                    />
+                    <FormHelperText className={classes.instruction}>le cas échéant</FormHelperText>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                    <Controller
+                      as={(
+                        <DatePicker
+                          label="Date de fin habilitation"
+                          inputProps={{
+                            'data-testid': 'visiteur-dateFinHabilitation',
+                          }}
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'dateFinHabilitation',
+                          )}
+                          disablePast
+                          helperText={
+                            errors.dateFinHabilitation && errors.dateFinHabilitation.message
+                          }
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      name="dateFinHabilitation"
+                      rules={{
+                        required: "La date de fin d'habilitation est obligatoire.",
+                        validate: {
+                          valide: (value) => isValid(value) || 'Format invalide',
+                        },
+                      }}
+                      defaultValue={null}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                    <Controller
+                      as={(
+                        <TextField
+                          label="Réf Contrôle Élémentaire"
+                          inputProps={{
+                            'data-testid': 'visiteur-refControleElementaire',
+                          }}
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'refControleElementaire',
+                          )}
+                          helperText={
+                            errors.refControleElementaire && errors.refControleElementaire.message
+                          }
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      rules={{
+                        required: 'La référence du contrôle élémentaire est obligatoire',
+                      }}
+                      name="refControleElementaire"
+                      defaultValue=""
+                    />
+                    <FormHelperText className={classes.instruction}>le cas échéant</FormHelperText>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                    <Controller
+                      as={(
+                        <DatePicker
+                          label="Date demande contrôle"
+                          inputProps={{
+                            'data-testid': 'visiteur-dateDemandeControle',
+                          }}
+                          error={Object.prototype.hasOwnProperty.call(
+                            errors,
+                            'dateDemandeControle',
+                          )}
+                          helperText={
+                            errors.dateDemandeControle && errors.dateDemandeControle.message
+                          }
+                          fullWidth
+                        />
+                      )}
+                      control={control}
+                      name="dateDemandeControle"
+                      rules={{
+                        required: 'La date de demande de contrôle est obligatoire.',
+                        validate: {
+                          valide: (value) => isValid(value) || 'Format invalide',
+                        },
+                      }}
+                      defaultValue={null}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </>
           )}
 
           <Grid item sm={12}>
@@ -994,7 +771,7 @@ export default function FormInfoVisitor({
                   variant="outlined"
                   color="primary"
                   style={{ marginRight: '5px' }}
-                  onClick={handleClickAnnuler}
+                  onClick={handleClickCancel}
                 >
                   Annuler
                 </Button>
@@ -1013,6 +790,16 @@ export default function FormInfoVisitor({
 }
 
 FormInfoVisitor.propTypes = {
+  formData: PropTypes.shape({
+    visitors: PropTypes.array.isRequired,
+    selectVisitor: PropTypes.objectOf(PropTypes.object),
+    object: PropTypes.string.isRequired,
+    from: PropTypes.instanceOf(Date).isRequired,
+    to: PropTypes.instanceOf(Date).isRequired,
+    reason: PropTypes.string.isRequired,
+    placeS: PropTypes.array.isRequired,
+    placeP: PropTypes.array.isRequired,
+  }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,

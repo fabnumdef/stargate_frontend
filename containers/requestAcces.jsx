@@ -13,7 +13,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import NoSsr from '../lib/nossr';
 
 import Template from './template';
-import { FormInfosClaimant, FormInfosVisitor, FormInfosRecapDemande } from '../components';
+import { FormInfosRequest, FormInfosVisitor, FormInfosRecapDemande } from '../components';
 
 const AntTab = withStyles((theme) => ({
   root: {
@@ -93,7 +93,7 @@ export default function RequestAccesForm() {
 
   // FormState
   const [formData, setForm] = useState({
-    listVisiteurs: [],
+    visitors: [],
   });
 
   return (
@@ -116,7 +116,7 @@ export default function RequestAccesForm() {
         <Grid item sm={12} xs={12}>
           <TabPanel value={activeStep} index={0}>
             <NoSsr>
-              <FormInfosClaimant setForm={setForm} handleNext={handleNext} />
+              <FormInfosRequest setForm={setForm} handleNext={handleNext} />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={1}>
