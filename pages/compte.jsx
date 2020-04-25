@@ -6,8 +6,4 @@ function AccountPage() {
   return <Account />;
 }
 
-AccountPage.getInitialProps = async (ctx) => {
-  console.log(ctx);
-};
-
 export default withApollo({ ssr: true })(AccountPage);

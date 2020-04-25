@@ -22,6 +22,26 @@ const AUTH_RENEW = gql`
     }
 `;
 
+const GET_ME = gql`
+    query getMe {
+        me {
+            firstname,
+            lastname
+        }
+    }
+`;
+
+// eslint-disable-next-line no-unused-vars
+const GET_ME_LOCAL = gql`
+    query getMeLocal {
+        me @client {
+            firstname,
+            lastname
+        }
+    }
+`;
+
+
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
@@ -33,6 +53,15 @@ export function LoginContextProvider(props) {
   const [isLoggedUser, setIsLoggedUser] = useState(
     typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
   );
+  const [resetPass, setResetPass] = useState(() => {
+    if (router.query.token && router.query.email) {
+      return {
+        email: router.query.email,
+        token: router.query.token,
+      };
+    }
+    return false;
+  });
   const [authRenewOn, setAuthRenew] = useState(false);
 
   const setToken = (token) => {
@@ -48,6 +77,11 @@ export function LoginContextProvider(props) {
   };
 
   const authRenew = async () => {
+    const reloadAuth = (duration) => setTimeout(authRenew, duration);
+    if (!localStorage.getItem('token')) {
+      return signOut({ message: 'Session expirée', severity: 'warning' });
+    }
+
     const payload = localStorage.getItem('token')
       .split('.')[1];
     const { exp, iat } = JSON.parse(window.atob(payload));
@@ -57,50 +91,64 @@ export function LoginContextProvider(props) {
     const expIn = exp - cur;
     if (expIn <= 0) {
       signOut({ message: 'Session expirée', severity: 'warning' });
+      clearTimeout(reloadAuth);
     } else if (expIn <= renewTrigger) {
       try {
-        const { data: { jwtRefresh: { jwt } } } = await client.mutate({ mutation: AUTH_RENEW });
+        const { data: { login: { jwt } } } = await client.mutate({ mutation: AUTH_RENEW });
         setToken(jwt);
-        authRenew();
+        return authRenew();
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          signOut({ message: 'Erreur lors du renouvellement de session, merci de vous reconnecter', severity: 'warning' });
-        }
-        setTimeout(authRenew, 60 * 1000);
+        signOut({ message: 'Session expirée', severity: 'warning' });
+        clearTimeout(reloadAuth);
       }
     } else {
-      setTimeout(authRenew, (expIn - renewTrigger) * 1000);
+      reloadAuth((expIn - renewTrigger) * 1000);
     }
+  };
+
+  const getUserData = async () => {
+    const { data: { me: { firstname, lastname } } } = await client.query({ query: GET_ME });
+    client.cache.writeData({ data: { me: { firstname, lastname } } });
   };
 
   const signIn = async (email, password, resetToken = null) => {
     try {
       const { data: { login: { jwt } } } = await client.mutate({
         mutation: LOGIN,
-        variables: { email, password, resetToken },
+        variables: { email, password, token: resetToken },
       });
       setToken(jwt);
       setIsLoggedUser(true);
       await authRenew(setToken, signOut, client);
-      return setAuthRenew(true);
+      setAuthRenew(true);
+      return getUserData();
     } catch (e) {
-      console.log(e);
-      return null;
+      switch (e.message) {
+        case `GraphQL error: Email "${email}" and password do not match.`:
+          return addAlert({ message: 'Mauvais identifiant et/ou mot de passe', severity: 'warning' });
+        case 'GraphQL error: Password expired':
+          return addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
+        case 'GraphQL error: Expired link':
+          return signOut({ message: 'Lien expiré, merci de refaire une demande de mot de passe', severity: 'warning' });
+        default:
+          return signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
+      }
     }
   };
 
   useEffect(() => {
     async function resetPassSignIn(email, token) {
-      await signIn(email, token);
+      await signIn(decodeURIComponent(email), null, token);
+      setResetPass(false);
     }
 
-    if (router.query.token) {
-      const { email, token } = router.query;
+    if (resetPass) {
+      const { email, token } = resetPass;
       resetPassSignIn(email, token);
     }
 
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (!token && !resetPass) {
       signOut();
     }
 
@@ -114,6 +162,9 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser]);
 
+  if (!isLoggedUser && children.type.name !== 'LoginPage') {
+    return <div />;
+  }
 
   return (
     <LoginContext.Provider value={{ signIn, signOut }}>
@@ -127,5 +178,6 @@ LoginContextProvider.propTypes = {
   client: PropTypes.shape({
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
+    query: PropTypes.func.isRequired,
   }).isRequired,
 };

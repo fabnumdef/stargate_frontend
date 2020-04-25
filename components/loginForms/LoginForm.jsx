@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLogin } from '../../lib/loginContext';
-import { useSnackBar } from '../../lib/snackbar';
 
 const useStyles = makeStyles(() => ({
   formLogin: {
@@ -9,15 +9,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function LoginForm() {
+export default function LoginForm({ Button }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const ctx = useLogin();
-  const { addAlert } = useSnackBar();
-
   const classes = useStyles();
 
-  const handleSubmit = async (evt) => {
+  const handleSubmit = (evt) => {
     evt.preventDefault();
     ctx.signIn(email, password);
   };
@@ -54,5 +52,5 @@ export default function LoginForm() {
 }
 
 LoginForm.propTypes = {
-  Button: PropTypes.element.isRequired,
+  Button: PropTypes.func.isRequired,
 };
