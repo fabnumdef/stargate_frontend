@@ -8,16 +8,18 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createHttpLink } from 'apollo-link-http';
 import fetch from 'isomorphic-unfetch';
 import { setContext } from 'apollo-link-context';
+import getConfig from 'next/config';
 import { LoginContextProvider } from '../loginContext';
-
 import { typeDefs, resolvers } from './resolvers';
+
+const { publicRuntimeConfig } = getConfig();
 
 // On the client, we store the Apollo Client in the following variable.
 // This prevents the client from reinitializing between page transitions.
 let globalApolloClient = null;
 
 const httpLink = createHttpLink({
-  uri: process.env.API_URL,
+  uri: publicRuntimeConfig.API_URL,
   fetch,
 });
 
