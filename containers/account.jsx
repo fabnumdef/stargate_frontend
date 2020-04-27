@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: '1px solid #e5e5e5',
     alignSelf: 'start',
   },
+  subtitleContainer: {
+    marginTop: '50px',
+  },
   formPassword: {
     padding: 8,
   },
@@ -42,11 +45,12 @@ const useStyles = makeStyles((theme) => ({
   },
   submitButton: {
     height: '50px',
+    marginTop: '20px',
   },
 }));
 
 export const EDIT_PASSWORD = gql`
-    mutation editPassword($user: UserInput!) {
+    mutation editPassword($user: OwnUserInput!) {
         editMe(user: $user) {
             id
         }
@@ -58,17 +62,18 @@ export default function Account() {
   const [submitEditPassword] = useMutation(EDIT_PASSWORD);
   const { addAlert } = useSnackBar();
   const {
-    handleSubmit, errors, control, reset,
+    handleSubmit, errors, control, reset, watch,
   } = useForm({
     defaultValues: {
       password: '',
+      confirmPassword: '',
     },
   });
 
   const onSubmit = async ({ password }) => {
     try {
       await submitEditPassword({ variables: { user: { password } } });
-      reset({ password: '' });
+      reset({ password: '', confirmPassword: '' });
       return addAlert({ message: 'Votre mot de passe a bien été modifié', severity: 'success' });
     } catch (e) {
       return e;
@@ -85,7 +90,7 @@ export default function Account() {
             </Typography>
           </Box>
         </Grid>
-        <Grid item xs={3} sm={3}>
+        <Grid item xs={3} sm={3} className={classes.subtitleContainer}>
           <Typography variant="subtitle2" gutterBottom>
             Changement de mot de passe:
           </Typography>
@@ -115,11 +120,35 @@ export default function Account() {
               >
                 8 caractères minimum
               </FormHelperText>
+              <Controller
+                as={(
+                  <TextField
+                    label="Confirmation du mot de passe"
+                    inputProps={{ 'data-testid': 'form-password-confirmation', type: 'password' }}
+                    error={Object.prototype.hasOwnProperty.call(errors, 'confirmPassword')}
+                    helperText={errors.confirmPassword && errors.confirmPassword.message}
+                    fullWidth
+                  />
+                )}
+                rules={{ validate: (value) => value === watch('password') }}
+                control={control}
+                name="confirmPassword"
+                defaultValue=""
+              />
+              {errors.confirmPassword && (
+                <FormHelperText className={classNames(
+                  classes.instruction,
+                  { [classes.instructionError]: errors.confirmPassword },
+                )}
+                >
+                  Vos mots de passe ne correspondent pas
+                </FormHelperText>
+              )}
             </Grid>
-            <Button type="submit" variant="contained" color="primary" className={classes.submitButton}>
-              Envoyer
-            </Button>
           </Grid>
+          <Button type="submit" variant="contained" color="primary" className={classes.submitButton}>
+            Envoyer
+          </Button>
         </form>
 
       </Grid>
