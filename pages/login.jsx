@@ -1,29 +1,30 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import { LoginForm, ForgotPassForm } from '../components';
 import { withApollo } from '../lib/apollo';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   mainLoginForm: {
-    marginTop: '15vh',
+    marginTop: '10vh',
   },
   logoContainer: {
     textAlign: 'center',
   },
   subLoginForm: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: 'rgba(14, 65, 148, 0.90)',
     color: 'white',
     height: '40vh',
     width: '40vh',
-    minWidth: '300px',
-    minHeight: '300px',
+    minWidth: '450px',
+    minHeight: '450px',
     margin: 'auto',
     borderRadius: '50%',
     border: '1.2rem solid rgba(255, 255, 255, .2)',
     boxShadow: '5px 5px 6px 0 rgba(0, 0, 0, 0.16)',
     position: 'relative',
     '& form': {
-      marginTop: '22%',
+      marginTop: '20%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -32,16 +33,16 @@ const useStyles = makeStyles((theme) => ({
         display: 'none',
       },
     },
-    '& button': {
-      position: 'absolute',
-      color: 'white',
-      cursor: 'pointer',
-      bottom: '15%',
-      width: '100%',
-      fontSize: '1rem',
-      backgroundColor: 'transparent',
-      border: 'none',
-    },
+  },
+  switchButton: {
+    position: 'absolute',
+    color: 'white',
+    cursor: 'pointer',
+    bottom: '12%',
+    width: '100%',
+    fontSize: '1rem',
+    backgroundColor: 'transparent',
+    border: 'none',
   },
   logo: {
     height: '10vh',
@@ -51,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const SubmitButton = ({ text, label }) => {
+  const classes = useStyles();
+  return <button className={classes.submitButton} type="submit" aria-label={label}>{text}</button>;
+};
+
 function LoginPage() {
   const [forgottenPass, setForgottenPass] = useState(false);
   const classes = useStyles();
@@ -58,7 +64,6 @@ function LoginPage() {
   const switchForms = () => {
     setForgottenPass(!forgottenPass);
   };
-
 
   return (
     <div className={classes.mainLoginForm}>
@@ -74,5 +79,10 @@ function LoginPage() {
     </div>
   );
 }
+
+SubmitButton.propTypes = {
+  text: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+};
 
 export default withApollo()(LoginPage);

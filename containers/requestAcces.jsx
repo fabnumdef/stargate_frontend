@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
@@ -90,11 +90,19 @@ export default function RequestAccesForm() {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
   // FormState
   const [formData, setForm] = useState({
+    idRequest: undefined,
     visitors: [],
   });
+
+  useEffect(() => {
+    if (!formData.idRequest) {
+      // TODO CREATE REQUEST IF MORE THAN ONE VISITEUR
+    } else {
+      // TODO UPDATE REQUEST
+    }
+  }, [formData]);
 
   return (
     <Template>

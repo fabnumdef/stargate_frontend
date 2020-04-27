@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import Checkbox from '@material-ui/core/Checkbox';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -72,11 +72,9 @@ const ListStyled = withStyles(() => ({
   },
 }))(List);
 
-export default function ListLieux(props) {
-  const {
-    options, label, expanded, onChange, setExpanded,
-  } = props;
-
+export default function ListLieux({
+  options, label, expanded, onChange, setExpanded,
+}) {
   const [checked, setChecked] = React.useState([]);
 
   const handleToggle = (value) => () => {
@@ -157,3 +155,11 @@ export default function ListLieux(props) {
     </ExpansionPanelStyled>
   );
 }
+
+ListLieux.propTypes = {
+  options: PropTypes.objectOf(PropTypes.array).isRequired,
+  label: PropTypes.string.isRequired,
+  expanded: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  setExpanded: PropTypes.func.isRequired,
+};

@@ -34,7 +34,7 @@ export function SnackBarProvider({ children }) {
     <SnackBarContext.Provider value={value}>
       {children}
       {alerts.map((alert) => (
-        <SnackBar key={alert} message={alert} open />
+        <SnackBar key={alert} alert={alert} open />
       ))}
     </SnackBarContext.Provider>
   );

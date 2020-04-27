@@ -130,7 +130,7 @@ export default function FormInfoVisitor({
   };
 
   const minArmOrNot = () => {
-    if (watch('origineVisiteur') === 'MINARM') { addAlert("Les informations sur l'identité sont à rentrer par le visiteur"); }
+    if (watch('origineVisiteur') === 'MINARM') addAlert({ message: "Les informations sur l'identité sont à rentrer par le visiteur", severity: 'info' });
   };
 
   const onSubmit = (data) => {
@@ -169,7 +169,7 @@ export default function FormInfoVisitor({
             <Grid container justify="space-between" spacing={2}>
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Origine visitors
+                  Origine visiteurs
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={12} className={classes.comps}>
@@ -295,12 +295,13 @@ export default function FormInfoVisitor({
 
                 <Grid item md={12} sm={12} xs={12}>
                   <TextField
-                    label="Nom d'usage"
+                    label="Nom"
                     fullWidth
                     name="usageLastname"
                     error={Object.prototype.hasOwnProperty.call(errors, 'usageLastname')}
                     helperText={errors.usageLastname && errors.usageLastname.message}
                     inputRef={register({ required: 'Le nom est obligatoire' })}
+                    inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
                   />
                 </Grid>
                 <Grid item md={6} sm={6} xs={12}>
@@ -326,14 +327,14 @@ export default function FormInfoVisitor({
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-prenom' }}
                         label="Prénom"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'preusageLastname')}
-                        helperText={errors.preusageLastname && errors.preusageLastname.message}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'firstname')}
+                        helperText={errors.firstname && errors.firstname.message}
                         fullWidth
                       />
                     )}
                     control={control}
                     rules={{ required: 'Le prénom est oblitoire' }}
-                    name="preusageLastname"
+                    name="firstname"
                     defaultValue=""
                   />
                 </Grid>
@@ -343,13 +344,13 @@ export default function FormInfoVisitor({
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-unite' }}
                         label="Unité/Société"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'uniteVisiteur')}
-                        helperText={errors.uniteVisiteur && errors.uniteVisiteur.message}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'company')}
+                        helperText={errors.company && errors.company.message}
                         fullWidth
                       />
                     )}
                     control={control}
-                    name="uniteVisiteur"
+                    name="company"
                     defaultValue=""
                     rules={{
                       required: "L'unité ou la société est obligatoire",
@@ -396,7 +397,7 @@ export default function FormInfoVisitor({
             </Grid>
             <Grid className={classes.comps} item xs={12} sm={12}>
               <FormControl
-                error={Object.prototype.hasOwnProperty.call(errors, 'vipVisiteur')}
+                error={Object.prototype.hasOwnProperty.call(errors, 'vip')}
                 component="div"
                 className={classes.formVip}
               >
@@ -404,13 +405,13 @@ export default function FormInfoVisitor({
                   as={(
                     <RadioGroup className={classes.radioGroup} aria-label="vip">
                       <FormControlLabel
-                        value="OUI"
+                        value="TRUE"
                         control={<Radio color="primary" />}
                         label="OUI"
                         labelPlacement="start"
                       />
                       <FormControlLabel
-                        value="NON"
+                        value="FALSE"
                         control={<Radio color="primary" />}
                         label="NON"
                         labelPlacement="start"
@@ -418,13 +419,10 @@ export default function FormInfoVisitor({
                     </RadioGroup>
                   )}
                   control={control}
-                  name="vipVisiteur"
-                  rules={{
-                    required: 'La object de la visite est obligatoire.',
-                  }}
-                  defaultValue="NON"
+                  name="vip"
+                  defaultValue="FALSE"
                 />
-                {watch('vipVisiteur') === 'OUI' && (
+                {watch('vip') === 'TRUE' && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
@@ -432,22 +430,19 @@ export default function FormInfoVisitor({
                           label="Veuillez justifier"
                           multiline
                           rowsMax="4"
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'justificationVipVisiteur',
-                          )}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'vipReason')}
                           helperText={
-                            errors.justificationVipVisiteur
-                            && errors.justificationVipVisiteur.type === 'required'
+                            errors.vipReason
+                            && errors.vipReason.type === 'required'
                             && 'La justification est obligatoire.'
                           }
                           fullWidth
                         />
                       )}
                       control={control}
-                      name="justificationVipVisiteur"
+                      name="vipReason"
                       rules={{
-                        required: watch('vipVisiteur') || '' === 'OUI',
+                        required: watch('vip') || '' === 'OUI',
                       }}
                       defaultValue=""
                     />
@@ -539,24 +534,23 @@ export default function FormInfoVisitor({
                       as={(
                         <TextField
                           label="Numéro"
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'numeroDocumentVisiteur',
-                          )}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'identityRef')}
                           helperText={
-                            errors.numeroDocumentVisiteur
-                            && errors.numeroDocumentVisiteur.type === 'required'
+                            errors.identityRef
+                            && errors.identityRef.type === 'required'
                             && 'Le numéro de document est obligatoire'
                           }
                           fullWidth
                         />
                       )}
                       control={control}
-                      name="numeroDocumentVisiteur"
+                      name="identityRef"
                       defaultValue=""
                       rules={{
                         required:
-                          watch('origineVisiteur') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                          watch('origineVisiteur')
+                          || '' === 'HORS MINARM'
+                          || object === REQUEST_OBJECT.PRIVATE,
                       }}
                     />
                   </Grid>
@@ -566,13 +560,10 @@ export default function FormInfoVisitor({
                       as={(
                         <DatePicker
                           label="Date de naissance"
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'dateNaissanceVisiteur',
-                          )}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
                           helperText={
-                            errors.dateNaissanceVisiteur
-                            && errors.dateNaissanceVisiteur.type === 'required'
+                            errors.birthday
+                            && errors.birthday.type === 'required'
                             && 'La date de naissance est obligatoire'
                           }
                           disableFuture
@@ -580,10 +571,12 @@ export default function FormInfoVisitor({
                         />
                       )}
                       control={control}
-                      name="dateNaissanceVisiteur"
+                      name="birthday"
                       rules={{
                         required:
-                          watch('origineVisiteur') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                          watch('origineVisiteur')
+                          || '' === 'HORS MINARM'
+                          || object === REQUEST_OBJECT.PRIVATE,
                       }}
                       defaultValue={null}
                     />
@@ -594,20 +587,17 @@ export default function FormInfoVisitor({
                       as={(
                         <TextField
                           label="Lieu de naissance"
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'lieuNaissanceVisiteur',
-                          )}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'birthdayPlace')}
                           helperText={
-                            errors.lieuNaissanceVisiteur
-                            && errors.lieuNaissanceVisiteur.type === 'required'
+                            errors.birthdayPlace
+                            && errors.birthdayPlace.type === 'required'
                             && 'Le lieu de naissance est obligatoire'
                           }
                           fullWidth
                         />
                       )}
                       control={control}
-                      name="lieuNaissanceVisiteur"
+                      name="birthdayPlace"
                       defaultValue=""
                       rules={{
                         required:
@@ -642,7 +632,7 @@ export default function FormInfoVisitor({
               )}
             </Grid>
           )}
-          {formData.zone2 && formData.zone2.length > 0 && (
+          {formData.placeP && formData.placeP.length > 0 && (
             <>
               <Grid item sm={12} xs={12} md={6}>
                 <Grid container spacing={2}>

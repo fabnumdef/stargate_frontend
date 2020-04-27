@@ -6,8 +6,8 @@ import Head from 'next/head';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
-
 import { SnackBarProvider } from '../lib/ui-providers/snackbar';
+
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -36,6 +36,7 @@ function MyApp({ Component, pageProps }) {
     </>
   );
 }
+
 
 MyApp.propTypes = {
   Component: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,

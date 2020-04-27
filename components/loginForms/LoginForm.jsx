@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { useLogin } from '../../lib/loginContext';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 export const CssTextField = withStyles({
   root: {
@@ -36,11 +38,12 @@ export const LOGIN = gql`
     }
 `;
 
-export default function LoginForm() {
+export default function LoginForm({ Button }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [login] = useMutation(LOGIN);
   const ctx = useLogin();
+  const { addAlert } = useSnackBar();
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
@@ -48,7 +51,16 @@ export default function LoginForm() {
       const { data: { login: { jwt } } } = await login({ variables: { email, password } });
       ctx.signIn(jwt);
     } catch (error) {
-      // TODO put toast messages for errors
+      switch (error.message) {
+        case `GraphQL error: Email "${email}" and password do not match.`:
+          addAlert({ message: 'Mauvais identifiant et/ou mot de passe', severity: 'warning' });
+          break;
+        case 'GraphQL error: Password expired':
+          addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
+          break;
+        default:
+          addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
+      }
     }
   };
 
@@ -70,8 +82,12 @@ export default function LoginForm() {
           value={password}
           onChange={(evt) => setPassword(evt.target.value)}
         />
-        <button type="submit" aria-label="submit-login-form" />
+        <Button text="Login" label="submit-login-form" />
       </form>
     </div>
   );
 }
+
+LoginForm.propTypes = {
+  Button: PropTypes.element.isRequired,
+};

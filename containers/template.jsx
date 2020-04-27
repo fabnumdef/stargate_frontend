@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 // Import Material
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import { Header } from '../components';
+import { Header, Footer } from '../components';
 
 const useStyles = makeStyles(() => ({
   container: {
     paddingTop: '15vh',
+    minHeight: '100vh',
+    marginBottom: '10%',
   },
 }));
 
@@ -24,6 +26,7 @@ export default function Template({ children }) {
       >
         {children}
       </Box>
+      <Footer />
     </div>
   );
 }

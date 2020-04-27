@@ -5,6 +5,8 @@ import {
 } from '../../../lib/test-utils';
 import LoginForm, { LOGIN } from '../loginForm';
 
+import { SnackBarContext } from '../../../lib/ui-providers/snackbar';
+
 const mocksItemProps = {
   handleSubmit: jest.fn(),
 };
@@ -21,7 +23,14 @@ const mocks = [
 
 describe('LoginForm', () => {
   afterEach(cleanup);
-  const { getByTestId } = render(<LoginForm {...mocksItemProps} />, { addTypename: false, mocks });
+
+  const addAlert = jest.fn();
+
+  const { getByTestId } = render(
+    <SnackBarContext.Provider value={{ addAlert }}>
+      <LoginForm {...mocksItemProps} />
+    </SnackBarContext.Provider>, { addTypename: false, mocks },
+  );
 
   it('should log user and receive his token', async () => {
     await act(async () => {

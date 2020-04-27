@@ -83,9 +83,8 @@ const theme = createMuiTheme(
           },
         },
       },
-      MuiSnackbarContent: {
+      MuiAlert: {
         root: {
-          backgroundColor: '#26c6da',
           borderRadius: '20px',
         },
       },
