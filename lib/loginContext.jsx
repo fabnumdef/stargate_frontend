@@ -79,6 +79,7 @@ export function LoginContextProvider(props) {
   const authRenew = async () => {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
+      clearTimeout(reloadAuth);
       return signOut({ message: 'Session expirée', severity: 'warning' });
     }
 
@@ -94,7 +95,7 @@ export function LoginContextProvider(props) {
       clearTimeout(reloadAuth);
     } else if (expIn <= renewTrigger) {
       try {
-        const { data: { login: { jwt } } } = await client.mutate({ mutation: AUTH_RENEW });
+        const { data: { jwtRefresh: { jwt } } } = await client.mutate({ mutation: AUTH_RENEW });
         setToken(jwt);
         return authRenew();
       } catch (error) {
@@ -102,13 +103,18 @@ export function LoginContextProvider(props) {
         clearTimeout(reloadAuth);
       }
     } else {
-      reloadAuth((expIn - renewTrigger) * 1000);
+      return reloadAuth((expIn - renewTrigger) * 1000);
     }
+    return null;
   };
 
   const getUserData = async () => {
-    const { data: { me: { firstname, lastname } } } = await client.query({ query: GET_ME });
-    client.cache.writeData({ data: { me: { firstname, lastname } } });
+    try {
+      const { data } = await client.query({ query: GET_ME });
+      client.cache.writeData({ data });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const signIn = async (email, password, resetToken = null) => {
@@ -179,5 +185,8 @@ LoginContextProvider.propTypes = {
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
     query: PropTypes.func.isRequired,
+    cache: PropTypes.shape({
+      writeData: PropTypes.func.isRequired,
+    }),
   }).isRequired,
 };

@@ -68,6 +68,7 @@ export default function Account() {
   const onSubmit = async ({ password }) => {
     try {
       await submitEditPassword({ variables: { user: { password } } });
+      reset({ password: '' });
       return addAlert({ message: 'Votre mot de passe a bien été modifié', severity: 'success' });
     } catch (e) {
       return e;
@@ -102,7 +103,7 @@ export default function Account() {
                     fullWidth
                   />
                 )}
-                rules={{ minLength: 8 }}
+                rules={{ minLength: 8, required: true }}
                 control={control}
                 name="password"
                 defaultValue=""
@@ -115,7 +116,7 @@ export default function Account() {
                 8 caractères minimum
               </FormHelperText>
             </Grid>
-            <Button type="submit" variant="contained" color="primary" onClick={() => reset({ password: '' })} className={classes.submitButton}>
+            <Button type="submit" variant="contained" color="primary" className={classes.submitButton}>
               Envoyer
             </Button>
           </Grid>
