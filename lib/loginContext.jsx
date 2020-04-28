@@ -31,17 +31,6 @@ const GET_ME = gql`
     }
 `;
 
-// eslint-disable-next-line no-unused-vars
-const GET_ME_LOCAL = gql`
-    query getMeLocal {
-        me @client {
-            firstname,
-            lastname
-        }
-    }
-`;
-
-
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
