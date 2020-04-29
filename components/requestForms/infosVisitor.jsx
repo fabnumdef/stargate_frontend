@@ -80,7 +80,7 @@ function getTypeEmploie(type) {
 }
 
 export default function FormInfoVisitor({
-  formData, setForm, handleNext, handleBack,
+  formData, setForm, handleNext, handleBack, selectVisitor,
 }) {
   const classes = useStyles();
 
@@ -100,15 +100,15 @@ export default function FormInfoVisitor({
   useEffect(() => {
     setObject(formData.object);
 
-    if (formData.selectVisitor) {
+    if (selectVisitor) {
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(
-        formData.selectVisitor,
+        selectVisitor,
       )) {
         setValue(key, value);
       }
     }
-  }, [formData, setValue]);
+  }, [formData, selectVisitor, setValue]);
 
   const { addAlert } = useSnackBar();
 
@@ -295,27 +295,27 @@ export default function FormInfoVisitor({
 
                 <Grid item md={12} sm={12} xs={12}>
                   <TextField
-                    label="Nom"
+                    label="Nom de naissance"
                     fullWidth
-                    name="usageLastname"
-                    error={Object.prototype.hasOwnProperty.call(errors, 'usageLastname')}
-                    helperText={errors.usageLastname && errors.usageLastname.message}
+                    name="birthdayLastname"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'birthdayLastname')}
+                    helperText={errors.birthdayLastname && errors.birthdayLastname.message}
                     inputRef={register({ required: 'Le nom est obligatoire' })}
-                    inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
+                    inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
                   />
                 </Grid>
                 <Grid item md={6} sm={6} xs={12}>
                   <Controller
                     as={(
                       <TextField
-                        inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
+                        inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
                         label="Nom de Naissance"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'birthdayLastname')}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'usageLastname')}
                         fullWidth
                       />
                     )}
                     control={control}
-                    name="birthdayLastname"
+                    name="usageLastname"
                     defaultValue=""
                   />
                   <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
@@ -577,6 +577,7 @@ export default function FormInfoVisitor({
                           watch('origineVisiteur')
                           || '' === 'HORS MINARM'
                           || object === REQUEST_OBJECT.PRIVATE,
+                        validate: { valide: (value) => isValid(value) || 'Format invalide' },
                       }}
                       defaultValue={null}
                     />
@@ -632,7 +633,7 @@ export default function FormInfoVisitor({
               )}
             </Grid>
           )}
-          {formData.placeP && formData.placeP.length > 0 && (
+          {/* {formData.placeP && formData.placeP.length > 0 && (
             <>
               <Grid item sm={12} xs={12} md={6}>
                 <Grid container spacing={2}>
@@ -752,7 +753,7 @@ export default function FormInfoVisitor({
                 </Grid>
               </Grid>
             </>
-          )}
+          )} */}
 
           <Grid item sm={12}>
             <Grid container justify="flex-end">
@@ -781,16 +782,31 @@ export default function FormInfoVisitor({
 
 FormInfoVisitor.propTypes = {
   formData: PropTypes.shape({
-    visitors: PropTypes.array.isRequired,
-    selectVisitor: PropTypes.objectOf(PropTypes.object),
     object: PropTypes.string.isRequired,
     from: PropTypes.instanceOf(Date).isRequired,
     to: PropTypes.instanceOf(Date).isRequired,
     reason: PropTypes.string.isRequired,
-    placeS: PropTypes.array.isRequired,
-    placeP: PropTypes.array.isRequired,
+    place: PropTypes.array.isRequired,
+    visitors: PropTypes.array.isRequired,
   }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
+  selectVisitor: PropTypes.shape({
+    nid: PropTypes.string,
+    firstname: PropTypes.string,
+    birthdayLastname: PropTypes.string,
+    usageLastname: PropTypes.string,
+    rank: PropTypes.string,
+    company: PropTypes.string,
+    email: PropTypes.string,
+    vip: PropTypes.string,
+    vipReason: PropTypes.string,
+    nationality: PropTypes.string,
+    identityRef: PropTypes.string,
+  }),
+};
+
+FormInfoVisitor.defaultProps = {
+  selectVisitor: null,
 };

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
@@ -76,8 +78,27 @@ function getSteps() {
   return ['Demande', 'Visiteur', 'Recapitulatif'];
 }
 
+export const CREATE_REQUEST = gql`
+    mutation createRequest($request: RequestInput!) {
+      createRequest(request: $request) {
+        id
+           }
+         }
+       `;
+
+export const UPDATE_REQUEST = gql`
+  mutation editRequest($id: String!, $request: RequestInput!) {
+    editRequest(id: $id, request: $request){
+      id
+    }
+  }
+`;
+
 export default function RequestAccesForm() {
   const classes = useStyles();
+
+  const [createRequest] = useMutation(CREATE_REQUEST);
+  const [updateRequest] = useMutation(UPDATE_REQUEST);
 
   // Stepper's functions
   const [activeStep, setActiveStep] = useState(0);
@@ -90,19 +111,26 @@ export default function RequestAccesForm() {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  // Update Visitor
+  const [selectVisitor, setSelectVisitor] = useState();
+
   // FormState
   const [formData, setForm] = useState({
-    idRequest: undefined,
+    id: undefined,
     visitors: [],
   });
 
-  useEffect(() => {
-    if (!formData.idRequest) {
-      // TODO CREATE REQUEST IF MORE THAN ONE VISITEUR
+  const saveForm = () => {
+    if (!formData.id) {
+      const { ...request } = formData;
+      createRequest({ variables: { request } });
+      // TODO SET ID
     } else {
-      // TODO UPDATE REQUEST
+      const { id, ...request } = formData;
+      updateRequest({ variables: { id, request } });
     }
-  }, [formData]);
+  };
 
   return (
     <Template>
@@ -124,14 +152,24 @@ export default function RequestAccesForm() {
         <Grid item sm={12} xs={12}>
           <TabPanel value={activeStep} index={0}>
             <NoSsr>
-              <FormInfosRequest setForm={setForm} handleNext={handleNext} />
+              <FormInfosRequest
+                setForm={(args) => {
+                  setForm(args);
+                  saveForm();
+                }}
+                handleNext={handleNext}
+              />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={1}>
             <NoSsr>
               <FormInfosVisitor
                 formData={formData}
-                setForm={setForm}
+                setForm={(args) => {
+                  setForm(args);
+                  saveForm();
+                }}
+                selectVisitor={selectVisitor}
                 handleNext={handleNext}
                 handleBack={handleBack}
               />
@@ -141,9 +179,13 @@ export default function RequestAccesForm() {
             <NoSsr>
               <FormInfosRecapDemande
                 formData={formData}
-                setForm={setForm}
+                setForm={(args) => {
+                  setForm(args);
+                  saveForm();
+                }}
                 handleNext={handleNext}
                 handleBack={handleBack}
+                setSelectVisitor={setSelectVisitor}
               />
             </NoSsr>
           </TabPanel>

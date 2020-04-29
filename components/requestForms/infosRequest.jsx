@@ -134,7 +134,8 @@ export default function FormInfosClaimant({
   });
 
   const onSubmit = (data) => {
-    setForm((formData) => ({ ...formData, ...data }));
+    const { placeP, placeS, ...others } = data;
+    setForm((formData) => ({ ...formData, place: [...placeP, ...placeS], ...others }));
     handleNext();
   };
 
