@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 
 // Import Material
 import { withStyles, makeStyles } from '@material-ui/core/styles';
@@ -56,6 +57,7 @@ const useStyles = makeStyles(() => ({
 
 export default function MenuIcon() {
   const classes = useStyles();
+  const router = useRouter();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -83,7 +85,7 @@ export default function MenuIcon() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <StyledMenuItem>
+        <StyledMenuItem onClick={() => router.push('/compte')}>
           <ListItemIcon>
             <AccountCircleIcon fontSize="default" />
           </ListItemIcon>
