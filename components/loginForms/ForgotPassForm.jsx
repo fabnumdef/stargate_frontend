@@ -62,5 +62,5 @@ export default function ForgotPassForm({ Button }) {
 }
 
 ForgotPassForm.propTypes = {
-  Button: PropTypes.element.isRequired,
+  Button: PropTypes.func.isRequired,
 };
