@@ -1,4 +1,6 @@
-export default mapUserData = (data, dataCampuses, dataUnits) => {
+//disable eslint, waiting for others mappers
+// eslint-disable-next-line import/prefer-default-export
+export const mapUserData = (data, dataCampuses, dataUnits) => {
   const { listCampuses: { list: campuses } } = dataCampuses;
   const { getCampus: { listUnits: { list: units } } } = dataUnits;
 
