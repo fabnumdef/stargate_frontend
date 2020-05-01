@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { Controller, useForm } from 'react-hook-form';
@@ -16,6 +17,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import mapUserData from '../../utils/mappers/adminMappers';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -69,17 +71,24 @@ const GET_UNITS = gql`
     }
 `;
 
-const UserForm = ({ onSubmit, defaultValues, user }) => {
+const UserForm = ({ submitForm, defaultValues, user }) => {
   const classes = useStyles();
   const {
     handleSubmit, errors, control,
   } = useForm();
+
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
 
   const { data: dataCampuses } = useQuery(GET_CAMPUSES);
   const [reqUnitsList, { called, loading, data: dataUnits }] = useLazyQuery(GET_UNITS);
+  console.log(called, loading);
 
+  const onSubmit = (formData) => {
+    console.log(dataCampuses, dataUnits);
+    const mappedUser = mapUserData(formData, dataCampuses, dataUnits);
+    submitForm(mappedUser);
+  };
 
   const getListUnits = async (campus) => {
     try {
@@ -285,6 +294,14 @@ const UserForm = ({ onSubmit, defaultValues, user }) => {
       </Grid>
     </form>
   );
+};
+
+UserForm.propTypes = {
+  submitForm: PropTypes.func.isRequired,
+  defaultValues: PropTypes.objectOf(PropTypes.string).isRequired,
+  user: PropTypes.shape({
+    role: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default UserForm;

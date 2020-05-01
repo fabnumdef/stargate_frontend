@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { withApollo } from '../../../lib/apollo';
@@ -41,26 +40,10 @@ const CREATE_USER = gql`
   }
 `;
 
-const mapCreateUser = (data) => ({
-  roles: [
-    {
-      role: data.role,
-      campuses: [{ _id: data.campus, label: data.campus }],
-    },
-  ],
-  firstname: data.firstname,
-  lastname: data.lastname,
-  email: data.email,
-});
-
 function CreateUser() {
-
   const [createUser] = useMutation(CREATE_USER);
 
-  const onSubmit = async (formData) => {
-    console.log('formData', formData);
-    const user = mapCreateUser(formData);
-    console.log('user', user);
+  const submitCreateUser = async (user) => {
     try {
       await createUser({ variables: { user } });
     } catch (e) {
@@ -78,7 +61,7 @@ function CreateUser() {
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur', 'Nouvel utilisateur']} />
-      <UserForm onSubmit={onSubmit} defaultValues={defaultValues} user={creator} />
+      <UserForm submitForm={submitCreateUser} defaultValues={defaultValues} user={creator} />
     </Template>
   );
 }
