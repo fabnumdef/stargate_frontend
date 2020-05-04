@@ -18,7 +18,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { mapUserData } from '../../utils/mappers/adminMappers';
-
+import { isAdmin } from '../../utils/permissions';
+import { useSnackBar } from '../../lib/snackbar';
 
 const useStyles = makeStyles((theme) => ({
   createUserForm: {
@@ -71,8 +72,9 @@ const GET_UNITS = gql`
     }
 `;
 
-const UserForm = ({ submitForm, defaultValues, user }) => {
+const UserForm = ({ submitForm, defaultValues, userRole }) => {
   const classes = useStyles();
+  const { addAlert } = useSnackBar();
   const {
     handleSubmit, errors, control,
   } = useForm();
@@ -81,33 +83,31 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
   const [labelWidth, setLabelWidth] = useState(0);
 
   const { data: dataCampuses } = useQuery(GET_CAMPUSES);
-  const [reqUnitsList, { called, loading, data: dataUnits }] = useLazyQuery(GET_UNITS);
-  console.log(called, loading);
+  const [reqUnitsList, { data: dataUnits }] = useLazyQuery(GET_UNITS);
 
   const onSubmit = (formData) => {
-    console.log(dataCampuses, dataUnits);
     const mappedUser = mapUserData(formData, dataCampuses, dataUnits);
     submitForm(mappedUser);
   };
 
-  const getListUnits = async (campus) => {
+  const getListUnits = async (campusId) => {
     try {
-      reqUnitsList({ variables: { campusId: campus } });
+      reqUnitsList({ variables: { campusId } });
     } catch (e) {
-      console.log(e);
+      addAlert({ message: 'Une erreur est survenue au chargement de la liste des unités', severity: 'error' });
     }
   };
 
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
-    getListUnits(defaultValues.campus.id);
+    getListUnits(defaultValues.campus);
   }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUserForm}>
-      <Grid container style={{ justifyContent: 'space-between' }} sm={12} xs={12} lg={12}>
+      <Grid container item style={{ justifyContent: 'space-between' }} sm={12} xs={12} lg={12}>
         <Grid item sm={4} xs={4}>
-          <Grid xs={12} sm={12}>
+          <Grid item xs={12} sm={12}>
             <Typography variant="subtitle2" gutterBottom>
               Informations personnelles
             </Typography>
@@ -168,7 +168,7 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
           </Grid>
         </Grid>
         <Grid item sm={7} xs={7}>
-          <Grid container style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
+          <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
             <Typography variant="subtitle2" gutterBottom>
               Affectation
             </Typography>
@@ -184,16 +184,17 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
                   Base
                 </InputLabel>
 
+                {dataCampuses && (
                 <Controller
                   as={(
                     <Select
                       fullWidth
                       labelId="create-user-campus"
                       id="campus"
-                      disabled={user.role !== 'Admin'}
+                      disabled={!isAdmin(userRole.role)}
                       labelWidth={labelWidth}
                     >
-                      {dataCampuses && dataCampuses.listCampuses.list.map((campus) => (
+                      {dataCampuses.listCampuses.list.map((campus) => (
                         <MenuItem key={campus.id} value={campus.id}>
                           {campus.label}
                         </MenuItem>
@@ -206,14 +207,16 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
                     return selected;
                   }}
                   name="campus"
-                  defaultValue={defaultValues.campus.id}
+                  defaultValue={defaultValues.campus}
                   rules={{ required: true }}
                 />
+                )}
 
                 {errors.campus && (
-                  <FormHelperText>Champ obligatoire</FormHelperText>
+                  <FormHelperText>Base obligatoire</FormHelperText>
                 )}
               </FormControl>
+
               <FormControl
                 variant="outlined"
                 error={Object.prototype.hasOwnProperty.call(errors, 'unit')}
@@ -222,31 +225,33 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
                 <InputLabel ref={inputLabel} id="select-outlined-label">
                   Unité
                 </InputLabel>
-                <Controller
-                  as={(
-                    <Select
-                      labelId="create-user-unit"
-                      id="unit"
-                      disabled={user.role !== 'Admin'}
-                      labelWidth={labelWidth}
-                    >
-                      {dataUnits && dataUnits.getCampus.listUnits.list.map((unit) => (
-                        <MenuItem key={unit.id} value={unit.id}>
-                          {unit.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                  control={control}
-                  name="unit"
-                  defaultValue={defaultValues.unit.id}
-                  rules={{ required: true }}
-                />
+                {dataUnits && (
+                  <Controller
+                    as={(
+                      <Select
+                        labelId="create-user-unit"
+                        id="unit"
+                        disabled={!isAdmin(userRole.role)}
+                        labelWidth={labelWidth}
+                      >
+                        {dataUnits.getCampus.listUnits.list.map((unit) => (
+                          <MenuItem key={unit.id} value={unit.id}>
+                            {unit.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                    control={control}
+                    name="unit"
+                    defaultValue={isAdmin(userRole.role) ? '' : defaultValues.unit}
+                    rules={{ required: true }}
+                  />
+                )}
                 {errors.unit && (
-                  <FormHelperText>Champ obligatoire</FormHelperText>
+                <FormHelperText>Unité obligatoire</FormHelperText>
                 )}
               </FormControl>
-              <Grid container style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
+              <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
                   Rôle
                 </Typography>
@@ -282,7 +287,7 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid sm={12} xs={12} className={classes.buttonsContainer}>
+      <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
         <Link href="/administration/utilisateurs">
           <Button variant="outlined" color="primary" className={classes.buttonCancel}>
             Annuler
@@ -298,8 +303,15 @@ const UserForm = ({ submitForm, defaultValues, user }) => {
 
 UserForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
-  defaultValues: PropTypes.objectOf(PropTypes.string).isRequired,
-  user: PropTypes.shape({
+  defaultValues: PropTypes.shape({
+    lastname: PropTypes.string,
+    firstname: PropTypes.string,
+    email: PropTypes.string,
+    role: PropTypes.string,
+    campus: PropTypes.objectOf(PropTypes.string.isRequired),
+    unit: PropTypes.objectOf(PropTypes.string.isRequired),
+  }).isRequired,
+  userRole: PropTypes.shape({
     role: PropTypes.string.isRequired,
   }).isRequired,
 };

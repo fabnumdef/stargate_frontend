@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Typography } from '@material-ui/core';
 
@@ -9,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontSize: theme.overrides.MuiTypography.title.fontSize,
+    fontSize: '1.6rem',
     fontWeight: theme.typography.fontWeightBold,
   },
   subtitle: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PageTitle({ title, subtitles = null }) {
+function PageTitle({ title, subtitles }) {
   const classes = useStyles();
 
   return (
@@ -26,7 +27,7 @@ function PageTitle({ title, subtitles = null }) {
         { title }
         {' '}
         { subtitles && subtitles.map((sub) => (
-          <span className={classes.subtitle}>
+          <span key={sub} className={classes.subtitle}>
             &gt;
             {' '}
             { sub }
@@ -38,5 +39,14 @@ function PageTitle({ title, subtitles = null }) {
     </Grid>
   );
 }
+
+PageTitle.defaultProps = {
+  subtitles: [],
+};
+
+PageTitle.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitles: PropTypes.arrayOf(PropTypes.string),
+};
 
 export default PageTitle;

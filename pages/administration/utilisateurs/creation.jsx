@@ -1,36 +1,30 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useRouter } from 'next/router';
 import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
+import { useSnackBar } from '../../../lib/snackbar';
 
-
-// eslint-disable-next-line no-unused-vars
-const creatorRole = {
-  role: 'CU',
-  campuses: [{
-    id: 'MIDDLE-EARTH',
-    label: 'Middle-Earth',
-  }],
-  units: [{
-    id: '5eaac5d6c94d620728b05511',
-    label: 'Orcs',
-  }],
-};
-
-const creatorRoleAdmin = {
-  role: 'Admin',
-  campuses: [{
-    id: 'MORDOR',
-    label: 'Test',
-  }],
-  units: [{
-    id: '5eaac5f9c94d620728b05514',
-    label: 'Mages',
-  }],
-};
+const GET_ME = gql`
+    query getMe {
+        me {
+            roles {
+                role
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
+        }
+    }
+`;
 
 const CREATE_USER = gql`
   mutation createUser($user: UserInput!) {
@@ -41,27 +35,49 @@ const CREATE_USER = gql`
 `;
 
 function CreateUser() {
+  const { addAlert } = useSnackBar();
+  const router = useRouter();
   const [createUser] = useMutation(CREATE_USER);
+  const { data: userData } = useQuery(GET_ME);
 
   const submitCreateUser = async (user) => {
     try {
-      await createUser({ variables: { user } });
+      const { data: { createUser: { id } } } = await createUser({ variables: { user } });
+      if (id) {
+        addAlert({ message: 'L\'utilisateur a bien été créé', severity: 'success' });
+        router.push('/administration/utilisateurs');
+      }
+      return null;
     } catch (e) {
-      console.log(e);
+      if (e.message === 'GraphQL error: User already exists') {
+        return addAlert({ message: 'Un utilisateur est déjà enregistré avec cet e-mail', severity: 'error' });
+      }
+      return addAlert({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
     }
   };
 
-  const creator = creatorRoleAdmin;
+  let defaultValues = {};
+  let userRole = {};
+  if (userData) {
+    [userRole] = userData.me.roles;
+    defaultValues = {
+      campus: userRole.campuses[0].id,
+      unit: userRole.units[0].id,
+    };
+  }
 
-  const defaultValues = {
-    campus: { id: creator.campuses[0].id, label: creator.campuses[0].label },
-    unit: { id: creator.units[0].id, label: creator.units[0].label },
-  };
 
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur', 'Nouvel utilisateur']} />
-      <UserForm submitForm={submitCreateUser} defaultValues={defaultValues} user={creator} />
+      {userData
+        && (
+        <UserForm
+          submitForm={submitCreateUser}
+          defaultValues={defaultValues}
+          userRole={userRole}
+        />
+        )}
     </Template>
   );
 }

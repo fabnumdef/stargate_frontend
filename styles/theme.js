@@ -27,9 +27,6 @@ const theme = createMuiTheme(
         },
       },
       MuiTypography: {
-        title: {
-          fontSize: '1.6rem',
-        },
         subtitle1: {
           fontWeight: 'bold',
           fontSize: '1.1rem',
