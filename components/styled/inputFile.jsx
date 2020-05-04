@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 
-export default function InputFile(props) {
+export default function InputFile({
+  label, onChange, error,
+}) {
   const [value, setValue] = useState();
-
-  const {
-    label, onChange, error,
-  } = props;
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -45,3 +43,9 @@ export default function InputFile(props) {
     </>
   );
 }
+
+InputFile.propTypes = {
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  error: PropTypes.bool.isRequired,
+};

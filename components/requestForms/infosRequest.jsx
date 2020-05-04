@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+// apollo graphQL
+import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+
 // React Hook Form Validations
 import { useForm, Controller } from 'react-hook-form';
 
@@ -117,11 +121,35 @@ function isDeadlineRespected(value) {
   return days >= 2;
 }
 
+const GET_USER_BASE = gql`
+  {
+    me @client {
+    }
+  }
+`;
+
+const GET_BASE_PLACE = gql`
+  query editRequest($id: String!, $request: RequestInput!) {
+    editRequest(id: $id, request: $request) {
+      id
+    }
+  }
+`;
+
+
 export default function FormInfosClaimant({
   setForm, handleNext,
 }) {
   const classes = useStyles();
   // Date Values
+  const { data: idBase } = useQuery(GET_USER_BASE);
+
+  const { data: places } = useQuery(GET_BASE_PLACE, {
+    skip: !idBase,
+    variables: {
+      id: idBase,
+    },
+  });
 
   const {
     register, control, handleSubmit, watch, errors,

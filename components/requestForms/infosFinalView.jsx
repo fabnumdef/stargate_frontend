@@ -1,5 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
+
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -22,14 +24,8 @@ const useStyles = makeStyles({
   },
 });
 
-export default function InfosRecapDemande({ dataToProps }) {
-  const { formData, setForm, handleBack } = dataToProps;
+export default function InfosFinalView({ formData, setForm, handleBack }) {
   const classes = useStyles();
-
-  const listLieux = React.useMemo(() => [...formData.zone1, ...formData.zone2], [
-    formData.zone1,
-    formData.zone2,
-  ]);
 
   // const [page, setPage] = React.useState(0);
   // const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -49,38 +45,38 @@ export default function InfosRecapDemande({ dataToProps }) {
         <Typography variant="body1">
           Visite du
           {' '}
-          {format(formData.dateStartVisite, 'dd/MM/yyyy')}
+          {format(formData.from, 'dd/MM/yyyy')}
           {' '}
           au
           {' '}
           {''}
-          {format(formData.dateEndVisite, 'dd/MM/yyyy')}
+          {format(formData.to, 'dd/MM/yyyy')}
         </Typography>
         <Typography variant="body1">
           à :
           {' '}
-          {listLieux.map((lieu, index) => {
-            if (index === listLieux.length - 1) return `${lieu.value}.`;
+          {formData.place.map((lieu, index) => {
+            if (index === formData.place.length - 1) return `${lieu.value}.`;
             return `${lieu.value}, `;
           })}
         </Typography>
         <Typography variant="body1">
           Motif:
           {' '}
-          {formData.motifVisite}
+          {formData.reason}
         </Typography>
       </Grid>
       <Grid item sm={12}>
         <Paper className={classes.root}>
           <TabRecapDemande
-            listVisiteurs={formData.listVisiteurs}
+            listVisiteurs={formData.visitors}
             onUpdate={(visiteur) => {
               setForm({ ...formData, visiteur });
             }}
             onDelete={(mail) => {
-              let visiteurs = [...formData.listVisiteurs];
-              visiteurs = remove(visiteurs, (visiteur) => visiteur.emailVisiteur === mail);
-              setForm({ ...formData, listVisiteurs: visiteurs });
+              let visiteurs = [...formData.visitors];
+              visiteurs = remove(visiteurs, (visiteur) => visiteur.email === mail);
+              setForm({ ...formData, visitors: visiteurs });
             }}
             handleBack={handleBack}
           />
@@ -98,3 +94,16 @@ export default function InfosRecapDemande({ dataToProps }) {
     </Grid>
   );
 }
+
+InfosFinalView.propTypes = {
+  formData: PropTypes.shape({
+    object: PropTypes.string.isRequired,
+    from: PropTypes.instanceOf(Date).isRequired,
+    to: PropTypes.instanceOf(Date).isRequired,
+    reason: PropTypes.string.isRequired,
+    place: PropTypes.array.isRequired,
+    visitors: PropTypes.array.isRequired,
+  }).isRequired,
+  setForm: PropTypes.func.isRequired,
+  handleBack: PropTypes.func.isRequired,
+};

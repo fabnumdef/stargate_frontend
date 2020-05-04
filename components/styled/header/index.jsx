@@ -1,6 +1,6 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-
+import PropTypes from 'prop-types';
 // Material Imports
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -23,6 +23,10 @@ function ElevationScroll(props) {
     elevation: trigger ? 3 : 0,
   });
 }
+
+ElevationScroll.propTypes = {
+  window: PropTypes.instanceOf(window.constructor),
+};
 
 const useStyles = makeStyles((theme) => ({
   grow: {
