@@ -3,7 +3,7 @@ import React from 'react';
 import {
   render, cleanup, fireEvent, act,
 } from '../../../lib/test-utils';
-import LoginForm, { LOGIN } from '../loginForm';
+import LoginForm, { LOGIN } from '../LoginForm';
 
 import { SnackBarContext } from '../../../lib/ui-providers/snackbar';
 

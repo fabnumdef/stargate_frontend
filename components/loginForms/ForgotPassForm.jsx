@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
-import { CssTextField } from './loginForm';
+import { CssTextField } from './LoginForm';
 
 const useStyles = makeStyles(() => ({
   formPasswordContainer: {
@@ -62,5 +62,5 @@ export default function ForgotPassForm({ Button }) {
 }
 
 ForgotPassForm.propTypes = {
-  Button: PropTypes.element.isRequired,
+  Button: PropTypes.func.isRequired,
 };

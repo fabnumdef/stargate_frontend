@@ -22,8 +22,8 @@ export default function CustomTableCell({ children, align, style }) {
 
 CustomTableCell.propTypes = {
   children: PropTypes.node.isRequired,
-  style: PropTypes.ofType(PropTypes.object),
-  align: PropTypes.ofType(PropTypes.object),
+  style: PropTypes.objectOf(PropTypes.object),
+  align: PropTypes.objectOf(PropTypes.object),
 };
 
 CustomTableCell.defaultProps = {

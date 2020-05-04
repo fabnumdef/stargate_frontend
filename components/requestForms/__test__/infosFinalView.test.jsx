@@ -3,35 +3,18 @@ import React from 'react';
 import {
   render, cleanup, fireEvent, act,
 } from '../../../lib/test-utils';
-import FormInfosRecapDemande from '../infosRecapDemande';
+import FormInfosRecapDemande from '../infosFinalView';
 
 const mockItems = {
   formData: {
-    natureVisite: 'Professionnelle',
-    dateStartVisite: new Date(2020, 3, 2),
-    dateEndVisite: new Date(2020, 3, 3),
-    zone1: [{ value: 'MESS' }],
-    zone2: [],
-    motifVisite: 'un motif convenable',
-    listVisiteurs: [
-      {
-        origineVisiteur: 'MINARM',
-        typeVisiteur: 'Militaire actif',
-        nidVisiteur: '1111111111',
-        gradeVisiteur: 'MP',
-        nomNaisanceVisiteur: '',
-        prenomVisiteur: 'Robin',
-        uniteVisiteur: 'CDBD Toulon',
-        emailVisiteur: 'robin.labrouille@intra.go.fr',
-        vipVisiteur: 'NON',
-        nomDemandeur: '',
-        nomVisiteur: 'Labouille',
-        nationaliteVisiteur: 'Française',
-      },
-    ],
+    object: 'PROFESSIONAL',
+    visitors: [],
+    place: [],
+    from: new Date(),
+    to: new Date(),
+    reason: 'A reason !',
   },
   setForm: jest.fn(),
-  handleNext: jest.fn(),
   handleBack: jest.fn(),
 };
 
@@ -39,7 +22,7 @@ describe('FormInfosRecapDemande', () => {
   afterEach(cleanup);
 
   it('renders without error', () => {
-    render(<FormInfosRecapDemande dataToProps={mockItems} />);
+    render(<FormInfosRecapDemande {...mockItems} />);
   });
 
   it('display messages', async () => {

@@ -97,7 +97,7 @@ export const UPDATE_REQUEST = gql`
 export default function RequestAccesForm() {
   const classes = useStyles();
 
-  const [createRequest] = useMutation(CREATE_REQUEST);
+  const [createRequest, { data: resultId }] = useMutation(CREATE_REQUEST);
   const [updateRequest] = useMutation(UPDATE_REQUEST);
 
   // Stepper's functions
@@ -125,7 +125,10 @@ export default function RequestAccesForm() {
     if (!formData.id) {
       const { ...request } = formData;
       createRequest({ variables: { request } });
-      // TODO SET ID
+      // save the id of the request
+      if (resultId) {
+        setForm({ ...formData, id: resultId });
+      }
     } else {
       const { id, ...request } = formData;
       updateRequest({ variables: { id, request } });
