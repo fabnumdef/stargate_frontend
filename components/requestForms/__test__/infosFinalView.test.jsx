@@ -8,7 +8,17 @@ import FormInfosRecapDemande from '../infosFinalView';
 const mockItems = {
   formData: {
     object: 'PROFESSIONAL',
-    visitors: [],
+    visitors: [
+      {
+        nid: '1',
+        firstname: 'John',
+        birthLastname: 'RAMBO',
+        usageLastname: 'RAMBO',
+        rank: 'SGT',
+        company: 'La7',
+        email: 'ok@ok.com',
+      },
+    ],
     place: [],
     from: new Date(),
     to: new Date(),

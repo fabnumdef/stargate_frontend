@@ -34,23 +34,23 @@ const columns = [
 ];
 
 function createData({
-  prenomVisiteur,
-  nomVisiteur,
-  gradeVisiteur,
-  uniteVisiteur,
-  typeVisiteur,
+  firstname,
+  birthLastName,
+  rank,
+  company,
+  type,
 }) {
-  if (!gradeVisiteur) {
+  if (!rank) {
     return {
-      visiteur: `${nomVisiteur.toUpperCase()} ${prenomVisiteur}`,
-      unite: uniteVisiteur,
-      type: typeVisiteur,
+      visiteur: `${birthLastName.toUpperCase()} ${firstname}`,
+      unite: company,
+      type,
     };
   }
   return {
-    visiteur: `${gradeVisiteur} ${nomVisiteur.toUpperCase()} ${prenomVisiteur}`,
-    unite: uniteVisiteur,
-    type: typeVisiteur,
+    visiteur: `${rank} ${birthLastName.toUpperCase()} ${firstname}`,
+    unite: company,
+    type,
   };
 }
 

@@ -49,7 +49,6 @@ export default function InfosFinalView({ formData, setForm, handleBack }) {
           {' '}
           au
           {' '}
-          {''}
           {format(formData.to, 'dd/MM/yyyy')}
         </Typography>
         <Typography variant="body1">

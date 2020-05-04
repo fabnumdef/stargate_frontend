@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { useLogin } from '../../lib/loginContext';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 export const CssTextField = withStyles({
   root: {
@@ -34,7 +31,6 @@ export default function LoginForm({ Button }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const ctx = useLogin();
-  const { addAlert } = useSnackBar();
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
