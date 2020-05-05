@@ -9,11 +9,11 @@ export const mapUserData = (data, dataCampuses, dataUnits) => {
       {
         role: data.role,
         campuses: [{
-          _id: data.campus,
+          id: data.campus,
           label: campuses.find((campus) => campus.id === data.campus).label,
         }],
         units: [{
-          _id: data.unit,
+          id: data.unit,
           label: units.find((unit) => unit.id === data.unit).label,
         }],
       },

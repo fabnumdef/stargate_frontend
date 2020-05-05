@@ -24,15 +24,11 @@ function PageTitle({ title, subtitles }) {
   return (
     <Grid item sm={12} xs={12}>
       <Typography variant="h2" className={classes.pageTitle}>
-        { title }
-        {' '}
+        { `${title} ` }
         { subtitles && subtitles.map((sub) => (
           <span key={sub} className={classes.subtitle}>
             &gt;
-            {' '}
-            { sub }
-            {' '}
-            {' '}
+            { ` ${sub} ` }
           </span>
         ))}
       </Typography>
