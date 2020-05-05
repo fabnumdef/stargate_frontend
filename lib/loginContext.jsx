@@ -31,6 +31,15 @@ const GET_ME = gql`
     }
 `;
 
+const GET_ME_LOCAL = gql`
+    query getMeLocal {
+        me @client {
+            firstname,
+            lastname
+        }
+    }
+`;
+
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
@@ -42,6 +51,24 @@ export function LoginContextProvider(props) {
   const [isLoggedUser, setIsLoggedUser] = useState(
     typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
   );
+
+  const getUserData = async () => {
+    try {
+      const { data } = await client.query({ query: GET_ME });
+      client.cache.writeData({ data });
+      return data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const reinitUserCache = async () => {
+    const { data } = await client.query({ query: GET_ME_LOCAL });
+    if (data) return data;
+    return getUserData();
+  };
+
   const [resetPass, setResetPass] = useState(() => {
     if (router.query.token && router.query.email) {
       return {
@@ -97,15 +124,6 @@ export function LoginContextProvider(props) {
     return null;
   };
 
-  const getUserData = async () => {
-    try {
-      const { data } = await client.query({ query: GET_ME });
-      client.cache.writeData({ data });
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const signIn = async (email, password, resetToken = null) => {
     try {
       const { data: { login: { jwt } } } = await client.mutate({
@@ -150,6 +168,10 @@ export function LoginContextProvider(props) {
     if (token && !authRenewOn) {
       authRenew();
       setAuthRenew(true);
+    }
+
+    if (isLoggedUser) {
+      reinitUserCache();
     }
 
     if (isLoggedUser && router.pathname === '/login') {
