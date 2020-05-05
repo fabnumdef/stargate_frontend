@@ -24,10 +24,6 @@ function ElevationScroll(props) {
   });
 }
 
-ElevationScroll.propTypes = {
-  window: PropTypes.instanceOf(window.constructor),
-};
-
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,

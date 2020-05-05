@@ -122,7 +122,7 @@ function isDeadlineRespected(value) {
 }
 
 const GET_USER_BASE = gql`
-  query me() {
+  query me {
     me @client
   }
 `;
