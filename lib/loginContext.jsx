@@ -7,28 +7,28 @@ import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
 
 export const LOGIN = gql`
-    mutation login($email: EmailAddress!, $password: String, $token: String) {
-        login(email: $email, password: $password, token: $token) {
-            jwt
-        }
+  mutation login($email: EmailAddress!, $password: String, $token: String) {
+    login(email: $email, password: $password, token: $token) {
+      jwt
     }
+  }
 `;
 
 const AUTH_RENEW = gql`
-    mutation jwtRefresh {
-        jwtRefresh {
-            jwt
-        }
+  mutation jwtRefresh {
+    jwtRefresh {
+      jwt
     }
+  }
 `;
 
 const GET_ME = gql`
-    query getMe {
-        me {
-            firstname,
-            lastname
-        }
+  query getMe {
+    me {
+      firstname
+      lastname
     }
+  }
 `;
 
 export const LoginContext = createContext();
@@ -57,7 +57,8 @@ export function LoginContextProvider(props) {
     localStorage.setItem('token', token);
   };
 
-  const signOut = () => {
+  const signOut = (alert = false) => {
+    router.push('/login');
     setIsLoggedUser(false);
     localStorage.clear();
     client.resetStore();
@@ -71,8 +72,7 @@ export function LoginContextProvider(props) {
       return signOut({ message: 'Session expirée', severity: 'warning' });
     }
 
-    const payload = localStorage.getItem('token')
-      .split('.')[1];
+    const payload = localStorage.getItem('token').split('.')[1];
     const { exp, iat } = JSON.parse(window.atob(payload));
     const cur = Math.floor(Date.now() / 1000);
     const duration = exp - iat;
@@ -83,7 +83,11 @@ export function LoginContextProvider(props) {
       clearTimeout(reloadAuth);
     } else if (expIn <= renewTrigger) {
       try {
-        const { data: { jwtRefresh: { jwt } } } = await client.mutate({ mutation: AUTH_RENEW });
+        const {
+          data: {
+            jwtRefresh: { jwt },
+          },
+        } = await client.mutate({ mutation: AUTH_RENEW });
         setToken(jwt);
         return authRenew();
       } catch (error) {
@@ -107,7 +111,11 @@ export function LoginContextProvider(props) {
 
   const signIn = async (email, password, resetToken = null) => {
     try {
-      const { data: { login: { jwt } } } = await client.mutate({
+      const {
+        data: {
+          login: { jwt },
+        },
+      } = await client.mutate({
         mutation: LOGIN,
         variables: { email, password, token: resetToken },
       });
@@ -119,11 +127,17 @@ export function LoginContextProvider(props) {
     } catch (e) {
       switch (e.message) {
         case `GraphQL error: Email "${email}" and password do not match.`:
-          return addAlert({ message: 'Mauvais identifiant et/ou mot de passe', severity: 'warning' });
+          return addAlert({
+            message: 'Mauvais identifiant et/ou mot de passe',
+            severity: 'warning',
+          });
         case 'GraphQL error: Password expired':
           return addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
         case 'GraphQL error: Expired link':
-          return signOut({ message: 'Lien expiré, merci de refaire une demande de mot de passe', severity: 'warning' });
+          return signOut({
+            message: 'Lien expiré, merci de refaire une demande de mot de passe',
+            severity: 'warning',
+          });
         default:
           return signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
       }
@@ -154,18 +168,13 @@ export function LoginContextProvider(props) {
     if (isLoggedUser && router.pathname === '/login') {
       router.push('/');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedUser]);
 
   if (!isLoggedUser && children.type.name !== 'LoginPage') {
     return <div />;
   }
 
-  return (
-    <LoginContext.Provider value={{ signIn, signOut }}>
-      {children}
-    </LoginContext.Provider>
-  );
+  return <LoginContext.Provider value={{ signIn, signOut }}>{children}</LoginContext.Provider>;
 }
 
 LoginContextProvider.propTypes = {

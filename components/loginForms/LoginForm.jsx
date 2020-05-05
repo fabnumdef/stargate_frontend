@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import { useLogin } from '../../lib/loginContext';
 
 export const CssTextField = withStyles({
@@ -27,10 +28,19 @@ export const CssTextField = withStyles({
   },
 })(TextField);
 
-export default function LoginForm({ Button }) {
+const useStyles = makeStyles(() => ({
+  submitButton: {
+    marginTop: '5%',
+    width: '50%',
+  },
+}));
+
+export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const ctx = useLogin();
+
+  const classes = useStyles();
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
@@ -55,12 +65,10 @@ export default function LoginForm({ Button }) {
           value={password}
           onChange={(evt) => setPassword(evt.target.value)}
         />
-        <Button text="Login" label="submit-login-form" />
+        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
+          Login
+        </Button>
       </form>
     </div>
   );
 }
-
-LoginForm.propTypes = {
-  Button: PropTypes.func.isRequired,
-};

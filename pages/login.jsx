@@ -29,20 +29,15 @@ const useStyles = makeStyles(() => ({
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      '& button': {
-        display: 'none',
-      },
     },
   },
   switchButton: {
     position: 'absolute',
-    color: 'white',
+    marginTop: '5%',
+    textAlign: 'center',
     cursor: 'pointer',
-    bottom: '12%',
     width: '100%',
     fontSize: '1rem',
-    backgroundColor: 'transparent',
-    border: 'none',
   },
   logo: {
     height: '10vh',
@@ -71,10 +66,10 @@ function LoginPage() {
         <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
       </div>
       <div className={classes.subLoginForm}>
-        {forgottenPass
-          ? <ForgotPassForm />
-          : <LoginForm />}
-        <button className={classes.buttonStyle} type="button" onClick={switchForms}>{forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}</button>
+        {forgottenPass ? <ForgotPassForm switchForms={switchForms} /> : <LoginForm />}
+        <div className={classes.switchButton} role="button" onClick={switchForms} onKeyDown={switchForms} aria-hidden>
+          {forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}
+        </div>
       </div>
     </div>
   );
