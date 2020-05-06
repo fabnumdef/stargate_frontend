@@ -25,17 +25,23 @@ const AUTH_RENEW = gql`
 const GET_ME = gql`
     query getMe {
         me {
-            firstname,
+            firstname
             lastname
+            roles {
+              role
+            }
         }
     }
 `;
 
 const GET_ME_LOCAL = gql`
-    query getMeLocal {
+    {
         me @client {
-            firstname,
+            firstname
             lastname
+            roles {
+              role
+            }
         }
     }
 `;
@@ -52,19 +58,34 @@ export function LoginContextProvider(props) {
     typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
   );
 
+  const signOut = (alert = false) => {
+    router.push('/login');
+    setIsLoggedUser(false);
+    localStorage.clear();
+    client.resetStore();
+    if (alert) addAlert(alert);
+  };
+
   const getUserData = async () => {
+    let activeRoleNumber = 0;
+    if (localStorage.getItem('activeRoleNumber')) {
+      activeRoleNumber = localStorage.getItem('activeRoleNumber');
+    } else {
+      localStorage.setItem('activeRoleNumber', activeRoleNumber);
+    }
     try {
-      const { data } = await client.query({ query: GET_ME });
-      client.cache.writeData({ data });
-      return data;
+      const { data: { me } } = await client.query({ query: GET_ME });
+      client.cache.writeData({ data: { me, activeRole: me.roles[activeRoleNumber] } });
+      return me;
     } catch (e) {
       console.error(e);
-      return null;
+      return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
     }
   };
 
   const reinitUserCache = async () => {
     const { data } = await client.query({ query: GET_ME_LOCAL });
+    console.log(await client.query({ query: GET_ME_LOCAL }));
     if (data) return data;
     return getUserData();
   };
@@ -82,14 +103,6 @@ export function LoginContextProvider(props) {
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
-  };
-
-  const signOut = (alert = false) => {
-    router.push('/login');
-    setIsLoggedUser(false);
-    localStorage.clear();
-    client.resetStore();
-    if (alert) addAlert(alert);
   };
 
   const authRenew = async () => {
@@ -150,6 +163,7 @@ export function LoginContextProvider(props) {
   };
 
   useEffect(() => {
+    console.log('LoginProvider clientCache', client.cache.data)
     async function resetPassSignIn(email, token) {
       await signIn(decodeURIComponent(email), null, token);
       setResetPass(false);
