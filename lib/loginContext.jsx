@@ -113,14 +113,6 @@ export function LoginContextProvider(props) {
     localStorage.setItem('token', token);
   };
 
-  const signOut = (alert = false) => {
-    router.push('/login');
-    setIsLoggedUser(false);
-    localStorage.clear();
-    client.resetStore();
-    if (alert) addAlert(alert);
-  };
-
   const authRenew = async () => {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
@@ -153,15 +145,6 @@ export function LoginContextProvider(props) {
     return null;
   };
 
-  const getUserData = async () => {
-    try {
-      const { data } = await client.query({ query: GET_ME });
-      client.cache.writeData({ data });
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const signIn = async (email, password, resetToken = null) => {
     try {
       const { data: { login: { jwt } } } = await client.mutate({
@@ -188,7 +171,7 @@ export function LoginContextProvider(props) {
   };
 
   useEffect(() => {
-    console.log('LoginProvider clientCache', client.cache.data)
+    console.log('LoginProvider clientCache', client.cache.data);
     async function resetPassSignIn(email, token) {
       await signIn(decodeURIComponent(email), null, token);
       setResetPass(false);
