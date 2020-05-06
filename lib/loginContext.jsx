@@ -25,10 +25,18 @@ const AUTH_RENEW = gql`
 const GET_ME = gql`
     query getMe {
         me {
-            firstname
-            lastname
+            firstname,
+            lastname,
             roles {
-              role
+                role
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
             }
         }
     }
@@ -105,6 +113,14 @@ export function LoginContextProvider(props) {
     localStorage.setItem('token', token);
   };
 
+  const signOut = (alert = false) => {
+    router.push('/login');
+    setIsLoggedUser(false);
+    localStorage.clear();
+    client.resetStore();
+    if (alert) addAlert(alert);
+  };
+
   const authRenew = async () => {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
@@ -135,6 +151,15 @@ export function LoginContextProvider(props) {
       return reloadAuth((expIn - renewTrigger) * 1000);
     }
     return null;
+  };
+
+  const getUserData = async () => {
+    try {
+      const { data } = await client.query({ query: GET_ME });
+      client.cache.writeData({ data });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const signIn = async (email, password, resetToken = null) => {
