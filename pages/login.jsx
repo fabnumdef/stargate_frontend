@@ -98,4 +98,4 @@ SubmitButton.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-export default withApollo()(LoginPage);
+export default withApollo({ ssr: true })(LoginPage);
