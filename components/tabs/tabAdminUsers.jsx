@@ -43,39 +43,20 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabAdminUsers({ tabData, columns }) {
+export default function TabAdminUsers({ rows, columns, deleteItem }) {
   const classes = useStyles();
-  console.log(tabData);
-  const [rows, setRows] = useState(tabData.reduce((acc, dem) => {
-    acc.push(dem);
-    return acc;
-  }, []));
-
-  const [hover, setHover] = useState({});
+  console.log(rows);
 
   const [del, setDel] = useState({});
-
-  const handleMouseEnter = (index) => {
-    setHover((prevState) => ({ ...prevState, [index]: true }));
-  };
-
-  const handleMouseLeave = (index) => {
-    setTimeout(() => {}, 2000);
-    setHover((prevState) => ({ ...prevState, [index]: false }));
-  };
 
   const handleDelete = (index) => {
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-
-  const handleDeleteConfirm = (index) => {
-    const newRows = rows;
-    newRows.splice(index, 1);
-    setRows(newRows);
+  const handleDeleteConfirm = (id) => {
+    deleteItem(id);
     setDel({});
   };
-
 
   const handleDeleteAvorted = () => {
     setDel({});
@@ -112,7 +93,7 @@ export default function TabAdminUsers({ tabData, columns }) {
                         <IconButton
                           aria-label="valide"
                           className={classes.icon}
-                          onClick={() => handleDeleteConfirm(index)}
+                          onClick={() => handleDeleteConfirm(row.id)}
                         >
                           <DoneIcon />
                         </IconButton>
@@ -135,9 +116,6 @@ export default function TabAdminUsers({ tabData, columns }) {
           return (
             <TableRow
               hover
-              onMouseOver={() => handleMouseEnter(index)}
-              onFocus={() => handleMouseEnter(index)}
-              onMouseLeave={() => handleMouseLeave(index)}
               role="checkbox"
               tabIndex={-1}
               key={row.code}
@@ -155,22 +133,18 @@ export default function TabAdminUsers({ tabData, columns }) {
                 );
               })}
               <TableCell key="modif">
-                {hover[index] && (
-                  <>
-                    <Link href="/demandes/1">
-                      <IconButton aria-label="modifier" className={classes.icon}>
-                        <EditIcon />
-                      </IconButton>
-                    </Link>
-                    <IconButton
-                      aria-label="supprimer"
-                      className={classes.icon}
-                      onClick={() => handleDelete(index)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )}
+                <Link href="/administration/utilisateurs">
+                  <IconButton aria-label="modifier" className={classes.icon}>
+                    <EditIcon />
+                  </IconButton>
+                </Link>
+                <IconButton
+                  aria-label="supprimer"
+                  className={classes.icon}
+                  onClick={() => handleDelete(index)}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </TableCell>
             </TableRow>
           );

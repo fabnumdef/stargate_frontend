@@ -23,6 +23,7 @@ export const mapUserData = (data, dataCampuses, dataUnits) => {
 };
 
 export const mapUsersList = (usersList) => usersList.map((user) => ({
+  id: user.id,
   lastname: user.lastname,
   firstname: user.firstname,
   campus: user.roles[0].campuses[0].label,
