@@ -220,6 +220,19 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
         apolloClient: ctx.apolloClient,
       };
     };
+  } else {
+    WithApollo.getInitialProps = async (ctx) => {
+      const inAppContext = Boolean(ctx.ctx);
+      let pageProps = {};
+      if (PageComponent.getInitialProps) {
+        pageProps = await PageComponent.getInitialProps(ctx);
+      } else if (inAppContext) {
+        pageProps = await App.getInitialProps(ctx);
+      }
+      return {
+        ...pageProps,
+      };
+    };
   }
 
   return WithApollo;
