@@ -18,6 +18,7 @@ const { publicRuntimeConfig } = getConfig();
 // This prevents the client from reinitializing between page transitions.
 let globalApolloClient = null;
 
+console.log(publicRuntimeConfig);
 const httpLink = createHttpLink({
   uri: publicRuntimeConfig.API_URL,
   fetch,
