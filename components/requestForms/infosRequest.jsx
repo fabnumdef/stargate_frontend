@@ -121,19 +121,11 @@ function isDeadlineRespected(value) {
   return days >= 2;
 }
 
-const GET_USER_BASE = gql`
-  query me {
-    me @client
-  }
-`;
-
-const GET_BASE_PLACE = gql`
-  query editRequest($id: String!, $request: RequestInput!) {
-    editRequest(id: $id, request: $request) {
-      id
-    }
-  }
-`;
+// const GET_USER_BASE = gql`
+//   query me {
+//     me @client
+//   }
+// `;
 
 
 export default function FormInfosClaimant({
@@ -141,14 +133,16 @@ export default function FormInfosClaimant({
 }) {
   const classes = useStyles();
   // Date Values
-  const { data: idBase } = useQuery(GET_USER_BASE);
 
-  const { data: places } = useQuery(GET_BASE_PLACE, {
-    skip: !idBase,
-    variables: {
-      id: idBase,
-    },
-  });
+  // ZONE REQUEST
+  // const { data: idBase } = useQuery(GET_USER_BASE);
+
+  // const { data: places } = useQuery(GET_BASE_PLACE, {
+  //   skip: !idBase,
+  //   variables: {
+  //     id: idBase,
+  //   },
+  // });
 
   const {
     register, control, handleSubmit, watch, errors,

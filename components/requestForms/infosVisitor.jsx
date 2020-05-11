@@ -24,6 +24,7 @@ import { isValid } from 'date-fns';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
+import { mapVisitorData } from '../../utils/mappers/requestAcces';
 
 import DatePicker from '../styled/date';
 import Nationalite from '../../utils/constants/insee/pays2019.json';
@@ -120,7 +121,7 @@ export default function FormInfoVisitor({
   useEffect(() => {
     register(
       { name: 'nationality' },
-      { required: watch('origineVisiteur') !== 'MINARM' },
+      { required: watch('isInternal') !== 'MINARM' },
     );
   }, [object, register, watch]);
 
@@ -130,20 +131,20 @@ export default function FormInfoVisitor({
   };
 
   const minArmOrNot = () => {
-    if (watch('origineVisiteur') === 'MINARM') addAlert({ message: "Les informations sur l'identité sont à rentrer par le visiteur", severity: 'info' });
+    if (watch('isInternal') === 'MINARM') addAlert({ message: "Les informations sur l'identité sont à rentrer par le visiteur", severity: 'info' });
   };
 
   const onSubmit = (data) => {
     // snackbar if minarm
     minArmOrNot();
 
+    const visitor = mapVisitorData(data);
+
     let visitors = [...formData.visitors];
     // remove the old element if exits
-    visitors = visitors.filter(
-      (value) => data.email && data.email !== value.email,
-    );
+    visitors = visitors.filter((value) => visitor.email && visitor.email !== value.email);
 
-    visitors.push(data);
+    visitors.push(visitor);
 
     // update the form
     setForm({ ...formData, visitors, visiteur: undefined });
@@ -174,7 +175,7 @@ export default function FormInfoVisitor({
               </Grid>
               <Grid item xs={12} sm={12} className={classes.comps}>
                 <FormControl
-                  error={Object.prototype.hasOwnProperty.call(errors, 'origineVisiteur')}
+                  error={Object.prototype.hasOwnProperty.call(errors, 'isInternal')}
                   component="div"
                 >
                   <Controller
@@ -194,12 +195,12 @@ export default function FormInfoVisitor({
                       </RadioGroup>
                     )}
                     control={control}
-                    name="origineVisiteur"
+                    name="isInternal"
                     rules={{ required: "L'origine est obligatoire." }}
                     defaultValue=""
                   />
-                  {errors.origineVisiteur && (
-                    <FormHelperText>{errors.origineVisiteur.message}</FormHelperText>
+                  {errors.isInternal && (
+                    <FormHelperText>{errors.isInternal.message}</FormHelperText>
                   )}
                 </FormControl>
               </Grid>
@@ -224,7 +225,7 @@ export default function FormInfoVisitor({
                         id="simple-select-outlined"
                         labelWidth={labelWidth}
                       >
-                        {getTypeEmploie(watch('origineVisiteur')).map((type) => (
+                        {getTypeEmploie(watch('isInternal')).map((type) => (
                           <MenuItem key={type} value={type}>
                             {type}
                           </MenuItem>
@@ -253,7 +254,7 @@ export default function FormInfoVisitor({
               </Grid>
 
               <Grid container className={classes.comps} spacing={2}>
-                {watch('origineVisiteur') !== 'HORS MINARM'
+                {watch('isInternal') !== 'HORS MINARM'
                   && object === REQUEST_OBJECT.PROFESSIONAL && (
                     <>
                       <Grid item md={6} sm={6} xs={12}>
@@ -452,7 +453,7 @@ export default function FormInfoVisitor({
             </Grid>
           </Grid>
 
-          {(watch('origineVisiteur') === 'HORS MINARM' || object === REQUEST_OBJECT.PRIVATE) && (
+          {(watch('isInternal') === 'HORS MINARM' || object === REQUEST_OBJECT.PRIVATE) && (
             <Grid item sm={12} xs={12} md={6}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
@@ -491,7 +492,7 @@ export default function FormInfoVisitor({
                   <Grid item xs={12} sm={12} md={12}>
                     <FormControl
                       variant="outlined"
-                      error={Object.prototype.hasOwnProperty.call(errors, 'typeDocumentVisiteur')}
+                      error={Object.prototype.hasOwnProperty.call(errors, 'kind')}
                       fullWidth
                     >
                       <InputLabel ref={inputLabel} id="select-outlined-label">
@@ -501,7 +502,7 @@ export default function FormInfoVisitor({
                         as={(
                           <Select
                             fullWidth
-                            labelId="typeDocumentVisiteur"
+                            labelId="kind"
                             id="typeDocuement"
                             labelWidth={labelWidth}
                           >
@@ -513,17 +514,17 @@ export default function FormInfoVisitor({
                           </Select>
                         )}
                         control={control}
-                        name="typeDocumentVisiteur"
+                        name="kind"
                         defaultValue=""
                         rules={{
                           required:
-                            watch('origineVisiteur')
+                            watch('isInternal')
                             || '' === 'HORS MINARM'
                             || object === REQUEST_OBJECT.PRIVATE,
                         }}
                       />
-                      {errors.typeDocumentVisiteur
-                        && errors.typeDocumentVisiteur.type === 'required' && (
+                      {errors.kind
+                        && errors.kind.type === 'required' && (
                           <FormHelperText>Le type de document est obligatoire</FormHelperText>
                       )}
                     </FormControl>
@@ -534,21 +535,21 @@ export default function FormInfoVisitor({
                       as={(
                         <TextField
                           label="Numéro"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'identityRef')}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                           helperText={
-                            errors.identityRef
-                            && errors.identityRef.type === 'required'
+                            errors.reference
+                            && errors.reference.type === 'required'
                             && 'Le numéro de document est obligatoire'
                           }
                           fullWidth
                         />
                       )}
                       control={control}
-                      name="identityRef"
+                      name="reference"
                       defaultValue=""
                       rules={{
                         required:
-                          watch('origineVisiteur')
+                          watch('isInternal')
                           || '' === 'HORS MINARM'
                           || object === REQUEST_OBJECT.PRIVATE,
                       }}
@@ -574,7 +575,7 @@ export default function FormInfoVisitor({
                       name="birthday"
                       rules={{
                         required:
-                          watch('origineVisiteur')
+                          watch('isInternal')
                           || '' === 'HORS MINARM'
                           || object === REQUEST_OBJECT.PRIVATE,
                         validate: { valide: (value) => isValid(value) || 'Format invalide' },
@@ -602,7 +603,7 @@ export default function FormInfoVisitor({
                       defaultValue=""
                       rules={{
                         required:
-                          watch('origineVisiteur') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                          watch('isInternal') || '' === 'HORS MINARM' || object === 'PRIVATE',
                       }}
                     />
                   </Grid>
@@ -803,7 +804,7 @@ FormInfoVisitor.propTypes = {
     vip: PropTypes.string,
     vipReason: PropTypes.string,
     nationality: PropTypes.string,
-    identityRef: PropTypes.string,
+    reference: PropTypes.string,
   }),
 };
 

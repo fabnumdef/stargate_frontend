@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 
-import TabRecapDemande from '../tabs/tabRecapDemande';
+import TabRecapRequest from '../tabs/tabRecapRequest';
 
 const useStyles = makeStyles({
   root: {
@@ -67,8 +67,8 @@ export default function InfosFinalView({ formData, setForm, handleBack }) {
       </Grid>
       <Grid item sm={12}>
         <Paper className={classes.root}>
-          <TabRecapDemande
-            listVisiteurs={formData.visitors}
+          <TabRecapRequest
+            visitors={formData.visitors}
             onUpdate={(visiteur) => {
               setForm({ ...formData, visiteur });
             }}
