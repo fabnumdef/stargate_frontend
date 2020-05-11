@@ -170,7 +170,7 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser]);
 
-  if (!isLoggedUser && children.type.name !== 'LoginPage') {
+  if (!isLoggedUser && router.pathname !== '/login') {
     return <div />;
   }
 
