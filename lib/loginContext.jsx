@@ -58,7 +58,7 @@ export function LoginContextProvider(props) {
   };
 
   const signOut = (alert = false) => {
-    router.push('/login');
+    // router.push('/login');
     setIsLoggedUser(false);
     localStorage.clear();
     client.resetStore();

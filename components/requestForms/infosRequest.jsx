@@ -156,6 +156,7 @@ export default function FormInfosClaimant({
 
   const onSubmit = (data) => {
     const { placeP, placeS, ...others } = data;
+    console.log(data);
     setForm((formData) => ({ ...formData, place: [...placeP, ...placeS], ...others }));
     handleNext();
   };
@@ -334,7 +335,15 @@ export default function FormInfosClaimant({
 
               <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
                 <Controller
-                  as={<ListLieux expanded={expanded} setExpanded={setExpanded} />}
+                  as={(
+                    <ListLieux
+                      options={lieux1}
+                      expanded={expanded}
+                      setExpanded={setExpanded}
+                      onChange={(checked) => checked}
+                      label="Port Militaire"
+                    />
+                  )}
                   rules={{
                     validate: {
                       valide: (value) => (value && value.length > 0) || 'La zone est obligatoire',
@@ -342,9 +351,6 @@ export default function FormInfosClaimant({
                   }}
                   control={control}
                   name="placeS"
-                  options={lieux1}
-                  onChange={(checked) => checked}
-                  label="Port Militaire"
                   defaultValue={[]}
                 />
                 {errors.placeS && (
@@ -353,12 +359,17 @@ export default function FormInfosClaimant({
               </Grid>
               <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
                 <Controller
-                  as={<ListLieux expanded={expanded} setExpanded={setExpanded} />}
+                  as={(
+                    <ListLieux
+                      expanded={expanded}
+                      setExpanded={setExpanded}
+                      options={lieux2}
+                      onChange={(checked) => checked}
+                      label="Zone Protégée"
+                    />
+                  )}
                   control={control}
                   name="placeP"
-                  options={lieux2}
-                  onChange={(checked) => checked}
-                  label="Zone Protégée"
                   defaultValue={[]}
                 />
               </Grid>

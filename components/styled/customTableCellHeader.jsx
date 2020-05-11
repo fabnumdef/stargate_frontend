@@ -12,9 +12,9 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function CustomTableCell({ children, align, style }) {
+export default function CustomTableCell({ children }) {
   return (
-    <StyledTableCell align={align} style={style}>
+    <StyledTableCell>
       {children}
     </StyledTableCell>
   );
@@ -22,11 +22,4 @@ export default function CustomTableCell({ children, align, style }) {
 
 CustomTableCell.propTypes = {
   children: PropTypes.node.isRequired,
-  style: PropTypes.objectOf(PropTypes.object),
-  align: PropTypes.objectOf(PropTypes.object),
-};
-
-CustomTableCell.defaultProps = {
-  style: {},
-  align: {},
 };

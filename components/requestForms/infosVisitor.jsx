@@ -783,13 +783,13 @@ export default function FormInfoVisitor({
 
 FormInfoVisitor.propTypes = {
   formData: PropTypes.shape({
-    object: PropTypes.string.isRequired,
-    from: PropTypes.instanceOf(Date).isRequired,
-    to: PropTypes.instanceOf(Date).isRequired,
-    reason: PropTypes.string.isRequired,
-    place: PropTypes.array.isRequired,
-    visitors: PropTypes.array.isRequired,
-  }).isRequired,
+    object: PropTypes.string,
+    from: PropTypes.instanceOf(Date),
+    to: PropTypes.instanceOf(Date),
+    reason: PropTypes.string,
+    place: PropTypes.array,
+    visitors: PropTypes.array,
+  }),
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
@@ -809,5 +809,6 @@ FormInfoVisitor.propTypes = {
 };
 
 FormInfoVisitor.defaultProps = {
-  selectVisitor: null,
+  formData: undefined,
+  selectVisitor: undefined,
 };

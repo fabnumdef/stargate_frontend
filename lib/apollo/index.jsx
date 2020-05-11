@@ -50,7 +50,6 @@ export default function createApolloClient(initialState, ctx) {
   return client;
 }
 
-
 /**
  * Always creates a new apollo client on the server
  * Creates or reuses apollo client in the browser.
@@ -85,7 +84,6 @@ export const initOnContext = (ctx) => {
   // as antipattern since it disables project wide Automatic Static Optimization.
   if (process.env.NODE_ENV === 'development') {
     if (inAppContext) {
-      // eslint-disable-next-line no-console
       console.warn(
         'Warning: You have opted-out of Automatic Static Optimization due to `withApollo` in `pages/_app`.\n'
           + 'Read more: https://err.sh/next.js/opt-out-auto-static-optimization\n',
@@ -97,8 +95,7 @@ export const initOnContext = (ctx) => {
   const apolloClient = ctx.apolloClient
     || initApolloClient(ctx.apolloState || {}, inAppContext ? ctx.ctx : ctx);
 
-  // We send the Apollo Client as a prop to the component
-  // to avoid calling initApollo() twice in the server.
+  // We send the Apollo Client as a prop to the component to avoid calling initApollo().
   // Otherwise, the component would have to call initApollo() again but this
   // time without the context. Once that happens, the following code will make sure we send
   // the prop as `null` to the browser.
@@ -115,6 +112,7 @@ export const initOnContext = (ctx) => {
   return ctx;
 };
 
+
 /**
  * Creates a withApollo HOC
  * that provides the apolloContext
@@ -124,7 +122,6 @@ export const initOnContext = (ctx) => {
  * @returns {(PageComponent: ReactNode) => ReactNode}
  */
 export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
-  // eslint-disable-next-line react/prop-types
   const WithApollo = ({ apolloClient, apolloState, ...pageProps }) => {
     let client;
     if (apolloClient) {
@@ -135,13 +132,11 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
       client = initApolloClient(apolloState, undefined);
     }
 
-    // disable Eslint rule, PageComponent needs all pageProps (and they'll never be the same)
     return (
       <ApolloProvider client={client}>
-        <LoginContextProvider client={client}>
-          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-          <PageComponent {...pageProps} />
-        </LoginContextProvider>
+
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <PageComponent {...pageProps} />
       </ApolloProvider>
     );
   };
@@ -195,15 +190,12 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
             // your entire AppTree once for every query. Check out apollo fragments
             // if you want to reduce the number of rerenders.
             // https://www.apollographql.com/docs/react/data/fragments/
-            // Disable Eslint: Apptree also need all the pageProps
             // eslint-disable-next-line react/jsx-props-no-spreading
             await getDataFromTree(<AppTree {...props} />);
           } catch (error) {
             // Prevent Apollo Client GraphQL errors from crashing SSR.
             // Handle them in components via the data.error prop:
             // https://www.apollographql.com/docs/react/api/react-apollo.html#graphql-query-data-error
-            // eslint-disable-next-line no-console
-            console.error('Error while running `getDataFromTree`', error);
           }
 
           // getDataFromTree does not call componentWillUnmount
@@ -219,19 +211,6 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
         // Provide the client for ssr. As soon as this payload
         // gets JSON.stringified it will remove itself.
         apolloClient: ctx.apolloClient,
-      };
-    };
-  } else {
-    WithApollo.getInitialProps = async (ctx) => {
-      const inAppContext = Boolean(ctx.ctx);
-      let pageProps = {};
-      if (PageComponent.getInitialProps) {
-        pageProps = await PageComponent.getInitialProps(ctx);
-      } else if (inAppContext) {
-        pageProps = await App.getInitialProps(ctx);
-      }
-      return {
-        ...pageProps,
       };
     };
   }

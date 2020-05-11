@@ -42,13 +42,13 @@ function createData({
 }) {
   if (!rank) {
     return {
-      visiteur: `${birthLastName.toUpperCase()} ${firstname}`,
+      visiteur: `${birthLastName} ${firstname}`,
       unite: company,
       type,
     };
   }
   return {
-    visiteur: `${rank} ${birthLastName.toUpperCase()} ${firstname}`,
+    visiteur: `${rank} ${birthLastName} ${firstname}`,
     unite: company,
     type,
   };
