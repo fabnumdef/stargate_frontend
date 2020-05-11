@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { useApolloClient, useMutation } from '@apollo/react-hooks';
+import Pagination from '@material-ui/lab/Pagination';
+import Grid from '@material-ui/core/Grid';
 import { withApollo } from '../../../lib/apollo';
 import Template from '../../../containers/template';
 import PageTitle from '../../../components/styled/pageTitle';
@@ -8,8 +10,8 @@ import TabAdminUsers from '../../../components/tabs/tabAdminUsers';
 import { mapUsersList } from '../../../utils/mappers/adminMappers';
 
 const columns = [
-  { id: 'firstname', label: 'Nom' },
-  { id: 'lastname', label: 'Prénom' },
+  { id: 'lastname', label: 'Nom' },
+  { id: 'firstname', label: 'Prénom' },
   { id: 'campus', label: 'Base' },
   { id: 'unit', label: 'Unité' },
   { id: 'role', label: 'Rôle' },
@@ -19,7 +21,9 @@ const GET_USERS_LIST = gql`
     query listUsers($cursor: OffsetCursor, $filters: UserFilters) {
         listUsers(cursor: $cursor, filters: $filters) {
           meta {
-            total 
+              offset
+              first
+              total 
           }  
           list {
               id
@@ -47,57 +51,82 @@ const DELETE_USER = gql`
   }
 `;
 
+const createUserData = {
+  createUserPath: '/administration/utilisateurs/creation',
+  deleteText: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?',
+};
+
 function UserAdministration() {
-  const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState('');
-  const [getUsersList, { data: usersList }] = useLazyQuery(GET_USERS_LIST);
+  const client = useApolloClient();
+
+  const [usersList, setUsersList] = useState(null);
+  const [actualPage, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState(null);
+
   const [deleteUserMutation] = useMutation(DELETE_USER);
+
+  const getList = async (page = actualPage, filters = null) => {
+    const { data } = await client.query({
+      query: GET_USERS_LIST,
+      variables: { cursor: { first: 10, offset: (page - 1) * 10 }, filters },
+      fetchPolicy: 'no-cache',
+    });
+    return setUsersList(data);
+  };
+
+  const setPaginationCount = (totalItems) => Math.ceil(totalItems / 10) || 1;
 
   const handleChangePage = (selectedPage) => {
     setPage(selectedPage);
-    getUsersList({
-      variables: { cursor: { first: 10, offset: selectedPage * 10 }, filter },
-    });
+    getList(selectedPage);
   };
 
   const handleChangeFilter = (e) => {
-    setFilter(e.target.value);
+    setSearchInput(e.target.value);
+    getList(actualPage, {
+      firstname: e.target.value,
+      lastname: e.target.value,
+    });
   };
 
   const deleteUser = async (id) => {
     try {
       await deleteUserMutation({ variables: { id } });
-      getUsersList({
-        variables: { cursor: { first: 10, offset: page * 10 }, filter },
-      });
+      if (usersList && usersList.listUsers.list.length === 1) {
+        await setPage(actualPage - 1);
+        return getList(actualPage - 1);
+      }
+      return getList();
     } catch (e) {
-      console.log(e);
+      // TODO toast
+      return e;
     }
   };
 
   useEffect(() => {
     if (!usersList) {
-      getUsersList({
-        variables: { cursor: { first: 10, offset: 0 }, filter },
-      });
+      getList();
     }
   });
 
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur']} />
-      <div>
-        <button type="button" onClick={() => handleChangePage(1)}>Page 2</button>
-        <input value={filter} onChange={handleChangeFilter} />
-      </div>
-      {usersList
-        && (
-        <TabAdminUsers
-          rows={mapUsersList(usersList.listUsers.list)}
-          columns={columns}
-          deleteItem={deleteUser}
+      <Grid container justify="space-between" style={{ margin: '20px 0' }}>
+        <Pagination
+          count={usersList ? setPaginationCount(usersList.listUsers.meta.total) : 1}
+          page={actualPage}
+          onChange={(e, page) => handleChangePage(page)}
+          color="primary"
         />
-        )}
+        <input value={searchInput} onChange={handleChangeFilter} />
+      </Grid>
+      <TabAdminUsers
+        rows={usersList ? mapUsersList(usersList.listUsers.list) : []}
+        columns={columns}
+        deleteItem={deleteUser}
+        tabData={createUserData}
+      />
     </Template>
   );
 }

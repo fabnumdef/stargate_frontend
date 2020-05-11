@@ -86,14 +86,12 @@ export function LoginContextProvider(props) {
       client.cache.writeData({ data: { me, activeRole: me.roles[activeRoleNumber] } });
       return me;
     } catch (e) {
-      console.error(e);
       return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
     }
   };
 
   const reinitUserCache = async () => {
     const { data } = await client.query({ query: GET_ME_LOCAL });
-    console.log(await client.query({ query: GET_ME_LOCAL }));
     if (data) return data;
     return getUserData();
   };
@@ -171,7 +169,6 @@ export function LoginContextProvider(props) {
   };
 
   useEffect(() => {
-    console.log('LoginProvider clientCache', client.cache.data);
     async function resetPassSignIn(email, token) {
       await signIn(decodeURIComponent(email), null, token);
       setResetPass(false);

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
@@ -43,9 +44,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabAdminUsers({ rows, columns, deleteItem }) {
+export default function TabAdminUsers({
+  rows,
+  columns,
+  deleteItem,
+  tabData,
+}) {
   const classes = useStyles();
-  console.log(rows);
 
   const [del, setDel] = useState({});
 
@@ -72,7 +77,7 @@ export default function TabAdminUsers({ rows, columns, deleteItem }) {
             </CustomTableCellHeader>
           ))}
           <CustomTableCellHeader key="actions">
-            <Link href="/administration/utilisateurs/creation"><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
+            <Link href={tabData.createUserPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
           </CustomTableCellHeader>
         </TableRow>
       </TableHead>
@@ -80,13 +85,13 @@ export default function TabAdminUsers({ rows, columns, deleteItem }) {
         {rows.map((row, index) => {
           if (del[index]) {
             return (
-              <TableRow tabIndex={-1} key={row.code}>
+              <TableRow tabIndex={-1} key={row.id}>
                 <Typography variant="body2">
                   <TableCell key="delete" colspan={columns.length + 1}>
                     <Grid container>
                       <Grid item sm={9}>
                         <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer cette demande ?
+                          { tabData.deleteText }
                         </Typography>
                       </Grid>
                       <Grid item sm={3}>
@@ -118,7 +123,7 @@ export default function TabAdminUsers({ rows, columns, deleteItem }) {
               hover
               role="checkbox"
               tabIndex={-1}
-              key={row.code}
+              key={row.id}
             >
               {columns.map((column) => {
                 const value = row[column.id];
@@ -153,3 +158,13 @@ export default function TabAdminUsers({ rows, columns, deleteItem }) {
     </Table>
   );
 }
+
+TabAdminUsers.propTypes = {
+  rows: PropTypes.arrayOf(PropTypes.object).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  deleteItem: PropTypes.func.isRequired,
+  tabData: PropTypes.shape({
+    createUserPath: PropTypes.string.isRequired,
+    deleteText: PropTypes.string.isRequired,
+  }).isRequired,
+};
