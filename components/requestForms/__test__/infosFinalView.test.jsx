@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  render, cleanup, fireEvent, act,
+  render, cleanup,
 } from '../../../lib/test-utils';
 import FormInfosRecapDemande from '../infosFinalView';
 
