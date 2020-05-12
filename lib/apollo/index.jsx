@@ -134,9 +134,10 @@ export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
 
     return (
       <ApolloProvider client={client}>
-
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <PageComponent {...pageProps} />
+        <LoginContextProvider client={client}>
+          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+          <PageComponent {...pageProps} />
+        </LoginContextProvider>
       </ApolloProvider>
     );
   };

@@ -35,20 +35,20 @@ const columns = [
 
 function createData({
   firstname,
-  birthLastName,
+  birthLastname,
   rank,
   company,
   type,
 }) {
   if (!rank) {
     return {
-      visiteur: `${firstname.toUpperCase()} ${birthLastName.toUpperCase()}`,
+      visiteur: `${birthLastname.toUpperCase()} ${firstname}`,
       unite: company,
       type,
     };
   }
   return {
-    visiteur: `${rank} ${birthLastName.toUpperCase()} ${firstname}`,
+    visiteur: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
     unite: company,
     type,
   };

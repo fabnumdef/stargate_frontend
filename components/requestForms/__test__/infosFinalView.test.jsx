@@ -12,8 +12,8 @@ const mockItems = {
       {
         nid: '1',
         firstname: 'John',
-        birthLastName: 'RAMBO',
-        usageLastName: 'RAMBO',
+        birthLastname: 'RAMBO',
+        usageLastname: 'RAMBO',
         rank: 'SGT',
         company: 'La7',
         email: 'ok@ok.com',
