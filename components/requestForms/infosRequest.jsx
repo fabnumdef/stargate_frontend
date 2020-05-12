@@ -156,7 +156,6 @@ export default function FormInfosClaimant({
 
   const onSubmit = (data) => {
     const { placeP, placeS, ...others } = data;
-    console.log(data);
     setForm((formData) => ({ ...formData, place: [...placeP, ...placeS], ...others }));
     handleNext();
   };

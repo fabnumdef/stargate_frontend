@@ -117,7 +117,6 @@ export default function RequestAccesForm() {
 
   // FormState
   const [formData, setForm] = useState({
-    id: undefined,
     visitors: [],
   });
 
