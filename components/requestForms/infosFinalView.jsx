@@ -24,7 +24,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function InfosFinalView({ formData, setForm, handleBack }) {
+export default function InfosFinalView({
+  formData, setForm, handleBack, setSelectVisitor,
+}) {
   const classes = useStyles();
 
   // const [page, setPage] = React.useState(0);
@@ -70,7 +72,7 @@ export default function InfosFinalView({ formData, setForm, handleBack }) {
           <TabRecapRequest
             visitors={formData.visitors}
             onUpdate={(visiteur) => {
-              setForm({ ...formData, visiteur });
+              setSelectVisitor(visiteur);
             }}
             onDelete={(mail) => {
               let visiteurs = [...formData.visitors];
@@ -104,9 +106,10 @@ InfosFinalView.propTypes = {
     visitors: PropTypes.array,
   }),
   setForm: PropTypes.func.isRequired,
+  setSelectVisitor: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
 };
 
 InfosFinalView.defaultProps = {
-  formData: undefined,
+  formData: {},
 };

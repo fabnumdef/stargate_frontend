@@ -145,9 +145,8 @@ export default function FormInfoVisitor({
     visitors = visitors.filter((value) => visitor.email && visitor.email !== value.email);
 
     visitors.push(visitor);
-
     // update the form
-    setForm({ ...formData, visitors, visiteur: undefined });
+    setForm({ ...formData, visitors });
     handleNext();
   };
 
@@ -298,9 +297,9 @@ export default function FormInfoVisitor({
                   <TextField
                     label="Nom de naissance"
                     fullWidth
-                    name="birthdayLastname"
-                    error={Object.prototype.hasOwnProperty.call(errors, 'birthdayLastname')}
-                    helperText={errors.birthdayLastname && errors.birthdayLastname.message}
+                    name="birthLastname"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'birthLastname')}
+                    helperText={errors.birthLastname && errors.birthLastname.message}
                     inputRef={register({ required: 'Le nom est obligatoire' })}
                     inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
                   />
@@ -796,7 +795,7 @@ FormInfoVisitor.propTypes = {
   selectVisitor: PropTypes.shape({
     nid: PropTypes.string,
     firstname: PropTypes.string,
-    birthdayLastname: PropTypes.string,
+    birthLastname: PropTypes.string,
     usageLastname: PropTypes.string,
     rank: PropTypes.string,
     company: PropTypes.string,

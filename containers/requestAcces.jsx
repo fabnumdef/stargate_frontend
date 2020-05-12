@@ -170,6 +170,7 @@ export default function RequestAccesForm() {
                 setForm={(args) => {
                   setForm(args);
                   saveForm();
+                  setSelectVisitor(null);
                 }}
                 selectVisitor={selectVisitor}
                 handleNext={handleNext}
