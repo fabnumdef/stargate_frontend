@@ -3,11 +3,26 @@ import gql from 'graphql-tag';
 import { useApolloClient, useMutation } from '@apollo/react-hooks';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 import { withApollo } from '../../../lib/apollo';
 import Template from '../../../containers/template';
 import PageTitle from '../../../components/styled/pageTitle';
 import TabAdminUsers from '../../../components/tabs/tabAdminUsers';
 import { mapUsersList } from '../../../utils/mappers/adminMappers';
+import { useSnackBar } from '../../../lib/snackbar';
+
+const useStyles = makeStyles({
+  root: {
+    width: '100%',
+  },
+  searchInput: {
+    height: '29px',
+    fontSize: '0.9rem',
+  },
+});
 
 const columns = [
   { id: 'lastname', label: 'Nom' },
@@ -58,14 +73,17 @@ const createUserData = {
 
 function UserAdministration() {
   const client = useApolloClient();
+  const classes = useStyles();
+  const { addAlert } = useSnackBar();
 
   const [usersList, setUsersList] = useState(null);
   const [actualPage, setPage] = useState(1);
-  const [searchInput, setSearchInput] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
 
   const [deleteUserMutation] = useMutation(DELETE_USER);
 
-  const getList = async (page = actualPage, filters = null) => {
+  const getList = async (page = actualPage, searchInputValue = '') => {
+    const filters = searchInputValue.length ? { lastname: searchInputValue } : null;
     const { data } = await client.query({
       query: GET_USERS_LIST,
       variables: { cursor: { first: 10, offset: (page - 1) * 10 }, filters },
@@ -83,22 +101,21 @@ function UserAdministration() {
 
   const handleChangeFilter = (e) => {
     setSearchInput(e.target.value);
-    getList(actualPage, {
-      firstname: e.target.value,
-      lastname: e.target.value,
-    });
+    return getList(actualPage, e.target.value);
   };
 
   const deleteUser = async (id) => {
     try {
       await deleteUserMutation({ variables: { id } });
-      if (usersList && usersList.listUsers.list.length === 1) {
+      setSearchInput(null);
+      addAlert({ message: 'L\'utilisateur a bien été supprimé', severity: 'success' });
+      if (usersList && usersList.listUsers.list.length === 1 && actualPage > 1) {
         await setPage(actualPage - 1);
-        return getList(actualPage - 1);
+        return getList(actualPage - 1, searchInput);
       }
-      return getList();
+      return getList(actualPage, searchInput);
     } catch (e) {
-      // TODO toast
+      addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
       return e;
     }
   };
@@ -118,8 +135,22 @@ function UserAdministration() {
           page={actualPage}
           onChange={(e, page) => handleChangePage(page)}
           color="primary"
+          size="small"
         />
-        <input value={searchInput} onChange={handleChangeFilter} />
+        <TextField
+          InputProps={{
+            className: classes.searchInput,
+            endAdornment: (
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          value={searchInput}
+          onChange={handleChangeFilter}
+          placeholder="Rechercher un nom..."
+          variant="outlined"
+        />
       </Grid>
       <TabAdminUsers
         rows={usersList ? mapUsersList(usersList.listUsers.list) : []}

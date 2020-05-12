@@ -72,11 +72,18 @@ export default function TabAdminUsers({
       <TableHead>
         <TableRow>
           {columns.map((column) => (
-            <CustomTableCellHeader key={column.id} align={column.align}>
+            <CustomTableCellHeader
+              key={column.id}
+              align={column.align}
+              style={{
+                fontWeight: '600',
+                fontSize: '18px',
+              }}
+            >
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions">
+          <CustomTableCellHeader key="actions" align="right">
             <Link href={tabData.createUserPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
           </CustomTableCellHeader>
         </TableRow>
@@ -132,20 +139,21 @@ export default function TabAdminUsers({
                     {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
                   </TableCell>
                 ) : (
-                  <TableCell key={column.id} align={column.align}>
+                  <TableCell key={column.id}>
                     {column.format && typeof value === 'number' ? column.format(value) : value}
                   </TableCell>
                 );
               })}
-              <TableCell key="modif">
+              <TableCell key="modif" align="right">
                 <Link href="/administration/utilisateurs">
-                  <IconButton aria-label="modifier" className={classes.icon}>
+                  <IconButton aria-label="modifier" color="primary" className={classes.icon}>
                     <EditIcon />
                   </IconButton>
                 </Link>
                 <IconButton
                   aria-label="supprimer"
                   className={classes.icon}
+                  color="primary"
                   onClick={() => handleDelete(index)}
                 >
                   <DeleteIcon />
