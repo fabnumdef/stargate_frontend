@@ -87,7 +87,7 @@ export default function ListLieux({
       newChecked.splice(currentIndex, 1);
     }
     setChecked(newChecked);
-    onChange(Object.values(newChecked));
+    onChange(newChecked.map((place) => place.label));
   };
 
   const handleChange = (panel) => () => {
@@ -98,7 +98,7 @@ export default function ListLieux({
     const newChecked = [...checked];
     newChecked.splice(index, 1);
     setChecked(newChecked);
-    onChange(Object.values(newChecked));
+    onChange(newChecked.map((place) => place.label));
   };
 
   const classes = useStyles();

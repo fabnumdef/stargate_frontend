@@ -8,10 +8,15 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import remove from 'lodash';
 
+// Apollo
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+
 import { format } from 'date-fns';
 
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
 
@@ -24,10 +29,24 @@ const useStyles = makeStyles({
   },
 });
 
+const DELETE_VISITOR = gql`
+  mutation deleteVisitor($idRequest: String!, $idVisitor: String!) {
+    mutateCampus(id: "MORDOR") {
+      mutateRequest(id: $idRequest) {
+        deleteVisitor(id: $idVisitor) {
+          id
+        }
+      }
+    }
+  }
+`;
+
 export default function InfosFinalView({
   formData, setForm, handleBack, setSelectVisitor,
 }) {
   const classes = useStyles();
+
+  const { addAlert } = useSnackBar();
 
   // const [page, setPage] = React.useState(0);
   // const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -40,6 +59,23 @@ export default function InfosFinalView({
   //   setRowsPerPage(+event.target.value);
   //   setPage(0);
   // };
+
+  const [deleteVisitor] = useMutation(DELETE_VISITOR, {
+    onCompleted: (data) => {
+      setForm({
+        ...formData,
+        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
+      });
+    },
+    onError: () => {
+      // Display good message
+      addAlert({
+        message: 'erreur graphQL',
+        severity: 'error',
+      });
+    },
+  });
+
 
   return (
     <Grid container spacing={4}>
@@ -74,9 +110,12 @@ export default function InfosFinalView({
             onUpdate={(visiteur) => {
               setSelectVisitor(visiteur);
             }}
-            onDelete={(mail) => {
+            onDelete={(idVisitor) => {
+              deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
+
+              // Delete from formData
               let visiteurs = [...formData.visitors];
-              visiteurs = remove(visiteurs, (visiteur) => visiteur.email === mail);
+              visiteurs = remove(visiteurs, (visiteur) => visiteur.id === idVisitor);
               setForm({ ...formData, visitors: visiteurs });
             }}
             handleBack={handleBack}
@@ -98,6 +137,7 @@ export default function InfosFinalView({
 
 InfosFinalView.propTypes = {
   formData: PropTypes.shape({
+    id: PropTypes.string,
     object: PropTypes.string,
     from: PropTypes.instanceOf(Date),
     to: PropTypes.instanceOf(Date),

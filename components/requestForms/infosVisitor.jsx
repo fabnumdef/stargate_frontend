@@ -2,6 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 // React hook form validators
 import { useForm, Controller } from 'react-hook-form';
+
+// Apollo
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+
 // Material UI components
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -68,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getTypeDocument() {
-  return ["Carte d'itentité", 'Passeport', 'Carte SIMS'];
+  return ["Carte d'identité", 'Passeport', 'Carte SIMS'];
 }
 
 function getNationalite() {
@@ -82,6 +87,32 @@ function getTypeEmploie(type) {
   }
   return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
 }
+
+// TODO Add PAPERS
+const ADD_VISITOR = gql`
+  mutation addVisitor($idRequest: String!, $visitor: RequestVisitorInput!) {
+    mutateCampus(id: "MORDOR") {
+      mutateRequest(id: $idRequest) {
+        addVisitor(visitor: $visitor){
+          id
+          nid
+          firstname
+          birthLastname
+          usageLastname
+          rank
+          company
+          email
+          vip
+          vipReason
+          nationality
+          birthday
+          birthplace
+        }
+      }
+    }
+  }
+`;
+
 
 export default function FormInfoVisitor({
   formData, setForm, handleNext, handleBack, selectVisitor,
@@ -99,11 +130,7 @@ export default function FormInfoVisitor({
   } = useForm({
   });
 
-  const [object, setObject] = useState(formData.object || '');
-
   useEffect(() => {
-    setObject(formData.object);
-
     if (selectVisitor) {
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(
@@ -112,7 +139,7 @@ export default function FormInfoVisitor({
         setValue(key, value);
       }
     }
-  }, [formData, selectVisitor, setValue]);
+  }, [selectVisitor, setValue]);
 
   const { addAlert } = useSnackBar();
 
@@ -126,7 +153,7 @@ export default function FormInfoVisitor({
       { name: 'nationality' },
       { required: watch('isInternal') !== 'MINARM' },
     );
-  }, [object, register, watch]);
+  }, [register, watch]);
 
   const handleClickCancel = () => {
     if (formData.visitors.length > 0) handleNext();
@@ -134,23 +161,38 @@ export default function FormInfoVisitor({
   };
 
   const minArmOrNot = () => {
-    if (watch('isInternal') === 'MINARM') addAlert({ message: "Les informations sur l'identité sont à rentrer par le visiteur", severity: 'info' });
+    if (watch('isInternal') === 'MINARM') {
+      addAlert({
+        message: "Les informations sur l'identité sont à rentrer par le visiteur",
+        severity: 'info',
+      });
+    }
   };
 
+  const [addVisitor] = useMutation(ADD_VISITOR, {
+    onCompleted: (data) => {
+      setForm({
+        ...formData,
+        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
+      });
+      minArmOrNot();
+      handleNext();
+    },
+    onError: () => {
+      // Display good message
+      addAlert({
+        message: 'erreur graphQL',
+        severity: 'error',
+      });
+    },
+  });
+
+
   const onSubmit = (data) => {
-    // snackbar if minarm
-    minArmOrNot();
-
-    const visitor = mapVisitorData(data);
-
-    let visitors = [...formData.visitors];
-    // remove the old element if exits
-    visitors = visitors.filter((value) => visitor.email && visitor.email !== value.email);
-
-    visitors.push(visitor);
-    // update the form
-    setForm({ ...formData, visitors });
-    handleNext();
+    // TODO DELETE WHEN API TAKE CARE OF TYPE OF EMPLOYE
+    // eslint-disable-next-line no-unused-vars
+    const { typeVisiteur, visitor } = mapVisitorData(data);
+    addVisitor({ variables: { idRequest: formData.id, visitor } });
   };
 
   const inputLabel = useRef(null);
@@ -288,7 +330,7 @@ export default function FormInfoVisitor({
                   />
                 </Grid>
 
-                {watch('isInternal') !== 'HORS MINARM' && object === REQUEST_OBJECT.PROFESSIONAL && (
+                {watch('isInternal') !== 'HORS MINARM' && formData.object === REQUEST_OBJECT.PROFESSIONAL && (
                   <>
                     <Grid item md={6} sm={6} xs={12}>
                       <Controller
@@ -520,7 +562,7 @@ export default function FormInfoVisitor({
                         required:
                             watch('isInternal')
                             || '' === 'HORS MINARM'
-                            || object === REQUEST_OBJECT.PRIVATE,
+                            || formData.object === REQUEST_OBJECT.PRIVATE,
                       }}
                     />
                     {errors.kind && errors.kind.type === 'required' && (
@@ -550,7 +592,7 @@ export default function FormInfoVisitor({
                       required:
                           watch('isInternal')
                           || '' === 'HORS MINARM'
-                          || object === REQUEST_OBJECT.PRIVATE,
+                          || formData.object === REQUEST_OBJECT.PRIVATE,
                     }}
                   />
                 </Grid>
@@ -576,7 +618,7 @@ export default function FormInfoVisitor({
                       required:
                           watch('isInternal')
                           || '' === 'HORS MINARM'
-                          || object === REQUEST_OBJECT.PRIVATE,
+                          || formData.object === REQUEST_OBJECT.PRIVATE,
                       validate: { valide: (value) => isValid(value) || 'Format invalide' },
                     }}
                     defaultValue={null}
@@ -588,21 +630,21 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         label="Lieu de naissance"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'birthdayPlace')}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'birthPlace')}
                         helperText={
-                            errors.birthdayPlace
-                            && errors.birthdayPlace.type === 'required'
+                            errors.birthPlace
+                            && errors.birthPlace.type === 'required'
                             && 'Le lieu de naissance est obligatoire'
                           }
                         fullWidth
                       />
                       )}
                     control={control}
-                    name="birthdayPlace"
+                    name="birthPlace"
                     defaultValue=""
                     rules={{
                       required:
-                          watch('isInternal') || '' === 'HORS MINARM' || object === 'PRIVATE',
+                          watch('isInternal') || '' === 'HORS MINARM' || formData.object === 'PRIVATE',
                     }}
                   />
                 </Grid>
@@ -781,6 +823,7 @@ export default function FormInfoVisitor({
 
 FormInfoVisitor.propTypes = {
   formData: PropTypes.shape({
+    id: PropTypes.string,
     object: PropTypes.string,
     from: PropTypes.instanceOf(Date),
     to: PropTypes.instanceOf(Date),

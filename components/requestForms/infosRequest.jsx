@@ -20,10 +20,11 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 
-// Date Validators
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
 } from 'date-fns';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
+// Date Validators
 
 
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
@@ -133,7 +134,9 @@ const REQUEST_ATTRIBUTES = gql`
       reason
       from
       to
-      places
+      places {
+        label
+      }
     }
   `;
 
@@ -176,26 +179,33 @@ export default function FormInfosClaimant({
   //     id: idBase,
   //   },
   // });
+  const { addAlert } = useSnackBar();
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
-      setForm({ ...data });
+      setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
       handleNext();
     },
     onError: (error) => {
       // Display good message
-      console.log(`ERREUR :${error.message}`);
+      addAlert({
+        message: error.message,
+        severity: 'info',
+      });
     },
   });
 
   const [updateRequest] = useMutation(EDIT_REQUEST, {
     onCompleted: (data) => {
-      setForm({ ...data });
+      setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
       handleNext();
     },
     onError: (error) => {
       // Display good message
-      console.log(`ERREUR :${error.message}`);
+      addAlert({
+        message: error.message,
+        severity: 'error',
+      });
     },
   });
 
@@ -212,12 +222,12 @@ export default function FormInfosClaimant({
   const onSubmit = (data) => {
     const { placeP, placeS, ...others } = data;
     if (!formData.id) {
-      createRequest({ variables: { place: [...placeP, ...placeS], ...others } });
+      createRequest({ variables: { request: { ...others } } });
     } else {
       updateRequest({
         variables: {
           id: formData.id,
-          request: { place: [...placeP, ...placeS], ...others },
+          request: { ...others },
         },
       });
     }

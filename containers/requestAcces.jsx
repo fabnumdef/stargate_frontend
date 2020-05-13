@@ -96,7 +96,9 @@ export default function RequestAccesForm() {
   const [selectVisitor, setSelectVisitor] = useState();
 
   // FormState
-  const [formData, setForm] = useState({});
+  const [formData, setForm] = useState({
+    visitors: [],
+  });
 
   return (
     <Template>
@@ -125,9 +127,7 @@ export default function RequestAccesForm() {
             <NoSsr>
               <FormInfosVisitor
                 formData={formData}
-                setForm={(args) => {
-                  setForm(args);
-                }}
+                setForm={setForm}
                 selectVisitor={selectVisitor}
                 handleNext={handleNext}
                 handleBack={handleBack}
@@ -138,9 +138,7 @@ export default function RequestAccesForm() {
             <NoSsr>
               <FormInfosRecapDemande
                 formData={formData}
-                setForm={(args) => {
-                  setForm(args);
-                }}
+                setForm={setForm}
                 handleNext={handleNext}
                 handleBack={handleBack}
                 setSelectVisitor={setSelectVisitor}

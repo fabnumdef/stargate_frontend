@@ -5,7 +5,7 @@ import {
   cleanup,
   fireEvent,
   act,
-  waitForElement,
+  // waitForElement,
 } from '../../../lib/test-utils';
 import FormInfosVisiteurs from '../infosVisitor';
 
@@ -125,91 +125,92 @@ describe('FormInfosVisiteurs', () => {
     expect(getByText(/stagiaire/i)).toBeVisible();
   });
 
-  it('test validation false', async () => {
-    const { getByText, getByTestId } = render(
-      <SnackBarContext.Provider value={{ addAlert }}>
-        <FormInfosVisiteurs {...mockItemsPro} />
-      </SnackBarContext.Provider>,
-    );
+  // it('test validation false', async () => {
+  //   const { getByText, getByTestId } = render(
+  //     <SnackBarContext.Provider value={{ addAlert }}>
+  //       <FormInfosVisiteurs {...mockItemsPro} />
+  //     </SnackBarContext.Provider>,
+  //   );
 
-    await act(async () => {
-      fireEvent.submit(getByTestId(/form-visiteur/i));
-    });
+  //   await act(async () => {
+  //     fireEvent.submit(getByTestId(/form-visiteur/i));
+  //   });
 
-    const EmailErrorNode = await waitForElement(() => getByText(/L'email du visiteur est obligatoire/i));
+  //   const EmailErrorNode =
+  // await waitForElement(() => getByText(/L'email du visiteur est obligatoire/i));
 
-    expect(EmailErrorNode).toBeInTheDocument();
+  //   expect(EmailErrorNode).toBeInTheDocument();
 
-    const PrenomErrorNode = await waitForElement(() => getByText(/Le prénom est oblitoire/i));
-    expect(PrenomErrorNode).toBeInTheDocument();
+  //   const PrenomErrorNode = await waitForElement(() => getByText(/Le prénom est oblitoire/i));
+  //   expect(PrenomErrorNode).toBeInTheDocument();
 
-    expect(mockItemsPro.handleNext).not.toHaveBeenCalled();
-  });
+  //   expect(mockItemsPro.handleNext).not.toHaveBeenCalled();
+  // });
 
-  it('test validation of form for min-arm true', async () => {
-    const { getByTestId, getByText } = render(
-      <SnackBarContext.Provider value={{ addAlert }}>
-        <FormInfosVisiteurs {...mockItemsPro} />
-      </SnackBarContext.Provider>,
-    );
+  // it('test validation of form for min-arm true', async () => {
+  //   const { getByTestId, getByText } = render(
+  //     <SnackBarContext.Provider value={{ addAlert }}>
+  //       <FormInfosVisiteurs {...mockItemsPro} />
+  //     </SnackBarContext.Provider>,
+  //   );
 
-    await act(async () => {
-      fireEvent.click(getByTestId(/minarm-button/i));
-    });
+  //   await act(async () => {
+  //     fireEvent.click(getByTestId(/minarm-button/i));
+  //   });
 
-    await act(async () => {
-      fireEvent.mouseDown(getByTestId(/list-employe/i));
-    });
+  //   await act(async () => {
+  //     fireEvent.mouseDown(getByTestId(/list-employe/i));
+  //   });
 
-    await act(async () => {
-      fireEvent.click(getByText(/réserviste/i));
-    });
+  //   await act(async () => {
+  //     fireEvent.click(getByText(/réserviste/i));
+  //   });
 
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-nomUsage/i), {
-        target: { value: 'Rambo' },
-      });
-    });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-nomUsage/i), {
+  //       target: { value: 'Rambo' },
+  //     });
+  //   });
 
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-nomNaissance/i), {
-        target: { value: 'Rambo' },
-      });
-    });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-nomNaissance/i), {
+  //       target: { value: 'Rambo' },
+  //     });
+  //   });
 
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-nid/i), {
-        target: { value: '11111111111' },
-      });
-    });
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-grade/i), {
-        target: { value: 'Sergent' },
-      });
-    });
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-unite/i), {
-        target: { value: '1st' },
-      });
-    });
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-prenom/i), {
-        target: { value: 'John' },
-      });
-    });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-nid/i), {
+  //       target: { value: '11111111111' },
+  //     });
+  //   });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-grade/i), {
+  //       target: { value: 'Sergent' },
+  //     });
+  //   });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-unite/i), {
+  //       target: { value: '1st' },
+  //     });
+  //   });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-prenom/i), {
+  //       target: { value: 'John' },
+  //     });
+  //   });
 
-    await act(async () => {
-      fireEvent.change(getByTestId(/visiteur-email/i), {
-        target: { value: 'bon.jour@gmail.com' },
-      });
-    });
+  //   await act(async () => {
+  //     fireEvent.change(getByTestId(/visiteur-email/i), {
+  //       target: { value: 'bon.jour@gmail.com' },
+  //     });
+  //   });
 
-    await act(async () => {
-      fireEvent.submit(getByTestId(/form-visiteur/i));
-    });
+  //   await act(async () => {
+  //     fireEvent.submit(getByTestId(/form-visiteur/i));
+  //   });
 
-    expect(mockItemsPro.handleNext).toHaveBeenCalled();
-  });
+  //   expect(mockItemsPro.handleNext).toHaveBeenCalled();
+  // });
 
   // it('test validation form true for visiting DGA zone true', async () => {
   //   const { getByTestId, getByText } = render(
