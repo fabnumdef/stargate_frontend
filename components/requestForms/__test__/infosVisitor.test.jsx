@@ -3,8 +3,6 @@ import React from 'react';
 import {
   render,
   cleanup,
-  fireEvent,
-  act,
   // waitForElement,
 } from '../../../lib/test-utils';
 import FormInfosVisiteurs from '../infosVisitor';
