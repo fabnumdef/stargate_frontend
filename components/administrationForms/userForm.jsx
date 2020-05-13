@@ -100,7 +100,9 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
 
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
-    getListUnits(defaultValues.campus);
+    if (defaultValues.campus) {
+      getListUnits(defaultValues.campus);
+    }
   }, []);
 
   return (
@@ -207,7 +209,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                     return selected;
                   }}
                   name="campus"
-                  defaultValue={defaultValues.campus}
+                  defaultValue={defaultValues.campus ? defaultValues.campus : ''}
                   rules={{ required: true }}
                 />
                 )}
@@ -225,28 +227,26 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                 <InputLabel ref={inputLabel} id="select-outlined-label">
                   Unité
                 </InputLabel>
-                {dataUnits && (
-                  <Controller
-                    as={(
-                      <Select
-                        labelId="create-user-unit"
-                        id="unit"
-                        disabled={!isAdmin(userRole.role)}
-                        labelWidth={labelWidth}
-                      >
-                        {dataUnits.getCampus.listUnits.list.map((unit) => (
-                          <MenuItem key={unit.id} value={unit.id}>
-                            {unit.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                <Controller
+                  as={(
+                    <Select
+                      labelId="create-user-unit"
+                      id="unit"
+                      disabled={!isAdmin(userRole.role) || !dataUnits}
+                      labelWidth={labelWidth}
+                    >
+                      {dataUnits && dataUnits.getCampus.listUnits.list.map((unit) => (
+                        <MenuItem key={unit.id} value={unit.id}>
+                          {unit.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
                     )}
-                    control={control}
-                    name="unit"
-                    defaultValue={isAdmin(userRole.role) ? '' : defaultValues.unit}
-                    rules={{ required: true }}
-                  />
-                )}
+                  control={control}
+                  name="unit"
+                  defaultValue={isAdmin(userRole.role) ? '' : defaultValues.unit}
+                  rules={{ required: true }}
+                />
                 {errors.unit && (
                 <FormHelperText>Unité obligatoire</FormHelperText>
                 )}
@@ -280,7 +280,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                   )}
                   control={control}
                   name="role"
-                  defaultValue={defaultValues.role ? defaultValues.role : ''}
+                  defaultValue=""
                 />
               </FormControl>
             </Grid>
