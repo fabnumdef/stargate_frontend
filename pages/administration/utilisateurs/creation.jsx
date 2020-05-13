@@ -61,8 +61,8 @@ function CreateUser() {
   if (userData) {
     [userRole] = userData.me.roles;
     defaultValues = {
-      campus: userRole.campuses[0].id,
-      unit: userRole.units[0].id,
+      campus: userRole.campuses[0] ? userRole.campuses[0].id : null,
+      unit: userRole.units[0] ? userRole.units[0].id : null,
     };
   }
 

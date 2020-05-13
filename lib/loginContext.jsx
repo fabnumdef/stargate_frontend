@@ -42,6 +42,18 @@ const GET_ME = gql`
     }
 `;
 
+const GET_ME_LOCAL = gql`
+    {
+        me @client {
+            firstname
+            lastname
+            roles {
+              role
+            }
+        }
+    }
+`;
+
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
@@ -53,6 +65,37 @@ export function LoginContextProvider(props) {
   const [isLoggedUser, setIsLoggedUser] = useState(
     typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
   );
+
+  const signOut = (alert = false) => {
+    router.push('/login');
+    setIsLoggedUser(false);
+    localStorage.clear();
+    client.resetStore();
+    if (alert) addAlert(alert);
+  };
+
+  const getUserData = async () => {
+    let activeRoleNumber = 0;
+    if (localStorage.getItem('activeRoleNumber')) {
+      activeRoleNumber = localStorage.getItem('activeRoleNumber');
+    } else {
+      localStorage.setItem('activeRoleNumber', activeRoleNumber);
+    }
+    try {
+      const { data: { me } } = await client.query({ query: GET_ME });
+      client.cache.writeData({ data: { me, activeRole: me.roles[activeRoleNumber] } });
+      return me;
+    } catch (e) {
+      return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
+    }
+  };
+
+  const reinitUserCache = async () => {
+    const { data } = await client.query({ query: GET_ME_LOCAL });
+    if (data) return data;
+    return getUserData();
+  };
+
   const [resetPass, setResetPass] = useState(() => {
     if (router.query.token && router.query.email) {
       return {
@@ -66,14 +109,6 @@ export function LoginContextProvider(props) {
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
-  };
-
-  const signOut = (alert = false) => {
-    router.push('/login');
-    setIsLoggedUser(false);
-    localStorage.clear();
-    client.resetStore();
-    if (alert) addAlert(alert);
   };
 
   const authRenew = async () => {
@@ -109,16 +144,6 @@ export function LoginContextProvider(props) {
       return reloadAuth((expIn - renewTrigger) * 1000);
     }
     return null;
-  };
-
-  const getUserData = async () => {
-    try {
-      const { data: { me } } = await client.query({ query: GET_ME });
-      const activeRole = me.roles[0];
-      await client.writeData({ data: { me, activeRole } });
-    } catch (e) {
-      console.error(e);
-    }
   };
 
   const signIn = async (email, password, resetToken = null) => {
@@ -177,6 +202,10 @@ export function LoginContextProvider(props) {
       setAuthRenew(true);
     }
 
+    if (isLoggedUser) {
+      reinitUserCache();
+    }
+
     if (isLoggedUser && router.pathname === '/login') {
       router.push('/');
     }
@@ -195,6 +224,8 @@ LoginContextProvider.propTypes = {
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
     query: PropTypes.func.isRequired,
-    writeData: PropTypes.func.isRequired,
+    cache: PropTypes.shape({
+      writeData: PropTypes.func.isRequired,
+    }),
   }).isRequired,
 };

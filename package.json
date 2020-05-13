@@ -3,7 +3,7 @@
   "private": true,
   "description": "Frontend de l'application Stargate",
   "scripts": {
-    "dev": "cross-env PORT=4200 node server/index.js",
+    "dev": "cross-env PORT=4200 API_URL=http://localhost:3000/api node server/index.js",
     "build": "next build",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "test": "jest --passWithNoTests",
