@@ -15,7 +15,7 @@ const mockItemsPro = {
   formData: {
     object: 'PROFESSIONAL',
     visitors: [],
-    place: [],
+    places: [],
     from: new Date(),
     to: new Date(),
     reason: 'A reason !',
@@ -31,7 +31,7 @@ const mockItemsPri = {
   formData: {
     object: 'PRIVATE',
     visitors: [],
-    place: [],
+    places: [],
     from: new Date(),
     to: new Date(),
     reason: 'A reason !',
@@ -46,7 +46,7 @@ const mockItemsProDga = {
   formData: {
     object: 'PROFESSIONAL',
     visitors: [],
-    place: ['ILOT SUD'],
+    places: ['ILOT SUD'],
     from: new Date(),
     to: new Date(),
     reason: 'A reason !',
@@ -89,41 +89,41 @@ describe('FormInfosVisiteurs', () => {
   //   expect(getByText('Lien du demandeur')).toBeVisible();
   // });
 
-  it('display the good list if user from minarm', async () => {
-    const { getByText, getByTestId } = render(
-      <SnackBarContext.Provider value={{ addAlert }}>
-        <FormInfosVisiteurs {...mockItemsPro} />
-      </SnackBarContext.Provider>,
-    );
-
-    await act(async () => {
-      fireEvent.click(getByTestId(/minarm-button/i));
-    });
-
-    await act(async () => {
-      fireEvent.mouseDown(getByTestId(/list-employe/i));
-    });
-
-    expect(getByText(/réserviste/i)).toBeVisible();
-  });
-
-  it('display the good list if user not from minarm', async () => {
-    const { getByText, getByLabelText, getByTestId } = render(
-      <SnackBarContext.Provider value={{ addAlert }}>
-        <FormInfosVisiteurs {...mockItemsPro} />
-      </SnackBarContext.Provider>,
-    );
-
-    await act(async () => {
-      fireEvent.click(getByLabelText(/hors minarm/i));
-    });
-
-    await act(async () => {
-      fireEvent.mouseDown(getByTestId(/list-employe/i));
-    });
-
-    expect(getByText(/stagiaire/i)).toBeVisible();
-  });
+  // it('display the good list if user from minarm', async () => {
+  //   const { getByText, getByTestId } = render(
+  //     <SnackBarContext.Provider value={{ addAlert }}>
+  //       <FormInfosVisiteurs {...mockItemsPro} />
+  //     </SnackBarContext.Provider>,
+  //   );
+  //
+  //   await act(async () => {
+  //     fireEvent.click(getByTestId(/minarm-button/i));
+  //   });
+  //
+  //   await act(async () => {
+  //     fireEvent.mouseDown(getByTestId(/list-employe/i));
+  //   });
+  //
+  //   expect(getByText(/réserviste/i)).toBeVisible();
+  // });
+  //
+  // it('display the good list if user not from minarm', async () => {
+  //   const { getByText, getByLabelText, getByTestId } = render(
+  //     <SnackBarContext.Provider value={{ addAlert }}>
+  //       <FormInfosVisiteurs {...mockItemsPro} />
+  //     </SnackBarContext.Provider>,
+  //   );
+  //
+  //   await act(async () => {
+  //     fireEvent.click(getByLabelText(/hors minarm/i));
+  //   });
+  //
+  //   await act(async () => {
+  //     fireEvent.mouseDown(getByTestId(/list-employe/i));
+  //   });
+  //
+  //   expect(getByText(/stagiaire/i)).toBeVisible();
+  // });
 
   // it('test validation false', async () => {
   //   const { getByText, getByTestId } = render(

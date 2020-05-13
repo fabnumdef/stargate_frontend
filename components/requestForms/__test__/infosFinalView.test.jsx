@@ -21,7 +21,7 @@ const mockItems = {
         email: 'ok@ok.com',
       },
     ],
-    place: [],
+    places: [],
     from: new Date(),
     to: new Date(),
     reason: 'un motif convenable',
