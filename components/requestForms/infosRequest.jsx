@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-// apollo graphQL
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-
 // React Hook Form Validations
 import { useForm, Controller } from 'react-hook-form';
 
+// Apollo
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 // Material UI Imports
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -81,19 +80,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const lieux1 = [
-  { value: 'HOMET' },
-  { value: 'INBS HOMET' },
-  { value: 'CACHIN' },
-  { value: 'COMNORD' },
-  { value: 'NARDOUET' },
+  { label: 'HOMET' },
+  { label: 'INBS HOMET' },
+  { label: 'CACHIN' },
+  { label: 'COMNORD' },
+  { label: 'NARDOUET' },
 ];
 
 const lieux2 = [
-  { value: 'BASE NAVALE' },
-  { value: 'ILOT SUD' },
-  { value: 'ETAT MAJOR' },
-  { value: 'FUSCO' },
-  { value: 'MESS' },
+  { label: 'BASE NAVALE' },
+  { label: 'ILOT SUD' },
+  { label: 'ETAT MAJOR' },
+  { label: 'FUSCO' },
+  { label: 'MESS' },
 ];
 
 // eslint-disable-next-line no-unused-vars
@@ -127,9 +126,43 @@ function isDeadlineRespected(value) {
 //   }
 // `;
 
+const REQUEST_ATTRIBUTES = gql`
+    fragment RequestResult on Request {
+      id
+      object
+      reason
+      from
+      to
+      places
+    }
+  `;
+
+
+export const CREATE_REQUEST = gql`
+         mutation createRequest($request: RequestInput!) {
+           mutateCampus(id: "MORDOR"){
+              createRequest(request: $request) {
+              ...RequestResult
+            }
+          }
+         }
+         ${REQUEST_ATTRIBUTES}
+       `;
+
+export const EDIT_REQUEST = gql`
+         mutation editRequest($id: String!, $request: RequestInput!) {
+            mutateCampus(id: "MORDOR"){
+              editRequest(id: $id, request: $request) {
+                ...RequestResult
+              }
+          }
+         }
+         ${REQUEST_ATTRIBUTES}
+       `;
+
 
 export default function FormInfosClaimant({
-  setForm, handleNext,
+  formData, setForm, handleNext,
 }) {
   const classes = useStyles();
   // Date Values
@@ -144,6 +177,28 @@ export default function FormInfosClaimant({
   //   },
   // });
 
+  const [createRequest] = useMutation(CREATE_REQUEST, {
+    onCompleted: (data) => {
+      setForm({ ...data });
+      handleNext();
+    },
+    onError: (error) => {
+      // Display good message
+      console.log(`ERREUR :${error.message}`);
+    },
+  });
+
+  const [updateRequest] = useMutation(EDIT_REQUEST, {
+    onCompleted: (data) => {
+      setForm({ ...data });
+      handleNext();
+    },
+    onError: (error) => {
+      // Display good message
+      console.log(`ERREUR :${error.message}`);
+    },
+  });
+
   const {
     register, control, handleSubmit, watch, errors,
   } = useForm();
@@ -156,8 +211,16 @@ export default function FormInfosClaimant({
 
   const onSubmit = (data) => {
     const { placeP, placeS, ...others } = data;
-    setForm((formData) => ({ ...formData, place: [...placeP, ...placeS], ...others }));
-    handleNext();
+    if (!formData.id) {
+      createRequest({ variables: { place: [...placeP, ...placeS], ...others } });
+    } else {
+      updateRequest({
+        variables: {
+          id: formData.id,
+          request: { place: [...placeP, ...placeS], ...others },
+        },
+      });
+    }
   };
 
   return (
@@ -401,6 +464,10 @@ export default function FormInfosClaimant({
 }
 
 FormInfosClaimant.propTypes = {
+  formData: PropTypes.shape({
+    id: PropTypes.string,
+    visitors: PropTypes.array,
+  }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
 };

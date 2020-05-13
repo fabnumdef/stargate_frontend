@@ -454,187 +454,184 @@ export default function FormInfoVisitor({
               </FormControl>
             </Grid>
           </Grid>
-
-          {(watch('isInternal') === 'HORS MINARM' || object === REQUEST_OBJECT.PRIVATE) && (
-            <Grid item sm={12} xs={12} md={6}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={12}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Identité
-                  </Typography>
-                </Grid>
-                <Grid container spacing={2} className={classes.comps}>
-                  <Grid item xs={12} sm={12} md={12}>
-                    <Autocomplete
-                      freeSolo
-                      id="combo-box-naissance"
-                      options={getNationalite()}
-                      getOptionLabel={(option) => option}
-                      onChange={handleNationalityChange}
-                      inputValue={watch('nationality') || ''}
-                      defaultValue=""
-                      renderInput={(params) => (
-                        <TextField
-                          variant="outlined"
+          <Grid item sm={12} xs={12} md={6}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Identité
+                </Typography>
+              </Grid>
+              <Grid container spacing={2} className={classes.comps}>
+                <Grid item xs={12} sm={12} md={12}>
+                  <Autocomplete
+                    freeSolo
+                    id="combo-box-naissance"
+                    options={getNationalite()}
+                    getOptionLabel={(option) => option}
+                    onChange={handleNationalityChange}
+                    inputValue={watch('nationality') || ''}
+                    defaultValue=""
+                    renderInput={(params) => (
+                      <TextField
+                        variant="outlined"
                           // TODO to delete with AutoComplete
                           // eslint-disable-next-line react/jsx-props-no-spreading
-                          {...params}
-                          label="Nationalité"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'nationality')}
-                          helperText={
+                        {...params}
+                        label="Nationalité"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'nationality')}
+                        helperText={
                             errors.nationality
                             && errors.nationality.type === 'required'
                             && 'La nationalité est obligatoire'
                           }
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12}>
+                  <FormControl
+                    variant="outlined"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'kind')}
+                    fullWidth
+                  >
+                    <InputLabel ref={inputLabel} id="select-outlined-label">
+                      Type Document
+                    </InputLabel>
+                    <Controller
+                      as={(
+                        <Select
                           fullWidth
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12}>
-                    <FormControl
-                      variant="outlined"
-                      error={Object.prototype.hasOwnProperty.call(errors, 'kind')}
-                      fullWidth
-                    >
-                      <InputLabel ref={inputLabel} id="select-outlined-label">
-                        Type Document
-                      </InputLabel>
-                      <Controller
-                        as={(
-                          <Select
-                            fullWidth
-                            labelId="kind"
-                            id="typeDocuement"
-                            labelWidth={labelWidth}
-                          >
-                            {getTypeDocument().map((type) => (
-                              <MenuItem key={type} value={type}>
-                                {type}
-                              </MenuItem>
-                            ))}
-                          </Select>
+                          labelId="kind"
+                          id="typeDocuement"
+                          labelWidth={labelWidth}
+                        >
+                          {getTypeDocument().map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </Select>
                         )}
-                        control={control}
-                        name="kind"
-                        defaultValue=""
-                        rules={{
-                          required:
+                      control={control}
+                      name="kind"
+                      defaultValue=""
+                      rules={{
+                        required:
                             watch('isInternal')
                             || '' === 'HORS MINARM'
                             || object === REQUEST_OBJECT.PRIVATE,
-                        }}
-                      />
-                      {errors.kind && errors.kind.type === 'required' && (
-                        <FormHelperText>Le type de document est obligatoire</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
+                      }}
+                    />
+                    {errors.kind && errors.kind.type === 'required' && (
+                    <FormHelperText>Le type de document est obligatoire</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
 
-                  <Grid item xs={12} sm={6} md={6}>
-                    <Controller
-                      as={(
-                        <TextField
-                          label="Numéro"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
-                          helperText={
+                <Grid item xs={12} sm={6} md={6}>
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Numéro"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
+                        helperText={
                             errors.reference
                             && errors.reference.type === 'required'
                             && 'Le numéro de document est obligatoire'
                           }
-                          fullWidth
-                        />
+                        fullWidth
+                      />
                       )}
-                      control={control}
-                      name="reference"
-                      defaultValue=""
-                      rules={{
-                        required:
+                    control={control}
+                    name="reference"
+                    defaultValue=""
+                    rules={{
+                      required:
                           watch('isInternal')
                           || '' === 'HORS MINARM'
                           || object === REQUEST_OBJECT.PRIVATE,
-                      }}
-                    />
-                  </Grid>
+                    }}
+                  />
+                </Grid>
 
-                  <Grid item xs={12} sm={6} md={6}>
-                    <Controller
-                      as={(
-                        <DatePicker
-                          label="Date de naissance"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
-                          helperText={
+                <Grid item xs={12} sm={6} md={6}>
+                  <Controller
+                    as={(
+                      <DatePicker
+                        label="Date de naissance"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
+                        helperText={
                             errors.birthday
                             && errors.birthday.type === 'required'
                             && 'La date de naissance est obligatoire'
                           }
-                          disableFuture
-                          fullWidth
-                        />
+                        disableFuture
+                        fullWidth
+                      />
                       )}
-                      control={control}
-                      name="birthday"
-                      rules={{
-                        required:
+                    control={control}
+                    name="birthday"
+                    rules={{
+                      required:
                           watch('isInternal')
                           || '' === 'HORS MINARM'
                           || object === REQUEST_OBJECT.PRIVATE,
-                        validate: { valide: (value) => isValid(value) || 'Format invalide' },
-                      }}
-                      defaultValue={null}
-                    />
-                  </Grid>
+                      validate: { valide: (value) => isValid(value) || 'Format invalide' },
+                    }}
+                    defaultValue={null}
+                  />
+                </Grid>
 
-                  <Grid item xs={12} sm={12} md={12}>
-                    <Controller
-                      as={(
-                        <TextField
-                          label="Lieu de naissance"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'birthdayPlace')}
-                          helperText={
+                <Grid item xs={12} sm={12} md={12}>
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Lieu de naissance"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'birthdayPlace')}
+                        helperText={
                             errors.birthdayPlace
                             && errors.birthdayPlace.type === 'required'
                             && 'Le lieu de naissance est obligatoire'
                           }
-                          fullWidth
-                        />
+                        fullWidth
+                      />
                       )}
-                      control={control}
-                      name="birthdayPlace"
-                      defaultValue=""
-                      rules={{
-                        required:
+                    control={control}
+                    name="birthdayPlace"
+                    defaultValue=""
+                    rules={{
+                      required:
                           watch('isInternal') || '' === 'HORS MINARM' || object === 'PRIVATE',
-                      }}
-                    />
-                  </Grid>
+                    }}
+                  />
                 </Grid>
               </Grid>
-              {watch('nationality') !== 'Française' && (
-                <Grid container spacing={2} className={classes.subTitle} justify="space-between">
-                  <Grid item xs={12} sm={12}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Scan papier identité: (obligatoire pour étranger)
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                    <Controller
-                      as={InputFile}
-                      rules={{
-                        required: watch('nationality') !== 'Française',
-                      }}
-                      control={control}
-                      defaultValue=""
-                      name="file"
-                      onChange={(file) => file}
-                      label="Fichier"
-                      error={Object.prototype.hasOwnProperty.call(errors, 'file')}
-                    />
-                  </Grid>
-                </Grid>
-              )}
             </Grid>
-          )}
+            {watch('nationality') !== 'Française' && (
+            <Grid container spacing={2} className={classes.subTitle} justify="space-between">
+              <Grid item xs={12} sm={12}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Scan papier identité: (obligatoire pour étranger)
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                <Controller
+                  as={InputFile}
+                  rules={{
+                    required: watch('nationality') !== 'Française',
+                  }}
+                  control={control}
+                  defaultValue=""
+                  name="file"
+                  onChange={(file) => file}
+                  label="Fichier"
+                  error={Object.prototype.hasOwnProperty.call(errors, 'file')}
+                />
+              </Grid>
+            </Grid>
+            )}
+          </Grid>
           {/* {formData.placeP && formData.placeP.length > 0 && (
             <>
               <Grid item sm={12} xs={12} md={6}>

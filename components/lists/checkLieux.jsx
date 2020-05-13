@@ -117,8 +117,8 @@ export default function ListLieux({
             <Chip
               color="primary"
               style={{ margin: '2px' }}
-              key={lieu.value}
-              label={lieu.value}
+              key={lieu.label}
+              label={lieu.label}
               onDelete={handleDelete}
             />
           ))}
@@ -131,7 +131,7 @@ export default function ListLieux({
             return (
               <ListItem
                 className={classes.listItem}
-                key={lieu.value}
+                key={lieu.label}
                 button
                 onClick={handleToggle(lieu)}
                 data-testid={`listitem-${label}-${index}`}
@@ -146,7 +146,7 @@ export default function ListLieux({
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={index} primary={lieu.value} />
+                <ListItemText id={index} primary={lieu.label} />
               </ListItem>
             );
           })}

@@ -23,12 +23,23 @@ const AUTH_RENEW = gql`
 `;
 
 const GET_ME = gql`
-  query getMe {
-    me {
-      firstname
-      lastname
+    query getMe {
+        me {
+            firstname,
+            lastname,
+            roles {
+                role
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
+        }
     }
-  }
 `;
 
 export const LoginContext = createContext();
@@ -102,8 +113,9 @@ export function LoginContextProvider(props) {
 
   const getUserData = async () => {
     try {
-      const { data } = await client.query({ query: GET_ME });
-      client.cache.writeData({ data });
+      const { data: { me } } = await client.query({ query: GET_ME });
+      const activeRole = me.roles[0];
+      await client.writeData({ data: { me, activeRole } });
     } catch (e) {
       console.error(e);
     }
@@ -183,8 +195,6 @@ LoginContextProvider.propTypes = {
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
     query: PropTypes.func.isRequired,
-    cache: PropTypes.shape({
-      writeData: PropTypes.func.isRequired,
-    }),
+    writeData: PropTypes.func.isRequired,
   }).isRequired,
 };
