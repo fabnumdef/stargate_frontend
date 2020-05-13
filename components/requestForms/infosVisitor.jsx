@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: '#fdd835',
   },
+  checkPos: {
+    marginBottom: '5px',
+  },
   comps: {
     marginLeft: '3vw',
   },
@@ -253,44 +256,75 @@ export default function FormInfoVisitor({
               </Grid>
 
               <Grid container className={classes.comps} spacing={2}>
-                {watch('isInternal') !== 'HORS MINARM'
-                  && object === REQUEST_OBJECT.PROFESSIONAL && (
-                    <>
-                      <Grid item md={6} sm={6} xs={12}>
-                        <Controller
-                          as={(
-                            <TextField
-                              label="NID"
-                              inputProps={{ 'data-testid': 'visiteur-nid' }}
-                              error={Object.prototype.hasOwnProperty.call(errors, 'nid')}
-                              helperText={errors.nid && errors.nid.message}
-                              fullWidth
-                            />
-                          )}
-                          rules={{ required: 'Le NID est obligatoire' }}
-                          control={control}
-                          name="nid"
-                          defaultValue=""
-                        />
-                      </Grid>
-                      <Grid item md={6} sm={6} xs={12}>
-                        <Controller
-                          as={(
-                            <TextField
-                              label="Grade"
-                              inputProps={{ 'data-testid': 'visiteur-grade' }}
-                              error={Object.prototype.hasOwnProperty.call(errors, 'rank')}
-                              helperText={errors.rank && errors.rank.message}
-                              fullWidth
-                            />
-                          )}
-                          rules={{ required: 'Le grade est obligatoire' }}
-                          control={control}
-                          name="rank"
-                          defaultValue=""
-                        />
-                      </Grid>
-                    </>
+                <Grid item md={12} sm={12} xs={12}>
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Email"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'email')}
+                        InputProps={
+                          watch('email') && validator.isEmail(watch('email'))
+                            ? {
+                              endAdornment: (
+                                <InputAdornment position="end" className={classes.checkPos}>
+                                  <CheckAnimation />
+                                </InputAdornment>
+                              ),
+                              inputProps: { 'data-testid': 'visiteur-email' },
+                            }
+                            : { inputProps: { 'data-testid': 'visiteur-email' } }
+                        }
+                        helperText={errors.email && errors.email.message}
+                        fullWidth
+                      />
+                    )}
+                    control={control}
+                    name="email"
+                    defaultValue=""
+                    rules={{
+                      required: "L'email du visiteur est obligatoire",
+                      validate: (value) => validator.isEmail(value) || 'Format invalide',
+                    }}
+                  />
+                </Grid>
+
+                {watch('isInternal') !== 'HORS MINARM' && object === REQUEST_OBJECT.PROFESSIONAL && (
+                  <>
+                    <Grid item md={6} sm={6} xs={12}>
+                      <Controller
+                        as={(
+                          <TextField
+                            label="NID"
+                            inputProps={{ 'data-testid': 'visiteur-nid' }}
+                            error={Object.prototype.hasOwnProperty.call(errors, 'nid')}
+                            helperText={errors.nid && errors.nid.message}
+                            fullWidth
+                          />
+                        )}
+                        rules={{ required: 'Le NID est obligatoire' }}
+                        control={control}
+                        name="nid"
+                        defaultValue=""
+                      />
+                    </Grid>
+                    <Grid item md={6} sm={6} xs={12}>
+                      <Controller
+                        as={(
+                          <TextField
+                            label="Grade"
+                            inputProps={{ 'data-testid': 'visiteur-grade' }}
+                            error={Object.prototype.hasOwnProperty.call(errors, 'rank')}
+                            helperText={errors.rank && errors.rank.message}
+                            fullWidth
+                          />
+                        )}
+                        rules={{ required: 'Le grade est obligatoire' }}
+                        control={control}
+                        name="rank"
+                        defaultValue=""
+                      />
+                    </Grid>
+                  </>
                 )}
 
                 <Grid item md={12} sm={12} xs={12}>
@@ -354,37 +388,6 @@ export default function FormInfoVisitor({
                     defaultValue=""
                     rules={{
                       required: "L'unité ou la société est obligatoire",
-                    }}
-                  />
-                </Grid>
-                <Grid item md={12} sm={12} xs={12}>
-                  <Controller
-                    as={(
-                      <TextField
-                        label="Email"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'email')}
-                        InputProps={
-                          watch('email') && validator.isEmail(watch('email'))
-                            ? {
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <CheckAnimation />
-                                </InputAdornment>
-                              ),
-                              inputProps: { 'data-testid': 'visiteur-email' },
-                            }
-                            : { inputProps: { 'data-testid': 'visiteur-email' } }
-                        }
-                        helperText={errors.email && errors.email.message}
-                        fullWidth
-                      />
-                    )}
-                    control={control}
-                    name="email"
-                    defaultValue=""
-                    rules={{
-                      required: "L'email du visiteur est obligatoire",
-                      validate: (value) => validator.isEmail(value) || 'Format invalide',
                     }}
                   />
                 </Grid>
@@ -522,9 +525,8 @@ export default function FormInfoVisitor({
                             || object === REQUEST_OBJECT.PRIVATE,
                         }}
                       />
-                      {errors.kind
-                        && errors.kind.type === 'required' && (
-                          <FormHelperText>Le type de document est obligatoire</FormHelperText>
+                      {errors.kind && errors.kind.type === 'required' && (
+                        <FormHelperText>Le type de document est obligatoire</FormHelperText>
                       )}
                     </FormControl>
                   </Grid>
