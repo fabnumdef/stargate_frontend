@@ -83,17 +83,17 @@ export default function InfosFinalView({
         <Typography variant="body1">
           Visite du
           {' '}
-          {format(formData.from, 'dd/MM/yyyy')}
+          {format(new Date(formData.from), 'dd/MM/yyyy')}
           {' '}
           au
           {' '}
-          {format(formData.to, 'dd/MM/yyyy')}
+          {format(new Date(formData.to), 'dd/MM/yyyy')}
         </Typography>
         <Typography variant="body1">
           à :
           {' '}
-          {formData.place.map((lieu, index) => {
-            if (index === formData.place.length - 1) return `${lieu.value}.`;
+          {formData.places.map((lieu, index) => {
+            if (index === formData.places.length - 1) return `${lieu.value}.`;
             return `${lieu.value}, `;
           })}
         </Typography>
@@ -142,7 +142,7 @@ InfosFinalView.propTypes = {
     from: PropTypes.instanceOf(Date),
     to: PropTypes.instanceOf(Date),
     reason: PropTypes.string,
-    place: PropTypes.array,
+    places: PropTypes.array,
     visitors: PropTypes.array,
   }),
   setForm: PropTypes.func.isRequired,

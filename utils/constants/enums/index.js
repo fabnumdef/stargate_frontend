@@ -8,3 +8,8 @@ export const ROLES = {
   ROLE_ADMIN: 'ROLE_ADMIN',
   ROLE_HOST: 'ROLE_HOST',
 };
+
+export const ID_DOCUMENT = {
+  IDCARD: 'IDCard',
+  PASSPORT: 'Passport',
+};

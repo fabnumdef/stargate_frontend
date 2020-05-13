@@ -28,7 +28,7 @@ import validator from 'validator';
 import { isValid } from 'date-fns';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
-import { REQUEST_OBJECT } from '../../utils/constants/enums';
+import { REQUEST_OBJECT, ID_DOCUMENT } from '../../utils/constants/enums';
 import { mapVisitorData } from '../../utils/mappers/requestAcces';
 
 import DatePicker from '../styled/date';
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getTypeDocument() {
-  return ["Carte d'identité", 'Passeport', 'Carte SIMS'];
+  return [{ value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" }, { value: ID_DOCUMENT.PASSPORT, label: 'Passeport' }];
 }
 
 function getNationalite() {
@@ -81,12 +81,13 @@ function getNationalite() {
   return arr.map((item) => item.nationalite);
 }
 
-function getTypeEmploie(type) {
-  if (type === 'HORS MINARM') {
-    return ['Consultant', 'Interimaire', 'Stagiaire', 'Livreur', 'Famille'];
-  }
-  return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
-}
+// TODO Uncomment when back will be ready
+// function getTypeEmploie(type) {
+//   if (type === 'HORS MINARM') {
+//     return ['Consultant', 'Interimaire', 'Stagiaire', 'Livreur', 'Famille'];
+//   }
+//   return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
+// }
 
 // TODO Add PAPERS
 const ADD_VISITOR = gql`
@@ -191,8 +192,8 @@ export default function FormInfoVisitor({
   const onSubmit = (data) => {
     // TODO DELETE WHEN API TAKE CARE OF TYPE OF EMPLOYE
     // eslint-disable-next-line no-unused-vars
-    const { typeVisiteur, visitor } = mapVisitorData(data);
-    addVisitor({ variables: { idRequest: formData.id, visitor } });
+    const visitorData = mapVisitorData(data);
+    addVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
   };
 
   const inputLabel = useRef(null);
@@ -248,46 +249,46 @@ export default function FormInfoVisitor({
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={12} className={classes.comps}>
-                <FormControl
-                  data-testid="test-employe"
-                  variant="outlined"
-                  error={Object.prototype.hasOwnProperty.call(errors, 'typeVisiteur')}
-                  fullWidth
-                >
-                  <InputLabel ref={inputLabel} id="select-outlined-label">
-                    Type d&apos;employé
-                  </InputLabel>
-                  <Controller
-                    as={(
-                      <Select
-                        SelectDisplayProps={{
-                          'data-testid': 'list-employe',
-                        }}
-                        fullWidth
-                        labelId="typeEmployeDemande"
-                        id="simple-select-outlined"
-                        labelWidth={labelWidth}
-                      >
-                        {getTypeEmploie(watch('isInternal')).map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                    control={control}
-                    name="typeVisiteur"
-                    rules={{
-                      required: 'Le type du visiteur est obligatoire.',
-                    }}
-                    defaultValue=""
-                  />
-                  {errors.typevisitors && (
-                    <FormHelperText>{errors.typevisitors.message}</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
+              {/* <Grid item xs={12} sm={12} className={classes.comps}> */}
+              {/*  <FormControl */}
+              {/*    data-testid="test-employe" */}
+              {/*    variant="outlined" */}
+              {/*    error={Object.prototype.hasOwnProperty.call(errors, 'typeVisiteur')} */}
+              {/*    fullWidth */}
+              {/*  > */}
+              {/*    <InputLabel ref={inputLabel} id="select-outlined-label"> */}
+              {/*      Type d&apos;employé */}
+              {/*    </InputLabel> */}
+              {/*    <Controller */}
+              {/*      as={( */}
+              {/*        <Select */}
+              {/*          SelectDisplayProps={{ */}
+              {/*            'data-testid': 'list-employe', */}
+              {/*          }} */}
+              {/*          fullWidth */}
+              {/*          labelId="typeEmployeDemande" */}
+              {/*          id="simple-select-outlined" */}
+              {/*          labelWidth={labelWidth} */}
+              {/*        > */}
+              {/*          {getTypeEmploie(watch('isInternal')).map((type) => ( */}
+              {/*            <MenuItem key={type} value={type}> */}
+              {/*              {type} */}
+              {/*            </MenuItem> */}
+              {/*          ))} */}
+              {/*        </Select> */}
+              {/*      )} */}
+              {/*      control={control} */}
+              {/*      name="typeVisiteur" */}
+              {/*      rules={{ */}
+              {/*        required: 'Le type du visiteur est obligatoire.', */}
+              {/*      }} */}
+              {/*      defaultValue="" */}
+              {/*    /> */}
+              {/*    {errors.typevisitors && ( */}
+              {/*      <FormHelperText>{errors.typevisitors.message}</FormHelperText> */}
+              {/*    )} */}
+              {/*  </FormControl> */}
+              {/* </Grid> */}
             </Grid>
 
             <Grid container spacing={1} alignItems="flex-end" className={classes.subTitle}>
@@ -385,7 +386,7 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
-                        label="Nom de Naissance"
+                        label="Nom marital"
                         error={Object.prototype.hasOwnProperty.call(errors, 'usageLastname')}
                         fullWidth
                       />
@@ -409,7 +410,7 @@ export default function FormInfoVisitor({
                       />
                     )}
                     control={control}
-                    rules={{ required: 'Le prénom est oblitoire' }}
+                    rules={{ required: 'Le prénom est obligatoire' }}
                     name="firstname"
                     defaultValue=""
                   />
@@ -548,9 +549,9 @@ export default function FormInfoVisitor({
                           id="typeDocuement"
                           labelWidth={labelWidth}
                         >
-                          {getTypeDocument().map((type) => (
-                            <MenuItem key={type} value={type}>
-                              {type}
+                          {getTypeDocument().map((doc) => (
+                            <MenuItem key={doc.value} value={doc.value}>
+                              {doc.label}
                             </MenuItem>
                           ))}
                         </Select>
@@ -630,17 +631,17 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         label="Lieu de naissance"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'birthPlace')}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'birthplace')}
                         helperText={
-                            errors.birthPlace
-                            && errors.birthPlace.type === 'required'
+                            errors.birthplace
+                            && errors.birthplace.type === 'required'
                             && 'Le lieu de naissance est obligatoire'
                           }
                         fullWidth
                       />
                       )}
                     control={control}
-                    name="birthPlace"
+                    name="birthplace"
                     defaultValue=""
                     rules={{
                       required:

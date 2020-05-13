@@ -15,6 +15,7 @@ function getMenus() {
   return [
     { label: 'Mes Demandes', link: '/' },
     { label: 'Nouvelle Demande', link: '/nouvelle-demande' },
+    { label: 'Administration', link: '/administration/utilisateurs' },
     { label: 'A propos', link: '/no-route' },
     { label: 'Contactez Nous', link: '/no-route' },
   ];

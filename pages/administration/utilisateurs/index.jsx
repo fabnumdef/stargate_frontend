@@ -12,7 +12,7 @@ import Template from '../../../containers/template';
 import PageTitle from '../../../components/styled/pageTitle';
 import TabAdminUsers from '../../../components/tabs/tabAdminUsers';
 import { mapUsersList } from '../../../utils/mappers/adminMappers';
-import { useSnackBar } from '../../../lib/snackbar';
+import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles({
   root: {
