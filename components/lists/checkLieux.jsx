@@ -157,11 +157,10 @@ export default function ListLieux({
 }
 
 ListLieux.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  options: PropTypes.array.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object).isRequired,
   label: PropTypes.string.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  expanded: PropTypes.object.isRequired,
+  expanded: PropTypes.objectOf(PropTypes.string).isRequired,
   onChange: PropTypes.func.isRequired,
   setExpanded: PropTypes.func.isRequired,
 };

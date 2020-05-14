@@ -41,7 +41,7 @@ export default function LoginForm() {
 
   const classes = useStyles();
 
-  const handleSubmit = async (evt) => {
+  const handleSubmit = (evt) => {
     evt.preventDefault();
     ctx.signIn(email, password);
   };

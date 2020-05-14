@@ -322,7 +322,7 @@ export default function FormInfosClaimant({
                         required: 'La date de fin est obligatoire',
                         validate: {
                           format: (value) => isValid(value) || 'Format invalide',
-                          valide: (value) => !isBefore(value, watch('from')) || 'Date éronee',
+                          valide: (value) => !isBefore(value, watch('from')) || 'Date éronnée',
                         },
                       }}
                       defaultValue={null}

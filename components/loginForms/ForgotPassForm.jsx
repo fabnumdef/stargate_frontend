@@ -54,7 +54,7 @@ export default function ForgotPassForm() {
       <form onSubmit={handleSubmit}>
         <CssTextField
           type="email"
-          label="Identifiant"
+          label="Email"
           value={email}
           onChange={(evt) => setEmail(evt.target.value)}
         />
