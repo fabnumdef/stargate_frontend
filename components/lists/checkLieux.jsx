@@ -87,7 +87,7 @@ export default function ListLieux({
       newChecked.splice(currentIndex, 1);
     }
     setChecked(newChecked);
-    onChange(newChecked.map((place) => place.label));
+    onChange(newChecked.map((place) => place.id));
   };
 
   const handleChange = (panel) => () => {
@@ -98,7 +98,7 @@ export default function ListLieux({
     const newChecked = [...checked];
     newChecked.splice(index, 1);
     setChecked(newChecked);
-    onChange(newChecked.map((place) => place.label));
+    onChange(newChecked.map((place) => place.id));
   };
 
   const classes = useStyles();
@@ -113,12 +113,12 @@ export default function ListLieux({
       >
         <div>
           <Typography className={classes.heading}>{label}</Typography>
-          {checked.map((lieu) => (
+          {checked.map((place) => (
             <Chip
               color="primary"
               style={{ margin: '2px' }}
-              key={lieu.label}
-              label={lieu.label}
+              key={place.id}
+              label={place.label}
               onDelete={handleDelete}
             />
           ))}
@@ -126,27 +126,27 @@ export default function ListLieux({
       </ExpansionPanelSummaryStyled>
       <ExpansionPanelDetails>
         <ListStyled className={classes.root}>
-          {options.map((lieu, index) => {
-            const labelId = `checkbox-list-label-${index}`;
+          {options.map((place) => {
+            const labelId = `checkbox-list-label-${place.id}`;
             return (
               <ListItem
                 className={classes.listItem}
-                key={lieu.label}
+                key={place.id}
                 button
-                onClick={handleToggle(lieu)}
-                data-testid={`listitem-${label}-${index}`}
+                onClick={handleToggle(place)}
+                data-testid={`listitem-${label}-${place.id}`}
               >
                 <ListItemIcon>
                   <Checkbox
                     color="primary"
                     edge="start"
-                    checked={checked.indexOf(lieu) !== -1}
+                    checked={checked.indexOf(place) !== -1}
                     tabIndex={-1}
                     disableRipple
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={index} primary={lieu.label} />
+                <ListItemText id={place.id} primary={place.label} />
               </ListItem>
             );
           })}

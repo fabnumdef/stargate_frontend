@@ -6,13 +6,12 @@ import { useForm, Controller } from 'react-hook-form';
 
 // Apollo
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 // Material UI Imports
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -80,22 +79,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const lieux1 = [
-  { label: 'HOMET' },
-  { label: 'INBS HOMET' },
-  { label: 'CACHIN' },
-  { label: 'COMNORD' },
-  { label: 'NARDOUET' },
-];
-
-const lieux2 = [
-  { label: 'BASE NAVALE' },
-  { label: 'ILOT SUD' },
-  { label: 'ETAT MAJOR' },
-  { label: 'FUSCO' },
-  { label: 'MESS' },
-];
-
 // eslint-disable-next-line no-unused-vars
 function getTypeEmploie() {
   return [
@@ -135,10 +118,23 @@ const REQUEST_ATTRIBUTES = gql`
     }
   `;
 
+export const GET_PLACES_LIST = gql`
+    query getPlacesList {
+        getCampus(id: "MIDDLE-EARTH") {
+            listPlaces {
+                list {
+                    id
+                    label
+                }
+            }
+        }
+    }
+`;
+
 
 export const CREATE_REQUEST = gql`
          mutation createRequest($request: RequestInput!) {
-           mutateCampus(id: "MORDOR"){
+           mutateCampus(id: "MIDDLE-EARTH"){
               createRequest(request: $request) {
               ...RequestResult
             }
@@ -149,7 +145,7 @@ export const CREATE_REQUEST = gql`
 
 export const EDIT_REQUEST = gql`
          mutation editRequest($id: String!, $request: RequestInput!) {
-            mutateCampus(id: "MORDOR"){
+            mutateCampus(id: "MIDDLE-EARTH"){
               editRequest(id: $id, request: $request) {
                 ...RequestResult
               }
@@ -165,6 +161,8 @@ export default function FormInfosClaimant({
   const classes = useStyles();
 
   const { addAlert } = useSnackBar();
+
+  const { data: placesList } = useQuery(GET_PLACES_LIST);
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
@@ -205,14 +203,13 @@ export default function FormInfosClaimant({
   });
 
   const onSubmit = (data) => {
-    const { placeP, placeS, ...others } = data;
     if (!formData.id) {
-      createRequest({ variables: { request: { ...others } } });
+      createRequest({ variables: { request: data } });
     } else {
       updateRequest({
         variables: {
           id: formData.id,
-          request: { ...others },
+          request: data,
         },
       });
     }
@@ -386,7 +383,7 @@ export default function FormInfosClaimant({
 
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Accès lieu
+                  Accès lieux
                 </Typography>
               </Grid>
 
@@ -394,54 +391,30 @@ export default function FormInfosClaimant({
                 <Controller
                   as={(
                     <ListLieux
-                      options={lieux1}
+                      options={placesList ? placesList.getCampus.listPlaces.list : []}
                       expanded={expanded}
                       setExpanded={setExpanded}
                       onChange={(checked) => checked}
-                      label="Port Militaire"
+                      label="Lieux"
                     />
                   )}
                   rules={{
                     validate: {
-                      valide: (value) => (value && value.length > 0) || 'La zone est obligatoire',
+                      valide: (value) => (value && value.length > 0) || 'Le choix d\'un lieu est obligatoire',
                     },
                   }}
                   control={control}
-                  name="placeS"
+                  name="places"
                   defaultValue={[]}
                 />
-                {errors.placeS && (
-                  <FormHelperText className={classes.error}>{errors.placeS.message}</FormHelperText>
+                {errors.places && (
+                  <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
                 )}
-              </Grid>
-              <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
-                <Controller
-                  as={(
-                    <ListLieux
-                      expanded={expanded}
-                      setExpanded={setExpanded}
-                      options={lieux2}
-                      onChange={(checked) => checked}
-                      label="Zone Protégée"
-                    />
-                  )}
-                  control={control}
-                  name="placeP"
-                  defaultValue={[]}
-                />
               </Grid>
             </Grid>
           </Grid>
 
           <Grid item sm={12} xs={12}>
-            <Grid container justify="flex-end">
-              {watch('placeS') && watch('placeP').length > 0 && (
-                <Typography variant="body2" gutterBottom>
-                  <WarningRoundedIcon className={classes.icon} />
-                  Un accompagnateur sera exigé lors de la visite
-                </Typography>
-              )}
-            </Grid>
             <Grid container justify="flex-end">
               <Button variant="outlined" color="primary" className={classes.buttonCancel}>
                 Annuler

@@ -104,7 +104,7 @@ function getNationalite() {
 // TODO Add PAPERS
 const ADD_VISITOR = gql`
   mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!) {
-    mutateCampus(id: "MORDOR") {
+    mutateCampus(id: "MIDDLE-EARTH") {
       mutateRequest(id: $idRequest) {
         createVisitor(visitor: $visitor){
           id

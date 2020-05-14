@@ -31,7 +31,7 @@ const useStyles = makeStyles({
 
 const DELETE_VISITOR = gql`
   mutation deleteVisitor($idRequest: String!, $idVisitor: String!) {
-    mutateCampus(id: "MORDOR") {
+    mutateCampus(id: "MIDDLE-EARTH") {
       mutateRequest(id: $idRequest) {
         deleteVisitor(id: $idVisitor) {
           id
