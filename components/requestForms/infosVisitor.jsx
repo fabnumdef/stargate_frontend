@@ -72,8 +72,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getTypeDocument() {
-  return [{ value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" }, { value: ID_DOCUMENT.PASSPORT, label: 'Passeport' }];
+function getTypeDocument(isInternal) {
+  // TODO Check if MIINARM or not
+  if (isInternal === 'MINARM') {
+    return [
+      { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
+      { value: ID_DOCUMENT.PASSPORT, label: 'Passeport' },
+      { value: ID_DOCUMENT.CIMSCARD, label: 'Carte CIMS' },
+    ];
+  }
+
+  return [
+    { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
+    { value: ID_DOCUMENT.PASSPORT, label: 'Passeport' },
+  ];
 }
 
 function getNationalite() {
@@ -152,22 +164,13 @@ export default function FormInfoVisitor({
   useEffect(() => {
     register(
       { name: 'nationality' },
-      { required: watch('isInternal') !== 'MINARM' },
+      { required: 'La nationalitée est obligatoire' },
     );
-  }, [register, watch]);
+  }, [register]);
 
   const handleClickCancel = () => {
     if (formData.visitors.length > 0) handleNext();
     else handleBack();
-  };
-
-  const minArmOrNot = () => {
-    if (watch('isInternal') === 'MINARM') {
-      addAlert({
-        message: "Les informations sur l'identité sont à rentrer par le visiteur",
-        severity: 'info',
-      });
-    }
   };
 
   const [addVisitor] = useMutation(ADD_VISITOR, {
@@ -176,7 +179,7 @@ export default function FormInfoVisitor({
         ...formData,
         visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
       });
-      minArmOrNot();
+      // minArmOrNot();
       handleNext();
     },
     onError: () => {
@@ -192,6 +195,7 @@ export default function FormInfoVisitor({
   const onSubmit = (data) => {
     // TODO DELETE WHEN API TAKE CARE OF TYPE OF EMPLOYE
     // eslint-disable-next-line no-unused-vars
+
     const visitorData = mapVisitorData(data);
     addVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
   };
@@ -512,7 +516,6 @@ export default function FormInfoVisitor({
                     options={getNationalite()}
                     getOptionLabel={(option) => option}
                     onChange={handleNationalityChange}
-                    inputValue={watch('nationality') || ''}
                     defaultValue=""
                     renderInput={(params) => (
                       <TextField
@@ -524,8 +527,7 @@ export default function FormInfoVisitor({
                         error={Object.prototype.hasOwnProperty.call(errors, 'nationality')}
                         helperText={
                             errors.nationality
-                            && errors.nationality.type === 'required'
-                            && 'La nationalité est obligatoire'
+                            && errors.nationality.message
                           }
                         fullWidth
                       />
@@ -549,7 +551,7 @@ export default function FormInfoVisitor({
                           id="typeDocuement"
                           labelWidth={labelWidth}
                         >
-                          {getTypeDocument().map((doc) => (
+                          {getTypeDocument(watch('isInternal')).map((doc) => (
                             <MenuItem key={doc.value} value={doc.value}>
                               {doc.label}
                             </MenuItem>
@@ -675,128 +677,6 @@ export default function FormInfoVisitor({
             </Grid>
             )}
           </Grid>
-          {/* {formData.placeP && formData.placeP.length > 0 && (
-            <>
-              <Grid item sm={12} xs={12} md={6}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={12}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Zone DGA
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                    <Controller
-                      as={(
-                        <TextField
-                          label="Réf Habilitation"
-                          inputProps={{
-                            'data-testid': 'visiteur-refHabilitation',
-                          }}
-                          error={Object.prototype.hasOwnProperty.call(errors, 'refHabilitation')}
-                          helperText={errors.refHabilitation && errors.refHabilitation.message}
-                          fullWidth
-                        />
-                      )}
-                      control={control}
-                      rules={{
-                        required: "La référence de l'habilitation est obligatoire",
-                      }}
-                      name="refHabilitation"
-                      defaultValue=""
-                    />
-                    <FormHelperText className={classes.instruction}>le cas échéant</FormHelperText>
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                    <Controller
-                      as={(
-                        <DatePicker
-                          label="Date de fin habilitation"
-                          inputProps={{
-                            'data-testid': 'visiteur-dateFinHabilitation',
-                          }}
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'dateFinHabilitation',
-                          )}
-                          disablePast
-                          helperText={
-                            errors.dateFinHabilitation && errors.dateFinHabilitation.message
-                          }
-                          fullWidth
-                        />
-                      )}
-                      control={control}
-                      name="dateFinHabilitation"
-                      rules={{
-                        required: "La date de fin d'habilitation est obligatoire.",
-                        validate: {
-                          valide: (value) => isValid(value) || 'Format invalide',
-                        },
-                      }}
-                      defaultValue={null}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                    <Controller
-                      as={(
-                        <TextField
-                          label="Réf Contrôle Élémentaire"
-                          inputProps={{
-                            'data-testid': 'visiteur-refControleElementaire',
-                          }}
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'refControleElementaire',
-                          )}
-                          helperText={
-                            errors.refControleElementaire && errors.refControleElementaire.message
-                          }
-                          fullWidth
-                        />
-                      )}
-                      control={control}
-                      rules={{
-                        required: 'La référence du contrôle élémentaire est obligatoire',
-                      }}
-                      name="refControleElementaire"
-                      defaultValue=""
-                    />
-                    <FormHelperText className={classes.instruction}>le cas échéant</FormHelperText>
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                    <Controller
-                      as={(
-                        <DatePicker
-                          label="Date demande contrôle"
-                          inputProps={{
-                            'data-testid': 'visiteur-dateDemandeControle',
-                          }}
-                          error={Object.prototype.hasOwnProperty.call(
-                            errors,
-                            'dateDemandeControle',
-                          )}
-                          helperText={
-                            errors.dateDemandeControle && errors.dateDemandeControle.message
-                          }
-                          fullWidth
-                        />
-                      )}
-                      control={control}
-                      name="dateDemandeControle"
-                      rules={{
-                        required: 'La date de demande de contrôle est obligatoire.',
-                        validate: {
-                          valide: (value) => isValid(value) || 'Format invalide',
-                        },
-                      }}
-                      defaultValue={null}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </>
-          )} */}
-
           <Grid item sm={12}>
             <Grid container justify="flex-end">
               <div>

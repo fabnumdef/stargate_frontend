@@ -48,18 +48,6 @@ export default function InfosFinalView({
 
   const { addAlert } = useSnackBar();
 
-  // const [page, setPage] = React.useState(0);
-  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  // const handleChangePage = (event, newPage) => {
-  //   setPage(newPage);
-  // };
-
-  // const handleChangeRowsPerPage = event => {
-  //   setRowsPerPage(+event.target.value);
-  //   setPage(0);
-  // };
-
   const [deleteVisitor] = useMutation(DELETE_VISITOR, {
     onCompleted: (data) => {
       setForm({

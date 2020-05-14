@@ -12,4 +12,5 @@ export const ROLES = {
 export const ID_DOCUMENT = {
   IDCARD: 'IDCard',
   PASSPORT: 'Passport',
+  CIMSCARD: 'CIMSCard',
 };

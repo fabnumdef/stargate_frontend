@@ -121,11 +121,6 @@ function isDeadlineRespected(value) {
   return days >= 2;
 }
 
-// const GET_USER_BASE = gql`
-//   query me {
-//     activeRole @client
-//   }
-// `;
 
 const REQUEST_ATTRIBUTES = gql`
     fragment RequestResult on Request {
@@ -168,17 +163,7 @@ export default function FormInfosClaimant({
   formData, setForm, handleNext,
 }) {
   const classes = useStyles();
-  // Date Values
 
-  // ZONE REQUEST
-  // const { data: idBase } = useQuery(GET_USER_BASE);
-
-  // const { data: places } = useQuery(GET_BASE_PLACE, {
-  //   skip: !idBase,
-  //   variables: {
-  //     id: idBase,
-  //   },
-  // });
   const { addAlert } = useSnackBar();
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
