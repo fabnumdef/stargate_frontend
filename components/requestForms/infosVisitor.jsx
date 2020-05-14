@@ -103,10 +103,10 @@ function getNationalite() {
 
 // TODO Add PAPERS
 const ADD_VISITOR = gql`
-  mutation addVisitor($idRequest: String!, $visitor: RequestVisitorInput!) {
+  mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!) {
     mutateCampus(id: "MORDOR") {
       mutateRequest(id: $idRequest) {
-        addVisitor(visitor: $visitor){
+        createVisitor(visitor: $visitor){
           id
           nid
           firstname
@@ -173,11 +173,11 @@ export default function FormInfoVisitor({
     else handleBack();
   };
 
-  const [addVisitor] = useMutation(ADD_VISITOR, {
+  const [createVisitor] = useMutation(ADD_VISITOR, {
     onCompleted: (data) => {
       setForm({
         ...formData,
-        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
+        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.createVisitor],
       });
       // minArmOrNot();
       handleNext();
@@ -197,7 +197,7 @@ export default function FormInfoVisitor({
     // eslint-disable-next-line no-unused-vars
 
     const visitorData = mapVisitorData(data);
-    addVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
+    createVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
   };
 
   const inputLabel = useRef(null);
