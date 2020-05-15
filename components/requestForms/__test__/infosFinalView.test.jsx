@@ -52,11 +52,4 @@ describe('FormInfosRecapDemande', () => {
 
     expect(getByText('Motif: un motif convenable')).toBeInTheDocument();
   });
-
-
-  // it('display visitor', async () => {
-  //   const { getByText } = render(<FormInfosRecapDemande {...mockItems} />);
-
-  //   expect(getByText('MP LABOUILLE Robin')).toBeInTheDocument();
-  // });
 });

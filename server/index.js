@@ -41,10 +41,10 @@ app.prepare().then(() => {
       res.writeHead(200, { 'Content-Type': Prometheus.register.contentType });
       res.end(Prometheus.register.metrics());
     })
-    .listen(process.env.PROMETHEUS_PORT || 9092, '0.0.0.0', () => {
+    .listen(process.env.PROMETHEUS_PORT || 9091, '0.0.0.0', () => {
       // eslint-disable-next-line no-console
       console.log(
-        `Prometheus exporter running at http://localhost:${process.env.PROMETHEUS_PORT || 9092}`,
+        `Prometheus exporter running at http://localhost:${process.env.PROMETHEUS_PORT || 9092}`
       );
     });
 });
