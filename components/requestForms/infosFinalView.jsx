@@ -30,8 +30,9 @@ const useStyles = makeStyles({
 });
 
 const DELETE_VISITOR = gql`
-  mutation deleteVisitor($idRequest: String!, $idVisitor: String!) {
-    mutateCampus(id: "MIDDLE-EARTH") {
+  mutation deleteVisitor($idRequest: String!, $idVisitor: String!, $campusId: String!) {
+    campusId @client @export(as: "campusId")
+    mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
         deleteVisitor(id: $idVisitor) {
           id
@@ -53,6 +54,10 @@ export default function InfosFinalView({
       setForm({
         ...formData,
         visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
+      });
+      addAlert({
+        message: 'Le visiteur a bien été supprimé de la demande',
+        severity: 'success',
       });
     },
     onError: () => {
@@ -81,8 +86,8 @@ export default function InfosFinalView({
           à :
           {' '}
           {formData.places.map((lieu, index) => {
-            if (index === formData.places.length - 1) return `${lieu.value}.`;
-            return `${lieu.value}, `;
+            if (index === formData.places.length - 1) return `${lieu.label}.`;
+            return `${lieu.label}, `;
           })}
         </Typography>
         <Typography variant="body1">

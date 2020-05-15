@@ -2,6 +2,7 @@ import React, {
   createContext, useEffect, useState, useContext,
 } from 'react';
 import { useRouter } from 'next/router';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
@@ -42,15 +43,9 @@ const GET_ME = gql`
     }
 `;
 
-const GET_ME_LOCAL = gql`
-    {
-        me @client {
-            firstname
-            lastname
-            roles {
-              role
-            }
-        }
+const GET_INITIALIZEDCACHE = gql`
+    query getInitCache {
+        initializedCache @client
     }
 `;
 
@@ -59,9 +54,13 @@ export const useLogin = () => useContext(LoginContext);
 
 export function LoginContextProvider(props) {
   const { children, client } = props;
+
   const router = useRouter();
   const { addAlert } = useSnackBar();
 
+  const { data: init } = useQuery(GET_INITIALIZEDCACHE);
+
+  const [isCacheInit, setIsCacheInit] = useState(init ? init.initializedCache : null);
   const [isLoggedUser, setIsLoggedUser] = useState(
     typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
   );
@@ -83,18 +82,24 @@ export function LoginContextProvider(props) {
     }
     try {
       const { data: { me } } = await client.query({ query: GET_ME });
-      client.cache.writeData({ data: { me, activeRole: me.roles[activeRoleNumber] } });
+      await client.cache.writeData({
+        data: {
+          initializedCache: true,
+          me,
+          activeRole: me.roles[activeRoleNumber],
+          campusId: me.roles[activeRoleNumber].campuses[0].id,
+        },
+      });
+      setIsCacheInit(true);
       return me;
     } catch (e) {
       return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
     }
   };
 
-  const reinitUserCache = async () => {
-    const { data } = await client.query({ query: GET_ME_LOCAL });
-    if (data) return data;
-    return getUserData();
-  };
+  if (isLoggedUser && !isCacheInit) {
+    getUserData();
+  }
 
   const [resetPass, setResetPass] = useState(() => {
     if (router.query.token && router.query.email) {
@@ -105,7 +110,6 @@ export function LoginContextProvider(props) {
     }
     return false;
   });
-  const [authRenewOn, setAuthRenew] = useState(false);
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
@@ -115,7 +119,8 @@ export function LoginContextProvider(props) {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
       clearTimeout(reloadAuth);
-      return signOut({ message: 'Session expirée', severity: 'warning' });
+      signOut({ message: 'Session expirée', severity: 'warning' });
+      return false;
     }
 
     const payload = localStorage.getItem('token').split('.')[1];
@@ -127,7 +132,9 @@ export function LoginContextProvider(props) {
     if (expIn <= 0) {
       signOut({ message: 'Session expirée', severity: 'warning' });
       clearTimeout(reloadAuth);
-    } else if (expIn <= renewTrigger) {
+      return false;
+    }
+    if (expIn <= renewTrigger) {
       try {
         const {
           data: {
@@ -135,15 +142,17 @@ export function LoginContextProvider(props) {
           },
         } = await client.mutate({ mutation: AUTH_RENEW });
         setToken(jwt);
-        return authRenew();
+        authRenew();
+        return true;
       } catch (error) {
         signOut({ message: 'Session expirée', severity: 'warning' });
         clearTimeout(reloadAuth);
+        return false;
       }
     } else {
-      return reloadAuth((expIn - renewTrigger) * 1000);
+      reloadAuth((expIn - renewTrigger) * 1000);
+      return true;
     }
-    return null;
   };
 
   const signIn = async (email, password, resetToken = null) => {
@@ -159,7 +168,6 @@ export function LoginContextProvider(props) {
       setToken(jwt);
       setIsLoggedUser(true);
       await authRenew(setToken, signOut, client);
-      setAuthRenew(true);
       return getUserData();
     } catch (e) {
       switch (e.message) {
@@ -192,26 +200,16 @@ export function LoginContextProvider(props) {
       resetPassSignIn(email, token);
     }
 
-    const token = localStorage.getItem('token');
-    if (!token && !resetPass) {
-      signOut();
-    }
-
-    if (token && !authRenewOn) {
-      authRenew();
-      setAuthRenew(true);
-    }
-
-    if (isLoggedUser) {
-      reinitUserCache();
-    }
-
     if (isLoggedUser && router.pathname === '/login') {
       router.push('/');
     }
+
+    if (!isLoggedUser && router.pathname !== '/login') {
+      router.push('/login');
+    }
   }, [isLoggedUser]);
 
-  if (!isLoggedUser && router.pathname !== '/login') {
+  if (!isCacheInit || (!isLoggedUser && router.pathname !== '/login')) {
     return <div />;
   }
 

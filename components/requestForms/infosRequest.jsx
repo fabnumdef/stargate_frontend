@@ -119,8 +119,9 @@ const REQUEST_ATTRIBUTES = gql`
   `;
 
 export const GET_PLACES_LIST = gql`
-    query getPlacesList {
-        getCampus(id: "MIDDLE-EARTH") {
+    query getPlacesList($campusId: String!) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
             listPlaces {
                 list {
                     id
@@ -133,8 +134,9 @@ export const GET_PLACES_LIST = gql`
 
 
 export const CREATE_REQUEST = gql`
-         mutation createRequest($request: RequestInput!) {
-           mutateCampus(id: "MIDDLE-EARTH"){
+         mutation createRequest($request: RequestInput!, $campusId: String!) {
+            campusId @client @export(as: "campusId")
+            mutateCampus(id: $campusId){
               createRequest(request: $request) {
               ...RequestResult
             }
@@ -144,8 +146,9 @@ export const CREATE_REQUEST = gql`
        `;
 
 export const EDIT_REQUEST = gql`
-         mutation editRequest($id: String!, $request: RequestInput!) {
-            mutateCampus(id: "MIDDLE-EARTH"){
+         mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!) {
+            campusId @client @export(as: "campusId")
+            mutateCampus(id: $campusId){
               editRequest(id: $id, request: $request) {
                 ...RequestResult
               }
@@ -197,10 +200,7 @@ export default function FormInfosClaimant({
   } = useForm();
 
   // states of expanded composant for area to choose
-  const [expanded, setExpanded] = useState({
-    'Port Militaire': false,
-    'Zone Protégée': false,
-  });
+  const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
     if (!formData.id) {

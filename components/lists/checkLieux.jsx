@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     width: '100%',
-    maxHeight: '20vh',
+    maxHeight: '35vh',
     overflow: 'auto',
   },
   listItem: {
@@ -90,8 +90,8 @@ export default function ListLieux({
     onChange(newChecked.map((place) => place.id));
   };
 
-  const handleChange = (panel) => () => {
-    setExpanded({ ...expanded, [panel]: !expanded[panel] });
+  const handleChange = () => () => {
+    setExpanded(!expanded);
   };
 
   const handleDelete = (index) => {
@@ -104,7 +104,7 @@ export default function ListLieux({
   const classes = useStyles();
 
   return (
-    <ExpansionPanelStyled expanded={expanded[label]} onChange={handleChange(label)}>
+    <ExpansionPanelStyled expanded={expanded} onChange={handleChange()}>
       <ExpansionPanelSummaryStyled
         expandIcon={<ExpandMoreIcon />}
         IconButtonProps={{ 'data-testid': `expand-icon-${label}` }}
@@ -159,8 +159,7 @@ export default function ListLieux({
 ListLieux.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   label: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  expanded: PropTypes.objectOf(PropTypes.string).isRequired,
+  expanded: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   setExpanded: PropTypes.func.isRequired,
 };
