@@ -1,10 +1,15 @@
-// @flow
 import React from 'react';
-import { Accueil } from '../containers';
+import { MenuRequest } from '../containers';
 import { withApollo } from '../lib/apollo';
 
-function IndexPage() {
-  return <Accueil />;
+function MyRequestsPage() {
+  // TODO check profile and load the good container
+
+  return (
+    <>
+      <MenuRequest />
+    </>
+  );
 }
 
-export default withApollo({ ssr: true })(IndexPage);
+export default withApollo()(MyRequestsPage);

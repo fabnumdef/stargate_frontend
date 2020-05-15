@@ -11,7 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import { useSnackBar } from '../lib/snackbar';
+import { useSnackBar } from '../lib/ui-providers/snackbar';
 import Template from './template';
 
 const useStyles = makeStyles((theme) => ({

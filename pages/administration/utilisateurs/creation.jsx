@@ -6,7 +6,7 @@ import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
-import { useSnackBar } from '../../../lib/snackbar';
+import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 
 const GET_ME = gql`
     query getMe {

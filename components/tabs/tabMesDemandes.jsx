@@ -135,7 +135,7 @@ export default function TabMesDemandes({ tabData }) {
         {rows.map((row, index) => {
           if (del[index]) {
             return (
-              <TableRow tabIndex={-1} key={row.code}>
+              <TableRow tabIndex={-1} key={row.id}>
                 <Typography variant="body2">
                   <TableCell key="delete" colspan={columns.length + 1}>
                     <Grid container>

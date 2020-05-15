@@ -1,5 +1,6 @@
 import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
+import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -11,10 +12,14 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function CustomTableCell({ children, align, style }) {
+export default function CustomTableCell({ children }) {
   return (
-    <StyledTableCell align={align} style={style}>
+    <StyledTableCell>
       {children}
     </StyledTableCell>
   );
 }
+
+CustomTableCell.propTypes = {
+  children: PropTypes.node.isRequired,
+};

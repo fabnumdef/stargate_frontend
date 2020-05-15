@@ -9,7 +9,7 @@ describe('Header', () => {
 
   it('render without user', async () => {
     await preloadAll();
-    const { getByText } = render(<Header userLogged />);
+    const { getByText } = render(<Header />);
     const lazyContent = await waitForElement(() => getByText(/MP Durand Henri/));
     expect(lazyContent).toBeInTheDocument();
   });

@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
-import { useSnackBar } from '../../lib/snackbar';
+import Button from '@material-ui/core/Button';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { CssTextField } from './LoginForm';
 
 const useStyles = makeStyles(() => ({
   formPasswordContainer: {
-    marginTop: '25%',
+    marginTop: '22%',
     maxWidth: '80%',
     margin: 'auto',
     '& p': {
       textAlign: 'justify',
     },
+  },
+  submitButton: {
+    marginTop: '5%',
+    width: '50%',
   },
 }));
 
@@ -22,7 +27,7 @@ export const RESET_PASSWORD = gql`
     }
 `;
 
-export default function ForgotPassForm({ Button }) {
+export default function ForgotPassForm() {
   const [email, setEmail] = useState();
   const [resetPassword] = useMutation(RESET_PASSWORD);
   const { addAlert } = useSnackBar();
@@ -32,7 +37,7 @@ export default function ForgotPassForm({ Button }) {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     if (!email) {
-      addAlert({ message: 'Merci d\'entrer un identifiant', severity: 'warning' });
+      addAlert({ message: "Merci d'entrer un identifiant", severity: 'warning' });
       return;
     }
     try {
@@ -46,21 +51,21 @@ export default function ForgotPassForm({ Button }) {
 
   return (
     <div className={classes.formPasswordContainer}>
-      <form onSubmit={handleSubmit} className={classes.formPassword}>
-        <label htmlFor="email">
-          <input type="email" name="email" placeholder="Identifiant" value={email} onChange={(evt) => setEmail(evt.target.value)} />
-        </label>
+      <form onSubmit={handleSubmit}>
+        <CssTextField
+          type="email"
+          label="Email"
+          value={email}
+          onChange={(evt) => setEmail(evt.target.value)}
+        />
         <p>
-          Merci d&apos;entrer votre identifiant.
-          S&apos;il est enregistré dans notre base de données,
-          vous recevrez un e-mail pour réinitialiser votre mot de passe.
+          Merci d&apos;entrer votre identifiant. S&apos;il est enregistré dans notre base de
+          données, vous recevrez un e-mail pour réinitialiser votre mot de passe.
         </p>
-        <Button text="Envoyer" label="submit-form-password" />
+        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
+          Envoyer
+        </Button>
       </form>
     </div>
   );
 }
-
-ForgotPassForm.propTypes = {
-  Button: PropTypes.func.isRequired,
-};

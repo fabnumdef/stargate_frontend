@@ -1,4 +1,3 @@
-// @flow
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -25,43 +24,26 @@ const useStyles = makeStyles(() => ({
     boxShadow: '5px 5px 6px 0 rgba(0, 0, 0, 0.16)',
     position: 'relative',
     '& form': {
-      textAlign: 'center',
-      '& input': {
-        display: 'block',
-        backgroundColor: 'transparent',
-        color: 'white',
-        border: 'none',
-        borderBottom: '1px solid white',
-        margin: '35px auto 0',
-        fontSize: '1.1rem',
-        maxWidth: '188px',
-      },
+      marginTop: '20%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   },
   switchButton: {
     position: 'absolute',
-    color: 'white',
+    marginTop: '5%',
+    textAlign: 'center',
     cursor: 'pointer',
-    bottom: '12%',
     width: '100%',
     fontSize: '1rem',
-    backgroundColor: 'transparent',
-    border: 'none',
   },
   logo: {
     height: '10vh',
   },
-  submitButton: {
-    margin: '30px auto 0',
-    fontSize: '1rem',
-    color: 'rgba(247, 249, 252, 0.99)',
-    width: '188px',
-    height: '31px',
-    border: 'none',
-    borderRadius: '2px',
-    boxShadow: '5px 3px 6px 0 rgba(0, 0, 0, 0.16)',
-    backgroundColor: '#0e4194',
-    cursor: 'pointer',
+  buttonStyle: {
+    outline: 'none',
   },
 }));
 
@@ -84,10 +66,10 @@ function LoginPage() {
         <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
       </div>
       <div className={classes.subLoginForm}>
-        {forgottenPass
-          ? <ForgotPassForm Button={SubmitButton} />
-          : <LoginForm Button={SubmitButton} />}
-        <button className={classes.switchButton} type="button" onClick={switchForms}>{forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}</button>
+        {forgottenPass ? <ForgotPassForm switchForms={switchForms} /> : <LoginForm />}
+        <div className={classes.switchButton} role="button" onClick={switchForms} onKeyDown={switchForms} aria-hidden>
+          {forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}
+        </div>
       </div>
     </div>
   );

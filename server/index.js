@@ -5,7 +5,6 @@ const Router = require('@koa/router');
 const Prometheus = require('prom-client');
 const metricsMiddleware = require('./middlewares/metrics');
 
-
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -37,11 +36,15 @@ app.prepare().then(() => {
     console.log(`> Ready on http://localhost:${port}`);
   });
 
-  http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': Prometheus.register.contentType });
-    res.end(Prometheus.register.metrics());
-  }).listen(process.env.PROMETHEUS_PORT || 9091, '0.0.0.0', () => {
-    // eslint-disable-next-line no-console
-    console.log(`Prometheus exporter running at http://localhost:${process.env.PROMETHEUS_PORT || 9091}`);
-  });
+  http
+    .createServer((req, res) => {
+      res.writeHead(200, { 'Content-Type': Prometheus.register.contentType });
+      res.end(Prometheus.register.metrics());
+    })
+    .listen(process.env.PROMETHEUS_PORT || 9091, '0.0.0.0', () => {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Prometheus exporter running athttp://localhost:${process.env.PROMETHEUS_PORT || 9091}`,
+      );
+    });
 });

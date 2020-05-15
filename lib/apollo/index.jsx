@@ -50,7 +50,6 @@ export default function createApolloClient(initialState, ctx) {
   return client;
 }
 
-
 /**
  * Always creates a new apollo client on the server
  * Creates or reuses apollo client in the browser.
@@ -95,7 +94,7 @@ export const initOnContext = (ctx) => {
 
   // Initialize ApolloClient if not already done
   const apolloClient = ctx.apolloClient
-    || initApolloClient(ctx.apolloState || {}, inAppContext ? ctx.ctx : ctx);
+  || initApolloClient(ctx.apolloState || {}, inAppContext ? ctx.ctx : ctx);
 
   // We send the Apollo Client as a prop to the component
   // to avoid calling initApollo() twice in the server.

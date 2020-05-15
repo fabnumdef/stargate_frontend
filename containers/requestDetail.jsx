@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Button from '@material-ui/core/Button';
 import Stepper from '../components/styled/stepper';
-import { SnackBarContext } from '../lib/snackbar';
+import { SnackBarContext } from '../lib/ui-providers/snackbar';
 
 import { TabVisiteur } from '../components';
 

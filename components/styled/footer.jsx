@@ -5,16 +5,13 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   footer: {
     width: '100%',
-    textAlign: 'center',
-    height: '78px',
+    height: '80px',
     backgroundColor: theme.palette.primary.main,
-    position: 'absolute',
-    bottom: 0,
   },
   footerImg: {
     height: '151px',
-    position: 'absolute',
-    bottom: 0,
+    position: 'relative',
+    top: '-90%',
     left: '50%',
     transform: 'translateX(-50%)',
   },

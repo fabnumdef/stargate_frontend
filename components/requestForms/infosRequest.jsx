@@ -1,24 +1,36 @@
-// @flow
-import React, { useState, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
+// React Hook Form Validations
 import { useForm, Controller } from 'react-hook-form';
+
+// Apollo
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+// Material UI Imports
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
-
 import Button from '@material-ui/core/Button';
-
-import { isValid } from 'date-fns';
-
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+
+import {
+  isValid, differenceInDays, isBefore, isThursday, isFriday,
+} from 'date-fns';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
+// Date Validators
+
+
+import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
+
 
 const useStyles = makeStyles((theme) => ({
   radioGroup: {
@@ -68,31 +80,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// eslint-disable-next-line no-unused-vars
-function getUser() {
-  return {
-    nom: 'Durand',
-    prenom: 'Henry',
-    grade: 'MP',
-    unite: 'Etat Major',
-    email: 'henry.durand@intradef.gouv.fr',
-  };
-}
-
 const lieux1 = [
-  { value: 'HOMET' },
-  { value: 'INBS HOMET' },
-  { value: 'CACHIN' },
-  { value: 'COMNORD' },
-  { value: 'NARDOUET' },
+  { label: 'HOMET' },
+  { label: 'INBS HOMET' },
+  { label: 'CACHIN' },
+  { label: 'COMNORD' },
+  { label: 'NARDOUET' },
 ];
 
 const lieux2 = [
-  { value: 'BASE NAVALE' },
-  { value: 'ILOT SUD' },
-  { value: 'ETAT MAJOR' },
-  { value: 'FUSCO' },
-  { value: 'MESS' },
+  { label: 'BASE NAVALE' },
+  { label: 'ILOT SUD' },
+  { label: 'ETAT MAJOR' },
+  { label: 'FUSCO' },
+  { label: 'MESS' },
 ];
 
 // eslint-disable-next-line no-unused-vars
@@ -110,10 +111,88 @@ function getTypeEmploie() {
   ];
 }
 
-export default function FormInfosDemandeur({ dataToProps }) {
-  const { setForm, handleNext } = dataToProps;
+// is not a business day
+function isDeadlineRespected(value) {
+  const today = new Date();
+  const days = differenceInDays(value, today);
+  if (isThursday(today) || isFriday(today)) {
+    return days >= 4;
+  }
+  return days >= 2;
+}
+
+
+const REQUEST_ATTRIBUTES = gql`
+    fragment RequestResult on Request {
+      id
+      object
+      reason
+      from
+      to
+      places {
+        label
+      }
+    }
+  `;
+
+
+export const CREATE_REQUEST = gql`
+         mutation createRequest($request: RequestInput!) {
+           mutateCampus(id: "MORDOR"){
+              createRequest(request: $request) {
+              ...RequestResult
+            }
+          }
+         }
+         ${REQUEST_ATTRIBUTES}
+       `;
+
+export const EDIT_REQUEST = gql`
+         mutation editRequest($id: String!, $request: RequestInput!) {
+            mutateCampus(id: "MORDOR"){
+              editRequest(id: $id, request: $request) {
+                ...RequestResult
+              }
+          }
+         }
+         ${REQUEST_ATTRIBUTES}
+       `;
+
+
+export default function FormInfosClaimant({
+  formData, setForm, handleNext,
+}) {
   const classes = useStyles();
-  // Date Values
+
+  const { addAlert } = useSnackBar();
+
+  const [createRequest] = useMutation(CREATE_REQUEST, {
+    onCompleted: (data) => {
+      setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
+      handleNext();
+    },
+    onError: (error) => {
+      // Display good message
+      addAlert({
+        message: error.message,
+        severity: 'info',
+      });
+    },
+  });
+
+  const [updateRequest] = useMutation(EDIT_REQUEST, {
+    onCompleted: (data) => {
+      setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
+      handleNext();
+    },
+    onError: (error) => {
+      // Display good message
+      addAlert({
+        message: error.message,
+        severity: 'error',
+      });
+    },
+  });
 
   const {
     register, control, handleSubmit, watch, errors,
@@ -125,19 +204,18 @@ export default function FormInfosDemandeur({ dataToProps }) {
     'Zone Protégée': false,
   });
 
-  // Select Emploie
-  // eslint-disable-next-line no-unused-vars
-  const [labelWidth, setLabelWidth] = useState(0);
-
-  const inputLabel = useRef(null);
-
-  useEffect(() => {
-    if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
-
   const onSubmit = (data) => {
-    setForm((formData) => ({ ...formData, ...data }));
-    handleNext();
+    const { placeP, placeS, ...others } = data;
+    if (!formData.id) {
+      createRequest({ variables: { request: { ...others } } });
+    } else {
+      updateRequest({
+        variables: {
+          id: formData.id,
+          request: { ...others },
+        },
+      });
+    }
   };
 
   return (
@@ -158,20 +236,20 @@ export default function FormInfosDemandeur({ dataToProps }) {
               </Grid>
               <Grid className={classes.comps} item xs={12} sm={12}>
                 <FormControl
-                  error={Object.prototype.hasOwnProperty.call(errors, 'natureVisite')}
+                  error={Object.prototype.hasOwnProperty.call(errors, 'object')}
                   component="div"
                 >
                   <Controller
                     as={(
-                      <RadioGroup className={classes.radioNature} aria-label="nature">
+                      <RadioGroup className={classes.radioNature} aria-label="object">
                         <FormControlLabel
-                          value="Professionnelle"
+                          value={REQUEST_OBJECT.PROFESSIONAL}
                           control={<Radio color="primary" />}
                           label="Professionnelle"
                           labelPlacement="start"
                         />
                         <FormControlLabel
-                          value="Privee"
+                          value={REQUEST_OBJECT.PRIVATE}
                           control={<Radio color="primary" />}
                           label="Privée"
                           labelPlacement="start"
@@ -182,12 +260,10 @@ export default function FormInfosDemandeur({ dataToProps }) {
                     rules={{
                       required: 'La nature de la visite est obligatoire.',
                     }}
-                    name="natureVisite"
+                    name="object"
                     defaultValue=""
                   />
-                  {errors.natureVisite && (
-                    <FormHelperText>{errors.natureVisite.message}</FormHelperText>
-                  )}
+                  {errors.object && <FormHelperText>{errors.object.message}</FormHelperText>}
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -204,9 +280,9 @@ export default function FormInfosDemandeur({ dataToProps }) {
                       as={(
                         <DatePicker
                           label="du"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'dateStartVisite')}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'from')}
                           disablePast
-                          helperText={errors.dateStartVisite && errors.dateStartVisite.message}
+                          helperText={errors.from && errors.from.message}
                           fullWidth
                           inputProps={{
                             'data-testid': 'datedebut-visite',
@@ -214,11 +290,12 @@ export default function FormInfosDemandeur({ dataToProps }) {
                         />
                       )}
                       control={control}
-                      name="dateStartVisite"
+                      name="from"
                       rules={{
                         required: 'La date de début est obligatoire.',
                         validate: {
-                          valide: (value) => isValid(value) || 'Format invalide',
+                          format: (value) => isValid(value) || 'Format invalide',
+                          valide: (value) => isDeadlineRespected(value) || 'Attention aux durées minimum.',
                         },
                       }}
                       defaultValue={null}
@@ -228,10 +305,10 @@ export default function FormInfosDemandeur({ dataToProps }) {
                     <Controller
                       as={(
                         <DatePicker
-                          minDate={watch('dateStartVisite')}
+                          minDate={watch('from')}
                           label="au (inclus)"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'dateEndVisite')}
-                          helperText={errors.dateEndVisite && errors.dateEndVisite.message}
+                          error={Object.prototype.hasOwnProperty.call(errors, 'to')}
+                          helperText={errors.to && errors.to.message}
                           disablePast
                           fullWidth
                           inputProps={{
@@ -240,11 +317,12 @@ export default function FormInfosDemandeur({ dataToProps }) {
                         />
                       )}
                       control={control}
-                      name="dateEndVisite"
+                      name="to"
                       rules={{
                         required: 'La date de fin est obligatoire',
                         validate: {
-                          valide: (value) => isValid(value) || 'Format invalide',
+                          format: (value) => isValid(value) || 'Format invalide',
+                          valide: (value) => !isBefore(value, watch('from')) || 'Date éronnée',
                         },
                       }}
                       defaultValue={null}
@@ -286,9 +364,9 @@ export default function FormInfosDemandeur({ dataToProps }) {
               <Grid className={classes.comps} item sm={12} xs={12}>
                 <TextField
                   className={classes.testBlue}
-                  name="motifVisite"
-                  error={Object.prototype.hasOwnProperty.call(errors, 'motifVisite')}
-                  helperText={errors.motifVisite && errors.motifVisite.message}
+                  name="reason"
+                  error={Object.prototype.hasOwnProperty.call(errors, 'reason')}
+                  helperText={errors.reason && errors.reason.message}
                   variant="outlined"
                   fullWidth
                   multiline
@@ -314,31 +392,41 @@ export default function FormInfosDemandeur({ dataToProps }) {
 
               <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
                 <Controller
-                  as={<ListLieux expanded={expanded} setExpanded={setExpanded} />}
+                  as={(
+                    <ListLieux
+                      options={lieux1}
+                      expanded={expanded}
+                      setExpanded={setExpanded}
+                      onChange={(checked) => checked}
+                      label="Port Militaire"
+                    />
+                  )}
                   rules={{
                     validate: {
                       valide: (value) => (value && value.length > 0) || 'La zone est obligatoire',
                     },
                   }}
                   control={control}
-                  name="zone1"
-                  options={lieux1}
-                  onChange={(checked) => checked}
-                  label="Port Militaire"
+                  name="placeS"
                   defaultValue={[]}
                 />
-                {errors.zone1 && (
-                  <FormHelperText className={classes.error}>{errors.zone1.message}</FormHelperText>
+                {errors.placeS && (
+                  <FormHelperText className={classes.error}>{errors.placeS.message}</FormHelperText>
                 )}
               </Grid>
               <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
                 <Controller
-                  as={<ListLieux expanded={expanded} setExpanded={setExpanded} />}
+                  as={(
+                    <ListLieux
+                      expanded={expanded}
+                      setExpanded={setExpanded}
+                      options={lieux2}
+                      onChange={(checked) => checked}
+                      label="Zone Protégée"
+                    />
+                  )}
                   control={control}
-                  name="zone2"
-                  options={lieux2}
-                  onChange={(checked) => checked}
-                  label="Zone Protégée"
+                  name="placeP"
                   defaultValue={[]}
                 />
               </Grid>
@@ -347,7 +435,7 @@ export default function FormInfosDemandeur({ dataToProps }) {
 
           <Grid item sm={12} xs={12}>
             <Grid container justify="flex-end">
-              {watch('zone2') && watch('zone2').length > 0 && (
+              {watch('placeS') && watch('placeP').length > 0 && (
                 <Typography variant="body2" gutterBottom>
                   <WarningRoundedIcon className={classes.icon} />
                   Un accompagnateur sera exigé lors de la visite
@@ -369,3 +457,12 @@ export default function FormInfosDemandeur({ dataToProps }) {
     </div>
   );
 }
+
+FormInfosClaimant.propTypes = {
+  formData: PropTypes.shape({
+    id: PropTypes.string,
+    visitors: PropTypes.array,
+  }).isRequired,
+  setForm: PropTypes.func.isRequired,
+  handleNext: PropTypes.func.isRequired,
+};

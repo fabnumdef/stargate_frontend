@@ -19,7 +19,7 @@ import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { mapUserData } from '../../utils/mappers/adminMappers';
 import { isAdmin } from '../../utils/permissions';
-import { useSnackBar } from '../../lib/snackbar';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles((theme) => ({
   createUserForm: {

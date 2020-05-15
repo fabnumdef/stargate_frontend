@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -34,23 +34,23 @@ const columns = [
 ];
 
 function createData({
-  prenomVisiteur,
-  nomVisiteur,
-  gradeVisiteur,
-  uniteVisiteur,
-  typeVisiteur,
+  firstname,
+  birthLastname,
+  rank,
+  company,
+  type,
 }) {
-  if (!gradeVisiteur) {
+  if (!rank) {
     return {
-      visiteur: `${nomVisiteur.toUpperCase()} ${prenomVisiteur}`,
-      unite: uniteVisiteur,
-      type: typeVisiteur,
+      visiteur: `${birthLastname.toUpperCase()} ${firstname}`,
+      unite: company,
+      type,
     };
   }
   return {
-    visiteur: `${gradeVisiteur} ${nomVisiteur.toUpperCase()} ${prenomVisiteur}`,
-    unite: uniteVisiteur,
-    type: typeVisiteur,
+    visiteur: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
+    unite: company,
+    type,
   };
 }
 
@@ -64,12 +64,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabRecapDemande({
-  listVisiteurs, onUpdate, onDelete, handleBack,
+export default function TabRecapRequest({
+  visitors, onUpdate, onDelete, handleBack,
 }) {
   const classes = useStyles();
 
-  const rows = listVisiteurs.reduce((acc, vis) => {
+  const rows = visitors.reduce((acc, vis) => {
     acc.push(createData(vis));
     return acc;
   }, []);
@@ -98,7 +98,7 @@ export default function TabRecapDemande({
   };
 
   const handleUpdate = (index) => {
-    onUpdate(listVisiteurs[index]);
+    onUpdate(visitors[index]);
     handleBack();
   };
 
@@ -179,8 +179,6 @@ export default function TabRecapDemande({
                 </TableRow>
               );
             }
-
-
             return (
               <TableRow
                 onMouseOver={() => handleMouseEnter(index)}
@@ -227,3 +225,10 @@ export default function TabRecapDemande({
     </Table>
   );
 }
+
+TabRecapRequest.propTypes = {
+  visitors: PropTypes.objectOf(PropTypes.array).isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  handleBack: PropTypes.func.isRequired,
+};

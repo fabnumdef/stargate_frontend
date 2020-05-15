@@ -1,17 +1,19 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 // Import Material
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import { Header } from '../components';
+import { Header, Footer } from '../components';
 
 const useStyles = makeStyles(() => ({
   container: {
-    paddingTop: '8vh',
+    paddingTop: '15vh',
+    minHeight: '100vh',
+    marginBottom: '10%',
   },
 }));
 
-export default function NestedList({ children }) {
+export default function Template({ children }) {
   const classes = useStyles();
 
   return (
@@ -24,6 +26,11 @@ export default function NestedList({ children }) {
       >
         {children}
       </Box>
+      <Footer />
     </div>
   );
 }
+
+Template.propTypes = {
+  children: PropTypes.node.isRequired,
+};

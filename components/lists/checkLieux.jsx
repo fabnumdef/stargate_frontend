@@ -1,6 +1,5 @@
-// @flow
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import Checkbox from '@material-ui/core/Checkbox';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -31,15 +30,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.primary.main, 0.02),
   },
 }));
-
-type ListLieuxProps = {
-  lieux: Array<any>,
-  label: string,
-  name: string,
-  expanded: any,
-  setValue: any,
-  setState: any
-};
 
 const ExpansionPanelStyled = withStyles(() => ({
   root: {
@@ -82,11 +72,9 @@ const ListStyled = withStyles(() => ({
   },
 }))(List);
 
-export default function ListLieux(props: ListLieuxProps) {
-  const {
-    options, label, expanded, onChange, setExpanded,
-  } = props;
-
+export default function ListLieux({
+  options, label, expanded, onChange, setExpanded,
+}) {
   const [checked, setChecked] = React.useState([]);
 
   const handleToggle = (value) => () => {
@@ -99,7 +87,7 @@ export default function ListLieux(props: ListLieuxProps) {
       newChecked.splice(currentIndex, 1);
     }
     setChecked(newChecked);
-    onChange(newChecked);
+    onChange(newChecked.map((place) => place.label));
   };
 
   const handleChange = (panel) => () => {
@@ -110,7 +98,7 @@ export default function ListLieux(props: ListLieuxProps) {
     const newChecked = [...checked];
     newChecked.splice(index, 1);
     setChecked(newChecked);
-    onChange(newChecked);
+    onChange(newChecked.map((place) => place.label));
   };
 
   const classes = useStyles();
@@ -129,8 +117,8 @@ export default function ListLieux(props: ListLieuxProps) {
             <Chip
               color="primary"
               style={{ margin: '2px' }}
-              key={lieu.value}
-              label={lieu.value}
+              key={lieu.label}
+              label={lieu.label}
               onDelete={handleDelete}
             />
           ))}
@@ -143,7 +131,7 @@ export default function ListLieux(props: ListLieuxProps) {
             return (
               <ListItem
                 className={classes.listItem}
-                key={lieu.value}
+                key={lieu.label}
                 button
                 onClick={handleToggle(lieu)}
                 data-testid={`listitem-${label}-${index}`}
@@ -158,7 +146,7 @@ export default function ListLieux(props: ListLieuxProps) {
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={index} primary={lieu.value} />
+                <ListItemText id={index} primary={lieu.label} />
               </ListItem>
             );
           })}
@@ -167,3 +155,12 @@ export default function ListLieux(props: ListLieuxProps) {
     </ExpansionPanelStyled>
   );
 }
+
+ListLieux.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.object).isRequired,
+  label: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  expanded: PropTypes.objectOf(PropTypes.string).isRequired,
+  onChange: PropTypes.func.isRequired,
+  setExpanded: PropTypes.func.isRequired,
+};

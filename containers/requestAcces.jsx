@@ -1,7 +1,7 @@
-// @flow
 import React, { useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
@@ -13,7 +13,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import NoSsr from '../lib/nossr';
 
 import Template from './template';
-import { FormInfosDemandeur, FormInfosVisiteur, FormInfosRecapDemande } from '../components';
+import { FormInfosRequest, FormInfosVisitor, FormInfosRecapDemande } from '../components';
 
 const AntTab = withStyles((theme) => ({
   root: {
@@ -51,16 +51,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type TabPanelProps = {
-  children: any,
-  value: number,
-  index: number,
-  ...
-};
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index } = props;
-
+function TabPanel({ children, value, index }) {
   return (
     <Typography
       component="div"
@@ -74,14 +66,22 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function getSteps(): Array<string> {
+TabPanel.propTypes = {
+  children: PropTypes.node.isRequired,
+  value: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired,
+};
+
+function getSteps() {
   return ['Demande', 'Visiteur', 'Recapitulatif'];
 }
 
-export default function FormDemandeAcces() {
+export default function RequestAccesForm() {
   const classes = useStyles();
-  // Moteur du Stepper
-  const [activeStep, setActiveStep] = useState<number>(0);
+
+
+  // Stepper's functions
+  const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
 
   const handleNext = () => {
@@ -92,23 +92,19 @@ export default function FormDemandeAcces() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // Data finale du form
-  const [formData, setForm] = useState({
-    listVisiteurs: [],
-  });
+  // functionality to update a Visitor.
+  const [selectVisitor, setSelectVisitor] = useState();
 
-  const dataToProps = {
-    formData,
-    setForm,
-    handleNext,
-    handleBack,
-  };
+  // FormState
+  const [formData, setForm] = useState({
+    visitors: [],
+  });
 
   return (
     <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
+          <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
               Nouvelle Demande
             </Typography>
@@ -124,17 +120,29 @@ export default function FormDemandeAcces() {
         <Grid item sm={12} xs={12}>
           <TabPanel value={activeStep} index={0}>
             <NoSsr>
-              <FormInfosDemandeur dataToProps={dataToProps} />
+              <FormInfosRequest formData={formData} setForm={setForm} handleNext={handleNext} />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={1}>
             <NoSsr>
-              <FormInfosVisiteur dataToProps={dataToProps} />
+              <FormInfosVisitor
+                formData={formData}
+                setForm={setForm}
+                selectVisitor={selectVisitor}
+                handleNext={handleNext}
+                handleBack={handleBack}
+              />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={2}>
             <NoSsr>
-              <FormInfosRecapDemande dataToProps={dataToProps} />
+              <FormInfosRecapDemande
+                formData={formData}
+                setForm={setForm}
+                handleNext={handleNext}
+                handleBack={handleBack}
+                setSelectVisitor={setSelectVisitor}
+              />
             </NoSsr>
           </TabPanel>
         </Grid>
