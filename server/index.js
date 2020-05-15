@@ -44,7 +44,7 @@ app.prepare().then(() => {
     .listen(process.env.PROMETHEUS_PORT || 9091, '0.0.0.0', () => {
       // eslint-disable-next-line no-console
       console.log(
-        `Prometheus exporter running at http://localhost:${process.env.PROMETHEUS_PORT || 9092}`
+        `Prometheus exporter running at http://localhost:${process.env.PROMETHEUS_PORT || 9091}`
       );
     });
 });
