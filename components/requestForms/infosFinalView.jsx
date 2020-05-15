@@ -56,7 +56,7 @@ export default function InfosFinalView({
       });
     },
     onError: () => {
-      // Display good message
+      //  @todo: Display good message
       addAlert({
         message: 'erreur graphQL',
         severity: 'error',

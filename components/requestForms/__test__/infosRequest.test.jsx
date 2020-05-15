@@ -50,41 +50,4 @@ describe('FormInfosClaimant', () => {
 
     expect(mockItemsPro.handleNext).not.toHaveBeenCalled();
   });
-
-  // it('test validation true', async () => {
-  //   const { getByTestId, getByLabelText } = render(
-  //     <FormInfosClaimant {...mockItemsPro} />,
-  //   );
-
-  //   await act(async () => {
-  //     fireEvent.click(getByLabelText(/professionnelle/i));
-  //   });
-  //   await act(async () => {
-  //     fireEvent.change(getByTestId(/motif-visite/i), {
-  //       target: { value: 'this is a motif' },
-  //     });
-  //   });
-  //   await act(async () => {
-  //     fireEvent.change(getByTestId(/datedebut-visite/i), {
-  //       target: { value: '24/12/2020' },
-  //     });
-  //   });
-  //   await act(async () => {
-  //     fireEvent.change(getByTestId(/datefin-visite/i), {
-  //       target: { value: '26/12/2020' },
-  //     });
-  //   });
-  //   await act(async () => {
-  //     fireEvent.click(getByTestId(/expand-icon-port militaire/i));
-  //   });
-
-  //   await act(async () => {
-  //     fireEvent.click(getByTestId(/listitem-port militaire-1/i));
-  //   });
-  //   await act(async () => {
-  //     fireEvent.submit(getByTestId(/form-demandeur/i));
-  //   });
-
-  //   expect(mockItemsPro.handleNext).toHaveBeenCalled();
-  // });
 });
