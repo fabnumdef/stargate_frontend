@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import remove from 'lodash';
 
 // Apollo
 import gql from 'graphql-tag';
@@ -51,9 +50,12 @@ export default function InfosFinalView({
 
   const [deleteVisitor] = useMutation(DELETE_VISITOR, {
     onCompleted: (data) => {
+      const newVisitors = formData.visitors.filter(
+        (visitor) => visitor.id !== data.mutateCampus.mutateRequest.deleteVisitor.id,
+      );
       setForm({
         ...formData,
-        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
+        visitors: newVisitors,
       });
       addAlert({
         message: 'Le visiteur a bien été supprimé de la demande',
@@ -105,11 +107,6 @@ export default function InfosFinalView({
             }}
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
-
-              // Delete from formData
-              let visiteurs = [...formData.visitors];
-              visiteurs = remove(visiteurs, (visiteur) => visiteur.id === idVisitor);
-              setForm({ ...formData, visitors: visiteurs });
             }}
             handleBack={handleBack}
           />

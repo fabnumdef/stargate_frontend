@@ -26,14 +26,10 @@ const columns = [
     label: 'Unité/Société',
     minWidth: 150,
   },
-  {
-    id: 'type',
-    label: 'Type',
-    minWidth: 150,
-  },
 ];
 
 function createData({
+  id,
   firstname,
   birthLastname,
   rank,
@@ -42,12 +38,14 @@ function createData({
 }) {
   if (!rank) {
     return {
+      id,
       visiteur: `${birthLastname.toUpperCase()} ${firstname}`,
       unite: company,
       type,
     };
   }
   return {
+    id,
     visiteur: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
     unite: company,
     type,
@@ -106,8 +104,8 @@ export default function TabRecapRequest({
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-  const handleDeleteConfirm = (mail) => {
-    onDelete(mail);
+  const handleDeleteConfirm = (id) => {
+    onDelete(id);
     setDel({});
   };
 
@@ -154,14 +152,14 @@ export default function TabRecapRequest({
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer cette demande ?
+                          Êtes-vous sûr de vouloir supprimer ce visiteur de la demande ?
                         </Typography>
                       </Grid>
                       <Grid item sm={2}>
                         <IconButton
                           aria-label="valide"
                           className={classes.icon}
-                          onClick={() => handleDeleteConfirm(row.emailVisiteur)}
+                          onClick={() => handleDeleteConfirm(row.id)}
                         >
                           <DoneIcon />
                         </IconButton>
