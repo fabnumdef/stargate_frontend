@@ -60,9 +60,31 @@ export function LoginContextProvider(props) {
 
   const { data: init } = useQuery(GET_INITIALIZEDCACHE);
 
+  const tokenDuration = () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : undefined;
+    if (!token) {
+      return {
+        expiredToken: true,
+      };
+    }
+    const payload = localStorage.getItem('token').split('.')[1];
+    const { exp, iat } = JSON.parse(window.atob(payload));
+    const cur = Math.floor(Date.now() / 1000);
+    const duration = exp - iat;
+    const renewTrigger = duration / 2;
+    const expIn = exp - cur;
+    const expiredToken = expIn <= 0;
+
+    return {
+      renewTrigger,
+      expIn,
+      expiredToken,
+    };
+  };
+
   const [isCacheInit, setIsCacheInit] = useState(init ? init.initializedCache : null);
   const [isLoggedUser, setIsLoggedUser] = useState(
-    typeof window !== 'undefined' ? !!localStorage.getItem('token') : undefined,
+    !tokenDuration().expiredToken,
   );
 
   const signOut = (alert = false) => {
@@ -93,13 +115,10 @@ export function LoginContextProvider(props) {
       setIsCacheInit(true);
       return me;
     } catch (e) {
+      setIsCacheInit(true);
       return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
     }
   };
-
-  if (isLoggedUser && !isCacheInit) {
-    getUserData();
-  }
 
   const [resetPass, setResetPass] = useState(() => {
     if (router.query.token && router.query.email) {
@@ -123,13 +142,8 @@ export function LoginContextProvider(props) {
       return false;
     }
 
-    const payload = localStorage.getItem('token').split('.')[1];
-    const { exp, iat } = JSON.parse(window.atob(payload));
-    const cur = Math.floor(Date.now() / 1000);
-    const duration = exp - iat;
-    const renewTrigger = duration / 2;
-    const expIn = exp - cur;
-    if (expIn <= 0) {
+    const { renewTrigger, expIn, expiredToken } = tokenDuration();
+    if (expiredToken) {
       signOut({ message: 'Session expirée', severity: 'warning' });
       clearTimeout(reloadAuth);
       return false;
@@ -154,6 +168,11 @@ export function LoginContextProvider(props) {
       return true;
     }
   };
+
+  if (isLoggedUser && !isCacheInit) {
+    authRenew();
+    getUserData();
+  }
 
   const signIn = async (email, password, resetToken = null) => {
     try {
@@ -209,7 +228,7 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser]);
 
-  if (!isCacheInit || (!isLoggedUser && router.pathname !== '/login')) {
+  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login')) {
     return <div />;
   }
 
