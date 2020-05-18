@@ -29,7 +29,7 @@ import { isValid } from 'date-fns';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import { REQUEST_OBJECT, ID_DOCUMENT } from '../../utils/constants/enums';
-import { mapVisitorData } from '../../utils/mappers/requestAcces';
+import { mapVisitorData, mapVisitorEdit } from '../../utils/mappers/requestAcces';
 
 import DatePicker from '../styled/date';
 import Nationalite from '../../utils/constants/insee/pays2019.json';
@@ -88,7 +88,7 @@ function getTypeDocument(isInternal) {
   ];
 }
 
-function getNationalite() {
+function getNationality() {
   const arr = [...Nationalite];
   return arr.map((item) => item.nationalite);
 }
@@ -109,6 +109,7 @@ const ADD_VISITOR = gql`
       mutateRequest(id: $idRequest) {
         createVisitor(visitor: $visitor){
           id
+          isInternal
           nid
           firstname
           birthLastname
@@ -121,10 +122,44 @@ const ADD_VISITOR = gql`
           nationality
           birthday
           birthplace
+          identityDocuments {
+              kind
+              reference
+          }
         }
       }
     }
   }
+`;
+
+const EDIT_VISITOR = gql`
+    mutation editVisitor( $campusId: String!, $idRequest: String!, $visitor: RequestVisitorInput!, $idVisitor: String!) {
+        campusId @client @export(as: "campusId")
+        mutateCampus(id: $campusId) {
+            mutateRequest(id: $idRequest) {
+                editVisitor(visitor: $visitor, id: $idVisitor){
+                    id
+                    isInternal
+                    nid
+                    firstname
+                    birthLastname
+                    usageLastname
+                    rank
+                    company
+                    email
+                    vip
+                    vipReason
+                    nationality
+                    birthday
+                    birthplace
+                    identityDocuments {
+                        kind
+                        reference
+                    }
+                }
+            }
+        }
+    }
 `;
 
 
@@ -132,7 +167,6 @@ export default function FormInfoVisitor({
   formData, setForm, handleNext, handleBack, selectVisitor,
 }) {
   const classes = useStyles();
-
   const {
     register,
     control,
@@ -140,27 +174,33 @@ export default function FormInfoVisitor({
     watch,
     errors,
     setValue,
+    getValues,
     clearError,
   } = useForm({
+    defaultValues: {
+      nationality: selectVisitor.nationality ? selectVisitor.nationality : '',
+    },
   });
-
-  useEffect(() => {
-    if (selectVisitor) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(
-        selectVisitor,
-      )) {
-        setValue(key, value);
-      }
-    }
-  }, [selectVisitor, setValue]);
-
-  const { addAlert } = useSnackBar();
 
   const handleNationalityChange = (event, value) => {
     clearError('nationality');
     setValue('nationality', value);
   };
+
+  useEffect(() => {
+    if (selectVisitor.id) {
+      const visitorData = mapVisitorEdit(selectVisitor);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const [key, value] of Object.entries(
+        visitorData,
+      )) {
+        setValue(key, value);
+      }
+      handleNationalityChange(null, selectVisitor.nationality);
+    }
+  }, [selectVisitor, setValue]);
+
+  const { addAlert } = useSnackBar();
 
   useEffect(() => {
     register(
@@ -192,13 +232,45 @@ export default function FormInfoVisitor({
     },
   });
 
+  const [editVisitor] = useMutation(EDIT_VISITOR, {
+    onCompleted: (data) => {
+      const newVisitors = formData.visitors.map((visitor) => {
+        if (visitor.id === data.mutateCampus.mutateRequest.editVisitor.id) {
+          return data.mutateCampus.mutateRequest.editVisitor;
+        }
+        return visitor;
+      });
+      setForm({
+        ...formData,
+        visitors: newVisitors,
+      });
+      // minArmOrNot();
+      handleNext();
+    },
+    onError: () => {
+      // Display good message
+      addAlert({
+        message: 'erreur graphQL',
+        severity: 'error',
+      });
+    },
+  });
+
 
   const onSubmit = (data) => {
     // TODO DELETE WHEN API TAKE CARE OF TYPE OF EMPLOYE
-    // eslint-disable-next-line no-unused-vars
 
     const visitorData = mapVisitorData(data);
-    createVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
+    if (selectVisitor.id) {
+      return editVisitor({
+        variables: {
+          idRequest: formData.id,
+          visitor: { ...visitorData },
+          idVisitor: selectVisitor.id,
+        },
+      });
+    }
+    return createVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
   };
 
   const inputLabel = useRef(null);
@@ -514,22 +586,24 @@ export default function FormInfoVisitor({
                   <Autocomplete
                     freeSolo
                     id="combo-box-naissance"
-                    options={getNationalite()}
+                    options={getNationality()}
                     getOptionLabel={(option) => option}
                     onChange={handleNationalityChange}
-                    defaultValue=""
+                    defaultValue={
+                        getNationality().find((n) => n === getValues().nationality)
+                        }
                     renderInput={(params) => (
                       <TextField
                         variant="outlined"
-                          // TODO to delete with AutoComplete
-                          // eslint-disable-next-line react/jsx-props-no-spreading
+                            // TODO to delete with AutoComplete
+                            // eslint-disable-next-line react/jsx-props-no-spreading
                         {...params}
                         label="Nationalité"
                         error={Object.prototype.hasOwnProperty.call(errors, 'nationality')}
                         helperText={
-                            errors.nationality
-                            && errors.nationality.message
-                          }
+                              errors.nationality
+                              && errors.nationality.message
+                            }
                         fullWidth
                       />
                     )}
@@ -549,7 +623,7 @@ export default function FormInfoVisitor({
                         <Select
                           fullWidth
                           labelId="kind"
-                          id="typeDocuement"
+                          id="typeDocument"
                           labelWidth={labelWidth}
                         >
                           {getTypeDocument(watch('isInternal')).map((doc) => (
@@ -707,16 +781,17 @@ FormInfoVisitor.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
     object: PropTypes.string,
-    from: PropTypes.instanceOf(Date),
-    to: PropTypes.instanceOf(Date),
+    from: PropTypes.string,
+    to: PropTypes.string,
     reason: PropTypes.string,
     place: PropTypes.array,
     visitors: PropTypes.array,
-  }),
+  }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
   selectVisitor: PropTypes.shape({
+    id: PropTypes.string,
     nid: PropTypes.string,
     firstname: PropTypes.string,
     birthLastname: PropTypes.string,
@@ -724,14 +799,9 @@ FormInfoVisitor.propTypes = {
     rank: PropTypes.string,
     company: PropTypes.string,
     email: PropTypes.string,
-    vip: PropTypes.string,
+    vip: PropTypes.bool,
     vipReason: PropTypes.string,
     nationality: PropTypes.string,
     reference: PropTypes.string,
-  }),
-};
-
-FormInfoVisitor.defaultProps = {
-  formData: undefined,
-  selectVisitor: undefined,
+  }).isRequired,
 };

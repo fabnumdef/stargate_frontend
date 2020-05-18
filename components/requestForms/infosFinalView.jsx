@@ -102,9 +102,7 @@ export default function InfosFinalView({
         <Paper className={classes.root}>
           <TabRecapRequest
             visitors={formData.visitors}
-            onUpdate={(visiteur) => {
-              setSelectVisitor(visiteur);
-            }}
+            setSelectVisitor={setSelectVisitor}
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
             }}
@@ -129,8 +127,8 @@ InfosFinalView.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
     object: PropTypes.string,
-    from: PropTypes.instanceOf(Date),
-    to: PropTypes.instanceOf(Date),
+    from: PropTypes.string,
+    to: PropTypes.string,
     reason: PropTypes.string,
     places: PropTypes.array,
     visitors: PropTypes.array,

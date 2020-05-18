@@ -63,7 +63,7 @@ const useStyles = makeStyles({
 });
 
 export default function TabRecapRequest({
-  visitors, onUpdate, onDelete, handleBack,
+  visitors, onDelete, handleBack, setSelectVisitor,
 }) {
   const classes = useStyles();
 
@@ -87,7 +87,8 @@ export default function TabRecapRequest({
   //   setPage(0);
   // };
 
-  const handleAjouterVisiteurs = () => {
+  const handleAddVisitor = () => {
+    setSelectVisitor({});
     handleBack();
   };
 
@@ -96,7 +97,7 @@ export default function TabRecapRequest({
   };
 
   const handleUpdate = (index) => {
-    onUpdate(visitors[index]);
+    setSelectVisitor(visitors[index]);
     handleBack();
   };
 
@@ -132,7 +133,7 @@ export default function TabRecapRequest({
               size="small"
               variant="outlined"
               color="primary"
-              onClick={handleAjouterVisiteurs}
+              onClick={handleAddVisitor}
               startIcon={<AddIcon />}
               className={classes.icon}
             >
@@ -184,7 +185,7 @@ export default function TabRecapRequest({
                 onMouseLeave={() => handleMouseLeave(index)}
                 role="checkbox"
                 tabIndex={-1}
-                key={row.emailVisiteur}
+                key={row.id}
               >
                 {columns.map((column) => {
                   const value = row[column.id];
@@ -225,8 +226,8 @@ export default function TabRecapRequest({
 }
 
 TabRecapRequest.propTypes = {
-  visitors: PropTypes.objectOf(PropTypes.array).isRequired,
-  onUpdate: PropTypes.func.isRequired,
+  visitors: PropTypes.arrayOf(PropTypes.shape).isRequired,
   onDelete: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
+  setSelectVisitor: PropTypes.func.isRequired,
 };
