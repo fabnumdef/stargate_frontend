@@ -66,11 +66,16 @@ export default function InfosFinalView({
       const newVisitors = formData.visitors.filter(
         (visitor) => visitor.id !== data.mutateCampus.mutateRequest.deleteVisitor.id,
       );
+      if (newVisitors.length === 0) {
+        return setForm({
+          visitors: [],
+        });
+      }
       setForm({
         ...formData,
         visitors: newVisitors,
       });
-      addAlert({
+      return addAlert({
         message: 'Le visiteur a bien été supprimé de la demande',
         severity: 'success',
       });
@@ -88,7 +93,7 @@ export default function InfosFinalView({
     onCompleted: () => {
       router.push('/');
       addAlert({
-        message: 'La demande a bien été annulée',
+        message: 'La demande a bien été supprimée',
         severity: 'success',
       });
     },
