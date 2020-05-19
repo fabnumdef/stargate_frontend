@@ -155,6 +155,11 @@ export default function TabRecapRequest({
                         <Typography variant="body1">
                           Êtes-vous sûr de vouloir supprimer ce visiteur de la demande ?
                         </Typography>
+                        {rows.length === 1 && (
+                          <Typography variant="body1" color="error">
+                            Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                          </Typography>
+                        )}
                       </Grid>
                       <Grid item sm={2}>
                         <IconButton

@@ -105,6 +105,9 @@ export default function InfosFinalView({
             setSelectVisitor={setSelectVisitor}
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
+              if (formData.visitors.length === 1) {
+                // TODO delete request
+              }
             }}
             handleBack={handleBack}
           />

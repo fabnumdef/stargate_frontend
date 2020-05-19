@@ -182,11 +182,6 @@ export default function FormInfoVisitor({
     },
   });
 
-  const handleNationalityChange = (event, value) => {
-    clearError('nationality');
-    setValue('nationality', value);
-  };
-
   useEffect(() => {
     if (selectVisitor.id) {
       const visitorData = mapVisitorEdit(selectVisitor);
@@ -196,7 +191,6 @@ export default function FormInfoVisitor({
       )) {
         setValue(key, value);
       }
-      handleNationalityChange(null, selectVisitor.nationality);
     }
   }, [selectVisitor, setValue]);
 
@@ -208,6 +202,13 @@ export default function FormInfoVisitor({
       { required: 'La nationalité est obligatoire' },
     );
   }, [register]);
+
+  const handleNationalityChange = (event, value) => {
+    clearError('nationality');
+    setValue('nationality', value);
+    setValue('kind', '');
+    setValue('reference', '');
+  };
 
   const handleClickCancel = () => {
     if (formData.visitors.length > 0) handleNext();
