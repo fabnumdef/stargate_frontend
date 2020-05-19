@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
@@ -41,10 +42,22 @@ const DELETE_VISITOR = gql`
   }
 `;
 
+const DELETE_REQUEST = gql`
+    mutation deleteRequest($idRequest: String!, $campusId: String!) {
+        campusId @client @export(as: "campusId")
+        mutateCampus(id: $campusId) {
+            deleteRequest(id: $idRequest) {
+                id
+            }
+        }
+    }
+`;
+
 export default function InfosFinalView({
   formData, setForm, handleBack, setSelectVisitor,
 }) {
   const classes = useStyles();
+  const router = useRouter();
 
   const { addAlert } = useSnackBar();
 
@@ -71,6 +84,22 @@ export default function InfosFinalView({
     },
   });
 
+  const [deleteRequest] = useMutation(DELETE_REQUEST, {
+    onCompleted: () => {
+      router.push('/');
+      addAlert({
+        message: 'La demande a bien été annulée',
+        severity: 'success',
+      });
+    },
+    onError: () => {
+      //  @todo: Display good message
+      addAlert({
+        message: 'erreur graphQL',
+        severity: 'error',
+      });
+    },
+  });
 
   return (
     <Grid container spacing={4}>
@@ -106,7 +135,7 @@ export default function InfosFinalView({
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
               if (formData.visitors.length === 1) {
-                // TODO delete request
+                deleteRequest({ variables: { idRequest: formData.id } });
               }
             }}
             handleBack={handleBack}
