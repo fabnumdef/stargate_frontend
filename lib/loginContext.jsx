@@ -109,7 +109,9 @@ export function LoginContextProvider(props) {
           initializedCache: true,
           me,
           activeRole: me.roles[activeRoleNumber],
-          campusId: me.roles[activeRoleNumber].campuses[0].id,
+          campusId: me.roles[activeRoleNumber].campuses[0]
+            ? me.roles[activeRoleNumber].campuses[0].id
+            : null,
         },
       });
       setIsCacheInit(true);
