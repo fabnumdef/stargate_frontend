@@ -45,7 +45,7 @@ describe('FormInfosClaimant', () => {
     const DateErrorNode = await waitForElement(() => getByText(/la date de début est obligatoire/i));
     expect(DateErrorNode).toBeInTheDocument();
 
-    const LieuxErrorNode = await waitForElement(() => getByText(/la zone est obligatoire/i));
+    const LieuxErrorNode = await waitForElement(() => getByText(/Le choix d'un lieu est obligatoire/i));
     expect(LieuxErrorNode).toBeInTheDocument();
 
     expect(mockItemsPro.handleNext).not.toHaveBeenCalled();

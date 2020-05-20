@@ -103,8 +103,9 @@ function getNationalite() {
 
 // TODO Add PAPERS
 const ADD_VISITOR = gql`
-  mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!) {
-    mutateCampus(id: "MORDOR") {
+  mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
+    campusId @client @export(as: "campusId")
+    mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
         createVisitor(visitor: $visitor){
           id
@@ -164,7 +165,7 @@ export default function FormInfoVisitor({
   useEffect(() => {
     register(
       { name: 'nationality' },
-      { required: 'La nationalitée est obligatoire' },
+      { required: 'La nationalité est obligatoire' },
     );
   }, [register]);
 
