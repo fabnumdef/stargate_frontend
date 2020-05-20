@@ -12,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import BuildIcon from '@material-ui/icons/Build';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import LinkOffOutlinedIcon from '@material-ui/icons/LinkOffOutlined';
+import { useLogin } from '../../../lib/loginContext';
 import Avatar from './icon';
 
 const StyledMenu = withStyles({
@@ -58,6 +59,7 @@ const useStyles = makeStyles(() => ({
 export default function MenuIcon() {
   const classes = useStyles();
   const router = useRouter();
+  const { signOut } = useLogin();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -67,6 +69,10 @@ export default function MenuIcon() {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const handleSignOut = () => {
+    signOut({ message: 'Vous avez bien été déconnecté', severity: 'success' });
   };
 
   return (
@@ -99,7 +105,7 @@ export default function MenuIcon() {
           <ListItemText primary="Paramétrer" />
         </StyledMenuItem>
 
-        <StyledMenuItem>
+        <StyledMenuItem onClick={() => handleSignOut()}>
           <ListItemIcon>
             <LinkOffOutlinedIcon fontSize="default" />
           </ListItemIcon>
