@@ -15,7 +15,6 @@ import DoneIcon from '@material-ui/icons/Done';
 import ErrorIcon from '@material-ui/icons/Error';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CustomTableCellHeader from '../styled/customTableCellHeader';
@@ -53,6 +52,17 @@ export default function TabAdminUsers({
   const classes = useStyles();
 
   const [del, setDel] = useState({});
+
+  const [hover, setHover] = useState({});
+
+  const handleMouseEnter = (index) => {
+    setHover((prevState) => ({ ...prevState, [index]: true }));
+  };
+
+  const handleMouseLeave = (index) => {
+    setTimeout(() => {}, 2000);
+    setHover((prevState) => ({ ...prevState, [index]: false }));
+  };
 
   const handleDelete = (index) => {
     setDel((prevState) => ({ ...prevState, [index]: true }));
@@ -93,34 +103,30 @@ export default function TabAdminUsers({
           if (del[index]) {
             return (
               <TableRow tabIndex={-1} key={row.id}>
-                <Typography variant="body2">
-                  <TableCell key="delete" colspan={columns.length + 1}>
-                    <Grid container>
-                      <Grid item sm={9}>
-                        <Typography variant="body1">
-                          { tabData.deleteText }
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={3}>
-                        <IconButton
-                          aria-label="valide"
-                          className={classes.icon}
-                          onClick={() => handleDeleteConfirm(row.id)}
-                        >
-                          <DoneIcon />
-                        </IconButton>
-
-                        <IconButton
-                          aria-label="cancel"
-                          className={classes.icon}
-                          onClick={() => handleDeleteAvorted(index)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </Grid>
+                <TableCell key="delete" colSpan={columns.length + 1}>
+                  <Grid container>
+                    <Grid item sm={10}>
+                      {tabData.deleteText}
                     </Grid>
-                  </TableCell>
-                </Typography>
+                    <Grid item sm={2}>
+                      <IconButton
+                        aria-label="valide"
+                        className={classes.icon}
+                        onClick={() => handleDeleteConfirm(row.id)}
+                      >
+                        <DoneIcon />
+                      </IconButton>
+
+                      <IconButton
+                        aria-label="cancel"
+                        className={classes.icon}
+                        onClick={() => handleDeleteAvorted(index)}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </TableCell>
               </TableRow>
             );
           }
@@ -131,6 +137,9 @@ export default function TabAdminUsers({
               role="checkbox"
               tabIndex={-1}
               key={row.id}
+              onMouseOver={() => handleMouseEnter(index)}
+              onFocus={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave(index)}
             >
               {columns.map((column) => {
                 const value = row[column.id];
@@ -145,19 +154,23 @@ export default function TabAdminUsers({
                 );
               })}
               <TableCell key="modif" align="right">
-                <Link href="/administration/utilisateurs">
-                  <IconButton aria-label="modifier" color="primary" className={classes.icon}>
-                    <EditIcon />
-                  </IconButton>
-                </Link>
-                <IconButton
-                  aria-label="supprimer"
-                  className={classes.icon}
-                  color="primary"
-                  onClick={() => handleDelete(index)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                {hover[index] && (
+                  <>
+                    <Link href="/administration/utilisateurs">
+                      <IconButton aria-label="modifier" color="primary" className={classes.icon}>
+                        <EditIcon />
+                      </IconButton>
+                    </Link>
+                    <IconButton
+                      aria-label="supprimer"
+                      className={classes.icon}
+                      color="primary"
+                      onClick={() => handleDelete(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
+                )}
               </TableCell>
             </TableRow>
           );

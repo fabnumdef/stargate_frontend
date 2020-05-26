@@ -101,7 +101,7 @@ export default function TabVisiteurs({ tabData }) {
             if (del[index]) {
               return (
                 <TableRow tabIndex={-1} key={row.code}>
-                  <TableCell key="delete" align="justify" colspan={columns.length + 1}>
+                  <TableCell key="delete" align="justify" colSpan={columns.length + 1}>
                     <Grid container>
                       <Grid item sm={9}>
                         <Typography variant="subtitle2">
