@@ -18,7 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { mapUserData } from '../../utils/mappers/adminMappers';
-import { isAdmin } from '../../utils/permissions';
+import { isAdmin, isSuperAdmin } from '../../utils/permissions';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles((theme) => ({
@@ -193,7 +193,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                       fullWidth
                       labelId="create-user-campus"
                       id="campus"
-                      disabled={!isAdmin(userRole.role)}
+                      disabled={isAdmin(userRole.role)}
                       labelWidth={labelWidth}
                     >
                       {dataCampuses.listCampuses.list.map((campus) => (
@@ -232,7 +232,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                     <Select
                       labelId="create-user-unit"
                       id="unit"
-                      disabled={!isAdmin(userRole.role) || !dataUnits}
+                      disabled={!dataUnits}
                       labelWidth={labelWidth}
                     >
                       {dataUnits && dataUnits.getCampus.listUnits.list.map((unit) => (
@@ -244,7 +244,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                     )}
                   control={control}
                   name="unit"
-                  defaultValue={isAdmin(userRole.role) ? '' : defaultValues.unit}
+                  defaultValue={isSuperAdmin(userRole.role) ? '' : defaultValues.unit}
                   rules={{ required: true }}
                 />
                 {errors.unit && (

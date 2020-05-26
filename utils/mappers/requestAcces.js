@@ -14,4 +14,13 @@ export const mapVisitorData = (data) => {
   return { ...visitor, identityDocuments: { kind, reference } };
 };
 
+export const mapVisitorEdit = (data) => ({
+  ...data,
+  isInternal: data.isInternal ? 'MINARM' : 'HORS MINARM',
+  vip: data.vip ? 'TRUE' : 'FALSE',
+  kind: data.identityDocuments[0].kind,
+  reference: data.identityDocuments[0].reference,
+  birthday: new Date(data.birthday),
+});
+
 export default {};

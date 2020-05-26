@@ -17,6 +17,7 @@ const mockItemsPro = {
     to: new Date(),
     reason: 'A reason !',
   },
+  selectVisitor: {},
   setForm: jest.fn(),
   handleNext: jest.fn(),
   handleBack: jest.fn(),

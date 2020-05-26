@@ -1,12 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import remove from 'lodash';
 
 // Apollo
 import gql from 'graphql-tag';
@@ -30,8 +30,9 @@ const useStyles = makeStyles({
 });
 
 const DELETE_VISITOR = gql`
-  mutation deleteVisitor($idRequest: String!, $idVisitor: String!) {
-    mutateCampus(id: "MORDOR") {
+  mutation deleteVisitor($idRequest: String!, $idVisitor: String!, $campusId: String!) {
+    campusId @client @export(as: "campusId")
+    mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
         deleteVisitor(id: $idVisitor) {
           id
@@ -41,18 +42,42 @@ const DELETE_VISITOR = gql`
   }
 `;
 
+const DELETE_REQUEST = gql`
+    mutation deleteRequest($idRequest: String!, $campusId: String!) {
+        campusId @client @export(as: "campusId")
+        mutateCampus(id: $campusId) {
+            deleteRequest(id: $idRequest) {
+                id
+            }
+        }
+    }
+`;
+
 export default function InfosFinalView({
   formData, setForm, handleBack, setSelectVisitor,
 }) {
   const classes = useStyles();
+  const router = useRouter();
 
   const { addAlert } = useSnackBar();
 
   const [deleteVisitor] = useMutation(DELETE_VISITOR, {
     onCompleted: (data) => {
+      const newVisitors = formData.visitors.filter(
+        (visitor) => visitor.id !== data.mutateCampus.mutateRequest.deleteVisitor.id,
+      );
+      if (newVisitors.length === 0) {
+        return setForm({
+          visitors: [],
+        });
+      }
       setForm({
         ...formData,
-        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.addVisitor],
+        visitors: newVisitors,
+      });
+      return addAlert({
+        message: 'Le visiteur a bien été supprimé de la demande',
+        severity: 'success',
       });
     },
     onError: () => {
@@ -64,6 +89,22 @@ export default function InfosFinalView({
     },
   });
 
+  const [deleteRequest] = useMutation(DELETE_REQUEST, {
+    onCompleted: () => {
+      router.push('/');
+      addAlert({
+        message: 'La demande a bien été supprimée',
+        severity: 'success',
+      });
+    },
+    onError: () => {
+      //  @todo: Display good message
+      addAlert({
+        message: 'erreur graphQL',
+        severity: 'error',
+      });
+    },
+  });
 
   return (
     <Grid container spacing={4}>
@@ -81,8 +122,8 @@ export default function InfosFinalView({
           à :
           {' '}
           {formData.places.map((lieu, index) => {
-            if (index === formData.places.length - 1) return `${lieu.value}.`;
-            return `${lieu.value}, `;
+            if (index === formData.places.length - 1) return `${lieu.label}.`;
+            return `${lieu.label}, `;
           })}
         </Typography>
         <Typography variant="body1">
@@ -95,16 +136,12 @@ export default function InfosFinalView({
         <Paper className={classes.root}>
           <TabRecapRequest
             visitors={formData.visitors}
-            onUpdate={(visiteur) => {
-              setSelectVisitor(visiteur);
-            }}
+            setSelectVisitor={setSelectVisitor}
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
-
-              // Delete from formData
-              let visiteurs = [...formData.visitors];
-              visiteurs = remove(visiteurs, (visiteur) => visiteur.id === idVisitor);
-              setForm({ ...formData, visitors: visiteurs });
+              if (formData.visitors.length === 1) {
+                deleteRequest({ variables: { idRequest: formData.id } });
+              }
             }}
             handleBack={handleBack}
           />
@@ -127,8 +164,8 @@ InfosFinalView.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
     object: PropTypes.string,
-    from: PropTypes.instanceOf(Date),
-    to: PropTypes.instanceOf(Date),
+    from: PropTypes.string,
+    to: PropTypes.string,
     reason: PropTypes.string,
     places: PropTypes.array,
     visitors: PropTypes.array,

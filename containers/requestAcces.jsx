@@ -93,7 +93,7 @@ export default function RequestAccesForm() {
   };
 
   // functionality to update a Visitor.
-  const [selectVisitor, setSelectVisitor] = useState();
+  const [selectVisitor, setSelectVisitor] = useState({});
 
   // FormState
   const [formData, setForm] = useState({

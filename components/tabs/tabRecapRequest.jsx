@@ -26,14 +26,10 @@ const columns = [
     label: 'Unité/Société',
     minWidth: 150,
   },
-  {
-    id: 'type',
-    label: 'Type',
-    minWidth: 150,
-  },
 ];
 
 function createData({
+  id,
   firstname,
   birthLastname,
   rank,
@@ -42,12 +38,14 @@ function createData({
 }) {
   if (!rank) {
     return {
+      id,
       visiteur: `${birthLastname.toUpperCase()} ${firstname}`,
       unite: company,
       type,
     };
   }
   return {
+    id,
     visiteur: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
     unite: company,
     type,
@@ -64,7 +62,7 @@ const useStyles = makeStyles({
 });
 
 export default function TabRecapRequest({
-  visitors, onUpdate, onDelete, handleBack,
+  visitors, onDelete, handleBack, setSelectVisitor,
 }) {
   const classes = useStyles();
 
@@ -88,7 +86,8 @@ export default function TabRecapRequest({
   //   setPage(0);
   // };
 
-  const handleAjouterVisiteurs = () => {
+  const handleAddVisitor = () => {
+    setSelectVisitor({});
     handleBack();
   };
 
@@ -97,7 +96,7 @@ export default function TabRecapRequest({
   };
 
   const handleUpdate = (index) => {
-    onUpdate(visitors[index]);
+    setSelectVisitor(visitors[index]);
     handleBack();
   };
 
@@ -105,8 +104,8 @@ export default function TabRecapRequest({
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-  const handleDeleteConfirm = (mail) => {
-    onDelete(mail);
+  const handleDeleteConfirm = (id) => {
+    onDelete(id);
     setDel({});
   };
 
@@ -133,7 +132,7 @@ export default function TabRecapRequest({
               size="small"
               variant="outlined"
               color="primary"
-              onClick={handleAjouterVisiteurs}
+              onClick={handleAddVisitor}
               startIcon={<AddIcon />}
               className={classes.icon}
             >
@@ -153,14 +152,19 @@ export default function TabRecapRequest({
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer cette demande ?
+                          Êtes-vous sûr de vouloir supprimer ce visiteur de la demande ?
                         </Typography>
+                        {rows.length === 1 && (
+                          <Typography variant="body1" color="error">
+                            Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                          </Typography>
+                        )}
                       </Grid>
                       <Grid item sm={2}>
                         <IconButton
                           aria-label="valide"
                           className={classes.icon}
-                          onClick={() => handleDeleteConfirm(row.emailVisiteur)}
+                          onClick={() => handleDeleteConfirm(row.id)}
                         >
                           <DoneIcon />
                         </IconButton>
@@ -185,7 +189,7 @@ export default function TabRecapRequest({
                 onMouseLeave={() => handleMouseLeave(index)}
                 role="checkbox"
                 tabIndex={-1}
-                key={row.emailVisiteur}
+                key={row.id}
               >
                 {columns.map((column) => {
                   const value = row[column.id];
@@ -226,8 +230,8 @@ export default function TabRecapRequest({
 }
 
 TabRecapRequest.propTypes = {
-  visitors: PropTypes.objectOf(PropTypes.array).isRequired,
-  onUpdate: PropTypes.func.isRequired,
+  visitors: PropTypes.arrayOf(PropTypes.shape).isRequired,
   onDelete: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
+  setSelectVisitor: PropTypes.func.isRequired,
 };
