@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
+import { urlAuthorization } from '../utils/permissions';
 
 export const LOGIN = gql`
   mutation login($email: EmailAddress!, $password: String, $token: String) {
@@ -104,14 +105,23 @@ export function LoginContextProvider(props) {
     }
     try {
       const { data: { me } } = await client.query({ query: GET_ME });
+
+      const validationPersonas = me.roles[activeRoleNumber].units[0]
+        ? {
+          role: me.roles[activeRoleNumber],
+          unit: me.roles[activeRoleNumber].units[0].label,
+        }
+        : null;
+      const campusId = me.roles[activeRoleNumber].campuses[0]
+        ? me.roles[activeRoleNumber].campuses[0].id
+        : null;
+
       await client.cache.writeData({
         data: {
           initializedCache: true,
           me,
-          activeRole: me.roles[activeRoleNumber],
-          campusId: me.roles[activeRoleNumber].campuses[0]
-            ? me.roles[activeRoleNumber].campuses[0].id
-            : null,
+          validationPersonas,
+          campusId,
         },
       });
       setIsCacheInit(true);
@@ -221,7 +231,9 @@ export function LoginContextProvider(props) {
       resetPassSignIn(email, token);
     }
 
-    if (isLoggedUser && router.pathname === '/login') {
+    if (isLoggedUser
+      && (router.pathname === '/login' || !urlAuthorization(router.pathname, 'ROLE_ADMIN'))
+    ) {
       router.push('/');
     }
 
