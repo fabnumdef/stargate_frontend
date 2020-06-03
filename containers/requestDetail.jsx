@@ -1,4 +1,6 @@
 import React from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -35,43 +37,71 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Provisory DATA
-function getRequest(idRequest) {
-  return {
-    id: idRequest,
-    reason: 'un motif raisonnable',
-    from: new Date('2020-05-21T12:39:00.000+00:00'),
-    to: new Date('2020-05-23T12:39:00.000+00:00'),
-    owner: {
-      firstname: 'Michel',
-      birthLastname: 'Poquet',
-      rank: 'SGC',
-      company: 'Fort Lamalgue',
-    },
-    visitors: [
-      {
-        firstname: 'Michel',
-        birthLastname: 'Poquet',
-        rank: 'SGC',
-        company: 'Fort Lamalgue',
-      },
-      {
-        firstname: 'Stephen',
-        birthLastname: 'Peanuts',
-        rank: 'SGT',
-        company: 'CDAD T',
-      },
-    ],
-    places: ['BN TOULON'],
-  };
-}
+
+const REQUEST_ATTRIBUTES = gql`
+  fragment RequestResult on Request {
+    id
+    reason
+    from
+    to
+    places {
+      label
+    }
+  }
+`;
+
+const STATUT_ATTRIBUTES = gql`
+  fragment StatutResult on UnitStatus {
+    status {
+      unit
+      steps {
+        role
+        step
+        behavior
+        status
+        done
+      }
+    }
+  }
+`;
+
+export const READ_REQUEST = gql`
+         mutation readRequest($requestId: String!, $campusId: String!) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             getRequest(id: $requestId) {
+               ...RequestResult
+               listVisitors {
+                 list {
+                   id
+                   rank
+                   firstname
+                   birthLastname
+                   company
+                   status {
+                     ...StatutResult
+                   }
+                 }
+               }
+             }
+           }
+         }
+         ${REQUEST_ATTRIBUTES}
+         ${STATUT_ATTRIBUTES}
+       `;
 
 
 export default function NestedList({ request }) {
   const classes = useStyles();
 
-  // @todo GET REQUEST OBJECT WITH ID
-  const data = getRequest(request);
+  // @todo GET REQUEST OBJECT WITH id
+  const { data, error, loading } = useQuery(READ_REQUEST, {
+    variables: { requestId: request },
+  });
+
+  if (loading) return <p>Loading ....</p>;
+
+  if (error) return <p>page 404</p>;
 
   return (
     <Template>
@@ -80,19 +110,19 @@ export default function NestedList({ request }) {
           <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
             <Typography variant="h5" className={classes.pageTitle}>
               {/* @todo change title if treated */}
-              Demandes à traiter:
+              Demandes à traiter :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
               {/* @todo change title if treated */}
-              {data.id}
+              {data.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data} />
+          <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <DetailsVisitorsRequest visitors={data.visitors} />
+          <DetailsVisitorsRequest visitors={data.getCampus.getRequest.listVisitors} />
         </Grid>
       </Grid>
     </Template>
