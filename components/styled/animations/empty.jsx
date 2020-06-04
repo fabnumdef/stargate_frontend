@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default function EmptyArrayLoggo() {
+export default function EmptyArrayLogo() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="228" height="166" viewBox="0 0 228 166">
       <g fill="none" fillRule="evenodd">
