@@ -86,18 +86,9 @@ const useStyles = makeStyles((theme) => ({
 function createData({
   id, firstname, birthLastname, rank, company, type,
 }) {
-  if (!rank) {
-    return {
-      id,
-      visitor: `${birthLastname.toUpperCase()} ${firstname}`,
-      company,
-      type,
-      validation: null,
-    };
-  }
   return {
     id,
-    visitor: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
+    visitor: (rank) ? `${rank} ${birthLastname.toUpperCase()} ${firstname}` : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type,
     validation: null,

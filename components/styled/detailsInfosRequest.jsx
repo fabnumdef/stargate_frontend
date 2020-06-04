@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -48,7 +48,13 @@ export default function DetailsInfosRequest({ request }) {
           Lieux:
           {' '}
         </Typography>
-        <Typography variant="body2">Base navale, HOMLET, Mess</Typography>
+        <Typography variant="body2">
+          {' '}
+          {request.places.map((lieu, index) => {
+            if (index === request.places.length - 1) return `${lieu.label}.`;
+            return `${lieu.label}, `;
+          })}
+        </Typography>
       </Grid>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
@@ -60,3 +66,22 @@ export default function DetailsInfosRequest({ request }) {
     </Grid>
   );
 }
+
+
+DetailsInfosRequest.propTypes = {
+  request: PropTypes.shape({
+    owner: PropTypes.shape({
+      rank: PropTypes.string,
+      birthLastname: PropTypes.string,
+      firstname: PropTypes.string,
+    }),
+    places: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string,
+      }),
+    ),
+    from: PropTypes.instanceOf(Date),
+    to: PropTypes.instanceOf(Date),
+    reason: PropTypes.string,
+  }).isRequired,
+};
