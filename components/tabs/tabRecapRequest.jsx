@@ -36,17 +36,11 @@ function createData({
   company,
   type,
 }) {
-  if (!rank) {
-    return {
-      id,
-      visiteur: `${birthLastname.toUpperCase()} ${firstname}`,
-      unite: company,
-      type,
-    };
-  }
   return {
     id,
-    visiteur: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
+    visiteur: rank
+      ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
+      : `${birthLastname.toUpperCase()} ${firstname}`,
     unite: company,
     type,
   };
@@ -152,7 +146,11 @@ export default function TabRecapRequest({
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer ce visiteur de la demande ?
+                          Êtes-vous sûr de vouloir supprimer
+                          {' '}
+                          {row.visiteur}
+                          {' '}
+                          de la demande ?
                         </Typography>
                         {rows.length === 1 && (
                           <Typography variant="body1" color="error">

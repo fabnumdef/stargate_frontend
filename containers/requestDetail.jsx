@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import { DetailsInfosRequest, DetailsVisitorsRequest } from '../components';
 
@@ -122,7 +123,30 @@ export default function NestedList({ request }) {
           <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <DetailsVisitorsRequest visitors={data.getCampus.getRequest.listVisitors} />
+          <DetailsVisitorsRequest
+            visitors={data.visitors}
+            onChange={(visitors) => {
+              console.log(visitors);
+            }}
+          />
+        </Grid>
+        <Grid item sm={12}>
+          <Grid container justify="flex-end">
+            <div>
+              <Button
+                variant="outlined"
+                color="primary"
+                style={{ marginRight: '5px' }}
+              >
+                Annuler
+              </Button>
+            </div>
+            <div>
+              <Button variant="contained" color="primary">
+                Envoyer
+              </Button>
+            </div>
+          </Grid>
         </Grid>
       </Grid>
     </Template>
