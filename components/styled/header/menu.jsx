@@ -9,6 +9,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Button from '@material-ui/core/Button';
 import Slide from '@material-ui/core/Slide';
+import { urlAuthorization } from '../../../utils/permissions';
+import { useLogin } from '../../../lib/loginContext';
 
 
 function getMenus() {
@@ -66,8 +68,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function MenuItems(props) {
+  const { activeRole } = useLogin();
   const menu = getMenus();
-
+  console.log('menu', activeRole);
   const classes = useStyles();
   const router = useRouter();
 
@@ -77,18 +80,20 @@ export default function MenuItems(props) {
       <HideOnScroll {...props}>
         <Toolbar className={classes.appBar}>
           <div className={classes.grow} />
-          {menu.map((item) => (
-            <Link href={item.link} key={item.label}>
-              {router.pathname === item.link ? (
+          {menu.map(({ link, label }) => (
+            urlAuthorization(link, activeRole.role) && (
+            <Link href={link} key={label}>
+              {router.pathname === link ? (
                 <ButtonMenu size="small" variant="contained" color="secondary">
-                  {item.label}
+                  {label}
                 </ButtonMenu>
               ) : (
                 <ButtonMenu size="small" variant="contained" color="primary">
-                  {item.label}
+                  {label}
                 </ButtonMenu>
               )}
             </Link>
+            )
           ))}
         </Toolbar>
       </HideOnScroll>
