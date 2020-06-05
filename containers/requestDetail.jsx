@@ -112,7 +112,7 @@ export default function NestedList({ request }) {
               </Button>
             </div>
             <div>
-              <Button type="submit" variant="contained" color="primary">
+              <Button variant="contained" color="primary">
                 Envoyer
               </Button>
             </div>

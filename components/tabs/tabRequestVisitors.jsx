@@ -268,26 +268,23 @@ export default function RequestVisitor({ visitors, onChange }) {
                       newArray[newArray.indexOf(row)].validation = event.target.value;
                       setDataRows(newArray);
                     }}
+                    style={{ justifyContent: 'space-evenly' }}
                   >
                     <FormControlLabel
                       value="VA"
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                      style={{ marginRight: '10px' }}
                     />
                     <FormControlLabel
                       value="VL"
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                      style={{ marginRight: '10px' }}
                     />
                     <FormControlLabel
                       value="ACCEPTER"
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                      style={{ marginRight: '10px' }}
                     />
                     <FormControlLabel
                       value="REFUSER"
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                      style={{ marginRight: '10px' }}
                     />
                   </RadioGroup>
                 </TableCell>
