@@ -112,7 +112,7 @@ function getCheckbox() {
   };
 }
 
-export default function RequestVisitor({ visitors }) {
+export default function RequestVisitor({ visitors, onChange }) {
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
       acc.push(createData(dem));
@@ -143,6 +143,10 @@ export default function RequestVisitor({ visitors }) {
   };
 
   React.useEffect(() => {
+    // Share changes to onther components
+    onChange(rows);
+
+    // UI tools
     let VA = true;
     let VL = true;
     let ACCEPTER = true;
@@ -185,7 +189,7 @@ export default function RequestVisitor({ visitors }) {
     setChecked({
       VA, VL, ACCEPTER, REFUSER,
     });
-  }, [rows]);
+  }, [onChange, rows]);
 
   return (
     <div className={classes.root}>

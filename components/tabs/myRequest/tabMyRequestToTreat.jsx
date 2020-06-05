@@ -46,7 +46,8 @@ const useStyles = makeStyles({
     width: '100%',
   },
   icon: {
-    margin: '-20px',
+    marginBottom: '-20px',
+    marginTop: '-20px',
   },
   deleteIcon: {
     marginTop: '-20px',
@@ -106,7 +107,7 @@ export default function TabMyRequestToTreat({ request }) {
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" />
+          <CustomTableCellHeader key="actions" style={{ minWidth: '150px' }} />
         </TableRow>
       </TableHead>
 
@@ -119,16 +120,16 @@ export default function TabMyRequestToTreat({ request }) {
                   <Grid container>
                     <Grid item sm={10}>
                       <Typography variant="body1">
-                        Êtes-vous sûr de vouloir supprimer
+                        Êtes-vous sûr de vouloir supprimer la demande
                         {' '}
-                        {row.visiteur}
+                        {row.id}
                         {' '}
-                        de la demande ?
+                        ?
                       </Typography>
                       {rows.length === 1 && (
-                      <Typography variant="body1" color="error">
-                        Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                      </Typography>
+                        <Typography variant="body1" color="error">
+                          Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                        </Typography>
                       )}
                     </Grid>
                     <Grid item sm={2}>
