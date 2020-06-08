@@ -80,7 +80,6 @@ export default function MenuIcon() {
   const router = useRouter();
   const { signOut, setActiveRole, activeRole } = useLogin();
   const client = useApolloClient();
-  console.log('menuIcon', activeRole)
 
   const { me } = client.readQuery({ query: GET_ME });
 
@@ -100,7 +99,6 @@ export default function MenuIcon() {
   };
 
   const handleChangeRole = (evt) => {
-    console.log('changeRole', evt.target.value);
     const selectedRole = me.roles.find((role) => role.role === evt.target.value);
 
     setActiveRole({
@@ -133,7 +131,6 @@ export default function MenuIcon() {
           id="role"
           value={activeRole.role}
           onChange={(evt) => handleChangeRole(evt)}
-          style={{ borderBottom: 'none' }}
         >
           {me && me.roles.map((role) => (
             <MenuItem key={role.role} value={role.role}>

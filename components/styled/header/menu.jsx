@@ -70,7 +70,6 @@ const useStyles = makeStyles(() => ({
 export default function MenuItems(props) {
   const { activeRole } = useLogin();
   const menu = getMenus();
-  console.log('menu', activeRole);
   const classes = useStyles();
   const router = useRouter();
 

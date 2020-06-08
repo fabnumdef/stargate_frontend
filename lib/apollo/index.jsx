@@ -63,7 +63,7 @@ export default function createApolloClient(initialState, ctx) {
       activeRoleCache: {
         role: 'ROLE_HOST',
         unit: null,
-        __typename: 'activeRoleCache'
+        __typename: 'activeRoleCache',
       },
     },
   });

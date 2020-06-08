@@ -1,4 +1,3 @@
-import gql from 'graphql-tag';
 import { ROLES } from './constants/enums';
 
 export const isAdmin = (userRole) => (

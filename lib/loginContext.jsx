@@ -64,7 +64,6 @@ export const useLogin = () => useContext(LoginContext);
 
 export function LoginContextProvider(props) {
   const { children, client } = props;
-  console.log(client);
 
   const router = useRouter();
   const { addAlert } = useSnackBar();
@@ -100,7 +99,6 @@ export function LoginContextProvider(props) {
   const [activeRole, setActiveRole] = useState(() => {
     if (isCacheInit) {
       const data = client.readQuery({ query: GET_ROLE });
-      console.log('init ActiveRole', data);
       return { ...data.activeRoleCache };
     }
     return null;
