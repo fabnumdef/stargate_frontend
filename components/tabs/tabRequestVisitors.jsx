@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
@@ -14,7 +15,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
+import { useLogin } from '../../lib/loginContext';
 import CustomTableHeader from '../styled/customTableCellHeader';
+import ckeckStatusVisitor, {
+  HIDEN_STEP_STATUS,
+  INACTIF_STEP_STATUS,
+} from '../../utils/mappers/checkStatusVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -81,17 +87,23 @@ const useStyles = makeStyles((theme) => ({
   paginator: {
     float: 'left',
   },
+  inactiveCell: {
+    opacity: '0.2',
+  },
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, type,
-}) {
+  id, firstname, birthLastname, rank, company, type, status,
+}, activeRole) {
   return {
     id,
-    visitor: (rank) ? `${rank} ${birthLastname.toUpperCase()} ${firstname}` : `${birthLastname.toUpperCase()} ${firstname}`,
+    visitor: rank
+      ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
+      : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type,
     validation: null,
+    step: ckeckStatusVisitor(status, activeRole),
   };
 }
 
@@ -113,9 +125,11 @@ function getCheckbox() {
 }
 
 export default function RequestVisitor({ visitors, onChange }) {
+  const { activeRole } = useLogin();
+
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
-      acc.push(createData(dem));
+      acc.push(createData(dem, activeRole));
       return acc;
     }, []),
   );
@@ -235,21 +249,34 @@ export default function RequestVisitor({ visitors, onChange }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
+            {rows.map(
+              (row, index) => row.step.state !== HIDEN_STEP_STATUS && (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
                   switch (column.id) {
                     case 'criblage':
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={
+                                row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''
+                              }
+                        >
                           {/* @todo criblage actions */}
                           {value}
                         </TableCell>
                       );
                     default:
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={
+                                row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''
+                              }
+                        >
                           {value}
                         </TableCell>
                       );
@@ -272,24 +299,29 @@ export default function RequestVisitor({ visitors, onChange }) {
                   >
                     <FormControlLabel
                       value="VA"
+                      disabed={row.step.state === INACTIF_STEP_STATUS}
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
                     />
                     <FormControlLabel
                       value="VL"
+                      disabed={row.step.state === INACTIF_STEP_STATUS}
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
                     />
                     <FormControlLabel
                       value="ACCEPTER"
+                      disabed={row.step.state === INACTIF_STEP_STATUS}
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
                     />
                     <FormControlLabel
                       value="REFUSER"
+                      disabed={row.step.state === INACTIF_STEP_STATUS}
                       control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
                     />
                   </RadioGroup>
                 </TableCell>
               </TableRow>
-            ))}
+              ),
+            )}
           </TableBody>
         </Table>
       </TableContainer>
