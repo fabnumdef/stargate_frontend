@@ -102,12 +102,12 @@ export default function MenuIcon() {
     const selectedRole = me.roles.find((role) => role.role === evt.target.value);
     client.cache.writeData({
       data: {
-        activeRoleCache: { ...selectedRole, __typename: 'activeRoleCache' },
+        activeRoleCache: { role: selectedRole.role, unit: selectedRole.units[0].label, __typename: 'activeRoleCache' },
       },
     });
     localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
     setSelectRole(false);
-    setActiveRole(selectedRole);
+    setActiveRole({ role: selectedRole.role, unit: selectedRole.units[0].label });
     handleCloseMenu();
   };
 
