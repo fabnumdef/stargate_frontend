@@ -18,8 +18,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { mapUserData } from '../../utils/mappers/adminMappers';
-import { isAdmin, isSuperAdmin } from '../../utils/permissions';
+import { isSuperAdmin } from '../../utils/permissions';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { ROLES } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   createUserForm: {
@@ -193,7 +194,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                       fullWidth
                       labelId="create-user-campus"
                       id="campus"
-                      disabled={isAdmin(userRole.role)}
+                      disabled={!isSuperAdmin(userRole.role)}
                       labelWidth={labelWidth}
                     >
                       {dataCampuses.listCampuses.list.map((campus) => (
@@ -232,7 +233,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                     <Select
                       labelId="create-user-unit"
                       id="unit"
-                      disabled={!dataUnits}
+                      disabled={!dataUnits || userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role}
                       labelWidth={labelWidth}
                     >
                       {dataUnits && dataUnits.getCampus.listUnits.list.map((unit) => (

@@ -100,25 +100,14 @@ export default function MenuIcon() {
 
   const handleChangeRole = (evt) => {
     const selectedRole = me.roles.find((role) => role.role === evt.target.value);
-
-    setActiveRole({
-      role: selectedRole.role,
-      unit: selectedRole.units[0]
-        ? selectedRole.units[0].label
-        : null,
-    });
     client.cache.writeData({
       data: {
-        activeRoleCache: {
-          role: selectedRole.role,
-          unit: selectedRole.units[0]
-            ? selectedRole.units[0].label
-            : null,
-          __typename: 'activeRoleCache',
-        },
+        activeRoleCache: { ...selectedRole, __typename: 'activeRoleCache' },
       },
     });
+    localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
     setSelectRole(false);
+    setActiveRole(selectedRole);
     handleCloseMenu();
   };
 
@@ -132,7 +121,7 @@ export default function MenuIcon() {
           value={activeRole.role}
           onChange={(evt) => handleChangeRole(evt)}
         >
-          {me && me.roles.map((role) => (
+          {me && me.roles && me.roles.map((role) => (
             <MenuItem key={role.role} value={role.role}>
               {ROLES[role.role].label}
             </MenuItem>

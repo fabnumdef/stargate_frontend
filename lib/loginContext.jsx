@@ -115,18 +115,19 @@ export function LoginContextProvider(props) {
   const getUserData = async () => {
     try {
       const { data: { me } } = await client.query({ query: GET_ME });
+      const activeRoleNumber = localStorage.getItem('activeRoleNumber');
 
-      const newRole = me.roles[0].units[0]
+      const newRole = me.roles[activeRoleNumber].units[0]
         ? {
-          role: me.roles[0].role,
-          unit: me.roles[0].units[0].label,
+          role: me.roles[activeRoleNumber].role,
+          unit: me.roles[activeRoleNumber].units[0].label,
         }
-        : { role: me.roles[0].role };
+        : { role: me.roles[activeRoleNumber].role };
 
       setActiveRole(newRole);
 
-      const campusId = me.roles[0].campuses[0]
-        ? me.roles[0].campuses[0].id
+      const campusId = me.roles[activeRoleNumber].campuses[0]
+        ? me.roles[activeRoleNumber].campuses[0].id
         : null;
 
       await client.cache.writeData({
@@ -211,6 +212,7 @@ export function LoginContextProvider(props) {
       });
       setToken(jwt);
       setIsLoggedUser(true);
+      localStorage.setItem('activeRoleNumber', 0);
       await authRenew(setToken, signOut, client);
       return getUserData();
     } catch (e) {
@@ -253,7 +255,7 @@ export function LoginContextProvider(props) {
     if (!isLoggedUser && router.pathname !== '/login') {
       router.push('/login');
     }
-  }, [isLoggedUser]);
+  }, [isLoggedUser, activeRole, isCacheInit]);
 
   if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login')) {
     return <div />;

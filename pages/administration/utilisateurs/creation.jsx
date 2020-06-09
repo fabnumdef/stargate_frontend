@@ -7,6 +7,7 @@ import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useLogin } from '../../../lib/loginContext';
 
 const GET_ME = gql`
     query getMe {
@@ -39,6 +40,7 @@ function CreateUser() {
   const router = useRouter();
   const [createUser] = useMutation(CREATE_USER);
   const { data: userData } = useQuery(GET_ME);
+  const { activeRole } = useLogin();
 
   const submitCreateUser = async (user) => {
     try {
@@ -57,12 +59,11 @@ function CreateUser() {
   };
 
   let defaultValues = {};
-  let userRole = {};
   if (userData) {
-    [userRole] = userData.me.roles;
+    const selectedRole = userData.me.roles.find((role) => role.role === activeRole.role);
     defaultValues = {
-      campus: userRole.campuses[0] ? userRole.campuses[0].id : null,
-      unit: userRole.units[0] ? userRole.units[0].id : null,
+      campus: selectedRole.campuses[0].id || null,
+      unit: selectedRole.units[0].id || null,
     };
   }
 
@@ -75,7 +76,7 @@ function CreateUser() {
         <UserForm
           submitForm={submitCreateUser}
           defaultValues={defaultValues}
-          userRole={userRole}
+          userRole={activeRole}
         />
         )}
     </Template>
