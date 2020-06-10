@@ -17,6 +17,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 
 import { useLogin } from '../../lib/loginContext';
 import CustomTableHeader from '../styled/customTableCellHeader';
+
+import { ROLE } from '../../utils/constants/enums';
 import ckeckStatusVisitor, {
   HIDEN_STEP_STATUS,
   INACTIF_STEP_STATUS,
@@ -117,14 +119,12 @@ const columns = [
 
 function getCheckbox() {
   return {
-    VA: false,
-    VL: false,
     ACCEPTER: false,
     REFUSER: false,
   };
 }
 
-export default function RequestVisitor({ visitors, onChange }) {
+export default function TabRequestVisitors({ visitors, onChange }) {
   const { activeRole } = useLogin();
 
   const [rows, setDataRows] = useState(
@@ -160,38 +160,20 @@ export default function RequestVisitor({ visitors, onChange }) {
     // Share changes to onther components
     onChange(rows);
 
-    // UI tools
-    let VA = true;
-    let VL = true;
+    // UI tool
     let ACCEPTER = true;
     let REFUSER = true;
 
     rows.some((row) => {
       switch (row.validation) {
         case null:
-          VA = false;
-          VL = false;
           ACCEPTER = false;
           REFUSER = false;
           return true;
-        case 'VA':
-          VL = false;
-          ACCEPTER = false;
-          REFUSER = false;
-          break;
-        case 'VL':
-          VA = false;
-          ACCEPTER = false;
-          REFUSER = false;
-          break;
         case 'ACCEPTER':
-          VA = false;
-          VL = false;
           REFUSER = false;
           break;
         case 'REFUSER':
-          VA = false;
-          VL = false;
           ACCEPTER = false;
           break;
         default:
@@ -201,7 +183,8 @@ export default function RequestVisitor({ visitors, onChange }) {
     });
 
     setChecked({
-      VA, VL, ACCEPTER, REFUSER,
+      ACCEPTER,
+      REFUSER,
     });
   }, [onChange, rows]);
 
@@ -219,13 +202,24 @@ export default function RequestVisitor({ visitors, onChange }) {
                         {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
+                  case 'criblage':
+                    return (
+                      (activeRole.role === ROLE.ROLE_SECURITY_OFFICER
+                        && (
+                        <CustomTableHeader key={headCell.id}>
+                          {/* @todo length etc ... */ `${headCell.label}`}
+                        </CustomTableHeader>
+                        )
+                      ));
                   default:
                     return (
                       <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
                     );
                 }
               })}
-              <CustomTableHeader className={`${classes.reportHeader} ${classes.reportRow}`}>
+              <CustomTableHeader
+                className={`${classes.reportHeader} ${classes.reportRow}`}
+              >
                 Validation
                 <FormGroup row className={classes.reportCheckbox}>
                   {Object.keys(getCheckbox()).map((value) => (
@@ -239,7 +233,7 @@ export default function RequestVisitor({ visitors, onChange }) {
                             handleSelectAll(event.target.checked, value);
                           }}
                         />
-                      )}
+                                     )}
                       label={value}
                       labelPlacement="start"
                     />
@@ -257,25 +251,27 @@ export default function RequestVisitor({ visitors, onChange }) {
                   switch (column.id) {
                     case 'criblage':
                       return (
+                        (activeRole.role === ROLE.ROLE_SECURITY_OFFICER
+                        && (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                                row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''
-                              }
+                          className={row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''}
                         >
                           {/* @todo criblage actions */}
-                          {value}
+                          checkCriblage
                         </TableCell>
+                        )
+                        )
                       );
                     default:
                       return (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                                row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''
-                              }
+                          className={row.step.state === INACTIF_STEP_STATUS
+                            ? classes.inactiveCell
+                            : ''}
                         >
                           {value}
                         </TableCell>
@@ -298,24 +294,24 @@ export default function RequestVisitor({ visitors, onChange }) {
                     style={{ justifyContent: 'space-evenly' }}
                   >
                     <FormControlLabel
-                      value="VA"
-                      disabed={row.step.state === INACTIF_STEP_STATUS}
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                    />
-                    <FormControlLabel
-                      value="VL"
-                      disabed={row.step.state === INACTIF_STEP_STATUS}
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                    />
-                    <FormControlLabel
                       value="ACCEPTER"
                       disabed={row.step.state === INACTIF_STEP_STATUS}
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
+                      control={(
+                        <Radio
+                          color="primary"
+                          onClick={() => handleDeselect(row)}
+                        />
+                                         )}
                     />
                     <FormControlLabel
                       value="REFUSER"
                       disabed={row.step.state === INACTIF_STEP_STATUS}
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
+                      control={(
+                        <Radio
+                          color="primary"
+                          onClick={() => handleDeselect(row)}
+                        />
+                                         )}
                     />
                   </RadioGroup>
                 </TableCell>
@@ -329,8 +325,11 @@ export default function RequestVisitor({ visitors, onChange }) {
   );
 }
 
-RequestVisitor.propTypes = {
-  visitors: PropTypes.arrayOf(PropTypes.shape({
-    firstname: PropTypes.string,
-  })).isRequired,
+TabRequestVisitors.propTypes = {
+  visitors: PropTypes.arrayOf(
+    PropTypes.shape({
+      firstname: PropTypes.string,
+    }),
+  ).isRequired,
+  onChange: PropTypes.func.isRequired,
 };
