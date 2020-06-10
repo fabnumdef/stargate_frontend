@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 // Import Material
@@ -12,8 +12,27 @@ import ListItemText from '@material-ui/core/ListItemText';
 import BuildIcon from '@material-ui/icons/Build';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import LinkOffOutlinedIcon from '@material-ui/icons/LinkOffOutlined';
+import gql from 'graphql-tag';
+import { useApolloClient } from '@apollo/react-hooks';
+import { Select } from '@material-ui/core';
 import { useLogin } from '../../../lib/loginContext';
 import Avatar from './icon';
+import { ROLES } from '../../../utils/constants/enums/index';
+
+const GET_ME = gql`
+    query getMe {
+        me {
+            firstname,
+            lastname,
+            roles {
+                role
+                units {
+                    label
+                }
+            }
+        }
+    }
+`;
 
 const StyledMenu = withStyles({
   paper: {
@@ -59,9 +78,13 @@ const useStyles = makeStyles(() => ({
 export default function MenuIcon() {
   const classes = useStyles();
   const router = useRouter();
-  const { signOut } = useLogin();
+  const { signOut, setActiveRole, activeRole } = useLogin();
+  const client = useApolloClient();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { me } = client.readQuery({ query: GET_ME });
+
+  const [selectRole, setSelectRole] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -75,11 +98,36 @@ export default function MenuIcon() {
     signOut({ message: 'Vous avez bien été déconnecté', severity: 'success' });
   };
 
+  const handleChangeRole = (evt) => {
+    const selectedRole = me.roles.find((role) => role.role === evt.target.value);
+    client.cache.writeData({
+      data: {
+        activeRoleCache: { role: selectedRole.role, unit: selectedRole.units[0].label, __typename: 'activeRoleCache' },
+      },
+    });
+    localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
+    setSelectRole(false);
+    setActiveRole({ role: selectedRole.role, unit: selectedRole.units[0].label });
+    handleCloseMenu();
+  };
+
   return (
     <div className={classes.root}>
       <Box fontWeight="fontWeightLight" display="flex" flexDirection="column">
-        <span>MP Durand Henri</span>
-        <span>Correspondant unité</span>
+        <span>{me && `${me.firstname} ${me.lastname}`}</span>
+        <Select
+          labelId="select-role"
+          id="role"
+          value={activeRole.role}
+          onChange={(evt) => handleChangeRole(evt)}
+        >
+          {me && me.roles && me.roles.map((role) => (
+            <MenuItem key={role.role} value={role.role}>
+              {ROLES[role.role].label}
+            </MenuItem>
+          ))}
+        </Select>
+        <span>{activeRole.unit ? activeRole.unit : ''}</span>
       </Box>
       <IconButton size="small" onClick={handleOpenMenu}>
         <Avatar />
@@ -96,6 +144,13 @@ export default function MenuIcon() {
             <AccountCircleIcon fontSize="default" />
           </ListItemIcon>
           <ListItemText title="myAccount" primary="Mon compte" />
+        </StyledMenuItem>
+
+        <StyledMenuItem onClick={() => setSelectRole(!selectRole)}>
+          <ListItemIcon>
+            <AccountCircleIcon fontSize="default" />
+          </ListItemIcon>
+          <ListItemText title="changeRole" primary="Selectionner Rôle" />
         </StyledMenuItem>
 
         <StyledMenuItem>

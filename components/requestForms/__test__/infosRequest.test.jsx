@@ -10,6 +10,7 @@ import {
 import FormInfosClaimant from '../infosRequest';
 
 import { SnackBarContext } from '../../../lib/ui-providers/snackbar';
+import { LoginContext } from '../../../lib/loginContext';
 
 const mockItemsPro = {
   formData: {},
@@ -22,21 +23,26 @@ describe('FormInfosClaimant', () => {
   afterEach(cleanup);
 
   const addAlert = jest.fn();
+  const activeRole = { role: 'role', unit: 'unit' };
 
   it('renders without error', () => {
     render(
-      <SnackBarContext.Provider value={{ addAlert }}>
-        <FormInfosClaimant {...mockItemsPro} />
-      </SnackBarContext.Provider>,
+      <LoginContext.Provider value={{ activeRole }}>
+        <SnackBarContext.Provider value={{ addAlert }}>
+          <FormInfosClaimant {...mockItemsPro} />
+        </SnackBarContext.Provider>
+      </LoginContext.Provider>,
     );
   });
 
   it('test validation false', async () => {
     // exception for testing, where props object is define
     const { getByText, getByTestId } = render(
-      <SnackBarContext.Provider value={{ addAlert }}>
-        <FormInfosClaimant {...mockItemsPro} />
-      </SnackBarContext.Provider>,
+      <LoginContext.Provider value={{ activeRole }}>
+        <SnackBarContext.Provider value={{ addAlert }}>
+          <FormInfosClaimant {...mockItemsPro} />
+        </SnackBarContext.Provider>
+      </LoginContext.Provider>,
     );
     await act(async () => {
       fireEvent.submit(getByTestId(/form-demandeur/i));
