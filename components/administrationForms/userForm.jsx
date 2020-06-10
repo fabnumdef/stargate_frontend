@@ -17,8 +17,9 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import classNames from 'classnames';
 import { mapUserData } from '../../utils/mappers/adminMappers';
-import { isSuperAdmin } from '../../utils/permissions';
+import { isAdmin, isSuperAdmin } from '../../utils/permissions';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 import { ROLES } from '../../utils/constants/enums';
 
@@ -46,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
     '& button': {
       margin: '3px',
     },
+  },
+  errorText: {
+    color: theme.palette.error.main,
   },
 }));
 
@@ -156,7 +160,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
               as={(
                 <TextField
                   label="Adresse e-mail"
-                  inputProps={{ 'data-testid': 'create-user-email' }}
+                  inputProps={{ 'data-testid': 'create-user-email', type: 'email' }}
                   error={Object.prototype.hasOwnProperty.call(errors, 'email')}
                   helperText={errors.email && errors.email.message}
                   className={classes.formTextField}
@@ -216,7 +220,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                 )}
 
                 {errors.campus && (
-                  <FormHelperText>Base obligatoire</FormHelperText>
+                  <FormHelperText className={classes.errorText}>Base obligatoire</FormHelperText>
                 )}
               </FormControl>
 
@@ -249,7 +253,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                   rules={{ required: true }}
                 />
                 {errors.unit && (
-                <FormHelperText>Unité obligatoire</FormHelperText>
+                <FormHelperText className={classes.errorText}>Unité obligatoire</FormHelperText>
                 )}
               </FormControl>
               <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
@@ -264,25 +268,51 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
               >
                 <Controller
                   as={(
-                    <RadioGroup className={classes.radioGroup} aria-label="vip">
+                    <RadioGroup
+                      className={classNames(
+                        classes.radioGroup,
+                        { [classes.errorText]: errors.role },
+                      )}
+                      aria-label="vip"
+                    >
                       <FormControlLabel
-                        value="Watcher"
+                        value={ROLES.ROLE_OBSERVER.role}
                         control={<Radio color="primary" />}
-                        label="Observateur"
+                        label={ROLES.ROLE_OBSERVER.label}
                         labelPlacement="start"
                       />
                       <FormControlLabel
-                        value="Host"
+                        value={ROLES.ROLE_HOST.role}
                         control={<Radio color="primary" />}
-                        label="Hôte"
+                        label={ROLES.ROLE_HOST.label}
                         labelPlacement="start"
                       />
+                      {(isAdmin(userRole.role) || isSuperAdmin(userRole.role)) && (
+                      <FormControlLabel
+                        value={ROLES.ROLE_ADMIN.role}
+                        control={<Radio color="primary" />}
+                        label={ROLES.ROLE_ADMIN.label}
+                        labelPlacement="start"
+                      />
+                      )}
+                      {isSuperAdmin(userRole.role) && (
+                        <FormControlLabel
+                          value={ROLES.ROLE_SUPERADMIN.role}
+                          control={<Radio color="primary" />}
+                          label={ROLES.ROLE_SUPERADMIN.label}
+                          labelPlacement="start"
+                        />
+                      )}
                     </RadioGroup>
                   )}
                   control={control}
+                  rules={{ required: 'Le rôle est obligatoire' }}
                   name="role"
                   defaultValue=""
                 />
+                {errors.role && (
+                  <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>
+                )}
               </FormControl>
             </Grid>
           </Grid>
