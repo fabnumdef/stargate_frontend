@@ -18,11 +18,11 @@ export default function DetailsInfosRequest({ request }) {
   return (
     <Grid container spacing={2}>
       <Grid item sm={6}>
-        <Typography variant="body1" className={classes.categorie}>
+        <Typography variant="body1" className={classes.categorie} color="primary">
           Demandeur:
           {' '}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="primary">
           {request.owner.rank}
           {' '}
           {request.owner.birthLastname.toUpperCase()}
@@ -31,11 +31,11 @@ export default function DetailsInfosRequest({ request }) {
         </Typography>
       </Grid>
       <Grid item sm={6}>
-        <Typography variant="body1" className={classes.categorie}>
+        <Typography variant="body1" className={classes.categorie} color="primary">
           Période:
           {' '}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="primary">
           {format(new Date(request.from), 'dd/MM/yyyy')}
           {' '}
           au
@@ -44,11 +44,11 @@ export default function DetailsInfosRequest({ request }) {
         </Typography>
       </Grid>
       <Grid item sm={6}>
-        <Typography variant="body1" className={classes.categorie}>
+        <Typography variant="body1" className={classes.categorie} color="primary">
           Lieux:
           {' '}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="primary">
           {' '}
           {request.places.map((lieu, index) => {
             if (index === request.places.length - 1) return `${lieu.label}.`;
@@ -57,11 +57,12 @@ export default function DetailsInfosRequest({ request }) {
         </Typography>
       </Grid>
       <Grid item sm={6}>
-        <Typography variant="body1" className={classes.categorie}>
+        <Typography variant="body1" className={classes.categorie} color="primary">
           Motif:
         </Typography>
-        <Typography variant="body2">{request.reason}</Typography>
-        {' '}
+        <Typography variant="body2" color="primary">
+          {request.reason}
+        </Typography>
       </Grid>
     </Grid>
   );

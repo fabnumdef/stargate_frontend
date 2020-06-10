@@ -14,15 +14,24 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import WarningIcon from '@material-ui/icons/Warning';
 
 import { useLogin } from '../../lib/loginContext';
 import CustomTableHeader from '../styled/customTableCellHeader';
 
-import { ROLE } from '../../utils/constants/enums';
+import { ROLES } from '../../utils/constants/enums';
+
 import ckeckStatusVisitor, {
   HIDEN_STEP_STATUS,
   INACTIF_STEP_STATUS,
 } from '../../utils/mappers/checkStatusVisitor';
+
+import checkCriblageVisitor, {
+  REFUSED_STATUS,
+  ACCEPTED_STATUS,
+  ACTIF_STEP_STATUS,
+} from '../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -104,6 +113,7 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type,
+    criblage: checkCriblageVisitor(status, activeRole),
     validation: null,
     step: ckeckStatusVisitor(status, activeRole),
   };
@@ -122,6 +132,19 @@ function getCheckbox() {
     ACCEPTER: false,
     REFUSER: false,
   };
+}
+
+function criblageReturn(value) {
+  switch (value) {
+    case ACTIF_STEP_STATUS:
+      return 'EN cours';
+    case ACCEPTED_STATUS:
+      return <CheckCircleIcon style={{ color: '#28a745' }} />;
+    case REFUSED_STATUS:
+      return <WarningIcon style={{ color: '#ffc107' }} />;
+    default:
+      return null;
+  }
 }
 
 export default function TabRequestVisitors({ visitors, onChange }) {
@@ -204,7 +227,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     );
                   case 'criblage':
                     return (
-                      (activeRole.role === ROLE.ROLE_SECURITY_OFFICER
+                      (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
                         && (
                         <CustomTableHeader key={headCell.id}>
                           {/* @todo length etc ... */ `${headCell.label}`}
@@ -251,15 +274,14 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   switch (column.id) {
                     case 'criblage':
                       return (
-                        (activeRole.role === ROLE.ROLE_SECURITY_OFFICER
+                        (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
                         && (
                         <TableCell
                           key={column.id}
                           align={column.align}
                           className={row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''}
                         >
-                          {/* @todo criblage actions */}
-                          checkCriblage
+                          { criblageReturn(value) }
                         </TableCell>
                         )
                         )
