@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
+import { urlAuthorization } from '../utils/permissions';
 
 export const LOGIN = gql`
   mutation login($email: EmailAddress!, $password: String, $token: String) {
@@ -49,6 +50,15 @@ const GET_INITIALIZEDCACHE = gql`
     }
 `;
 
+const GET_ROLE = gql`
+    query getRole {
+        activeRoleCache {
+            role
+            unit
+        }
+    }
+`;
+
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
@@ -86,6 +96,13 @@ export function LoginContextProvider(props) {
   const [isLoggedUser, setIsLoggedUser] = useState(
     !tokenDuration().expiredToken,
   );
+  const [activeRole, setActiveRole] = useState(() => {
+    if (isCacheInit) {
+      const data = client.readQuery({ query: GET_ROLE });
+      return { ...data.activeRoleCache };
+    }
+    return null;
+  });
 
   const signOut = (alert = false) => {
     router.push('/login');
@@ -96,22 +113,29 @@ export function LoginContextProvider(props) {
   };
 
   const getUserData = async () => {
-    let activeRoleNumber = 0;
-    if (localStorage.getItem('activeRoleNumber')) {
-      activeRoleNumber = localStorage.getItem('activeRoleNumber');
-    } else {
-      localStorage.setItem('activeRoleNumber', activeRoleNumber);
-    }
     try {
       const { data: { me } } = await client.query({ query: GET_ME });
+      const activeRoleNumber = localStorage.getItem('activeRoleNumber');
+
+      const newRole = me.roles[activeRoleNumber].units[0]
+        ? {
+          role: me.roles[activeRoleNumber].role,
+          unit: me.roles[activeRoleNumber].units[0].label,
+        }
+        : { role: me.roles[activeRoleNumber].role };
+
+      setActiveRole(newRole);
+
+      const campusId = me.roles[activeRoleNumber].campuses[0]
+        ? me.roles[activeRoleNumber].campuses[0].id
+        : null;
+
       await client.cache.writeData({
         data: {
           initializedCache: true,
           me,
-          activeRole: me.roles[activeRoleNumber],
-          campusId: me.roles[activeRoleNumber].campuses[0]
-            ? me.roles[activeRoleNumber].campuses[0].id
-            : null,
+          activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
+          campusId,
         },
       });
       setIsCacheInit(true);
@@ -188,6 +212,7 @@ export function LoginContextProvider(props) {
       });
       setToken(jwt);
       setIsLoggedUser(true);
+      localStorage.setItem('activeRoleNumber', 0);
       await authRenew(setToken, signOut, client);
       return getUserData();
     } catch (e) {
@@ -221,20 +246,32 @@ export function LoginContextProvider(props) {
       resetPassSignIn(email, token);
     }
 
-    if (isLoggedUser && router.pathname === '/login') {
+    if ((isLoggedUser
+      && router.pathname === '/login') || (isCacheInit && !urlAuthorization(router.pathname, activeRole.role))
+    ) {
       router.push('/');
     }
 
     if (!isLoggedUser && router.pathname !== '/login') {
       router.push('/login');
     }
-  }, [isLoggedUser]);
+  }, [isLoggedUser, activeRole, isCacheInit]);
 
   if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login')) {
     return <div />;
   }
 
-  return <LoginContext.Provider value={{ signIn, signOut }}>{children}</LoginContext.Provider>;
+  return (
+    <LoginContext.Provider value={{
+      signIn,
+      signOut,
+      setActiveRole,
+      activeRole,
+    }}
+    >
+      {children}
+    </LoginContext.Provider>
+  );
 }
 
 LoginContextProvider.propTypes = {

@@ -6,7 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 // Apollo
 import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
 // Material UI Imports
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -29,6 +29,7 @@ import { useSnackBar } from '../../lib/ui-providers/snackbar';
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
+import { useLogin } from '../../lib/loginContext';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -126,6 +127,9 @@ export const GET_PLACES_LIST = gql`
                 list {
                     id
                     label
+                    unitInCharge {
+                      label
+                    }
                 }
             }
         }
@@ -164,8 +168,18 @@ export default function FormInfosClaimant({
   const classes = useStyles();
 
   const { addAlert } = useSnackBar();
+  const client = useApolloClient();
 
   const { data: placesList } = useQuery(GET_PLACES_LIST);
+  const { activeRole } = useLogin();
+
+  const checkSelection = async (value) => {
+    const { data } = await client.query({ query: GET_PLACES_LIST });
+    const filter = data.getCampus.listPlaces.list.filter(
+      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unit,
+    );
+    return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
+  };
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
@@ -401,6 +415,7 @@ export default function FormInfosClaimant({
                   rules={{
                     validate: {
                       valide: (value) => (value && value.length > 0) || 'Le choix d\'un lieu est obligatoire',
+                      acceptedSelection: (value) => checkSelection(value),
                     },
                   }}
                   control={control}

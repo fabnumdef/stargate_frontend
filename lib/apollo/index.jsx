@@ -47,6 +47,30 @@ export default function createApolloClient(initialState, ctx) {
     resolvers,
   });
 
+  cache.writeData({
+    data: {
+      initializedCache: false,
+      me: {
+        firstname: '',
+        lastname: '',
+        roles: [{
+          role: '',
+          units: [{
+            label: '',
+            __typename: 'Unit',
+          }],
+          __typename: 'UserRole',
+        }],
+        __typename: 'User',
+      },
+      activeRoleCache: {
+        role: 'ROLE_HOST',
+        unit: null,
+        __typename: 'activeRoleCache',
+      },
+    },
+  });
+
   return client;
 }
 
