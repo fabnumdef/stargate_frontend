@@ -14,6 +14,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 export default function CustomTableCell({ children, ...others }) {
   return (
+    // we use spreading because we dont know explicit props will be used
     // eslint-disable-next-line react/jsx-props-no-spreading
     <StyledTableCell {...others}>
       {children}
