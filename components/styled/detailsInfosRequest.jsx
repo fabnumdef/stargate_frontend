@@ -19,7 +19,7 @@ export default function DetailsInfosRequest({ request }) {
     <Grid container spacing={2}>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Demandeur:
+          Demandeur :
           {' '}
         </Typography>
         <Typography variant="body2">
