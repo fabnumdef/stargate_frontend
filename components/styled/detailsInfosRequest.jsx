@@ -19,7 +19,7 @@ export default function DetailsInfosRequest({ request }) {
     <Grid container spacing={2}>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Demandeur:
+          Demandeur :
           {' '}
         </Typography>
         <Typography variant="body2">
@@ -32,7 +32,7 @@ export default function DetailsInfosRequest({ request }) {
       </Grid>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Période:
+          Période :
           {' '}
         </Typography>
         <Typography variant="body2">
@@ -45,7 +45,7 @@ export default function DetailsInfosRequest({ request }) {
       </Grid>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Lieux:
+          Lieux :
           {' '}
         </Typography>
         <Typography variant="body2">
@@ -58,7 +58,7 @@ export default function DetailsInfosRequest({ request }) {
       </Grid>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Motif:
+          Motif :
         </Typography>
         <Typography variant="body2">{request.reason}</Typography>
         {' '}

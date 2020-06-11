@@ -88,7 +88,6 @@ const useStyles = makeStyles({
 export default function TabMyRequestUntreated({ request }) {
   const classes = useStyles();
 
-  // eslint-disable-next-line no-unused-vars
   const [rows, setRows] = React.useState(
     request.reduce((acc, dem) => {
       acc.push(createData(dem));
