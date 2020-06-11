@@ -88,12 +88,10 @@ const useStyles = makeStyles({
 export default function TabMyRequestUntreated({ request }) {
   const classes = useStyles();
 
-  const [rows, setRows] = React.useState(
-    request.reduce((acc, dem) => {
-      acc.push(createData(dem));
-      return acc;
-    }, []),
-  );
+  const rows = request.reduce((acc, dem) => {
+    acc.push(createData(dem));
+    return acc;
+  }, []);
 
   const [hover, setHover] = useState({});
 
