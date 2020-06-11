@@ -1,3 +1,5 @@
+import { ROLES } from '../constants/enums';
+
 export const mapUserData = (data, dataCampuses, dataUnits) => {
   const { listCampuses: { list: campuses } } = dataCampuses;
   const { getCampus: { listUnits: { list: units } } } = dataUnits;
@@ -28,5 +30,5 @@ export const mapUsersList = (usersList) => usersList.map((user) => ({
   firstname: user.firstname,
   campus: user.roles[0].campuses[0] ? user.roles[0].campuses[0].label : '',
   unit: user.roles[0].units[0] ? user.roles[0].units[0].label : '',
-  role: user.roles[0].role,
+  role: ROLES[user.roles[0].role].label,
 }));
