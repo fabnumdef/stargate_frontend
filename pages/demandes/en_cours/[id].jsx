@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 // import { useQuery } from '@apollo/react-hooks';
 // import gql from 'graphql-tag';
 import { withApollo } from '../../../lib/apollo';
-import { RequestDetailToTreat } from '../../../containers';
+import { RequestDetailProgress } from '../../../containers';
 
 
 // const GET_ACTIVE_ROLE = gql`
@@ -25,7 +25,7 @@ function RequestDetailPage() {
 
   return (
     <>
-      <RequestDetailToTreat requestId={id} />
+      <RequestDetailProgress requestId={id} />
     </>
   );
 }

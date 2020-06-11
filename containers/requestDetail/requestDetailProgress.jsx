@@ -10,11 +10,11 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { useLogin } from '../lib/loginContext';
-import { useSnackBar } from '../lib/ui-providers/snackbar';
-import { DetailsInfosRequest, TabRequestVisitors } from '../components';
+import { useLogin } from '../../lib/loginContext';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { DetailsInfosRequest } from '../../components';
 
-import Template from './template';
+import Template from '../template';
 
 const useStyles = makeStyles((theme) => ({
   root: {
