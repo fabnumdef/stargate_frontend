@@ -58,7 +58,7 @@ export default function DetailsInfosRequest({ request }) {
       </Grid>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Motif:
+          Motif :
         </Typography>
         <Typography variant="body2">{request.reason}</Typography>
         {' '}
