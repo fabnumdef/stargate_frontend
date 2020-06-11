@@ -45,7 +45,7 @@ export default function DetailsInfosRequest({ request }) {
       </Grid>
       <Grid item sm={6}>
         <Typography variant="body1" className={classes.categorie}>
-          Lieux:
+          Lieux :
           {' '}
         </Typography>
         <Typography variant="body2">
