@@ -17,21 +17,21 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import WarningIcon from '@material-ui/icons/Warning';
 
-import { useLogin } from '../../lib/loginContext';
-import CustomTableHeader from '../styled/customTableCellHeader';
+import { useLogin } from '../../../lib/loginContext';
+import CustomTableHeader from '../../styled/customTableCellHeader';
 
-import { ROLES } from '../../utils/constants/enums';
+import { ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
   HIDEN_STEP_STATUS,
   INACTIF_STEP_STATUS,
-} from '../../utils/mappers/checkStatusVisitor';
+} from '../../../utils/mappers/checkStatusVisitor';
 
 import checkCriblageVisitor, {
   REFUSED_STATUS,
   ACCEPTED_STATUS,
   ACTIF_STEP_STATUS,
-} from '../../utils/mappers/checkCriblageVisitor';
+} from '../../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

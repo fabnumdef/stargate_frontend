@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 // Material Import
@@ -10,9 +10,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { useLogin } from '../../lib/loginContext';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
-import { DetailsInfosRequest } from '../../components';
+import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../components';
 
 import Template from '../template';
 
@@ -95,63 +93,14 @@ export const READ_REQUEST = gql`
        `;
 
 
-export const MUTATE_VISITOR = gql`
-         mutation shiftVisitor(
-           $requestId: String!
-           $campusId: String!
-           $visitorId: String!
-           $persona: ValidationPersonas!
-           $transition: String!
-         ) {
-           campusId @client @export(as: "campusId")
-           mutateCampus(id: $campusId) {
-             mutateRequest(id: $requestId) {
-               shiftVisitor(id: $visitorId, as: $persona, transition: $transition) {
-                 id
-               }
-             }
-           }
-         }
-       `;
-
-
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
 
-  const { activeRole } = useLogin();
-  const { addAlert } = useSnackBar();
-
   const {
-    data, error, loading, refetch,
+    data, error, loading,
   } = useQuery(READ_REQUEST, {
     variables: { requestId },
   });
-
-  const [shiftVisitor] = useMutation(MUTATE_VISITOR);
-
-  const [visitors, setVisitors] = useState([]);
-
-  const submitForm = () => {
-    visitors.forEach((visitor) => {
-      if (visitor.validation !== null) {
-        shiftVisitor({
-          variables: { requestId, persona: activeRole, transition: visitor.validation },
-          onError: () => {
-            // Display good message
-            addAlert({
-              message:
-              `erreur graphQL:${' '}
-              le visiteur ${visitor.firstname} ${visitor.birthLastname.toUpperCase()} n'a pas été sauvegardé`,
-              severity: 'error',
-            });
-          },
-        });
-      }
-    });
-    // refresh the query
-    refetch();
-  };
-
 
   if (loading) return <p>Loading ....</p>;
 
@@ -176,12 +125,7 @@ export default function RequestDetails({ requestId }) {
           <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <TabRequestVisitors
-            visitors={data.visitors}
-            onChange={(entries) => {
-              setVisitors(entries);
-            }}
-          />
+          <TabRequestVisitorsProgress visitors={data.visitors} />
         </Grid>
         <Grid item sm={12}>
           <Grid container justify="flex-end">

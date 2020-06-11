@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button';
 
 import { useLogin } from '../../lib/loginContext';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
-import { DetailsInfosRequest, TabRequestVisitors } from '../../components';
+import { DetailsInfosRequest, TabRequestVisitorsToTreat } from '../../components';
 
 import Template from '../template';
 
@@ -176,7 +176,7 @@ export default function RequestDetails({ requestId }) {
           <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <TabRequestVisitors
+          <TabRequestVisitorsToTreat
             visitors={data.visitors}
             onChange={(entries) => {
               setVisitors(entries);
