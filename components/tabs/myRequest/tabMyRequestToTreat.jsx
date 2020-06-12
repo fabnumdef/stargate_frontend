@@ -1,59 +1,74 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
 import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import DoneIcon from '@material-ui/icons/Done';
-import ErrorIcon from '@material-ui/icons/Error';
 import DeleteIcon from '@material-ui/icons/Delete';
-import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import CustomTableCellHeader from '../styled/customTableCellHeader';
+import Typography from '@material-ui/core/Typography';
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
+import DescriptionIcon from '@material-ui/icons/Description';
+
+import { format } from 'date-fns';
+import EmptyArray from '../../styled/emptyArray';
+import CustomTableCellHeader from '../../styled/customTableCellHeader';
+
+
+const columns = [
+  { id: 'id', label: 'N° demande' },
+  { id: 'periode', label: 'Période' },
+  { id: 'reason', label: 'Motif' },
+  { id: 'type', label: 'Type de demande' },
+];
+
+function createData({
+  id, from, to, reason, visitors,
+}) {
+  return {
+    id,
+    periode: `${format(new Date(from), 'dd/MM/yyyy')}
+          au
+          ${format(new Date(to), 'dd/MM/yyyy')}`,
+    reason,
+    type: (visitors.length > 5) ? 'Groupe' : 'Simple',
+  };
+}
 
 const useStyles = makeStyles({
   root: {
     width: '100%',
   },
-  container: {
-    maxHeight: 440,
-  },
   icon: {
     marginBottom: '-20px',
     marginTop: '-20px',
   },
-  buttons: {
-    marginTop: '1vh',
-    marginBottom: '1vh',
+  deleteIcon: {
+    marginTop: '-20px',
+    marginLeft: '10px',
+    marginBottom: '-20px',
   },
-  export: {
-    color: 'white',
-  },
-  exportContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
+  cellVisitors: {
+    border: 'none',
   },
 });
 
-export default function TabAdminUsers({
-  rows,
-  columns,
-  deleteItem,
-  tabData,
-}) {
+export default function TabMyRequestToTreat({ request }) {
   const classes = useStyles();
 
-  const [del, setDel] = useState({});
+  const rows = request.reduce((acc, dem) => {
+    acc.push(createData(dem));
+    return acc;
+  }, []);
 
   const [hover, setHover] = useState({});
+  const [del, setDel] = useState({});
+
 
   const handleMouseEnter = (index) => {
     setHover((prevState) => ({ ...prevState, [index]: true }));
@@ -68,45 +83,53 @@ export default function TabAdminUsers({
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-  const handleDeleteConfirm = (id) => {
-    deleteItem(id);
-    setDel({});
+  const handleDeleteConfirm = () => {
+    // todo
   };
+
+  // @todo : Cancel or delete visitor
+  // const handleDeleteConfirm = (id) => {
+  //   setDel({});
+  //   delete method
+  // };
 
   const handleDeleteAvorted = () => {
     setDel({});
   };
 
-  return (
-    <Table>
+  return request.length > 0 ? (
+    <Table aria-label="sticky table">
       <TableHead>
         <TableRow>
           {columns.map((column) => (
-            <CustomTableCellHeader
-              key={column.id}
-              align={column.align}
-              style={{
-                fontWeight: '600',
-                fontSize: '18px',
-              }}
-            >
+            <CustomTableCellHeader key={column.id} style={{ width: column.minWidth }}>
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" align="right">
-            <Link href={tabData.createUserPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
-          </CustomTableCellHeader>
+          <CustomTableCellHeader key="actions" style={{ minWidth: '150px' }} />
         </TableRow>
       </TableHead>
+
       <TableBody>
         {rows.map((row, index) => {
           if (del[index]) {
             return (
-              <TableRow tabIndex={-1} key={row.id}>
-                <TableCell key="delete" colSpan={columns.length + 1}>
+              <TableRow tabIndex={-1} key={row.emailVisiteur}>
+                <TableCell key="delete" align="justify" colspan={columns.length + 1}>
                   <Grid container>
                     <Grid item sm={10}>
-                      {tabData.deleteText}
+                      <Typography variant="body1">
+                        Êtes-vous sûr de vouloir supprimer la demande
+                        {' '}
+                        {row.id}
+                        {' '}
+                        ?
+                      </Typography>
+                      {rows.length === 1 && (
+                        <Typography variant="body1" color="error">
+                          Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                        </Typography>
+                      )}
                     </Grid>
                     <Grid item sm={2}>
                       <IconButton
@@ -130,41 +153,32 @@ export default function TabAdminUsers({
               </TableRow>
             );
           }
-
           return (
             <TableRow
               hover
-              role="checkbox"
-              tabIndex={-1}
-              key={row.id}
               onMouseOver={() => handleMouseEnter(index)}
               onFocus={() => handleMouseEnter(index)}
               onMouseLeave={() => handleMouseLeave(index)}
+              key={row.code}
             >
               {columns.map((column) => {
                 const value = row[column.id];
-                return column.id === 'criblage' ? (
-                  <TableCell key={column.id} align={column.align}>
-                    {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
-                  </TableCell>
-                ) : (
-                  <TableCell key={column.id}>
+                return (
+                  <TableCell key={column.id} align={column.align} component="td" scope="row">
                     {column.format && typeof value === 'number' ? column.format(value) : value}
                   </TableCell>
                 );
               })}
-              <TableCell key="modif" align="right">
+              <TableCell key="actions">
                 {hover[index] && (
                   <>
-                    <Link href="/administration/utilisateurs">
-                      <IconButton aria-label="modifier" color="primary" className={classes.icon}>
-                        <EditIcon />
-                      </IconButton>
-                    </Link>
+                    <IconButton color="primary" aria-label="link" className={classes.icon}>
+                      <DescriptionIcon />
+                    </IconButton>
                     <IconButton
-                      aria-label="supprimer"
-                      className={classes.icon}
                       color="primary"
+                      aria-label="delete"
+                      className={classes.icon}
                       onClick={() => handleDelete(index)}
                     >
                       <DeleteIcon />
@@ -177,15 +191,11 @@ export default function TabAdminUsers({
         })}
       </TableBody>
     </Table>
+  ) : (
+    <EmptyArray />
   );
 }
 
-TabAdminUsers.propTypes = {
-  rows: PropTypes.arrayOf(PropTypes.object).isRequired,
-  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  deleteItem: PropTypes.func.isRequired,
-  tabData: PropTypes.shape({
-    createUserPath: PropTypes.string.isRequired,
-    deleteText: PropTypes.string.isRequired,
-  }).isRequired,
+TabMyRequestToTreat.propTypes = {
+  request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };

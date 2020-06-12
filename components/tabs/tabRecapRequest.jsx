@@ -10,8 +10,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
@@ -36,17 +36,11 @@ function createData({
   company,
   type,
 }) {
-  if (!rank) {
-    return {
-      id,
-      visiteur: `${birthLastname.toUpperCase()} ${firstname}`,
-      unite: company,
-      type,
-    };
-  }
   return {
     id,
-    visiteur: `${rank} ${birthLastname.toUpperCase()} ${firstname}`,
+    visiteur: rank
+      ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
+      : `${birthLastname.toUpperCase()} ${firstname}`,
     unite: company,
     type,
   };
@@ -57,8 +51,7 @@ const useStyles = makeStyles({
     maxHeight: 440,
   },
   icon: {
-    marginBottom: '-20px',
-    marginTop: '-20px',
+    margin: '-20px',
   },
 });
 
@@ -153,7 +146,11 @@ export default function TabRecapRequest({
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer ce visiteur de la demande ?
+                          Êtes-vous sûr de vouloir supprimer
+                          {' '}
+                          {row.visiteur}
+                          {' '}
+                          de la demande ?
                         </Typography>
                         {rows.length === 1 && (
                           <Typography variant="body1" color="error">

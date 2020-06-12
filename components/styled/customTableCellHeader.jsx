@@ -12,14 +12,20 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function CustomTableCell({ children }) {
+export default function CustomTableCell({ children, ...others }) {
   return (
-    <StyledTableCell>
+    // we use spreading because we dont know explicit props will be used
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <StyledTableCell {...others}>
       {children}
     </StyledTableCell>
   );
 }
 
 CustomTableCell.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
+};
+
+CustomTableCell.defaultProps = {
+  children: '',
 };

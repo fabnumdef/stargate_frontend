@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 // Material Import
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -64,52 +64,57 @@ const AntTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 // Modify number with API data
-const tabList = [
-  { label: 'En cours (3)' },
-  { label: 'A traiter (2)' },
-  { label: 'Traitées' },
-];
+const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
 export default function NestedList() {
   const classes = useStyles();
 
-  const [tabData, setTab] = useState({
+  const tabData = {
     demandes: [
       {
-        numDemande: 'CSD02020-1',
-        dateDemande: '13/02/2020',
-        demandeur: {
-          prenomDemandeur: 'Henri',
-          nomDemandeur: 'Durand',
-          gradeDemandeur: 'MP',
-          uniteDemandeur: 'Etat Major',
-        },
-        periode: {
-          dateDebut: '02/03/2020',
-          dateFin: '04/03/2020',
-        },
-        motif:
-          'Visite des lieux alors que la difference du 6 eme et que le 7 sont sont différentes, oui, oui, oui tu le sais',
-        etapeDemande: 'Demande',
+        id: 'n°1',
+        reason: 'un motif raisonnable',
+        from: new Date('2020-05-21T12:39:00.000+00:00'),
+        to: new Date('2020-05-23T12:39:00.000+00:00'),
+        visitors: [
+          {
+            firstname: 'Michel',
+            birthLastname: 'Poquet',
+            rank: 'SGC',
+            company: 'Fort Lamalgue',
+          },
+          {
+            firstname: 'Stephen',
+            birthLastname: 'Peanuts',
+            rank: 'SGT',
+            company: 'CDAD T',
+          },
+        ],
+        places: ['BN TOULON'],
       },
       {
-        numDemande: 'CSD02020-2',
-        dateDemande: '02/01/2020',
-        demandeur: {
-          gradeDemandeur: 'AV1',
-          prenomDemandeur: 'Jean',
-          nomDemandeur: 'Paul',
-          uniteDemandeur: 'Etat major',
-        },
-        periode: {
-          dateDebut: '07/02/2020',
-          dateFin: '20/02/2020',
-        },
-        motif: 'signature contrat',
-        etapeDemande: 'Viser',
+        id: 'n°2',
+        reason: 'un motif non raisonnable',
+        from: new Date('2020-05-21T12:39:00.000+00:00'),
+        to: new Date('2020-05-23T12:39:00.000+00:00'),
+        visitors: [
+          {
+            firstname: 'Michel',
+            birthLastname: 'Piquet',
+            rank: 'SGC',
+            company: 'Fort Lamalgue',
+          },
+          {
+            firstname: 'Stephen',
+            birthLastname: 'Ben&Nuts',
+            rank: 'SGT',
+            company: 'CDAD T',
+          },
+        ],
+        places: ['BN TOULON'],
       },
     ],
-  });
+  };
 
   const [value, setValue] = React.useState(0);
 
@@ -136,19 +141,21 @@ export default function NestedList() {
             scrollButtons="off"
             aria-label="simple tabs example"
           >
-            { tabList.map((tab, index) => (
+            {tabList.map((tab, index) => (
               <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
             ))}
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes tabData={tabData} setTab={setTab} />
+            <TabMesDemandes request={tabData.demandes} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees tabData={tabData} setTab={setTab} />
+            <TabDemandesTraitees request={tabData.demandes} />
           </TabPanel>
-          <TabPanel value={value} index={2} />
+          <TabPanel value={value} index={2}>
+            <TabMesDemandes request={tabData.demandes} />
+          </TabPanel>
         </Grid>
       </Grid>
     </Template>

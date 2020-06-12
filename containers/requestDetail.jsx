@@ -1,191 +1,124 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
+// Material Import
 import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-
 import Button from '@material-ui/core/Button';
-import Stepper from '../components/styled/stepper';
-import { SnackBarContext } from '../lib/ui-providers/snackbar';
 
-import { TabVisiteur } from '../components';
+import { DetailsInfosRequest, DetailsVisitorsRequest } from '../components';
 
-const useStyles = makeStyles(() => ({
+import Template from './template';
+
+const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    width: '100%',
   },
-  infos: {
-    margin: '40px',
+  pageTitle: {
+    margin: '16px 0',
+    color: '#0d40a0',
+    fontWeight: theme.typography.fontWeightBold,
   },
-  categorie: {
-    fontWeight: 'bold',
+  idRequest: {
+    marginLeft: '10px',
+    marginTop: '4px',
+    color: '#0d40a0',
   },
-  restricTitle: {
-    marginLeft: '4vw;',
+  pageTitleHolder: {
+    borderBottom: '1px solid #e5e5e5',
   },
-  restricZone: {
-    paddingLeft: '6vw',
-    paddingRight: '2vw',
+  pageTitleControl: {
+    marginLeft: 'auto',
   },
-  buttons: {
-    marginTop: '20vh',
-  },
-  fixedButton: {
-    position: 'fixed',
-    bottom: '10vh',
-    right: '10vw',
+  tabContent: {
+    margin: '20px 0',
   },
 }));
 
-function getDemande() {
+// Provisory DATA
+function getRequest(idRequest) {
   return {
-    numDemande: 'CSD02020-1',
-    dateDemande: '13/02/2020',
-    demandeur: {
-      nomDemandeur: 'Durand',
-      prenomDemandeur: 'Henri',
-      gradeDemandeur: 'MP',
-      uniteDemandeur: 'Etat Major',
+    id: idRequest,
+    reason: 'un motif raisonnable',
+    from: new Date('2020-05-21T12:39:00.000+00:00'),
+    to: new Date('2020-05-23T12:39:00.000+00:00'),
+    owner: {
+      firstname: 'Michel',
+      birthLastname: 'Poquet',
+      rank: 'SGC',
+      company: 'Fort Lamalgue',
     },
-    periode: {
-      dateDebut: '02/03/2020',
-      dateFin: '04/03/2020',
-    },
-    motif: 'Visite des lieux',
+    visitors: [
+      {
+        firstname: 'Michel',
+        birthLastname: 'Poquet',
+        rank: 'SGC',
+        company: 'Fort Lamalgue',
+      },
+      {
+        firstname: 'Stephen',
+        birthLastname: 'Peanuts',
+        rank: 'SGT',
+        company: 'CDAD T',
+      },
+    ],
+    places: ['BN TOULON'],
   };
 }
 
-function getVisiteurs() {
-  return [
-    {
-      visiteur: {
-        nomVisiteur: 'Latour',
-        prenomVisiteur: 'Robert',
-        gradeVisiteur: 'ASC1',
-        uniteVisiteur: 'CDBD Toulon',
-        status: true,
-        typeVisiteur: 'Civil de la Defense',
-      },
-    },
-    {
-      visiteur: {
-        nomVisiteur: 'Labouille',
-        prenomVisiteur: 'Robin',
-        gradeVisiteur: 'MP',
-        uniteVisiteur: 'CDBD Toulon',
-        status: true,
-        typeVisiteur: 'Militaire actif',
-      },
-    },
-    {
-      visiteur: {
-        nomVisiteur: 'Pichon',
-        prenomVisiteur: 'Frédérique',
-        uniteVisiteur: 'Société Informatique Toulonnaise',
-        gradeVisiteur: 'Mr',
-        status: true,
-        typeVisiteur: 'Militaire actif',
-      },
-    },
-  ];
-}
 
-export default function ContainerDetail() {
-  const demande = getDemande();
+export default function NestedList({ request }) {
   const classes = useStyles();
 
-  const { addAlert } = useContext(SnackBarContext);
-
-  const handleClickEnvoyer = () => {
-    addAlert('La demande a été envoyé pour criblage');
-  };
+  // @todo GET REQUEST OBJECT WITH ID
+  const data = getRequest(request);
 
   return (
-    <Paper className={classes.root}>
-      <Grid container spacing={2}>
-        <Grid item sm={12} className={classes.infos}>
-          <Grid container spacing={2}>
-            <Grid item sm={6}>
-              <Typography variant="body1" className={classes.categorie}>
-                N° Demande:
-              </Typography>
-              <Typography variant="body2">{demande.numDemande}</Typography>
-            </Grid>
-            <Grid item sm={6}>
-              <Typography variant="body1" className={classes.categorie}>
-                Motif:
-              </Typography>
-              <Typography variant="body2">{demande.motif}</Typography>
-            </Grid>
-            <Grid item sm={6}>
-              <Typography variant="body1" className={classes.categorie}>
-                Création:
-              </Typography>
-              <Typography variant="body2">{demande.dateDemande}</Typography>
-            </Grid>
-            <Grid item sm={6}>
-              <Typography variant="body1" className={classes.categorie}>
-                Période:
-                {' '}
-              </Typography>
-              <Typography variant="body2">
-                {demande.periode.dateDebut}
-                {' '}
-                au
-                {demande.periode.dateFin}
-              </Typography>
-            </Grid>
-            <Grid item sm={6}>
-              <Typography variant="body1" className={classes.categorie}>
-                Demandeur:
-                {' '}
-              </Typography>
-              <Typography variant="body2">
-                {demande.demandeur.gradeDemandeur}
-                {' '}
-                {demande.demandeur.nomDemandeur.toUpperCase()}
-                {' '}
-                {demande.demandeur.prenomDemandeur}
-              </Typography>
-            </Grid>
-            <Grid item sm={6}>
-              <Typography variant="body1" className={classes.categorie}>
-                Lieux:
-                {' '}
-              </Typography>
-              <Typography variant="body2">Base navale, HOMLET, Mess</Typography>
-            </Grid>
+    <Template>
+      <Grid container spacing={2} className={classes.root}>
+        <Grid item sm={12} xs={12}>
+          <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
+            <Typography variant="h5" className={classes.pageTitle}>
+              {/* @todo change title if treated */}
+              Demandes à traiter:
+            </Typography>
+            <Typography variant="subtitle2" className={classes.idRequest}>
+              {/* @todo change title if treated */}
+              {data.id}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item sm={12} xs={12}>
+          <DetailsInfosRequest request={data} />
+        </Grid>
+        <Grid item sm={12} xs={12} className={classes.tabContent}>
+          <DetailsVisitorsRequest
+            visitors={data.visitors}
+            onChange={(visitors) => {
+              console.log(visitors);
+            }}
+          />
+        </Grid>
+        <Grid item sm={12}>
+          <Grid container justify="flex-end">
+            <div>
+              <Button
+                variant="outlined"
+                color="primary"
+                style={{ marginRight: '5px' }}
+              >
+                Annuler
+              </Button>
+            </div>
+            <div>
+              <Button variant="contained" color="primary">
+                Envoyer
+              </Button>
+            </div>
           </Grid>
         </Grid>
-        <Grid item sm={12}>
-          <Stepper />
-        </Grid>
-        <Grid item sm={12}>
-          <TabVisiteur tabData={getVisiteurs()} />
-        </Grid>
       </Grid>
-
-      <div className={classes.fixedButton}>
-        <Link href="/mesDemandes">
-          <Button variant="outlined" color="primary">
-            Retour
-          </Button>
-        </Link>
-
-        <Button variant="outlined" color="primary">
-          Refuser
-        </Button>
-        <Link href="/mesDemandes">
-          <Button variant="contained" color="primary" onClick={handleClickEnvoyer}>
-            Envoyer
-          </Button>
-        </Link>
-      </div>
-      {/* <Visiteurs/> */}
-
-      {/* <Commentaire/> */}
-    </Paper>
+    </Template>
   );
 }
