@@ -422,11 +422,11 @@ export default function FormInfoVisitor({
                             fullWidth
                           />
                         )}
-                        rules={{ required: 'Le NID est obligatoire' }}
                         control={control}
                         name="nid"
                         defaultValue=""
                       />
+                      <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
                     </Grid>
                     <Grid item md={6} sm={6} xs={12}>
                       <Controller
@@ -439,11 +439,11 @@ export default function FormInfoVisitor({
                             fullWidth
                           />
                         )}
-                        rules={{ required: 'Le grade est obligatoire' }}
                         control={control}
                         name="rank"
                         defaultValue=""
                       />
+                      <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
                     </Grid>
                   </>
                 )}
@@ -638,14 +638,11 @@ export default function FormInfoVisitor({
                       name="kind"
                       defaultValue=""
                       rules={{
-                        required:
-                            watch('isInternal')
-                            || '' === 'HORS MINARM'
-                            || formData.object === REQUEST_OBJECT.PRIVATE,
+                        required: 'Le type de document est obligatoire',
                       }}
                     />
                     {errors.kind && errors.kind.type === 'required' && (
-                    <FormHelperText>Le type de document est obligatoire</FormHelperText>
+                    <FormHelperText>{errors.kind.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -658,8 +655,7 @@ export default function FormInfoVisitor({
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                         helperText={
                             errors.reference
-                            && errors.reference.type === 'required'
-                            && 'Le numéro de document est obligatoire'
+                            && errors.reference.message
                           }
                         fullWidth
                       />
@@ -668,10 +664,7 @@ export default function FormInfoVisitor({
                     name="reference"
                     defaultValue=""
                     rules={{
-                      required:
-                          watch('isInternal')
-                          || '' === 'HORS MINARM'
-                          || formData.object === REQUEST_OBJECT.PRIVATE,
+                      required: 'Le numéro de document est obligatoire',
                     }}
                   />
                 </Grid>
@@ -685,7 +678,7 @@ export default function FormInfoVisitor({
                         helperText={
                             errors.birthday
                             && errors.birthday.type === 'required'
-                            && 'La date de naissance est obligatoire'
+                            && errors.birthday.message
                           }
                         disableFuture
                         fullWidth
@@ -694,10 +687,7 @@ export default function FormInfoVisitor({
                     control={control}
                     name="birthday"
                     rules={{
-                      required:
-                          watch('isInternal')
-                          || '' === 'HORS MINARM'
-                          || formData.object === REQUEST_OBJECT.PRIVATE,
+                      required: 'La date de naissance est obligatoire',
                       validate: { valide: (value) => isValid(value) || 'Format invalide' },
                     }}
                     defaultValue={null}
@@ -712,8 +702,7 @@ export default function FormInfoVisitor({
                         error={Object.prototype.hasOwnProperty.call(errors, 'birthplace')}
                         helperText={
                             errors.birthplace
-                            && errors.birthplace.type === 'required'
-                            && 'Le lieu de naissance est obligatoire'
+                            && errors.birthplace.message
                           }
                         fullWidth
                       />
@@ -722,8 +711,7 @@ export default function FormInfoVisitor({
                     name="birthplace"
                     defaultValue=""
                     rules={{
-                      required:
-                          watch('isInternal') || '' === 'HORS MINARM' || formData.object === 'PRIVATE',
+                      required: 'Le lieu de naissance est obligatoire',
                     }}
                   />
                 </Grid>

@@ -112,16 +112,16 @@ export default function InfosFinalView({
         <Typography variant="body1">
           Visite du
           {' '}
-          {format(new Date(formData.from), 'dd/MM/yyyy')}
+          {formData.from && format(new Date(formData.from), 'dd/MM/yyyy')}
           {' '}
           au
           {' '}
-          {format(new Date(formData.to), 'dd/MM/yyyy')}
+          {formData.to && format(new Date(formData.to), 'dd/MM/yyyy')}
         </Typography>
         <Typography variant="body1">
           à :
           {' '}
-          {formData.places.map((lieu, index) => {
+          {formData.places && formData.places.map((lieu, index) => {
             if (index === formData.places.length - 1) return `${lieu.label}.`;
             return `${lieu.label}, `;
           })}
@@ -129,7 +129,7 @@ export default function InfosFinalView({
         <Typography variant="body1">
           Motif:
           {' '}
-          {formData.reason}
+          {formData.reason && formData.reason}
         </Typography>
       </Grid>
       <Grid item sm={12}>
@@ -139,7 +139,7 @@ export default function InfosFinalView({
             setSelectVisitor={setSelectVisitor}
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
-              if (formData.visitors.length === 1) {
+              if (formData.visitors && formData.visitors.length === 1) {
                 deleteRequest({ variables: { idRequest: formData.id } });
               }
             }}
