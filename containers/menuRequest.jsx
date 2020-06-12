@@ -1,4 +1,6 @@
 import React from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 
 // Material Import
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -10,6 +12,10 @@ import Typography from '@material-ui/core/Typography';
 
 import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
 import Template from './template';
+
+import { STATE_REQUEST } from '../utils/constants/enums';
+
+import { useLogin } from '../lib/loginContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,55 +72,47 @@ const AntTab = withStyles((theme) => ({
 // Modify number with API data
 const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
-export default function NestedList() {
+
+const REQUEST_ATTRIBUTES = gql`
+  fragment RequestResult on Request {
+    id
+    reason
+    from
+    to
+    places {
+      label
+    }
+  }
+`;
+
+export const LIST_REQUESTS = gql`
+         query listRequests($campusId: String!, $as: ValidationPersonas!, $filter: RequestFilters) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             listRequests(as: $as, filter: $filter) {
+               list {
+                 ...RequestResult
+               }
+             }
+           }
+         }
+         ${REQUEST_ATTRIBUTES}
+       `;
+
+export default function MenuRequest() {
   const classes = useStyles();
 
-  const tabData = {
-    demandes: [
-      {
-        id: 'n°1',
-        reason: 'un motif raisonnable',
-        from: new Date('2020-05-21T12:39:00.000+00:00'),
-        to: new Date('2020-05-23T12:39:00.000+00:00'),
-        visitors: [
-          {
-            firstname: 'Michel',
-            birthLastname: 'Poquet',
-            rank: 'SGC',
-            company: 'Fort Lamalgue',
-          },
-          {
-            firstname: 'Stephen',
-            birthLastname: 'Peanuts',
-            rank: 'SGT',
-            company: 'CDAD T',
-          },
-        ],
-        places: ['BN TOULON'],
-      },
-      {
-        id: 'n°2',
-        reason: 'un motif non raisonnable',
-        from: new Date('2020-05-21T12:39:00.000+00:00'),
-        to: new Date('2020-05-23T12:39:00.000+00:00'),
-        visitors: [
-          {
-            firstname: 'Michel',
-            birthLastname: 'Piquet',
-            rank: 'SGC',
-            company: 'Fort Lamalgue',
-          },
-          {
-            firstname: 'Stephen',
-            birthLastname: 'Ben&Nuts',
-            rank: 'SGT',
-            company: 'CDAD T',
-          },
-        ],
-        places: ['BN TOULON'],
-      },
-    ],
-  };
+  const { activeRole } = useLogin();
+
+  const { data: resquestsToTreat } = useQuery(LIST_REQUESTS, {
+    variable: { as: activeRole, filters: { status: STATE_REQUEST.STATE_CREATED } },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  // const { data: resquestsProgress } = useQuery(LIST_REQUESTS, {
+  //   variable: { as: activeRole, filters: { statu: STATE_REQUEST.STATE_CREATED } },
+  //   fetchPolicy: 'cache-and-network',
+  // });
 
   const [value, setValue] = React.useState(0);
 
@@ -148,13 +146,15 @@ export default function NestedList() {
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes request={tabData.demandes} />
+            <TabMesDemandes
+              request={resquestsToTreat && resquestsToTreat.getCampus.listRequests.list}
+            />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={tabData.demandes} />
+            <TabDemandesTraitees request={[]} />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <TabMesDemandes request={tabData.demandes} />
+            <TabMesDemandes request={[]} />
           </TabPanel>
         </Grid>
       </Grid>

@@ -188,6 +188,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     let REFUSER = true;
 
     rows.some((row) => {
+      // @todo: refactor this switch
       switch (row.validation) {
         case null:
           ACCEPTER = false;

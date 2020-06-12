@@ -88,13 +88,10 @@ const useStyles = makeStyles({
 export default function TabMyRequestUntreated({ request }) {
   const classes = useStyles();
 
-  // eslint-disable-next-line no-unused-vars
-  const [rows, setRows] = React.useState(
-    request.reduce((acc, dem) => {
-      acc.push(createData(dem));
-      return acc;
-    }, []),
-  );
+  const rows = request.reduce((acc, dem) => {
+    acc.push(createData(dem));
+    return acc;
+  }, []);
 
   const [hover, setHover] = useState({});
 
@@ -158,7 +155,7 @@ export default function TabMyRequestUntreated({ request }) {
       </TableBody>
     </Table>
   ) : (
-    <EmptyArray />
+    <EmptyArray type="à traiter" />
   );
 }
 
@@ -177,5 +174,9 @@ TabMyRequestUntreated.propTypes = {
       places: PropTypes.arrayOf(PropTypes.string),
       reason: PropTypes.string,
     }),
-  ).isRequired,
+  ),
+};
+
+TabMyRequestUntreated.defaultProps = {
+  request: [],
 };

@@ -135,7 +135,7 @@ export default function RequestDetails({ requestId }) {
               </Button>
             </div>
             <div>
-              <Button variant="contained" color="primary" onClick={submitForm}>
+              <Button variant="contained" color="primary">
                 Envoyer
               </Button>
             </div>

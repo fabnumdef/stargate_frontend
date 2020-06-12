@@ -51,10 +51,23 @@ function CreateUser() {
       }
       return null;
     } catch (e) {
-      if (e.message === 'GraphQL error: User already exists') {
-        return addAlert({ message: 'Un utilisateur est déjà enregistré avec cet e-mail', severity: 'error' });
+      switch (true) {
+        case e.message === 'GraphQL error: User already exists':
+          return addAlert({
+            message: 'Un utilisateur est déjà enregistré avec cet e-mail',
+            severity: 'error',
+          });
+        case e.message.includes('User validation failed: email.original: queryMx ENOTFOUND'):
+          return addAlert({
+            message: 'Erreur, veuillez vérifier le domaine de l\'adresse e-mail',
+            severity: 'warning',
+          });
+        default:
+          return addAlert({
+            message: 'Erreur serveur, merci de réessayer',
+            severity: 'warning',
+          });
       }
-      return addAlert({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
     }
   };
 
