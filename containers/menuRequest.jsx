@@ -135,6 +135,9 @@ export default function MenuRequest() {
     setValue(newValue);
   };
 
+  // to remove
+  if (loadingToTreat || loadingInProgress) return '';
+
   return (
     <Template>
       <Grid container spacing={2} className={classes.root}>
