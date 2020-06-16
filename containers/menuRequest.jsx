@@ -120,14 +120,17 @@ export default function MenuRequest() {
 
   const { activeRole } = useLogin();
 
-  const { data: toTreat, loading: loadingToTreat } = useQuery(LIST_REQUESTS, {
+  const { data: toTreat, loading: loadingToTreat, error: errorToTreat } = useQuery(LIST_REQUESTS, {
     variables: { as: activeRole, filters: { status: STATE_REQUEST.STATE_CREATED.state } },
     fetchPolicy: 'cache-and-network',
   });
 
-  const { data: inProgress, loading: loadingInProgress } = useQuery(LIST_MY_REQUESTS, {
-    fetchPolicy: 'cache-and-network',
-  });
+  const { data: inProgress, loading: loadingInProgress, error: errorInProgress } = useQuery(
+    LIST_MY_REQUESTS,
+    {
+      fetchPolicy: 'cache-and-network',
+    },
+  );
 
   const [value, setValue] = React.useState(0);
 
@@ -136,7 +139,16 @@ export default function MenuRequest() {
   };
 
   // to remove
-  if (loadingToTreat || loadingInProgress) return '';
+  if (loadingToTreat || loadingInProgress) return 'loading screen toDO';
+  if (errorToTreat || errorInProgress) {
+    return (
+      <Template>
+        Error:
+        {' '}
+        {errorToTreat}
+      </Template>
+    );
+  }
 
   return (
     <Template>
