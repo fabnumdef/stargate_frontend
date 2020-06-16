@@ -15,8 +15,6 @@ import Template from './template';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
 
-import { useLogin } from '../lib/loginContext';
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -73,30 +71,39 @@ const AntTab = withStyles((theme) => ({
 const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
 
-const REQUEST_ATTRIBUTES = gql`
+const REQUEST_ATTRIBUTES = {
+  requestResult: gql`
   fragment RequestResult on Request {
     id
-    from
-    reason
     to
     places {
       label
     }
   }
-`;
+`,
+};
 
 export const LIST_REQUESTS = gql`
          query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
            campusId @client @export(as: "campusId")
+           activeRoleCache @client @export(as: "as") { role, unit }
            getCampus(id: $campusId) {
              listRequests(as: $as, filters: $filters) {
                list {
-                 ...RequestResult
+                   id
+                   from
+                   to
+                   reason
+                   places {
+                       label
+                   }
                }
+                 meta {
+                     total
+                 }
              }
            }
          }
-         ${REQUEST_ATTRIBUTES}
        `;
 
 export const LIST_MY_REQUESTS = gql`
@@ -107,21 +114,27 @@ export const LIST_MY_REQUESTS = gql`
            getCampus(id: $campusId) {
              listMyRequests {
                list {
-                 ...RequestResult
+                   id
+                   from
+                   to
+                   reason
+                   places {
+                       label
+                   }
+                   meta {
+                       total
+                   }
                }
              }
            }
          }
-         ${REQUEST_ATTRIBUTES}
        `;
 
 export default function MenuRequest() {
   const classes = useStyles();
 
-  const { activeRole } = useLogin();
-
   const { data: toTreat, loading: loadingToTreat, error: errorToTreat } = useQuery(LIST_REQUESTS, {
-    variables: { as: activeRole, filters: { status: STATE_REQUEST.STATE_CREATED.state } },
+    variables: { filters: { status: STATE_REQUEST.STATE_CREATED.state } },
     fetchPolicy: 'cache-and-network',
   });
 

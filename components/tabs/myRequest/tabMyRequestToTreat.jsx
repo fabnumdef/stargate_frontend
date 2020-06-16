@@ -28,7 +28,7 @@ const columns = [
 ];
 
 function createData({
-  id, from, to, reason, visitors,
+  id, from, to, reason,
 }) {
   return {
     id,
@@ -36,7 +36,7 @@ function createData({
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
     reason,
-    type: (visitors.length > 5) ? 'Groupe' : 'Simple',
+    type: 'Simple',
   };
 }
 

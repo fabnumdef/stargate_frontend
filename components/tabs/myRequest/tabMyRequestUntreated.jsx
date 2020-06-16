@@ -40,9 +40,9 @@ function createData({
           ${demandeur.company}`
       : '',
 
-    places: places.map((lieu, index) => {
-      if (index === places.length - 1) return `${lieu.value}.`;
-      return `${lieu.value}, `;
+    places: places.map((place, index) => {
+      if (index === places.length - 1) return `${place.label}.`;
+      return `${place.label}, `;
     }),
     reason,
   };
