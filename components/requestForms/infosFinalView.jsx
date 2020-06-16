@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import PropTypes from 'prop-types';
@@ -48,6 +47,18 @@ const DELETE_REQUEST = gql`
         mutateCampus(id: $campusId) {
             deleteRequest(id: $idRequest) {
                 id
+            }
+        }
+    }
+`;
+
+const CREATE_REQUEST = gql`
+    mutation shiftRequestMutation($idRequest: String!, $campusId: String!, $transition: RequestTransition!) {
+        campusId @client @export(as: "campusId")
+        mutateCampus(id: $campusId) {
+            shiftRequest(id: $idRequest, transition: $transition) {
+                id
+                status
             }
         }
     }
@@ -106,22 +117,40 @@ export default function InfosFinalView({
     },
   });
 
+  const [createRequest] = useMutation(CREATE_REQUEST, {
+    onCompleted: (data) => {
+      if (data.mutateCampus.shiftRequest.status === 'created') {
+        router.push('/');
+        addAlert({
+          message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créé`,
+          severity: 'success',
+        });
+      }
+    },
+    onError: () => {
+      addAlert({
+        message: 'Erreur lors de la création de votre demande',
+        severity: 'error',
+      });
+    },
+  });
+
   return (
     <Grid container spacing={4}>
       <Grid item sm={11}>
         <Typography variant="body1">
           Visite du
           {' '}
-          {format(new Date(formData.from), 'dd/MM/yyyy')}
+          {formData.from && format(new Date(formData.from), 'dd/MM/yyyy')}
           {' '}
           au
           {' '}
-          {format(new Date(formData.to), 'dd/MM/yyyy')}
+          {formData.to && format(new Date(formData.to), 'dd/MM/yyyy')}
         </Typography>
         <Typography variant="body1">
           à :
           {' '}
-          {formData.places.map((lieu, index) => {
+          {formData.places && formData.places.map((lieu, index) => {
             if (index === formData.places.length - 1) return `${lieu.label}.`;
             return `${lieu.label}, `;
           })}
@@ -129,7 +158,7 @@ export default function InfosFinalView({
         <Typography variant="body1">
           Motif:
           {' '}
-          {formData.reason}
+          {formData.reason && formData.reason}
         </Typography>
       </Grid>
       <Grid item sm={12}>
@@ -139,7 +168,7 @@ export default function InfosFinalView({
             setSelectVisitor={setSelectVisitor}
             onDelete={(idVisitor) => {
               deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
-              if (formData.visitors.length === 1) {
+              if (formData.visitors && formData.visitors.length === 1) {
                 deleteRequest({ variables: { idRequest: formData.id } });
               }
             }}
@@ -149,11 +178,14 @@ export default function InfosFinalView({
       </Grid>
       <Grid item xs={12} sm={12}>
         <Grid container justify="flex-end">
-          <Link href="/">
-            <Button variant="contained" color="primary" startIcon={<SaveIcon />}>
-              Valider
-            </Button>
-          </Link>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<SaveIcon />}
+            onClick={() => createRequest({ variables: { idRequest: formData.id, transition: 'CREATE' } })}
+          >
+            Valider
+          </Button>
         </Grid>
       </Grid>
     </Grid>
