@@ -22,6 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
 } from 'date-fns';
+import { useRouter } from 'next/router';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 // Date Validators
 
@@ -105,6 +106,16 @@ function isDeadlineRespected(value) {
   return days >= 2;
 }
 
+const fromMinDate = () => {
+  const date = new Date();
+  if (isThursday(date)) {
+    return date.setDate(date.getDate() + 5);
+  }
+  if (isFriday(date)) {
+    return date.setDate(date.getDate() + 4);
+  }
+  return date.setDate(date.getDate() + 3);
+};
 
 const REQUEST_ATTRIBUTES = gql`
     fragment RequestResult on Request {
@@ -166,6 +177,7 @@ export default function FormInfosClaimant({
   formData, setForm, handleNext,
 }) {
   const classes = useStyles();
+  const router = useRouter();
 
   const { addAlert } = useSnackBar();
   const client = useApolloClient();
@@ -290,6 +302,7 @@ export default function FormInfosClaimant({
                     <Controller
                       as={(
                         <DatePicker
+                          minDate={fromMinDate()}
                           label="du"
                           error={Object.prototype.hasOwnProperty.call(errors, 'from')}
                           disablePast
@@ -306,7 +319,7 @@ export default function FormInfosClaimant({
                         required: 'La date de début est obligatoire.',
                         validate: {
                           format: (value) => isValid(value) || 'Format invalide',
-                          valide: (value) => isDeadlineRespected(value) || 'Attention aux durées minimum.',
+                          valide: (value) => isDeadlineRespected(value) || 'Le délai minimum avant visite est de 2 jours ouvrés',
                         },
                       }}
                       defaultValue={null}
@@ -321,6 +334,7 @@ export default function FormInfosClaimant({
                           error={Object.prototype.hasOwnProperty.call(errors, 'to')}
                           helperText={errors.to && errors.to.message}
                           disablePast
+                          disabled={!watch('from')}
                           fullWidth
                           inputProps={{
                             'data-testid': 'datefin-visite',
@@ -431,7 +445,7 @@ export default function FormInfosClaimant({
 
           <Grid item sm={12} xs={12}>
             <Grid container justify="flex-end">
-              <Button variant="outlined" color="primary" className={classes.buttonCancel}>
+              <Button variant="outlined" color="primary" className={classes.buttonCancel} onClick={() => router.push('/')}>
                 Annuler
               </Button>
               <Button type="submit" variant="contained" color="primary">
