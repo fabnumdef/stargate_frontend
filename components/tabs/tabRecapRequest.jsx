@@ -51,7 +51,8 @@ const useStyles = makeStyles({
     maxHeight: 440,
   },
   icon: {
-    margin: '-20px',
+    marginTop: '-20px',
+    marginBottom: '-20px',
   },
 });
 
@@ -128,7 +129,6 @@ export default function TabRecapRequest({
               color="primary"
               onClick={handleAddVisitor}
               startIcon={<AddIcon />}
-              className={classes.icon}
             >
               Ajouter
             </Button>

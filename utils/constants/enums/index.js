@@ -15,13 +15,13 @@ export const ROLES = {
 };
 
 export const STATE_REQUEST = {
-  STATE_DRAFTED: { state: 'STATE_DRAFTED' },
-  STATE_CREATED: { state: 'STATE_CREATED' },
-  STATE_CANCELED: { state: 'STATE_CANCELED' },
-  STATE_REMOVED: { state: 'STATE_REMOVED' },
-  STATE_ACCEPTED: { state: 'STATE_ACCEPTED' },
-  STATE_REJECTED: { state: 'STATE_REJECTED' },
-  STATE_MIXED: { state: 'STATE_MIXED' },
+  STATE_DRAFTED: { state: 'drafted' },
+  STATE_CREATED: { state: 'created' },
+  STATE_CANCELED: { state: 'canceled' },
+  STATE_REMOVED: { state: 'removed' },
+  STATE_ACCEPTED: { state: 'accpeted' },
+  STATE_REJECTED: { state: 'rejeted' },
+  STATE_MIXED: { state: 'mixed' },
 };
 
 export const ID_DOCUMENT = {

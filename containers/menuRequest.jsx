@@ -76,8 +76,8 @@ const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label:
 const REQUEST_ATTRIBUTES = gql`
   fragment RequestResult on Request {
     id
-    reason
     from
+    reason
     to
     places {
       label
@@ -86,10 +86,26 @@ const REQUEST_ATTRIBUTES = gql`
 `;
 
 export const LIST_REQUESTS = gql`
-         query listRequests($campusId: String!, $as: ValidationPersonas!, $filter: RequestFilters) {
+         query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listRequests(as: $as, filter: $filter) {
+             listRequests(as: $as, filters: $filters) {
+               list {
+                 ...RequestResult
+               }
+             }
+           }
+         }
+         ${REQUEST_ATTRIBUTES}
+       `;
+
+export const LIST_MY_REQUESTS = gql`
+         query listMyRequests(
+           $campusId: String!
+         ) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             listMyRequests {
                list {
                  ...RequestResult
                }
@@ -104,15 +120,14 @@ export default function MenuRequest() {
 
   const { activeRole } = useLogin();
 
-  const { data: resquestsToTreat } = useQuery(LIST_REQUESTS, {
-    variable: { as: activeRole, filters: { status: STATE_REQUEST.STATE_CREATED } },
+  const { data: toTreat, loading: loadingToTreat } = useQuery(LIST_REQUESTS, {
+    variables: { as: activeRole, filters: { status: STATE_REQUEST.STATE_CREATED.state } },
     fetchPolicy: 'cache-and-network',
   });
 
-  // const { data: resquestsProgress } = useQuery(LIST_REQUESTS, {
-  //   variable: { as: activeRole, filters: { statu: STATE_REQUEST.STATE_CREATED } },
-  //   fetchPolicy: 'cache-and-network',
-  // });
+  const { data: inProgress, loading: loadingInProgress } = useQuery(LIST_MY_REQUESTS, {
+    fetchPolicy: 'cache-and-network',
+  });
 
   const [value, setValue] = React.useState(0);
 
@@ -146,12 +161,10 @@ export default function MenuRequest() {
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes
-              request={resquestsToTreat && resquestsToTreat.getCampus.listRequests.list}
-            />
+            <TabMesDemandes request={toTreat.getCampus.listRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={[]} />
+            <TabDemandesTraitees request={inProgress.getCampus.listMyRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={2}>
             <TabMesDemandes request={[]} />
