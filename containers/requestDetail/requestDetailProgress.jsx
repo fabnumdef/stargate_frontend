@@ -104,6 +104,7 @@ export default function RequestDetails({ requestId }) {
 
   if (loading) return <p>Loading ....</p>;
 
+  // @todo a real 404 page
   if (error) return <p>page 404</p>;
 
   return (

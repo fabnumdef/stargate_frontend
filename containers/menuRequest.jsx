@@ -70,7 +70,7 @@ const AntTab = withStyles((theme) => ({
 // Modify number with API data
 const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
-// To fix fragment
+// @todo check to implement fragments
 // const REQUEST_ATTRIBUTES = {
 //   requestResult: gql`
 //   fragment RequestResult on Request {

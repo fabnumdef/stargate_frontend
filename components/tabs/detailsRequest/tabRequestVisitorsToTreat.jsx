@@ -137,7 +137,7 @@ function getCheckbox() {
 function criblageReturn(value) {
   switch (value) {
     case ACTIF_STEP_STATUS:
-      return 'EN cours';
+      return 'En cours';
     case ACCEPTED_STATUS:
       return <CheckCircleIcon style={{ color: '#28a745' }} />;
     case REFUSED_STATUS:

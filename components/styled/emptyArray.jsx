@@ -26,14 +26,13 @@ export default function EmptyArray({ type }) {
       </div>
       <div className={classes.textContent}>
         <Typography variant="subtitle2" style={{ textAlign: 'center' }}>
-          Aucune demande
-          {' '}
-          {type}
+          {`Aucune demande ${type}`}
         </Typography>
       </div>
     </>
   );
 }
+
 EmptyArray.propTypes = {
   type: PropTypes.string.isRequired,
 };

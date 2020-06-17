@@ -9,17 +9,6 @@ export default function checkCriblageVisitor(status, activeRole) {
 
   const screening = statu.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
 
-  switch (screening) {
-    // check if screening in progress
-    case !screening.done:
-      return ACTIF_STEP_STATUS;
-    // check if screening is ok
-    case screening.status === ACCEPTED_STATUS:
-      return ACCEPTED_STATUS;
-    // check if screening is ko
-    case screening.status === REFUSED_STATUS:
-      return REFUSED_STATUS;
-    default:
-      return null;
-  }
+  // check if screening in progress
+  return !screening.done ? ACTIF_STEP_STATUS : screening.status;
 }

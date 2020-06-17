@@ -97,93 +97,88 @@ export default function TabRequestVisitors({ visitors }) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows
-          // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((row, index) => {
-            if (del[index]) {
-              return (
-                <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                  <TableCell key="delete" align="justify" colspan={columns.length + 1}>
-                    <Grid container>
-                      <Grid item sm={10}>
-                        <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer
-                          {' '}
-                          {row.visiteur}
-                          {' '}
-                          de la demande ?
-                        </Typography>
-                        {rows.length === 1 && (
-                          <Typography variant="body1" color="error">
-                            Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                          </Typography>
-                        )}
-                      </Grid>
-                      <Grid item sm={2}>
-                        <IconButton
-                          aria-label="valide"
-                          className={classes.icon}
-                          onClick={() => handleDeleteConfirm(row.id)}
-                        >
-                          <DoneIcon />
-                        </IconButton>
-
-                        <IconButton
-                          aria-label="cancel"
-                          className={classes.icon}
-                          onClick={() => handleDeleteAvorted(index)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                  </TableCell>
-                </TableRow>
-              );
-            }
+        {rows.map((row, index) => {
+          if (del[index]) {
             return (
-              <TableRow
-                onMouseOver={() => handleMouseEnter(index)}
-                onFocus={() => handleMouseEnter(index)}
-                onMouseLeave={() => handleMouseLeave(index)}
-                role="checkbox"
-                tabIndex={-1}
-                key={row.id}
-              >
-                {columns.map((column) => {
-                  const value = row[column.id];
-                  switch (column.id) {
-                    case 'step':
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          value.activeStep.step
-                        </TableCell>
-                      );
-                    default:
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      );
-                  }
-                })}
-                <TableCell key="actions">
-                  {hover[index] && (
-                    <>
+              <TableRow tabIndex={-1} key={row.emailVisiteur}>
+                <TableCell key="delete" align="justify" colspan={columns.length + 1}>
+                  <Grid container>
+                    <Grid item sm={10}>
+                      <Typography variant="body1">
+                        {`Êtes-vous sûr de vouloir supprimer ${row.visiteur}
+                         de la demande ?`}
+                      </Typography>
+                      {rows.length === 1 && (
+                      <Typography variant="body1" color="error">
+                        Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                      </Typography>
+                      )}
+                    </Grid>
+                    <Grid item sm={2}>
                       <IconButton
-                        color="primary"
-                        aria-label="delete"
+                        aria-label="valide"
                         className={classes.icon}
-                        onClick={() => handleDelete(index)}
+                        onClick={() => handleDeleteConfirm(row.id)}
                       >
-                        <DeleteIcon />
+                        <DoneIcon />
                       </IconButton>
-                    </>
-                  )}
+
+                      <IconButton
+                        aria-label="cancel"
+                        className={classes.icon}
+                        onClick={() => handleDeleteAvorted(index)}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
                 </TableCell>
               </TableRow>
             );
-          })}
+          }
+          return (
+            <TableRow
+              onMouseOver={() => handleMouseEnter(index)}
+              onFocus={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave(index)}
+              role="checkbox"
+              tabIndex={-1}
+              key={row.id}
+            >
+              {columns.map((column) => {
+                const value = row[column.id];
+                switch (column.id) {
+                  case 'step':
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        value.activeStep.step
+                      </TableCell>
+                    );
+                  default:
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                      </TableCell>
+                    );
+                }
+              })}
+              <TableCell key="actions">
+                {hover[index] && (
+                <>
+                  <IconButton
+                    color="primary"
+                    aria-label="delete"
+                    className={classes.icon}
+                    onClick={() => handleDelete(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
