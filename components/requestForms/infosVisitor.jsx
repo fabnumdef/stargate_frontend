@@ -100,7 +100,6 @@ function getTypeEmploie(type) {
   return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
 }
 
-// TODO Add PAPERS
 const ADD_VISITOR = gql`
   mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
     campusId @client @export(as: "campusId")
@@ -260,8 +259,6 @@ export default function FormInfoVisitor({
 
 
   const onSubmit = (data) => {
-    // TODO DELETE WHEN API TAKE CARE OF TYPE OF EMPLOYE
-
     const visitorData = mapVisitorData(data);
     if (selectVisitor.id) {
       return editVisitor({
