@@ -113,7 +113,7 @@ export default function TabMyRequestUntreated({ request }) {
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" style={{ minWidth: '150px' }} />
+          <CustomTableCellHeader key="actions" style={{ minWidth: '100px' }} />
         </TableRow>
       </TableHead>
       <TableBody>

@@ -14,11 +14,12 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function CustomTableCell({ children, ...others }) {
+export default function CustomTableCell({ children, style, ...others }) {
   return (
     <StyledTableCell
       {...others}
       style={{
+        ...style,
         fontWeight: '600',
         fontSize: '18px',
       }}
@@ -30,8 +31,10 @@ export default function CustomTableCell({ children, ...others }) {
 
 CustomTableCell.propTypes = {
   children: PropTypes.node,
+  style: PropTypes.oneOf(PropTypes.object),
 };
 
 CustomTableCell.defaultProps = {
   children: '',
+  style: {},
 };

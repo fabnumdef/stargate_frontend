@@ -98,9 +98,6 @@ export const LIST_REQUESTS = gql`
                        label
                    }
                }
-                 meta {
-                     total
-                 }
              }
            }
          }
@@ -120,9 +117,6 @@ export const LIST_MY_REQUESTS = gql`
                    reason
                    places {
                        label
-                   }
-                   meta {
-                       total
                    }
                }
              }
