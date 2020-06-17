@@ -10,7 +10,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
-import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
+import { TabPanel, TabDemandesProgress, TabMesDemandesToTreat } from '../components';
 import Template from './template';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
@@ -183,13 +183,13 @@ export default function MenuRequest() {
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes request={toTreat.getCampus.listRequests.list} />
+            <TabMesDemandesToTreat request={toTreat.getCampus.listRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={inProgress.getCampus.listMyRequests.list} />
+            <TabDemandesProgress request={inProgress.getCampus.listMyRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <TabMesDemandes request={[]} />
+            <TabMesDemandesToTreat request={[]} />
           </TabPanel>
         </Grid>
       </Grid>
