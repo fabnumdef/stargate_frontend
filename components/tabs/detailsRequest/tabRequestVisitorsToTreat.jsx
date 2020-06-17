@@ -23,7 +23,7 @@ import CustomTableHeader from '../../styled/customTableCellHeader';
 import { ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
-  HIDEN_STEP_STATUS,
+  HIDDEN_STEP_STATUS,
   INACTIF_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
 
@@ -268,7 +268,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
           </TableHead>
           <TableBody>
             {rows.map(
-              (row, index) => row.step.state !== HIDEN_STEP_STATUS && (
+              (row, index) => row.step !== HIDDEN_STEP_STATUS && (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
@@ -280,7 +280,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''}
+                          className={row.step === INACTIF_STEP_STATUS ? classes.inactiveCell : ''}
                         >
                           { criblageReturn(value) }
                         </TableCell>
@@ -292,7 +292,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step.state === INACTIF_STEP_STATUS
+                          className={row.step === INACTIF_STEP_STATUS
                             ? classes.inactiveCell
                             : ''}
                         >
@@ -318,7 +318,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   >
                     <FormControlLabel
                       value="ACCEPTER"
-                      disabed={row.step.state === INACTIF_STEP_STATUS}
+                      disabed={row.step === INACTIF_STEP_STATUS}
                       control={(
                         <Radio
                           color="primary"
@@ -328,7 +328,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     />
                     <FormControlLabel
                       value="REFUSER"
-                      disabed={row.step.state === INACTIF_STEP_STATUS}
+                      disabed={row.step === INACTIF_STEP_STATUS}
                       control={(
                         <Radio
                           color="primary"

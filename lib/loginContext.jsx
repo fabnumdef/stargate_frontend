@@ -257,7 +257,7 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
-  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login')) {
+  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || !urlAuthorization(router.pathname, activeRole.role)) {
     return <div />;
   }
 

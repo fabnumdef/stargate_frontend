@@ -5,7 +5,7 @@ export const ACCEPTED_STATUS = 'accepted';
 export const ACTIF_STEP_STATUS = 'inProgress';
 
 export default function checkCriblageVisitor(status, activeRole) {
-  const statu = status.find((item) => item.unit === activeRole.unit);
+  const statu = status.find((item) => item.label === activeRole.unit);
 
   const screening = statu.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
 

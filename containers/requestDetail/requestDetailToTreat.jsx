@@ -74,7 +74,17 @@ export const READ_REQUEST = gql`
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              getRequest(id: $requestId) {
-               ...RequestResult
+                 id
+                 reason
+                 from
+                 to
+                 owner {
+                     lastname
+                     firstname
+                 }
+                 places {
+                     label
+                 }
                listVisitors {
                  list {
                    id
@@ -83,15 +93,21 @@ export const READ_REQUEST = gql`
                    birthLastname
                    company
                    status {
-                     ...StatutResult
+                       unitId
+                       label
+                       steps {
+                           role
+                           step
+                           behavior
+                           status
+                           done
+                       }                   
                    }
                  }
                }
              }
            }
          }
-         ${REQUEST_ATTRIBUTES}
-         ${STATUT_ATTRIBUTES}
        `;
 
 
@@ -177,7 +193,7 @@ export default function RequestDetails({ requestId }) {
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsToTreat
-            visitors={data.visitors}
+            visitors={data.getCampus.getRequest.listVisitors.list}
             onChange={(entries) => {
               setVisitors(entries);
             }}
