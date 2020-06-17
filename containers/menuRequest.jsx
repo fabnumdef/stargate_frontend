@@ -70,18 +70,18 @@ const AntTab = withStyles((theme) => ({
 // Modify number with API data
 const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
-
-const REQUEST_ATTRIBUTES = {
-  requestResult: gql`
-  fragment RequestResult on Request {
-    id
-    to
-    places {
-      label
-    }
-  }
-`,
-};
+// To fix fragment
+// const REQUEST_ATTRIBUTES = {
+//   requestResult: gql`
+//   fragment RequestResult on Request {
+//     id
+//     to
+//     places {
+//       label
+//     }
+//   }
+// `,
+// };
 
 export const LIST_REQUESTS = gql`
          query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
