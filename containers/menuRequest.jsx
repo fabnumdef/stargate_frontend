@@ -86,7 +86,7 @@ const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label:
 export const LIST_REQUESTS = gql`
          query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
            campusId @client @export(as: "campusId")
-           activeRoleCache @client @export(as: "as") { role, unit }
+           activeRoleCache @client @export(as: "as") { role, unit: unitLabel }
            getCampus(id: $campusId) {
              listRequests(as: $as, filters: $filters) {
                list {

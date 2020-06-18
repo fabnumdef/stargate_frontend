@@ -120,7 +120,8 @@ export function LoginContextProvider(props) {
       const newRole = me.roles[activeRoleNumber].units[0]
         ? {
           role: me.roles[activeRoleNumber].role,
-          unit: me.roles[activeRoleNumber].units[0].label,
+          unit: me.roles[activeRoleNumber].units[0].id,
+          unitLabel: me.roles[activeRoleNumber].units[0].label,
         }
         : { role: me.roles[activeRoleNumber].role };
 
@@ -257,7 +258,7 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
-  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || !urlAuthorization(router.pathname, activeRole.role)) {
+  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) {
     return <div />;
   }
 

@@ -188,7 +188,7 @@ export default function FormInfosClaimant({
   const checkSelection = async (value) => {
     const { data } = await client.query({ query: GET_PLACES_LIST });
     const filter = data.getCampus.listPlaces.list.filter(
-      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unit,
+      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unitLabel,
     );
     return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
   };

@@ -10,7 +10,6 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { useLogin } from '../../lib/loginContext';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 import { DetailsInfosRequest, TabRequestVisitorsToTreat } from '../../components';
 
@@ -116,13 +115,14 @@ export const MUTATE_VISITOR = gql`
            $requestId: String!
            $campusId: String!
            $visitorId: String!
-           $persona: ValidationPersonas!
+           $as: ValidationPersonas!
            $transition: String!
          ) {
            campusId @client @export(as: "campusId")
+           activeRoleCache @client @export(as: "as") { role, unit }
            mutateCampus(id: $campusId) {
              mutateRequest(id: $requestId) {
-               shiftVisitor(id: $visitorId, as: $persona, transition: $transition) {
+               shiftVisitor(id: $visitorId, as: $as, transition: $transition) {
                  id
                }
              }
@@ -134,7 +134,6 @@ export const MUTATE_VISITOR = gql`
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
 
-  const { activeRole } = useLogin();
   const { addAlert } = useSnackBar();
 
   const {
@@ -149,19 +148,19 @@ export default function RequestDetails({ requestId }) {
 
   const submitForm = () => {
     visitors.forEach((visitor) => {
+      console.log('submitForm', visitor);
       if (visitor.validation !== null) {
-        shiftVisitor({
-          variables: { requestId, persona: activeRole, transition: visitor.validation },
-          onError: () => {
-            // Display good message
-            addAlert({
-              message:
-              `erreur graphQL:${' '}
-              le visiteur ${visitor.firstname} ${visitor.birthLastname.toUpperCase()} n'a pas été sauvegardé`,
-              severity: 'error',
-            });
-          },
-        });
+        try {
+          shiftVisitor({
+            variables: { requestId, visitorId: visitor.id, transition: visitor.validation },
+          });
+        } catch (e) {
+          addAlert({
+            message:
+              e.message,
+            severity: 'error',
+          });
+        }
       }
     });
     // refresh the query
@@ -207,7 +206,7 @@ export default function RequestDetails({ requestId }) {
               </Button>
             </div>
             <div>
-              <Button variant="contained" color="primary" onClick={submitForm}>
+              <Button variant="contained" color="primary" onClick={submitForm} disabled={!visitors.find((visitor) => visitor.validation !== null)}>
                 Envoyer
               </Button>
             </div>
