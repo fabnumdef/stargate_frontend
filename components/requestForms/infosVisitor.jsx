@@ -93,11 +93,8 @@ function getNationality() {
   return arr.map((item) => item.nationalite);
 }
 
-function getTypeEmploie(type) {
-  if (type === 'HORS MINARM') {
-    return ['Consultant', 'Interimaire', 'Stagiaire', 'Livreur', 'Famille'];
-  }
-  return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
+function getTypeEmploie() {
+  return ['Visiteur', 'Sous-traitant', 'Intérimaire', 'Stagiaire', 'Livreur', 'Militaire d\'active', 'Réserviste', 'Civil de la défense', 'Famille', 'Autorité'];
 }
 
 const ADD_VISITOR = gql`
@@ -325,8 +322,6 @@ export default function FormInfoVisitor({
                   )}
                 </FormControl>
               </Grid>
-              {formData.object === REQUEST_OBJECT.PROFESSIONAL
-              && (
               <Grid item xs={12} sm={12} className={classes.comps}>
                 <FormControl
                   data-testid="test-employe"
@@ -348,7 +343,7 @@ export default function FormInfoVisitor({
                         id="simple-select-outlined"
                         labelWidth={labelWidth}
                       >
-                        {getTypeEmploie(watch('isInternal')).map((type) => (
+                        {getTypeEmploie().map((type) => (
                           <MenuItem key={type} value={type}>
                             {type}
                           </MenuItem>
@@ -367,7 +362,6 @@ export default function FormInfoVisitor({
                   )}
                 </FormControl>
               </Grid>
-              )}
             </Grid>
 
             <Grid container spacing={1} alignItems="flex-end" className={classes.subTitle}>
