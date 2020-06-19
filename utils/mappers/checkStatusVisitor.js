@@ -17,4 +17,4 @@ export default function ckeckStatusVisitor(status, activeRole) {
     return INACTIVE_STEP_STATUS;
   }
   return null;
-};
+}

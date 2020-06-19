@@ -55,6 +55,7 @@ const GET_ROLE = gql`
         activeRoleCache {
             role
             unit
+            unitLabel
         }
     }
 `;

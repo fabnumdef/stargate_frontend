@@ -148,7 +148,6 @@ export default function RequestDetails({ requestId }) {
 
   const submitForm = () => {
     visitors.forEach((visitor) => {
-      console.log('submitForm', visitor);
       if (visitor.validation !== null) {
         try {
           shiftVisitor({

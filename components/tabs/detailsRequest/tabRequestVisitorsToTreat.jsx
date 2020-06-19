@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -152,21 +152,27 @@ export default function TabRequestVisitors({ visitors, onChange }) {
 
   const classes = useStyles();
 
-  const [checked, setChecked] = React.useState([
+  const [selectAll, setSelectAll] = React.useState([
     { label: 'ACCEPTER', value: false, validation: ROLES[activeRole.role].workflow.positive },
-    { label: 'ACCEPT', value: false, validation: ROLES[activeRole.role].workflow.positive },
     { label: 'REFUSER', value: false, validation: ROLES[activeRole.role].workflow.negative },
   ]);
 
-  const handleSelectAll = (checkbox, label, value) => {
-    console.log(checkbox, label, value);
+  const handleSelectAll = (checkbox, checkedValue) => {
     const newArray = rows.slice();
     newArray.forEach((row) => {
-      newArray[newArray.indexOf(row)].validation = checkbox ? value : null;
+      newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue : null;
     });
     setDataRows(newArray);
 
-    // TODO Set checked
+    const newChecked = selectAll.map((check) => {
+      if (checkbox) {
+        check.value = check.validation === checkedValue;
+      } else {
+        check.value = false;
+      }
+      return check;
+    });
+    setSelectAll(newChecked);
   };
 
   const handleDeselect = (row) => {
@@ -177,37 +183,15 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     }
   };
 
-  React.useEffect(() => {
-    // Share changes to onther components
-    // onChange(rows);
-    //
-    // // UI tool
-    // let ACCEPTER = true;
-    // let REFUSER = true;
-    //
-    // rows.some((row) => {
-    //   // @todo: refactor this switch
-    //   switch (row.validation) {
-    //     case null:
-    //       ACCEPTER = false;
-    //       REFUSER = false;
-    //       return true;
-    //     case 'ACCEPTER':
-    //       REFUSER = false;
-    //       break;
-    //     case 'REFUSER':
-    //       ACCEPTER = false;
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    //   return false;
-    // });
-    //
-    // setChecked({
-    //   ACCEPTER,
-    //   REFUSER,
-    // });
+  const deselectAllCheckbox = () => {
+    setSelectAll(selectAll.map((check) => {
+      check.value = null;
+      return check;
+    }));
+  };
+
+  useEffect(() => {
+    onChange(rows);
   }, [onChange, rows]);
 
   return (
@@ -244,14 +228,14 @@ export default function TabRequestVisitors({ visitors, onChange }) {
               >
                 Validation
                 <FormGroup row className={classes.reportCheckbox}>
-                  {checked && checked.map((checkbox) => (
+                  {selectAll.map((checkbox) => (
                     <FormControlLabel
                       control={(
                         <Checkbox
                           color="primary"
                           checked={checkbox.value}
                           onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox.label, checkbox.validation);
+                            handleSelectAll(event.target.checked, checkbox.validation);
                           }}
                         />
                                      )}
@@ -311,6 +295,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                       const newArray = rows.slice();
                       newArray[newArray.indexOf(row)].validation = event.target.value;
                       setDataRows(newArray);
+                      deselectAllCheckbox();
                     }}
                     style={{ justifyContent: 'space-evenly' }}
                   >
