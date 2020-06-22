@@ -97,6 +97,11 @@ export const LIST_REQUESTS = gql`
                    places {
                        label
                    }
+                   owner {
+                       firstname
+                       lastname
+                       unit
+                   }
                }
              }
            }
