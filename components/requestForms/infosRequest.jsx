@@ -149,11 +149,11 @@ export const GET_PLACES_LIST = gql`
 
 
 export const CREATE_REQUEST = gql`
-         mutation createRequest($request: RequestInput!, $campusId: String!, $as: ValidationPersonas!) {
+         mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
-            activeRoleCache @client @export (as: "as") {role, unit: unitLabel}
+            activeRoleCache @client @export (as: "unit") {label: unitLabel}
             mutateCampus(id: $campusId){
-              createRequest(request: $request, as: $as) {
+              createRequest(request: $request, unit: $unit) {
               ...RequestResult
             }
           }
@@ -162,11 +162,11 @@ export const CREATE_REQUEST = gql`
        `;
 
 export const EDIT_REQUEST = gql`
-         mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!, $as: ValidationPersonas!) {
+         mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
-            activeRoleCache @client @export (as: "as") {role, unit: unitLabel}
+            activeRoleCache @client @export (as: "unit") {unit: unitLabel}
             mutateCampus(id: $campusId){
-              editRequest(id: $id, request: $request, as: $as) {
+              editRequest(id: $id, request: $request, unit: $unit) {
                 ...RequestResult
               }
           }

@@ -112,7 +112,6 @@ export default function MenuIcon() {
       },
     });
     localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
-    setSelectRole(false);
     setActiveRole(newRole);
     handleCloseMenu();
   };
