@@ -93,15 +93,10 @@ function getNationality() {
   return arr.map((item) => item.nationalite);
 }
 
-// TODO Uncomment when back will be ready
-// function getTypeEmploie(type) {
-//   if (type === 'HORS MINARM') {
-//     return ['Consultant', 'Interimaire', 'Stagiaire', 'Livreur', 'Famille'];
-//   }
-//   return ['Militaire actif', 'Réserviste', 'Civil de la Defense', 'Autorité'];
-// }
+function getTypeEmploie() {
+  return ['Visiteur', 'Sous-traitant', 'Intérimaire', 'Stagiaire', 'Livreur', 'Militaire d\'active', 'Réserviste', 'Civil de la défense', 'Famille', 'Autorité'];
+}
 
-// TODO Add PAPERS
 const ADD_VISITOR = gql`
   mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
     campusId @client @export(as: "campusId")
@@ -110,6 +105,7 @@ const ADD_VISITOR = gql`
         createVisitor(visitor: $visitor){
           id
           isInternal
+          employeeType
           nid
           firstname
           birthLastname
@@ -140,6 +136,7 @@ const EDIT_VISITOR = gql`
                 editVisitor(visitor: $visitor, id: $idVisitor){
                     id
                     isInternal
+                    employeeType
                     nid
                     firstname
                     birthLastname
@@ -259,8 +256,6 @@ export default function FormInfoVisitor({
 
 
   const onSubmit = (data) => {
-    // TODO DELETE WHEN API TAKE CARE OF TYPE OF EMPLOYE
-
     const visitorData = mapVisitorData(data);
     if (selectVisitor.id) {
       return editVisitor({
@@ -327,46 +322,46 @@ export default function FormInfoVisitor({
                   )}
                 </FormControl>
               </Grid>
-              {/* <Grid item xs={12} sm={12} className={classes.comps}> */}
-              {/*  <FormControl */}
-              {/*    data-testid="test-employe" */}
-              {/*    variant="outlined" */}
-              {/*    error={Object.prototype.hasOwnProperty.call(errors, 'typeVisiteur')} */}
-              {/*    fullWidth */}
-              {/*  > */}
-              {/*    <InputLabel ref={inputLabel} id="select-outlined-label"> */}
-              {/*      Type d&apos;employé */}
-              {/*    </InputLabel> */}
-              {/*    <Controller */}
-              {/*      as={( */}
-              {/*        <Select */}
-              {/*          SelectDisplayProps={{ */}
-              {/*            'data-testid': 'list-employe', */}
-              {/*          }} */}
-              {/*          fullWidth */}
-              {/*          labelId="typeEmployeDemande" */}
-              {/*          id="simple-select-outlined" */}
-              {/*          labelWidth={labelWidth} */}
-              {/*        > */}
-              {/*          {getTypeEmploie(watch('isInternal')).map((type) => ( */}
-              {/*            <MenuItem key={type} value={type}> */}
-              {/*              {type} */}
-              {/*            </MenuItem> */}
-              {/*          ))} */}
-              {/*        </Select> */}
-              {/*      )} */}
-              {/*      control={control} */}
-              {/*      name="typeVisiteur" */}
-              {/*      rules={{ */}
-              {/*        required: 'Le type du visiteur est obligatoire.', */}
-              {/*      }} */}
-              {/*      defaultValue="" */}
-              {/*    /> */}
-              {/*    {errors.typevisitors && ( */}
-              {/*      <FormHelperText>{errors.typevisitors.message}</FormHelperText> */}
-              {/*    )} */}
-              {/*  </FormControl> */}
-              {/* </Grid> */}
+              <Grid item xs={12} sm={12} className={classes.comps}>
+                <FormControl
+                  data-testid="test-employe"
+                  variant="outlined"
+                  error={Object.prototype.hasOwnProperty.call(errors, 'employeeType')}
+                  fullWidth
+                >
+                  <InputLabel ref={inputLabel} id="select-outlined-label">
+                    Type d&apos;employé
+                  </InputLabel>
+                  <Controller
+                    as={(
+                      <Select
+                        SelectDisplayProps={{
+                          'data-testid': 'list-employe',
+                        }}
+                        fullWidth
+                        labelId="typeEmployeDemande"
+                        id="simple-select-outlined"
+                        labelWidth={labelWidth}
+                      >
+                        {getTypeEmploie().map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                    control={control}
+                    name="employeeType"
+                    rules={{
+                      required: 'Le type du visiteur est obligatoire.',
+                    }}
+                    defaultValue=""
+                  />
+                  {errors.typevisitors && (
+                  <FormHelperText>{errors.typevisitors.message}</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
             </Grid>
 
             <Grid container spacing={1} alignItems="flex-end" className={classes.subTitle}>
