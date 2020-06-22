@@ -166,13 +166,24 @@ export default function TabRequestVisitors({ visitors, onChange }) {
 
     const newChecked = selectAll.map((check) => {
       if (checkbox) {
-        check.value = check.validation === checkedValue;
-      } else {
-        check.value = false;
+        return {
+          ...check,
+          value: check.validation === checkedValue,
+        };
       }
-      return check;
+      return {
+        ...check,
+        value: null,
+      };
     });
     setSelectAll(newChecked);
+  };
+
+  const deselectAllCheckbox = () => {
+    setSelectAll(selectAll.map((check) => ({
+      ...check,
+      value: null,
+    })));
   };
 
   const handleDeselect = (row) => {
@@ -181,13 +192,6 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       newArray[newArray.indexOf(row)].validation = null;
       setDataRows(newArray);
     }
-  };
-
-  const deselectAllCheckbox = () => {
-    setSelectAll(selectAll.map((check) => {
-      check.value = null;
-      return check;
-    }));
   };
 
   useEffect(() => {

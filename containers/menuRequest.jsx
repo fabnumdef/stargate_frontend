@@ -14,6 +14,7 @@ import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
 import Template from './template';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
+import { useLogin } from '../lib/loginContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,7 +87,6 @@ const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label:
 export const LIST_REQUESTS = gql`
          query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
            campusId @client @export(as: "campusId")
-           activeRoleCache @client @export(as: "as") { role, unit: unitLabel }
            getCampus(id: $campusId) {
              listRequests(as: $as, filters: $filters) {
                list {
@@ -126,11 +126,20 @@ export const LIST_MY_REQUESTS = gql`
 
 export default function MenuRequest() {
   const classes = useStyles();
+  const { activeRole } = useLogin();
 
-  const { data: toTreat, loading: loadingToTreat, error: errorToTreat } = useQuery(LIST_REQUESTS, {
-    variables: { filters: { status: STATE_REQUEST.STATE_CREATED.state } },
+  const {
+    data: toTreat,
+    loading: loadingToTreat,
+    error: errorToTreat,
+  } = useQuery(LIST_REQUESTS, {
+    variables: {
+      filters: { status: STATE_REQUEST.STATE_CREATED.state },
+      as: { role: activeRole.role, unit: activeRole.unitLabel },
+    },
     fetchPolicy: 'cache-and-network',
   });
+
 
   const { data: inProgress, loading: loadingInProgress, error: errorInProgress } = useQuery(
     LIST_MY_REQUESTS,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
@@ -14,6 +14,7 @@ import { useSnackBar } from '../../lib/ui-providers/snackbar';
 import { DetailsInfosRequest, TabRequestVisitorsToTreat } from '../../components';
 
 import Template from '../template';
+import { useLogin } from '../../lib/loginContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,34 +40,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '20px 0',
   },
 }));
-
-
-const REQUEST_ATTRIBUTES = gql`
-  fragment RequestResult on Request {
-    id
-    reason
-    from
-    to
-    places {
-      label
-    }
-  }
-`;
-
-const STATUT_ATTRIBUTES = gql`
-  fragment StatutResult on UnitStatus {
-    status {
-      unit
-      steps {
-        role
-        step
-        behavior
-        status
-        done
-      }
-    }
-  }
-`;
 
 export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!) {
@@ -133,6 +106,7 @@ export const MUTATE_VISITOR = gql`
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
+  const { activeRole } = useLogin();
 
   const { addAlert } = useSnackBar();
 
@@ -140,17 +114,24 @@ export default function RequestDetails({ requestId }) {
     data, error, loading, refetch,
   } = useQuery(READ_REQUEST, {
     variables: { requestId },
+    fetchPolicy: 'cache-and-network',
   });
+
+  useEffect(() => {
+    if (data) {
+      refetch();
+    }
+  }, [activeRole]);
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
   const [visitors, setVisitors] = useState([]);
 
-  const submitForm = () => {
-    visitors.forEach((visitor) => {
+  const submitForm = async () => {
+    await Promise.all(visitors.map(async (visitor) => {
       if (visitor.validation !== null) {
         try {
-          shiftVisitor({
+          await shiftVisitor({
             variables: { requestId, visitorId: visitor.id, transition: visitor.validation },
           });
         } catch (e) {
@@ -161,7 +142,7 @@ export default function RequestDetails({ requestId }) {
           });
         }
       }
-    });
+    }));
     // refresh the query
     refetch();
   };
