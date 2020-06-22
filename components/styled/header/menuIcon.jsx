@@ -84,7 +84,6 @@ export default function MenuIcon() {
 
   const { me } = client.readQuery({ query: GET_ME });
 
-  const [selectRole, setSelectRole] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleOpenMenu = (event) => {
@@ -151,13 +150,6 @@ export default function MenuIcon() {
             <AccountCircleIcon fontSize="default" />
           </ListItemIcon>
           <ListItemText title="myAccount" primary="Mon compte" />
-        </StyledMenuItem>
-
-        <StyledMenuItem onClick={() => setSelectRole(!selectRole)}>
-          <ListItemIcon>
-            <AccountCircleIcon fontSize="default" />
-          </ListItemIcon>
-          <ListItemText title="changeRole" primary="Selectionner Rôle" />
         </StyledMenuItem>
 
         <StyledMenuItem>
