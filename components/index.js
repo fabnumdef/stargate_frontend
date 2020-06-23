@@ -12,7 +12,9 @@ export { default as TabDemandesTraitees } from './tabs/myRequest/tabMyRequestToT
 export { default as TabMesDemandes } from './tabs/myRequest/tabMyRequestUntreated';
 export { default as TabRecapRequest } from './tabs/tabRecapRequest';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
-export { default as DetailsVisitorsRequest } from './tabs/tabRequestVisitors';
+
+export { default as TabRequestVisitorsToTreat } from './tabs/detailsRequest/tabRequestVisitorsToTreat';
+export { default as TabRequestVisitorsProgress } from './tabs/detailsRequest/tabRequestVisitorsProgress';
 
 // Login Forms
 export { default as LoginForm } from './loginForms/LoginForm';

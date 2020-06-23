@@ -1,4 +1,6 @@
 import React from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 
 // Material Import
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -10,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 
 import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
 import Template from './template';
+
+import { STATE_REQUEST } from '../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,55 +70,74 @@ const AntTab = withStyles((theme) => ({
 // Modify number with API data
 const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
-export default function NestedList() {
+// @todo check to implement fragments
+// const REQUEST_ATTRIBUTES = {
+//   requestResult: gql`
+//   fragment RequestResult on Request {
+//     id
+//     to
+//     places {
+//       label
+//     }
+//   }
+// `,
+// };
+
+export const LIST_REQUESTS = gql`
+         query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
+           campusId @client @export(as: "campusId")
+           activeRoleCache @client @export(as: "as") { role, unit }
+           getCampus(id: $campusId) {
+             listRequests(as: $as, filters: $filters) {
+               list {
+                   id
+                   from
+                   to
+                   reason
+                   places {
+                       label
+                   }
+               }
+             }
+           }
+         }
+       `;
+
+export const LIST_MY_REQUESTS = gql`
+         query listMyRequests(
+           $campusId: String!
+         ) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             listMyRequests {
+               list {
+                   id
+                   from
+                   to
+                   reason
+                   places {
+                       label
+                   }
+               }
+             }
+           }
+         }
+       `;
+
+export default function MenuRequest() {
   const classes = useStyles();
 
-  const tabData = {
-    demandes: [
-      {
-        id: 'n°1',
-        reason: 'un motif raisonnable',
-        from: new Date('2020-05-21T12:39:00.000+00:00'),
-        to: new Date('2020-05-23T12:39:00.000+00:00'),
-        visitors: [
-          {
-            firstname: 'Michel',
-            birthLastname: 'Poquet',
-            rank: 'SGC',
-            company: 'Fort Lamalgue',
-          },
-          {
-            firstname: 'Stephen',
-            birthLastname: 'Peanuts',
-            rank: 'SGT',
-            company: 'CDAD T',
-          },
-        ],
-        places: ['BN TOULON'],
-      },
-      {
-        id: 'n°2',
-        reason: 'un motif non raisonnable',
-        from: new Date('2020-05-21T12:39:00.000+00:00'),
-        to: new Date('2020-05-23T12:39:00.000+00:00'),
-        visitors: [
-          {
-            firstname: 'Michel',
-            birthLastname: 'Piquet',
-            rank: 'SGC',
-            company: 'Fort Lamalgue',
-          },
-          {
-            firstname: 'Stephen',
-            birthLastname: 'Ben&Nuts',
-            rank: 'SGT',
-            company: 'CDAD T',
-          },
-        ],
-        places: ['BN TOULON'],
-      },
-    ],
-  };
+  const { data: toTreat, loading: loadingToTreat, error: errorToTreat } = useQuery(LIST_REQUESTS, {
+    variables: { filters: { status: STATE_REQUEST.STATE_CREATED.state } },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const { data: inProgress, loading: loadingInProgress, error: errorInProgress } = useQuery(
+    LIST_MY_REQUESTS,
+    {
+      fetchPolicy: 'cache-and-network',
+    },
+  );
 
   const [value, setValue] = React.useState(0);
 
@@ -122,11 +145,23 @@ export default function NestedList() {
     setValue(newValue);
   };
 
+  // to remove
+  if (loadingToTreat || loadingInProgress) return 'loading screen toDO';
+  if (errorToTreat || errorInProgress) {
+    return (
+      <Template>
+        Error:
+        {' '}
+        {errorToTreat}
+      </Template>
+    );
+  }
+
   return (
     <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
+          <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
               Mes Demandes
             </Typography>
@@ -148,13 +183,13 @@ export default function NestedList() {
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes request={tabData.demandes} />
+            <TabMesDemandes request={toTreat.getCampus.listRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={tabData.demandes} />
+            <TabDemandesTraitees request={inProgress.getCampus.listMyRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <TabMesDemandes request={tabData.demandes} />
+            <TabMesDemandes request={[]} />
           </TabPanel>
         </Grid>
       </Grid>

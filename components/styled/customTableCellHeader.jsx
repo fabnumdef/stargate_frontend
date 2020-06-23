@@ -1,3 +1,5 @@
+// we use spreading because we dont know explicit props will be used
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
@@ -12,11 +14,16 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function CustomTableCell({ children, ...others }) {
+export default function CustomTableCell({ children, style, ...others }) {
   return (
-    // we use spreading because we dont know explicit props will be used
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <StyledTableCell {...others}>
+    <StyledTableCell
+      {...others}
+      style={{
+        ...style,
+        fontWeight: '600',
+        fontSize: '18px',
+      }}
+    >
       {children}
     </StyledTableCell>
   );
@@ -24,8 +31,10 @@ export default function CustomTableCell({ children, ...others }) {
 
 CustomTableCell.propTypes = {
   children: PropTypes.node,
+  style: PropTypes.oneOf(PropTypes.object),
 };
 
 CustomTableCell.defaultProps = {
   children: '',
+  style: {},
 };

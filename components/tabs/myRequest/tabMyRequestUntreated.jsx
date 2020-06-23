@@ -40,9 +40,9 @@ function createData({
           ${demandeur.company}`
       : '',
 
-    places: places.map((lieu, index) => {
-      if (index === places.length - 1) return `${lieu.value}.`;
-      return `${lieu.value}, `;
+    places: places.map((place, index) => {
+      if (index === places.length - 1) return `${place.label}.`;
+      return `${place.label}, `;
     }),
     reason,
   };
@@ -113,9 +113,7 @@ export default function TabMyRequestUntreated({ request }) {
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" style={{ minWidth: '150px' }}>
-            Actions
-          </CustomTableCellHeader>
+          <CustomTableCellHeader key="actions" style={{ minWidth: '100px' }} />
         </TableRow>
       </TableHead>
       <TableBody>
@@ -157,7 +155,7 @@ export default function TabMyRequestUntreated({ request }) {
       </TableBody>
     </Table>
   ) : (
-    <EmptyArray />
+    <EmptyArray type="à traiter" />
   );
 }
 
@@ -176,5 +174,9 @@ TabMyRequestUntreated.propTypes = {
       places: PropTypes.arrayOf(PropTypes.string),
       reason: PropTypes.string,
     }),
-  ).isRequired,
+  ),
+};
+
+TabMyRequestUntreated.defaultProps = {
+  request: [],
 };

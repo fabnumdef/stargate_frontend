@@ -22,7 +22,7 @@ export default function DetailsInfosRequest({ request }) {
           Demandeur :
           {' '}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="primary">
           {request.owner.rank}
           {' '}
           {request.owner.birthLastname.toUpperCase()}
@@ -35,7 +35,7 @@ export default function DetailsInfosRequest({ request }) {
           Période :
           {' '}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="primary">
           {format(new Date(request.from), 'dd/MM/yyyy')}
           {' '}
           au
@@ -48,7 +48,7 @@ export default function DetailsInfosRequest({ request }) {
           Lieux :
           {' '}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="primary">
           {' '}
           {request.places.map((lieu, index) => {
             if (index === request.places.length - 1) return `${lieu.label}.`;
@@ -60,8 +60,9 @@ export default function DetailsInfosRequest({ request }) {
         <Typography variant="body1" className={classes.categorie}>
           Motif :
         </Typography>
-        <Typography variant="body2">{request.reason}</Typography>
-        {' '}
+        <Typography variant="body2" color="primary">
+          {request.reason}
+        </Typography>
       </Grid>
     </Grid>
   );

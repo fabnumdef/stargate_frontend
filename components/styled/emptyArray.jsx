@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -16,7 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default () => {
+export default function EmptyArray({ type }) {
   const classes = useStyles();
   return (
     <>
@@ -25,9 +26,13 @@ export default () => {
       </div>
       <div className={classes.textContent}>
         <Typography variant="subtitle2" style={{ textAlign: 'center' }}>
-          Aucune demande en cours
+          {`Aucune demande ${type}`}
         </Typography>
       </div>
     </>
   );
+}
+
+EmptyArray.propTypes = {
+  type: PropTypes.string.isRequired,
 };

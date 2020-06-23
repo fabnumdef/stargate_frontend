@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
@@ -13,8 +14,24 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import WarningIcon from '@material-ui/icons/Warning';
 
-import CustomTableHeader from '../styled/customTableCellHeader';
+import { useLogin } from '../../../lib/loginContext';
+import CustomTableHeader from '../../styled/customTableCellHeader';
+
+import { ROLES } from '../../../utils/constants/enums';
+
+import ckeckStatusVisitor, {
+  HIDEN_STEP_STATUS,
+  INACTIF_STEP_STATUS,
+} from '../../../utils/mappers/checkStatusVisitor';
+
+import checkCriblageVisitor, {
+  REFUSED_STATUS,
+  ACCEPTED_STATUS,
+  ACTIF_STEP_STATUS,
+} from '../../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -81,17 +98,24 @@ const useStyles = makeStyles((theme) => ({
   paginator: {
     float: 'left',
   },
+  inactiveCell: {
+    opacity: '0.2',
+  },
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, type,
-}) {
+  id, firstname, birthLastname, rank, company, type, status,
+}, activeRole) {
   return {
     id,
-    visitor: (rank) ? `${rank} ${birthLastname.toUpperCase()} ${firstname}` : `${birthLastname.toUpperCase()} ${firstname}`,
+    visitor: rank
+      ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
+      : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type,
+    criblage: checkCriblageVisitor(status, activeRole),
     validation: null,
+    step: ckeckStatusVisitor(status, activeRole),
   };
 }
 
@@ -105,17 +129,30 @@ const columns = [
 
 function getCheckbox() {
   return {
-    VA: false,
-    VL: false,
     ACCEPTER: false,
     REFUSER: false,
   };
 }
 
-export default function RequestVisitor({ visitors, onChange }) {
+function criblageReturn(value) {
+  switch (value) {
+    case ACTIF_STEP_STATUS:
+      return 'En cours';
+    case ACCEPTED_STATUS:
+      return <CheckCircleIcon style={{ color: '#28a745' }} />;
+    case REFUSED_STATUS:
+      return <WarningIcon style={{ color: '#ffc107' }} />;
+    default:
+      return null;
+  }
+}
+
+export default function TabRequestVisitors({ visitors, onChange }) {
+  const { activeRole } = useLogin();
+
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
-      acc.push(createData(dem));
+      acc.push(createData(dem, activeRole));
       return acc;
     }, []),
   );
@@ -146,9 +183,7 @@ export default function RequestVisitor({ visitors, onChange }) {
     // Share changes to onther components
     onChange(rows);
 
-    // UI tools
-    let VA = true;
-    let VL = true;
+    // UI tool
     let ACCEPTER = true;
     let REFUSER = true;
 
@@ -156,29 +191,13 @@ export default function RequestVisitor({ visitors, onChange }) {
       // @todo: refactor this switch
       switch (row.validation) {
         case null:
-          VA = false;
-          VL = false;
           ACCEPTER = false;
           REFUSER = false;
           return true;
-        case 'VA':
-          VL = false;
-          ACCEPTER = false;
-          REFUSER = false;
-          break;
-        case 'VL':
-          VA = false;
-          ACCEPTER = false;
-          REFUSER = false;
-          break;
         case 'ACCEPTER':
-          VA = false;
-          VL = false;
           REFUSER = false;
           break;
         case 'REFUSER':
-          VA = false;
-          VL = false;
           ACCEPTER = false;
           break;
         default:
@@ -188,7 +207,8 @@ export default function RequestVisitor({ visitors, onChange }) {
     });
 
     setChecked({
-      VA, VL, ACCEPTER, REFUSER,
+      ACCEPTER,
+      REFUSER,
     });
   }, [onChange, rows]);
 
@@ -206,13 +226,24 @@ export default function RequestVisitor({ visitors, onChange }) {
                         {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
+                  case 'criblage':
+                    return (
+                      (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
+                        && (
+                        <CustomTableHeader key={headCell.id}>
+                          {/* @todo length etc ... */ `${headCell.label}`}
+                        </CustomTableHeader>
+                        )
+                      ));
                   default:
                     return (
                       <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
                     );
                 }
               })}
-              <CustomTableHeader className={`${classes.reportHeader} ${classes.reportRow}`}>
+              <CustomTableHeader
+                className={`${classes.reportHeader} ${classes.reportRow}`}
+              >
                 Validation
                 <FormGroup row className={classes.reportCheckbox}>
                   {Object.keys(getCheckbox()).map((value) => (
@@ -226,7 +257,7 @@ export default function RequestVisitor({ visitors, onChange }) {
                             handleSelectAll(event.target.checked, value);
                           }}
                         />
-                      )}
+                                     )}
                       label={value}
                       labelPlacement="start"
                     />
@@ -236,21 +267,35 @@ export default function RequestVisitor({ visitors, onChange }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
+            {rows.map(
+              (row, index) => row.step.state !== HIDEN_STEP_STATUS && (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
                   switch (column.id) {
                     case 'criblage':
                       return (
-                        <TableCell key={column.id} align={column.align}>
-                          {/* @todo criblage actions */}
-                          {value}
+                        (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
+                        && (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''}
+                        >
+                          { criblageReturn(value) }
                         </TableCell>
+                        )
+                        )
                       );
                     default:
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={row.step.state === INACTIF_STEP_STATUS
+                            ? classes.inactiveCell
+                            : ''}
+                        >
                           {value}
                         </TableCell>
                       );
@@ -272,25 +317,30 @@ export default function RequestVisitor({ visitors, onChange }) {
                     style={{ justifyContent: 'space-evenly' }}
                   >
                     <FormControlLabel
-                      value="VA"
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                    />
-                    <FormControlLabel
-                      value="VL"
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
-                    />
-                    <FormControlLabel
                       value="ACCEPTER"
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
+                      disabed={row.step.state === INACTIF_STEP_STATUS}
+                      control={(
+                        <Radio
+                          color="primary"
+                          onClick={() => handleDeselect(row)}
+                        />
+                                         )}
                     />
                     <FormControlLabel
                       value="REFUSER"
-                      control={<Radio color="primary" onClick={() => handleDeselect(row)} />}
+                      disabed={row.step.state === INACTIF_STEP_STATUS}
+                      control={(
+                        <Radio
+                          color="primary"
+                          onClick={() => handleDeselect(row)}
+                        />
+                                         )}
                     />
                   </RadioGroup>
                 </TableCell>
               </TableRow>
-            ))}
+              ),
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -298,8 +348,11 @@ export default function RequestVisitor({ visitors, onChange }) {
   );
 }
 
-RequestVisitor.propTypes = {
-  visitors: PropTypes.arrayOf(PropTypes.shape({
-    firstname: PropTypes.string,
-  })).isRequired,
+TabRequestVisitors.propTypes = {
+  visitors: PropTypes.arrayOf(
+    PropTypes.shape({
+      firstname: PropTypes.string,
+    }),
+  ).isRequired,
+  onChange: PropTypes.func.isRequired,
 };

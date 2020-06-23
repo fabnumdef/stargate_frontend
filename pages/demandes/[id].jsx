@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { withApollo } from '../../lib/apollo';
-import { RequestDetail } from '../../containers';
+import { RequestDetailToTreat } from '../../containers';
 
 function RequestDetailPage() {
   // TODO check profile and load the good container
@@ -10,7 +10,7 @@ function RequestDetailPage() {
 
   return (
     <>
-      <RequestDetail request={id} />
+      <RequestDetailToTreat requestId={id} />
     </>
   );
 }
