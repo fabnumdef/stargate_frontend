@@ -102,7 +102,7 @@ export function LoginContextProvider(props) {
       const data = client.readQuery({ query: GET_ROLE });
       return { ...data.activeRoleCache };
     }
-    return null;
+    return { role: '', unit: '', unitLabel: '' };
   });
 
   const signOut = (alert = false) => {
