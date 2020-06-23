@@ -34,7 +34,7 @@ export const STATE_REQUEST = {
   STATE_CREATED: { state: 'created' },
   STATE_CANCELED: { state: 'canceled' },
   STATE_REMOVED: { state: 'removed' },
-  STATE_ACCEPTED: { state: 'accpeted' },
+  STATE_ACCEPTED: { state: 'accepted' },
   STATE_REJECTED: { state: 'rejeted' },
   STATE_MIXED: { state: 'mixed' },
 };
