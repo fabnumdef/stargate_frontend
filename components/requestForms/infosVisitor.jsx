@@ -28,7 +28,7 @@ import validator from 'validator';
 import { isValid } from 'date-fns';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
-import { REQUEST_OBJECT, ID_DOCUMENT } from '../../utils/constants/enums';
+import { REQUEST_OBJECT, ID_DOCUMENT, EMPLOYEE_TYPE } from '../../utils/constants/enums';
 import { mapVisitorData, mapVisitorEdit } from '../../utils/mappers/requestAcces';
 
 import DatePicker from '../styled/date';
@@ -91,10 +91,6 @@ function getTypeDocument(isInternal) {
 function getNationality() {
   const arr = [...Nationalite];
   return arr.map((item) => item.nationalite);
-}
-
-function getTypeEmploie() {
-  return ['Visiteur', 'Sous-traitant', 'Intérimaire', 'Stagiaire', 'Livreur', 'Militaire d\'active', 'Réserviste', 'Civil de la défense', 'Famille', 'Autorité'];
 }
 
 const ADD_VISITOR = gql`
@@ -343,9 +339,9 @@ export default function FormInfoVisitor({
                         id="simple-select-outlined"
                         labelWidth={labelWidth}
                       >
-                        {getTypeEmploie().map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
+                        {Object.entries(EMPLOYEE_TYPE).map(([value, label]) => (
+                          <MenuItem key={value} value={value}>
+                            {label}
                           </MenuItem>
                         ))}
                       </Select>
