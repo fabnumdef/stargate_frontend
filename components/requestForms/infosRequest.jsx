@@ -162,9 +162,8 @@ export const CREATE_REQUEST = gql`
        `;
 
 export const EDIT_REQUEST = gql`
-         mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
+         mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!) {
             campusId @client @export(as: "campusId")
-            activeRoleCache @client @export (as: "unit") {unit: unitLabel}
             mutateCampus(id: $campusId){
               editRequest(id: $id, request: $request, unit: $unit) {
                 ...RequestResult
