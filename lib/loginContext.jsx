@@ -279,6 +279,7 @@ export function LoginContextProvider(props) {
 LoginContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
   client: PropTypes.shape({
+    readQuery: PropTypes.func.isRequired,
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
     query: PropTypes.func.isRequired,
