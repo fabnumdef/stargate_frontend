@@ -113,19 +113,7 @@ export default function RequestDetails({ requestId }) {
     variables: { requestId },
   });
 
-  const [deleteVisitor] = useMutation(DELETE_VISITOR, {
-    onCompleted: () => addAlert({
-      message: 'Le visiteur a bien été supprimé de la demande',
-      severity: 'success',
-    }),
-    onError: () => {
-      //  @todo: Display good message
-      addAlert({
-        message: 'graphQL error',
-        severity: 'error',
-      });
-    },
-  });
+  const [deleteVisitor] = useMutation(DELETE_VISITOR);
 
   if (loading) return <p>Loading ....</p>;
 
@@ -138,11 +126,9 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
-              {/* @todo change title if treated */}
               Demandes en cours :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
-              {/* @todo change title if treated */}
               {data.getCampus.getRequest.id}
             </Typography>
           </Box>
@@ -153,8 +139,13 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsProgress
             visitors={data.getCampus.getRequest.listVisitors.list}
-            onDelete={(idVisitor) => {
-              deleteVisitor({ variables: { requestId, idVisitor, transition: 'cancel' } });
+            onDelete={async (idVisitor) => {
+              try {
+                // @todo fix that delete
+                await deleteVisitor({ variables: { requestId, idVisitor, transition: 'cancel' } });
+              } catch (e) {
+                addAlert({ message: e.message, severity: 'error' });
+              }
             }}
           />
         </Grid>
