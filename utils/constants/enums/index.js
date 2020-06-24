@@ -29,3 +29,16 @@ export const ID_DOCUMENT = {
   PASSPORT: 'Passport',
   CIMSCARD: 'CIMSCard',
 };
+
+export const EMPLOYEE_TYPE = {
+  TYPE_VISITOR: 'Visiteur',
+  TYPE_SUBCONTRACTOR: 'Sous-traitant',
+  TYPE_INTERIM: 'Intérimaire',
+  TYPE_TRAINEE: 'Stagiaire',
+  TYPE_DELIVERER: 'Livreur',
+  TYPE_ACTIVE_MILITARY: 'Militaire d\'active',
+  TYPE_RESERVIST: 'Réserviste',
+  TYPE_CIVILIAN_DEFENSE: 'Civil de la défense',
+  TYPE_FAMILY: 'Famille',
+  TYPE_AUTHORITY: 'Autorité',
+};
