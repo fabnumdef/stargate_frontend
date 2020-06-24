@@ -81,7 +81,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
   const {
-    handleSubmit, errors, control,
+    handleSubmit, errors, control, watch,
   } = useForm();
 
   const inputLabel = useRef(null);
@@ -224,6 +224,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                 )}
               </FormControl>
 
+              {(watch('role') !== ROLES.ROLE_ADMIN.role || watch('role') !== ROLES.ROLE_SUPERADMIN.role) && (
               <FormControl
                 variant="outlined"
                 error={Object.prototype.hasOwnProperty.call(errors, 'unit')}
@@ -256,6 +257,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                 <FormHelperText className={classes.errorText}>Unité obligatoire</FormHelperText>
                 )}
               </FormControl>
+              )}
               <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
                   Rôle

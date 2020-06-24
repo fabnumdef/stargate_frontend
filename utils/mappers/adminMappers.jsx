@@ -12,10 +12,12 @@ export const mapUserData = (data, dataCampuses, dataUnits) => {
           id: data.campus,
           label: campuses.find((campus) => campus.id === data.campus).label,
         }],
-        units: [{
-          id: data.unit,
-          label: units.find((unit) => unit.id === data.unit).label,
-        }],
+        units: data.unit
+          ? [{
+            id: data.unit,
+            label: units.find((unit) => unit.id === data.unit).label,
+          }]
+          : [],
       },
     ],
     firstname: data.firstname,
