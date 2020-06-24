@@ -27,21 +27,21 @@ const columns = [
 ];
 
 function createData({
-  id, demandeur, from, to, reason, places,
+  id, owner, from, to, reason, places,
 }) {
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
-    demandeur: demandeur
+    demandeur: owner
       ? `
-          ${demandeur.rank} ${demandeur.birthLastname.toUpperCase()} ${demandeur.firstname}
-          ${demandeur.company}`
+          ${owner.lastname.toUpperCase()} ${owner.firstname} -
+          ${owner.unit}`
       : '',
 
     places: places.map((place, index) => {
-      if (index === places.length - 1) return `${place.label}.`;
+      if (index === places.length - 1) return `${place.label}`;
       return `${place.label}, `;
     }),
     reason,

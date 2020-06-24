@@ -55,6 +55,7 @@ const GET_ROLE = gql`
         activeRoleCache {
             role
             unit
+            unitLabel
         }
     }
 `;
@@ -101,7 +102,7 @@ export function LoginContextProvider(props) {
       const data = client.readQuery({ query: GET_ROLE });
       return { ...data.activeRoleCache };
     }
-    return null;
+    return { role: '', unit: '', unitLabel: '' };
   });
 
   const signOut = (alert = false) => {
@@ -120,7 +121,8 @@ export function LoginContextProvider(props) {
       const newRole = me.roles[activeRoleNumber].units[0]
         ? {
           role: me.roles[activeRoleNumber].role,
-          unit: me.roles[activeRoleNumber].units[0].label,
+          unit: me.roles[activeRoleNumber].units[0].id,
+          unitLabel: me.roles[activeRoleNumber].units[0].label,
         }
         : { role: me.roles[activeRoleNumber].role };
 
@@ -257,7 +259,7 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
-  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login')) {
+  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) {
     return <div />;
   }
 
@@ -277,6 +279,7 @@ export function LoginContextProvider(props) {
 LoginContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
   client: PropTypes.shape({
+    readQuery: PropTypes.func.isRequired,
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
     query: PropTypes.func.isRequired,
