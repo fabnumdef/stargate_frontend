@@ -149,10 +149,11 @@ export const GET_PLACES_LIST = gql`
 
 
 export const CREATE_REQUEST = gql`
-         mutation createRequest($request: RequestInput!, $campusId: String!) {
+         mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
+            activeRoleCache @client @export (as: "unit") {label: unitLabel}
             mutateCampus(id: $campusId){
-              createRequest(request: $request) {
+              createRequest(request: $request, unit: $unit) {
               ...RequestResult
             }
           }
@@ -164,7 +165,7 @@ export const EDIT_REQUEST = gql`
          mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!) {
             campusId @client @export(as: "campusId")
             mutateCampus(id: $campusId){
-              editRequest(id: $id, request: $request) {
+              editRequest(id: $id, request: $request, unit: $unit) {
                 ...RequestResult
               }
           }
@@ -188,7 +189,7 @@ export default function FormInfosClaimant({
   const checkSelection = async (value) => {
     const { data } = await client.query({ query: GET_PLACES_LIST });
     const filter = data.getCampus.listPlaces.list.filter(
-      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unit,
+      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unitLabel,
     );
     return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
   };

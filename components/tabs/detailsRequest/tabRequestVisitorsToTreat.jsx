@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,14 +23,15 @@ import CustomTableHeader from '../../styled/customTableCellHeader';
 import { ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
-  HIDEN_STEP_STATUS,
-  INACTIF_STEP_STATUS,
+  ACTIVE_STEP_STATUS,
+  HIDDEN_STEP_STATUS,
+  INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
 
 import checkCriblageVisitor, {
   REFUSED_STATUS,
   ACCEPTED_STATUS,
-  ACTIF_STEP_STATUS,
+  PROGRESS_STEP_STATUS,
 } from '../../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
@@ -104,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, type, status,
+  id, firstname, birthLastname, rank, company, employeeType, status,
 }, activeRole) {
   return {
     id,
@@ -112,7 +113,7 @@ function createData({
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
-    type,
+    type: employeeType,
     criblage: checkCriblageVisitor(status, activeRole),
     validation: null,
     step: ckeckStatusVisitor(status, activeRole),
@@ -126,17 +127,9 @@ const columns = [
   { id: 'criblage', label: 'Criblage' },
 ];
 
-
-function getCheckbox() {
-  return {
-    ACCEPTER: false,
-    REFUSER: false,
-  };
-}
-
 function criblageReturn(value) {
   switch (value) {
-    case ACTIF_STEP_STATUS:
+    case PROGRESS_STEP_STATUS:
       return 'En cours';
     case ACCEPTED_STATUS:
       return <CheckCircleIcon style={{ color: '#28a745' }} />;
@@ -159,16 +152,38 @@ export default function TabRequestVisitors({ visitors, onChange }) {
 
   const classes = useStyles();
 
-  const [checked, setChecked] = React.useState(getCheckbox());
+  const [selectAll, setSelectAll] = React.useState([
+    { label: 'ACCEPTER', value: false, validation: ROLES[activeRole.role].workflow.positive },
+    { label: 'REFUSER', value: false, validation: ROLES[activeRole.role].workflow.negative },
+  ]);
 
-  const handleSelectAll = (checkbox, value) => {
+  const handleSelectAll = (checkbox, checkedValue) => {
     const newArray = rows.slice();
-
     newArray.forEach((row) => {
-      newArray[newArray.indexOf(row)].validation = checkbox ? value : null;
+      newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue : null;
     });
-
     setDataRows(newArray);
+
+    const newChecked = selectAll.map((check) => {
+      if (checkbox) {
+        return {
+          ...check,
+          value: check.validation === checkedValue,
+        };
+      }
+      return {
+        ...check,
+        value: null,
+      };
+    });
+    setSelectAll(newChecked);
+  };
+
+  const deselectAllCheckbox = () => {
+    setSelectAll(selectAll.map((check) => ({
+      ...check,
+      value: null,
+    })));
   };
 
   const handleDeselect = (row) => {
@@ -179,37 +194,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     }
   };
 
-  React.useEffect(() => {
-    // Share changes to onther components
+  useEffect(() => {
     onChange(rows);
-
-    // UI tool
-    let ACCEPTER = true;
-    let REFUSER = true;
-
-    rows.some((row) => {
-      // @todo: refactor this switch
-      switch (row.validation) {
-        case null:
-          ACCEPTER = false;
-          REFUSER = false;
-          return true;
-        case 'ACCEPTER':
-          REFUSER = false;
-          break;
-        case 'REFUSER':
-          ACCEPTER = false;
-          break;
-        default:
-          break;
-      }
-      return false;
-    });
-
-    setChecked({
-      ACCEPTER,
-      REFUSER,
-    });
   }, [onChange, rows]);
 
   return (
@@ -246,19 +232,19 @@ export default function TabRequestVisitors({ visitors, onChange }) {
               >
                 Validation
                 <FormGroup row className={classes.reportCheckbox}>
-                  {Object.keys(getCheckbox()).map((value) => (
+                  {selectAll.map((checkbox) => (
                     <FormControlLabel
                       control={(
                         <Checkbox
                           color="primary"
-                          checked={checked[value]}
+                          checked={checkbox.value}
                           onChange={(event) => {
-                            setChecked({ ...getCheckbox, [value]: !checked[value] });
-                            handleSelectAll(event.target.checked, value);
+                            handleSelectAll(event.target.checked, checkbox.validation);
                           }}
                         />
                                      )}
-                      label={value}
+                      label={checkbox.label}
+                      disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
                       labelPlacement="start"
                     />
                   ))}
@@ -268,7 +254,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
           </TableHead>
           <TableBody>
             {rows.map(
-              (row, index) => row.step.state !== HIDEN_STEP_STATUS && (
+              (row, index) => row.step !== HIDDEN_STEP_STATUS && (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
@@ -280,7 +266,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step.state === INACTIF_STEP_STATUS ? classes.inactiveCell : ''}
+                          className={row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}
                         >
                           { criblageReturn(value) }
                         </TableCell>
@@ -292,7 +278,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step.state === INACTIF_STEP_STATUS
+                          className={row.step === INACTIVE_STEP_STATUS
                             ? classes.inactiveCell
                             : ''}
                         >
@@ -313,26 +299,29 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                       const newArray = rows.slice();
                       newArray[newArray.indexOf(row)].validation = event.target.value;
                       setDataRows(newArray);
+                      deselectAllCheckbox();
                     }}
                     style={{ justifyContent: 'space-evenly' }}
                   >
                     <FormControlLabel
-                      value="ACCEPTER"
-                      disabed={row.step.state === INACTIF_STEP_STATUS}
+                      value={ROLES[activeRole.role].workflow.positive}
+                      disabled={row.step === INACTIVE_STEP_STATUS}
                       control={(
                         <Radio
                           color="primary"
                           onClick={() => handleDeselect(row)}
+                          disabled={row.step === INACTIVE_STEP_STATUS}
                         />
                                          )}
                     />
                     <FormControlLabel
-                      value="REFUSER"
-                      disabed={row.step.state === INACTIF_STEP_STATUS}
+                      value={ROLES[activeRole.role].workflow.negative}
+                      disabled={row.step === INACTIVE_STEP_STATUS}
                       control={(
                         <Radio
                           color="primary"
                           onClick={() => handleDeselect(row)}
+                          disabled={row.step === INACTIVE_STEP_STATUS}
                         />
                                          )}
                     />

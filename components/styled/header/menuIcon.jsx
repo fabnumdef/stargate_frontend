@@ -27,6 +27,7 @@ const GET_ME = gql`
             roles {
                 role
                 units {
+                    id
                     label
                 }
             }
@@ -99,13 +100,19 @@ export default function MenuIcon() {
 
   const handleChangeRole = (evt) => {
     const selectedRole = me.roles.find((role) => role.role === evt.target.value);
+    const newRole = {
+      role: selectedRole.role,
+      unit: selectedRole.units[0].id,
+      unitLabel: selectedRole.units[0].label,
+    };
+
     client.cache.writeData({
       data: {
-        activeRoleCache: { role: selectedRole.role, unit: selectedRole.units[0].label, __typename: 'activeRoleCache' },
+        activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
       },
     });
     localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
-    setActiveRole({ role: selectedRole.role, unit: selectedRole.units[0].label });
+    setActiveRole(newRole);
     handleCloseMenu();
   };
 
@@ -125,7 +132,7 @@ export default function MenuIcon() {
             </MenuItem>
           ))}
         </Select>
-        <span>{activeRole.unit ? activeRole.unit : ''}</span>
+        <span>{activeRole.unitLabel ? activeRole.unitLabel : ''}</span>
       </Box>
       <IconButton size="small" onClick={handleOpenMenu}>
         <Avatar />

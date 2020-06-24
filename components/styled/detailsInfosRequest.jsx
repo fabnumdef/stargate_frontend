@@ -23,14 +23,11 @@ export default function DetailsInfosRequest({ request }) {
           {' '}
         </Typography>
         <Typography variant="body2" color="primary">
-          {/*
-          // @todo owner
-          {request.owner.rank}
+          {request.owner.rank || 'rank'}
           {' '}
-          {request.owner.birthLastname.toUpperCase()}
+          {request.owner.lastname.toUpperCase()}
           {' '}
           {request.owner.firstname}
-          */}
         </Typography>
       </Grid>
       <Grid item sm={6}>
