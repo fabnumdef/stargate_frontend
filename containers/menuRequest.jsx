@@ -98,6 +98,7 @@ export const LIST_REQUESTS = gql`
                        label
                    }
                    owner {
+                       id
                        firstname
                        lastname
                        unit
@@ -182,8 +183,8 @@ export default function MenuRequest() {
   const [value, setValue] = React.useState(0);
 
   const tabList = [
-    { label: `A traiter (${!loadingToTreat ? toTreat.getCampus.listRequests.meta.total : '...'})`, access: true },
-    { label: `En cours (${!loadingInProgress ? inProgress.getCampus.listMyRequests.meta.total : '...'})`, access: urlAuthorization('/nouvelle-demande', activeRole.role) },
+    { label: `A traiter (${toTreat ? toTreat.getCampus.listRequests.meta.total : '...'})`, access: true },
+    { label: `En cours (${inProgress ? inProgress.getCampus.listMyRequests.meta.total : '...'})`, access: urlAuthorization('/nouvelle-demande', activeRole.role) },
     { label: 'Traitées', access: true },
   ];
 

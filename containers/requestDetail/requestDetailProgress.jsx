@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 // Material Import
@@ -10,6 +10,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
+import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../components';
 
 import Template from '../template';
@@ -54,6 +55,7 @@ export const READ_REQUEST = gql`
                  label
                }
                owner {
+                  id
                   lastname
                   firstname
                }
@@ -83,7 +85,6 @@ export const READ_REQUEST = gql`
          }
        `;
 
-
 export const DELETE_VISITOR = gql`
          mutation deleteVisitor(
            $idVisitor: String!
@@ -110,6 +111,19 @@ export const DELETE_VISITOR = gql`
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
+  const router = useRouter();
+  const client = useApolloClient();
+
+  const userData = client.readQuery({
+    query: gql`
+        query getUserId {
+            me {
+             id
+            }
+        }
+    `,
+  });
+
 
   const { addAlert } = useSnackBar();
 
@@ -122,6 +136,11 @@ export default function RequestDetails({ requestId }) {
   const [deleteVisitor] = useMutation(DELETE_VISITOR);
 
   if (loading) return <p>Loading ....</p>;
+
+  if (data && userData && data.getCampus.getRequest.owner.id !== userData.me.id) {
+    router.push('/');
+    return <div />;
+  }
 
   // @todo a real 404 page
   // if (error) return <p>page 404</p>;
