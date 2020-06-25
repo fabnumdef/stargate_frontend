@@ -14,10 +14,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { useLogin } from '../../../lib/loginContext';
 import CustomTableCell from '../../styled/customTableCellHeader';
 
-import ckeckStatusVisitor from '../../../utils/mappers/checkStatusVisitor';
+import { EMPLOYEE_TYPE } from '../../../utils/constants/enums';
 
 const useStyles = makeStyles({
   container: {
@@ -30,16 +29,15 @@ const useStyles = makeStyles({
 });
 
 function createData({
-  id, firstname, birthLastname, rank, company, type, status,
-}, activeRole) {
+  id, firstname, birthLastname, rank, company, employeeType,
+}) {
   return {
     id,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
-    type,
-    step: ckeckStatusVisitor(status, activeRole),
+    type: EMPLOYEE_TYPE[employeeType],
   };
 }
 
@@ -53,10 +51,8 @@ const columns = [
 export default function TabRequestVisitors({ visitors, onDelete }) {
   const classes = useStyles();
 
-  const { activeRole } = useLogin();
-
   const rows = visitors.reduce((acc, vis) => {
-    acc.push(createData(vis, activeRole));
+    acc.push(createData(vis));
     return acc;
   }, []);
 
@@ -152,7 +148,8 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                   case 'step':
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        value.activeStep.step
+                        {/* TODO checkActualStep after rework checkStatus */}
+                        Unité
                       </TableCell>
                     );
                   default:
@@ -191,6 +188,7 @@ TabRequestVisitors.propTypes = {
       firstname: PropTypes.string,
     }),
   ),
+  onDelete: PropTypes.func.isRequired,
 };
 
 TabRequestVisitors.defaultProps = {

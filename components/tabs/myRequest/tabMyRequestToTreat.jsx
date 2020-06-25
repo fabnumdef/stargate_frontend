@@ -146,7 +146,7 @@ export default function TabMyRequestUntreated({ request }) {
             <TableCell key="modif">
               {hover[index] && (
                 <>
-                  <Link href={`/demandes/${row.id}`}>
+                  <Link href={`/demandes/a-traiter/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
                       <DescriptionIcon />
                     </IconButton>

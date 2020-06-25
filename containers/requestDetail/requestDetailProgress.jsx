@@ -53,15 +53,21 @@ export const READ_REQUEST = gql`
                places {
                  label
                }
+               owner {
+                  lastname
+                  firstname
+               }
                listVisitors {
                  list {
                    id
                    rank
                    firstname
                    birthLastname
+                   employeeType
                    company
                    status {
-                     unit
+                     unitId
+                     label
                      steps {
                        role
                        step
@@ -141,7 +147,7 @@ export default function RequestDetails({ requestId }) {
             visitors={data.getCampus.getRequest.listVisitors.list}
             onDelete={async (idVisitor) => {
               try {
-                // @todo fix that delete
+                // @todo waiting back to delete
                 await deleteVisitor({ variables: { requestId, idVisitor, transition: 'cancel' } });
               } catch (e) {
                 addAlert({ message: e.message, severity: 'error' });

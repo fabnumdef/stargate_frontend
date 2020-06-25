@@ -17,8 +17,26 @@ import CloseIcon from '@material-ui/icons/Close';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import EmptyArray from '../../styled/emptyArray';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
+import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+
+const CANCEL_REQUEST = gql`
+  mutation cancelRequest(
+      $requestId: String!
+      $campusId: String!
+      $transition: RequestTransition!
+  ) {
+      campusId @client @export(as: "campusId")
+      mutateCampus(id: $campusId) {
+            shiftRequest(id: $requestId, transition: $transition ) {
+                id
+            }
+      }
+  }
+`;
 
 
 const columns = [
@@ -59,8 +77,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabMyRequestToTreat({ request }) {
+export default function TabMyRequestToTreat({ request, queries }) {
   const classes = useStyles();
+  const { addAlert } = useSnackBar();
 
   const rows = request.reduce((acc, dem) => {
     acc.push(createData(dem));
@@ -69,6 +88,8 @@ export default function TabMyRequestToTreat({ request }) {
 
   const [hover, setHover] = useState({});
   const [del, setDel] = useState({});
+
+  const [cancelRequest] = useMutation(CANCEL_REQUEST);
 
 
   const handleMouseEnter = (index) => {
@@ -84,8 +105,18 @@ export default function TabMyRequestToTreat({ request }) {
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-  const handleDeleteConfirm = () => {
-    // todo
+  const handleDeleteConfirm = async (id) => {
+    try {
+      const { data } = await cancelRequest({
+        variables: { requestId: id, transition: 'CANCEL' },
+        refetchQueries: queries,
+      });
+      if (data) {
+        addAlert({ message: 'La demande a bien été supprimée', severity: 'Success' });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // @todo : Cancel or delete visitor
@@ -126,11 +157,6 @@ export default function TabMyRequestToTreat({ request }) {
                         {' '}
                         ?
                       </Typography>
-                      {rows.length === 1 && (
-                        <Typography variant="body1" color="error">
-                          Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                        </Typography>
-                      )}
                     </Grid>
                     <Grid item sm={2}>
                       <IconButton
@@ -173,7 +199,7 @@ export default function TabMyRequestToTreat({ request }) {
               <TableCell key="actions">
                 {hover[index] && (
                   <>
-                    <Link href={`/enCours/${row.id}`}>
+                    <Link href={`/demandes/en-cours/${row.id}`}>
                       <IconButton color="primary" aria-label="link" className={classes.icon}>
                         <DescriptionIcon />
                       </IconButton>
@@ -201,4 +227,5 @@ export default function TabMyRequestToTreat({ request }) {
 
 TabMyRequestToTreat.propTypes = {
   request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  queries: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
