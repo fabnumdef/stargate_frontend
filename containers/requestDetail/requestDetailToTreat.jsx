@@ -11,10 +11,16 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
-import { DetailsInfosRequest, TabRequestVisitorsToTreat } from '../../components';
+import {
+  DetailsInfosRequest,
+  TabRequestVisitorsToTreat,
+  TabRequestVisitorsToTreatAcces,
+} from '../../components';
 
 import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
+
+import { ROLES } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,7 +79,7 @@ export const READ_REQUEST = gql`
                            behavior
                            status
                            done
-                       }                   
+                       }
                    }
                  }
                }
@@ -171,12 +177,28 @@ export default function RequestDetails({ requestId }) {
           <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <TabRequestVisitorsToTreat
-            visitors={data.getCampus.getRequest.listVisitors.list}
-            onChange={(entries) => {
-              setVisitors(entries);
-            }}
-          />
+          {(() => {
+            switch (activeRole.role) {
+              case ROLES.ROLE_ACCESS_OFFICE.role:
+                return (
+                  <TabRequestVisitorsToTreatAcces
+                    visitors={data.getCampus.getRequest.listVisitors.list}
+                    onChange={(entries) => {
+                      setVisitors(entries);
+                    }}
+                  />
+                );
+              default:
+                return (
+                  <TabRequestVisitorsToTreat
+                    visitors={data.getCampus.getRequest.listVisitors.list}
+                    onChange={(entries) => {
+                      setVisitors(entries);
+                    }}
+                  />
+                );
+            }
+          })()}
         </Grid>
         <Grid item sm={12}>
           <Grid container justify="flex-end">

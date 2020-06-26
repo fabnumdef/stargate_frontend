@@ -14,6 +14,7 @@ export { default as TabRecapRequest } from './tabs/tabRecapRequest';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
 
 export { default as TabRequestVisitorsToTreat } from './tabs/detailsRequest/tabRequestVisitorsToTreat';
+export { default as TabRequestVisitorsToTreatAcces } from './tabs/detailsRequest/tabRequestVisitorsToTreatAcces';
 export { default as TabRequestVisitorsProgress } from './tabs/detailsRequest/tabRequestVisitorsProgress';
 
 // Login Forms
