@@ -163,6 +163,24 @@ export default function MenuRequest() {
     },
   );
 
+  const { data: treated, loading: loadingTreated, error: errorTreated } = useQuery(
+    LIST_REQUESTS,
+    {
+      variables: {
+        filters: {
+          status: [
+            STATE_REQUEST.STATE_CANCELED.state,
+            STATE_REQUEST.STATE_ACCEPTED.state,
+            STATE_REQUEST.STATE_REJECTED.state,
+            STATE_REQUEST.STATE_MIXED.state,
+          ],
+        },
+        as: { role: activeRole.role, unit: activeRole.unitLabel },
+      },
+      fetchPolicy: 'cache-and-network',
+    },
+  );
+
   const refetchQueries = [
     {
       query: LIST_MY_REQUESTS,
@@ -185,7 +203,7 @@ export default function MenuRequest() {
   const tabList = [
     { label: `A traiter (${toTreat ? toTreat.getCampus.listRequests.meta.total : '...'})`, access: true },
     { label: `En cours (${inProgress ? inProgress.getCampus.listMyRequests.meta.total : '...'})`, access: urlAuthorization('/nouvelle-demande', activeRole.role) },
-    { label: 'Traitées', access: true },
+    { label: `Traitées (${treated ? treated.getCampus.listRequests.meta.total : '...'})`, access: true },
   ];
 
   const handleChange = (event, newValue) => {
@@ -193,8 +211,8 @@ export default function MenuRequest() {
   };
 
   // to remove
-  if (loadingToTreat || loadingInProgress) return 'loading screen toDO';
-  if (errorToTreat || errorInProgress) {
+  if (loadingToTreat || loadingInProgress || loadingTreated) return 'loading screen toDO';
+  if (errorToTreat || errorInProgress || errorTreated) {
     return (
       <Template>
         Error:
@@ -231,18 +249,18 @@ export default function MenuRequest() {
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandesToTreat request={toTreat.getCampus.listRequests.list} />
+            <TabMesDemandesToTreat request={toTreat ? toTreat.getCampus.listRequests.list : []} detailLink="a-traiter" />
           </TabPanel>
           {urlAuthorization('/nouvelle-demande', activeRole.role) && (
           <TabPanel value={value} index={1}>
             <TabDemandesProgress
-              request={inProgress.getCampus.listMyRequests.list}
+              request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
               queries={refetchQueries}
             />
           </TabPanel>
           )}
           <TabPanel value={value} index={2}>
-            <TabMesDemandesToTreat request={[]} />
+            <TabMesDemandesToTreat request={treated ? treated.getCampus.listRequests.list : []} detailLink="traitees" />
           </TabPanel>
         </Grid>
       </Grid>

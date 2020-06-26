@@ -15,6 +15,8 @@ export { default as TabVisiteur } from './tabs/tabVisiteurs';
 
 export { default as TabRequestVisitorsToTreat } from './tabs/detailsRequest/tabRequestVisitorsToTreat';
 export { default as TabRequestVisitorsProgress } from './tabs/detailsRequest/tabRequestVisitorsProgress';
+export { default as TabRequestVisitorsTreated } from './tabs/detailsRequest/tabRequestVisitorsTreated';
+
 
 // Login Forms
 export { default as LoginForm } from './loginForms/LoginForm';

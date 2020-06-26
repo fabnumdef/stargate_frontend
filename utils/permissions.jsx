@@ -40,7 +40,26 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_ACCESS_OFFICE.role,
         ROLES.ROLE_SCREENING.role,
       ].includes(role);
+    case path.includes('/demandes/traitees'):
+      return [
+        ROLES.ROLE_UNIT_CORRESPONDENT.role,
+        ROLES.ROLE_SECURITY_OFFICER.role,
+        ROLES.ROLE_ACCESS_OFFICE.role,
+        ROLES.ROLE_SCREENING.role,
+        ROLES.ROLE_HOST.role,
+      ].includes(role);
     default:
       return false;
   }
+};
+
+export const checkRequestDetailAuth = (data, activeRole) => {
+  const isInWorkflow = data.getCampus.getRequest.listVisitors.list.find(
+    (visitor) => visitor.status.find(
+      (s) => s.unitId === activeRole.unit && s.steps.find(
+        (step) => step.role === activeRole.role,
+      ),
+    ),
+  );
+  return !!isInWorkflow;
 };

@@ -18,6 +18,12 @@ export const WORKFLOW_BEHAVIOR = {
   },
 };
 
+export const VISITOR_STATUS = {
+  accepted: 'Accepté',
+  rejected: 'Refusé',
+  mixed: 'Partiellement accepté',
+};
+
 export const ROLES = {
   ROLE_SUPERADMIN: { role: 'ROLE_SUPERADMIN', label: 'Super Administrateur' },
   ROLE_ADMIN: { role: 'ROLE_ADMIN', label: 'Administrateur' },
@@ -35,7 +41,7 @@ export const STATE_REQUEST = {
   STATE_CANCELED: { state: 'canceled' },
   STATE_REMOVED: { state: 'removed' },
   STATE_ACCEPTED: { state: 'accepted' },
-  STATE_REJECTED: { state: 'rejeted' },
+  STATE_REJECTED: { state: 'rejected' },
   STATE_MIXED: { state: 'mixed' },
 };
 
