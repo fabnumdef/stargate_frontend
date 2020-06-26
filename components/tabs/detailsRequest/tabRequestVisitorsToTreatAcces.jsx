@@ -121,7 +121,9 @@ function createData({
 function CellDecision({ date, children }) {
   return (
     <>
-      {`${date} ${children}`}
+      {date}
+      {' '}
+      {children}
     </>
   );
 }
