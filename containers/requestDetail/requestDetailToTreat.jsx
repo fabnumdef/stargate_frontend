@@ -15,6 +15,7 @@ import { DetailsInfosRequest, TabRequestVisitorsToTreat } from '../../components
 
 import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,6 +108,7 @@ export const MUTATE_VISITOR = gql`
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
   const { activeRole } = useLogin();
+  const router = useRouter();
 
   const { addAlert } = useSnackBar();
 
@@ -143,8 +145,13 @@ export default function RequestDetails({ requestId }) {
         }
       }
     }));
-    // refresh the query
-    refetch();
+    if (visitors.every((visitor) => visitor.status)) {
+      addAlert({ message: `Traitement terminé pour la demande ${requestId}`, severity: 'success' });
+
+      router.push('/');
+    } else {
+      refetch();
+    }
   };
 
 
@@ -172,6 +179,7 @@ export default function RequestDetails({ requestId }) {
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsToTreat
+            requestId={ requestId }
             visitors={data.getCampus.getRequest.listVisitors.list}
             onChange={(entries) => {
               setVisitors(entries);

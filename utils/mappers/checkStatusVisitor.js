@@ -6,7 +6,7 @@ export default function ckeckStatusVisitor(status, activeRole) {
   const statu = status.find((item) => item.label === activeRole.unitLabel);
   const userIndex = statu.steps.findIndex((step) => step.role === activeRole.role);
 
-  if (statu && statu.steps[userIndex].done) {
+  if (statu && (statu.steps[userIndex].done || statu.steps.find((s) => s.behavior === 'Validation' && s.status === 'reject'))) {
     return HIDDEN_STEP_STATUS;
   }
 
