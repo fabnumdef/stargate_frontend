@@ -10,11 +10,12 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
-import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
+import { TabPanel, TabDemandesProgress, TabMesDemandesToTreat } from '../components';
 import Template from './template';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
+import { urlAuthorization } from '../utils/permissions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,7 +70,6 @@ const AntTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 // Modify number with API data
-const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
 // @todo check to implement fragments
 // const REQUEST_ATTRIBUTES = {
@@ -98,10 +98,14 @@ export const LIST_REQUESTS = gql`
                        label
                    }
                    owner {
+                       id
                        firstname
                        lastname
                        unit
                    }
+               }
+               meta {
+                   total
                }
              }
            }
@@ -110,11 +114,11 @@ export const LIST_REQUESTS = gql`
 
 export const LIST_MY_REQUESTS = gql`
          query listMyRequests(
-           $campusId: String!
+           $campusId: String!, $filters: RequestFilters!
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listMyRequests {
+             listMyRequests(filters: $filters)  {
                list {
                    id
                    from
@@ -123,6 +127,9 @@ export const LIST_MY_REQUESTS = gql`
                    places {
                        label
                    }
+               }
+               meta {
+                   total
                }
              }
            }
@@ -149,11 +156,37 @@ export default function MenuRequest() {
   const { data: inProgress, loading: loadingInProgress, error: errorInProgress } = useQuery(
     LIST_MY_REQUESTS,
     {
+      variables: {
+        filters: { status: STATE_REQUEST.STATE_CREATED.state },
+      },
       fetchPolicy: 'cache-and-network',
     },
   );
 
+  const refetchQueries = [
+    {
+      query: LIST_MY_REQUESTS,
+      variables: {
+        filters: { status: STATE_REQUEST.STATE_CREATED.state },
+      },
+      fetchPolicy: 'cache-and-network',
+    },
+    {
+      query: LIST_REQUESTS,
+      variables: {
+        filters: { status: STATE_REQUEST.STATE_CREATED.state },
+        as: { role: activeRole.role, unit: activeRole.unitLabel },
+      },
+      fetchPolicy: 'cache-and-network',
+    }];
+
   const [value, setValue] = React.useState(0);
+
+  const tabList = [
+    { label: `A traiter (${toTreat ? toTreat.getCampus.listRequests.meta.total : '...'})`, access: true },
+    { label: `En cours (${inProgress ? inProgress.getCampus.listMyRequests.meta.total : '...'})`, access: urlAuthorization('/nouvelle-demande', activeRole.role) },
+    { label: 'Traitées', access: true },
+  ];
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -191,19 +224,25 @@ export default function MenuRequest() {
             aria-label="simple tabs example"
           >
             {tabList.map((tab, index) => (
-              <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
+              tab.access
+              && <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
             ))}
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes request={toTreat.getCampus.listRequests.list} />
+            <TabMesDemandesToTreat request={toTreat.getCampus.listRequests.list} />
           </TabPanel>
+          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={inProgress.getCampus.listMyRequests.list} />
+            <TabDemandesProgress
+              request={inProgress.getCampus.listMyRequests.list}
+              queries={refetchQueries}
+            />
           </TabPanel>
+          )}
           <TabPanel value={value} index={2}>
-            <TabMesDemandes request={[]} />
+            <TabMesDemandesToTreat request={[]} />
           </TabPanel>
         </Grid>
       </Grid>

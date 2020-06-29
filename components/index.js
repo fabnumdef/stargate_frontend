@@ -8,8 +8,8 @@ export { default as FormInfosRecapDemande } from './requestForms/infosFinalView'
 export { default as FormInfosVisitor } from './requestForms/infosVisitor';
 
 // Tabs
-export { default as TabDemandesTraitees } from './tabs/myRequest/tabMyRequestToTreat';
-export { default as TabMesDemandes } from './tabs/myRequest/tabMyRequestUntreated';
+export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestProgress';
+export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';
 export { default as TabRecapRequest } from './tabs/tabRecapRequest';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
 

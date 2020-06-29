@@ -27,6 +27,7 @@ const AUTH_RENEW = gql`
 const GET_ME = gql`
     query getMe {
         me {
+            id,
             firstname,
             lastname,
             roles {
