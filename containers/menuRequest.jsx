@@ -10,6 +10,12 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
+import TablePagination from '@material-ui/core/TablePagination';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+
+
 import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
 import Template from './template';
 
@@ -133,43 +139,84 @@ export default function MenuRequest() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
+  const [value, setValue] = React.useState(0);
+
+  // paginator and searchField
+  // const [search, setSearch] = React.useState('');
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
   const {
     data: toTreat,
-    loading: loadingToTreat,
-    error: errorToTreat,
+    fetchMore: fetchToTreat,
   } = useQuery(LIST_REQUESTS, {
     variables: {
+      cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
       as: { role: activeRole.role, unit: activeRole.unitLabel },
     },
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
   });
 
 
-  const { data: inProgress, loading: loadingInProgress, error: errorInProgress } = useQuery(
-    LIST_MY_REQUESTS,
-    {
-      fetchPolicy: 'cache-and-network',
+  const {
+    data: inProgress,
+    fetchMore: fetchInProgress,
+  } = useQuery(LIST_MY_REQUESTS, {
+    variables: {
+      cursor: { first: rowsPerPage, offset: page * rowsPerPage },
     },
-  );
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
+  });
 
-  const [value, setValue] = React.useState(0);
+
+  const handleFetchMore = async () => {
+    switch (value) {
+      case 0:
+        fetchToTreat({
+          variables: {
+            cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+            filters: { status: STATE_REQUEST.STATE_CREATED.state },
+            as: { role: activeRole.role, unit: activeRole.unitLabel },
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prev;
+            return fetchMoreResult;
+          },
+        });
+        break;
+      case 1:
+        fetchInProgress({
+          variables: {
+            cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prev;
+            return fetchMoreResult;
+          },
+        });
+        break;
+      default:
+    }
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+    handleFetchMore();
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    handleFetchMore();
+    setPage(0);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    setPage(0);
   };
-
-  // to remove
-  if (loadingToTreat || loadingInProgress) return 'loading screen toDO';
-  if (errorToTreat || errorInProgress) {
-    return (
-      <Template>
-        Error:
-        {' '}
-        {errorToTreat}
-      </Template>
-    );
-  }
 
   return (
     <Template>
@@ -195,16 +242,49 @@ export default function MenuRequest() {
             ))}
           </Tabs>
         </Grid>
+        <Grid container spacing={1} className={classes.searchField}>
+          <Grid item sm={12} xs={12} md={12} lg={12}>
+            <TextField
+              style={{ float: 'right' }}
+              margin="dense"
+              variant="outlined"
+              onChange={() => {
+                setPage(0);
+                // setSearch(event.target.value);
+              }}
+              placeholder="Rechercher..."
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                inputProps: { 'data-testid': 'searchField' },
+              }}
+            />
+          </Grid>
+        </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes request={toTreat.getCampus.listRequests.list} />
+            <TabMesDemandes request={toTreat && toTreat.getCampus.listRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={inProgress.getCampus.listMyRequests.list} />
+            <TabDemandesTraitees request={inProgress && inProgress.getCampus.listMyRequests.list} />
           </TabPanel>
           <TabPanel value={value} index={2}>
             <TabMesDemandes request={[]} />
           </TabPanel>
+        </Grid>
+        <Grid item sm={6} xs={12} md={8} lg={8}>
+          <TablePagination
+            rowsPerPageOptions={[10, 20, 30, 40, 50]}
+            component="div"
+            count={10}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
         </Grid>
       </Grid>
     </Template>

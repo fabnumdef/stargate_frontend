@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useApolloClient, useMutation } from '@apollo/react-hooks';
-import Pagination from '@material-ui/lab/Pagination';
+import TablePagination from '@material-ui/core/TablePagination';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -38,8 +38,8 @@ const GET_USERS_LIST = gql`
           meta {
               offset
               first
-              total 
-          }  
+              total
+          }
           list {
               id
               lastname
@@ -77,31 +77,40 @@ function UserAdministration() {
   const { addAlert } = useSnackBar();
 
   const [usersList, setUsersList] = useState(null);
-  const [actualPage, setPage] = useState(1);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
   const [searchInput, setSearchInput] = useState('');
 
   const [deleteUserMutation] = useMutation(DELETE_USER);
 
-  const getList = async (page = actualPage, searchInputValue = '') => {
-    const filters = searchInputValue.length ? { lastname: searchInputValue } : null;
+  const getList = async () => {
+    const filters = searchInput.length ? { lastname: searchInput } : null;
     const { data } = await client.query({
       query: GET_USERS_LIST,
-      variables: { cursor: { first: 10, offset: (page - 1) * 10 }, filters },
-      fetchPolicy: 'no-cache',
+      variables: { cursor: { first: rowsPerPage, offset: page * rowsPerPage }, filters },
+      fetchPolicy: 'cache-and-network',
     });
     return setUsersList(data);
   };
 
   const setPaginationCount = (totalItems) => Math.ceil(totalItems / 10) || 1;
 
-  const handleChangePage = (selectedPage) => {
+  const handleChangePage = (event, selectedPage) => {
     setPage(selectedPage);
-    getList(selectedPage);
+    getList();
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+    getList();
   };
 
   const handleChangeFilter = (e) => {
     setSearchInput(e.target.value);
-    return getList(actualPage, e.target.value);
+    return getList();
   };
 
   const deleteUser = async (id) => {
@@ -109,11 +118,11 @@ function UserAdministration() {
       await deleteUserMutation({ variables: { id } });
       setSearchInput(null);
       addAlert({ message: 'L\'utilisateur a bien été supprimé', severity: 'success' });
-      if (usersList && usersList.listUsers.list.length === 1 && actualPage > 1) {
-        await setPage(actualPage - 1);
-        return getList(actualPage - 1, searchInput);
+      if (usersList && usersList.listUsers.list.length === 1 && page > 1) {
+        await setPage(page - 1);
+        return getList(page - 1, searchInput);
       }
-      return getList(actualPage, searchInput);
+      return getList(page, searchInput);
     } catch (e) {
       addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
       return e;
@@ -130,12 +139,13 @@ function UserAdministration() {
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur']} />
       <Grid container justify="space-between" style={{ margin: '20px 0' }}>
-        <Pagination
+        <TablePagination
           count={usersList ? setPaginationCount(usersList.listUsers.meta.total) : 1}
-          page={actualPage}
-          onChange={(e, page) => handleChangePage(page)}
-          color="primary"
-          size="small"
+          rowsPerPageOptions={[10, 20, 30, 40, 50]}
+          page={page}
+          onChangePage={(e, p) => handleChangePage(p)}
+          rowsPerPage={rowsPerPage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
         />
         <TextField
           InputProps={{

@@ -197,5 +197,9 @@ export default function TabMyRequestToTreat({ request }) {
 }
 
 TabMyRequestToTreat.propTypes = {
-  request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  request: PropTypes.arrayOf(PropTypes.shape()),
+};
+
+TabMyRequestToTreat.defaultProps = {
+  request: [],
 };
