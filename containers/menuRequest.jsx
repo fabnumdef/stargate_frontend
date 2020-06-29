@@ -242,7 +242,7 @@ export default function MenuRequest() {
             ))}
           </Tabs>
         </Grid>
-        <Grid container spacing={1} className={classes.searchField}>
+        <Grid container className={classes.searchField}>
           <Grid item sm={12} xs={12} md={12} lg={12}>
             <TextField
               style={{ float: 'right' }}

@@ -90,7 +90,7 @@ function UserAdministration() {
     const { data } = await client.query({
       query: GET_USERS_LIST,
       variables: { cursor: { first: rowsPerPage, offset: page * rowsPerPage }, filters },
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'no-cache',
     });
     return setUsersList(data);
   };
@@ -138,36 +138,44 @@ function UserAdministration() {
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur']} />
-      <Grid container justify="space-between" style={{ margin: '20px 0' }}>
-        <TablePagination
-          count={usersList ? setPaginationCount(usersList.listUsers.meta.total) : 1}
-          rowsPerPageOptions={[10, 20, 30, 40, 50]}
-          page={page}
-          onChangePage={(e, p) => handleChangePage(p)}
-          rowsPerPage={rowsPerPage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-        <TextField
-          InputProps={{
-            className: classes.searchInput,
-            endAdornment: (
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          value={searchInput}
-          onChange={handleChangeFilter}
-          placeholder="Rechercher un nom..."
-          variant="outlined"
-        />
+      <Grid container spacing={1} justify="space-between" style={{ margin: '20px 0' }}>
+        <Grid item sm={12} xs={12} md={12} lg={12}>
+          <TextField
+            style={{ float: 'right' }}
+            InputProps={{
+              className: classes.searchInput,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            value={searchInput}
+            onChange={handleChangeFilter}
+            placeholder="Rechercher un nom..."
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item sm={12}>
+          <TabAdminUsers
+            rows={usersList ? mapUsersList(usersList.listUsers.list) : []}
+            columns={columns}
+            deleteItem={deleteUser}
+            tabData={createUserData}
+          />
+        </Grid>
+        <Grid item sm={6} xs={12} md={8} lg={8}>
+          <TablePagination
+            rowsPerPageOptions={[10, 20, 30, 40, 50]}
+            component="div"
+            count={setPaginationCount()}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </Grid>
       </Grid>
-      <TabAdminUsers
-        rows={usersList ? mapUsersList(usersList.listUsers.list) : []}
-        columns={columns}
-        deleteItem={deleteUser}
-        tabData={createUserData}
-      />
     </Template>
   );
 }
