@@ -4,16 +4,8 @@ export default function getDecisions(status) {
   const steps = [];
 
   // add first criblage state
-  let value = status[0].steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
-  steps.push({ label: 'Criblage', value });
 
-  value = status[0].steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
-  steps.push({ label: 'Criblage', value });
-
-  value = status[0].steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
-  steps.push({ label: 'Criblage', value });
-
-  value = status[0].steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
+  const value = status[0].steps.find((step) => step.role === ROLES.ROLE_SCREENING.role);
   steps.push({ label: 'Criblage', value });
 
   // for each unit get os or cu decisions
