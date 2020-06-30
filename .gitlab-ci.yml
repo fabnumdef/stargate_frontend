@@ -24,10 +24,25 @@ include:
     file: /helm.reviews.auto.yml
   - project: fabnum-minarm/igloo/gitlab-templates
     file: /helm.staging.auto.yml
+  - project: fabnum-minarm/igloo/gitlab-templates
+    file: /helm.production.auto.yml
 
 variables:
   HELM_CHART: igloo-stable/nodejs
   HELM_ENV_VAR_VERSION: Version ${CI_COMMIT_REF_NAME} - ${CI_COMMIT_SHA} (job \#${CI_JOB_ID})
+
+deploy:review:
+  variables:
+    HOST: ${CI_ENVIRONMENT_SLUG}.${BASE_DOMAIN}
+    HELM_INGRESS_HOST: $HOST
+    HELM_NAME: frontend-${CI_COMMIT_REF_SLUG}
+    HELM_ENV_VAR_API_URL: https://api.${BASE_DOMAIN}/api
+  environment:
+    url: https://${CI_ENVIRONMENT_SLUG}.${BASE_DOMAIN}
+
+deploy:review:uninstall:
+  variables:
+    HELM_NAME: frontend-${CI_COMMIT_REF_SLUG}
 
 deploy:staging:
   variables:
@@ -42,15 +57,15 @@ deploy:staging:uninstall:
   variables:
     HELM_NAME: frontend
 
-deploy:review:
+deploy:production:
   variables:
-    HOST: ${CI_ENVIRONMENT_SLUG}.${BASE_DOMAIN}
+    HOST: ${BASE_DOMAIN}
     HELM_INGRESS_HOST: $HOST
-    HELM_NAME: frontend-${CI_COMMIT_REF_SLUG}
     HELM_ENV_VAR_API_URL: https://api.${BASE_DOMAIN}/api
+    HELM_NAME: frontend
   environment:
-    url: https://${CI_ENVIRONMENT_SLUG}.${BASE_DOMAIN}
+    url: https://${BASE_DOMAIN}
 
-deploy:review:uninstall:
+deploy:production:uninstall:
   variables:
-    HELM_NAME: frontend-${CI_COMMIT_REF_SLUG}
+    HELM_NAME: frontend
