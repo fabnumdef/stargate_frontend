@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
@@ -14,25 +15,21 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import WarningIcon from '@material-ui/icons/Warning';
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
-import { useLogin } from '../../../lib/loginContext';
 import CustomTableHeader from '../../styled/customTableCellHeader';
+import { useLogin } from '../../../lib/loginContext';
+import { ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
+import getDecisions from '../../../utils/mappers/getDecisions';
 
-import { ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
   ACTIVE_STEP_STATUS,
   HIDDEN_STEP_STATUS,
   INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
-
-import checkCriblageVisitor, {
-  REFUSED_STATUS,
-  ACCEPTED_STATUS,
-  PROGRESS_STEP_STATUS,
-} from '../../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -81,7 +78,9 @@ const useStyles = makeStyles((theme) => ({
   },
   reportHeader: {
     textAlign: 'center',
+    minWidth: '300px',
     borderTop: 'solid 1px',
+    whiteSpace: 'nowrap',
   },
   reportRow: {
     borderLeft: 'solid 1px',
@@ -105,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, status,
+  id, firstname, birthLastname, rank, company, status,
 }, activeRole) {
   return {
     id,
@@ -113,34 +112,69 @@ function createData({
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
-    type: employeeType,
-    criblage: checkCriblageVisitor(status, activeRole),
-    validation: null,
+    steps: getDecisions(status),
     step: ckeckStatusVisitor(status, activeRole),
+    validation: null,
   };
+}
+
+function CellDecision({ date, children }) {
+  return (
+    <>
+      {date}
+      {' '}
+      {children}
+    </>
+  );
+}
+
+CellDecision.propTypes = {
+  date: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+function decisionReturn(value) {
+  // @todo cast value.date to string
+  const date = '02/06/2020';
+
+  switch (value.status) {
+    case WORKFLOW_BEHAVIOR.VALIDATION.positive:
+      return (
+        <CellDecision date={date}>
+          <CheckCircleIcon style={{ color: '#28a745' }} />
+        </CellDecision>
+      );
+    case WORKFLOW_BEHAVIOR.VALIDATION.negative:
+      return (
+        <CellDecision date={date}>
+          <RemoveCircleIcon style={{ color: '#ffc107' }} />
+        </CellDecision>
+      );
+    case WORKFLOW_BEHAVIOR.ADVISEMENT.positive:
+      return (
+        <CellDecision date={date}>
+          <CheckCircleIcon style={{ color: '#28a745' }} />
+        </CellDecision>
+      );
+    case WORKFLOW_BEHAVIOR.ADVISEMENT.negative:
+      return (
+        <CellDecision date={date}>
+          <RemoveCircleIcon style={{ color: '#ffc107' }} />
+        </CellDecision>
+      );
+    default:
+      return 'En attente';
+  }
 }
 
 const columns = [
   { id: 'visitor', label: 'Visiteur(s)' },
   { id: 'company', label: 'Unité/Société' },
   { id: 'type', label: 'Type' },
-  { id: 'criblage', label: 'Criblage' },
+  { id: 'steps' },
 ];
 
-function criblageReturn(value) {
-  switch (value) {
-    case PROGRESS_STEP_STATUS:
-      return 'En cours';
-    case ACCEPTED_STATUS:
-      return <CheckCircleIcon style={{ color: '#28a745' }} />;
-    case REFUSED_STATUS:
-      return <WarningIcon style={{ color: '#ffc107' }} />;
-    default:
-      return null;
-  }
-}
-
-export default function TabRequestVisitors({ visitors, onChange }) {
+export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const { activeRole } = useLogin();
 
   const [rows, setDataRows] = useState(
@@ -214,15 +248,12 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                         {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
-                  case 'criblage':
-                    return (
-                      (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
-                        && (
-                        <CustomTableHeader key={headCell.id}>
-                          {/* @todo length etc ... */ `${headCell.label}`}
-                        </CustomTableHeader>
-                        )
-                      ));
+                  case 'steps':
+                    return rows[0].steps.map((column) => (
+                      <CustomTableHeader key={column.label}>
+                        {/* @todo length etc ... */ `${column.label}`}
+                      </CustomTableHeader>
+                    ));
                   default:
                     return (
                       <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
@@ -244,9 +275,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                             handleSelectAll(event.target.checked, checkbox.validation);
                           }}
                         />
-                                     )}
+                      )}
                       label={checkbox.label}
-                      disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
                       labelPlacement="start"
                     />
                   ))}
@@ -261,28 +291,26 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                 {columns.map((column) => {
                   const value = row[column.id];
                   switch (column.id) {
-                    case 'criblage':
-                      return (
-                        (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
-                        && (
+                    case 'steps':
+                      return value.map((step) => (
                         <TableCell
-                          key={column.id}
+                          key={step.step}
                           align={column.align}
-                          className={row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}
+                          className={
+                                row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                              }
                         >
-                          { criblageReturn(value) }
+                          {decisionReturn(step.value)}
                         </TableCell>
-                        )
-                        )
-                      );
+                      ));
                     default:
                       return (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step === INACTIVE_STEP_STATUS
-                            ? classes.inactiveCell
-                            : ''}
+                          className={
+                                row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                              }
                         >
                           {value}
                         </TableCell>
@@ -314,7 +342,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           onClick={() => handleDeselect(row)}
                           disabled={row.step === INACTIVE_STEP_STATUS}
                         />
-                                         )}
+                          )}
                     />
                     <FormControlLabel
                       value={ROLES[activeRole.role].workflow.negative}
@@ -325,7 +353,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           onClick={() => handleDeselect(row)}
                           disabled={row.step === INACTIVE_STEP_STATUS}
                         />
-                                         )}
+                          )}
                     />
                   </RadioGroup>
                 </TableCell>
@@ -339,7 +367,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   );
 }
 
-TabRequestVisitors.propTypes = {
+TabRequestVisitorsAcces.propTypes = {
   visitors: PropTypes.arrayOf(
     PropTypes.shape({
       firstname: PropTypes.string,

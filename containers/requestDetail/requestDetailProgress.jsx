@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 // Material Import
@@ -10,9 +10,11 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
+import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../components';
 
 import Template from '../template';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,72 +42,108 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const REQUEST_ATTRIBUTES = gql`
-  fragment RequestResult on Request {
-    id
-    reason
-    from
-    to
-    places {
-      label
-    }
-  }
-`;
-
-const STATUT_ATTRIBUTES = gql`
-  fragment StatutResult on UnitStatus {
-    status {
-      unit
-      steps {
-        role
-        step
-        behavior
-        status
-        done
-      }
-    }
-  }
-`;
-
 export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              getRequest(id: $requestId) {
-               ...RequestResult
+               id
+               reason
+               from
+               to
+               places {
+                 label
+               }
+               owner {
+                  id
+                  lastname
+                  firstname
+               }
                listVisitors {
                  list {
                    id
                    rank
                    firstname
                    birthLastname
+                   employeeType
                    company
                    status {
-                     ...StatutResult
+                     unitId
+                     label
+                     steps {
+                       role
+                       step
+                       behavior
+                       status
+                       done
+                     }
                    }
                  }
                }
              }
            }
          }
-         ${REQUEST_ATTRIBUTES}
-         ${STATUT_ATTRIBUTES}
+       `;
+
+export const DELETE_VISITOR = gql`
+         mutation deleteVisitor(
+           $idVisitor: String!
+           $requestId: String!
+           $campusId: String!
+           $transition: String!
+           $as: ValidationPersonas!
+         ) {
+           campusId @client @export(as: "campusId")
+           activeRoleCache @client @export(as: "as") {
+             role
+             unit
+           }
+           mutateCampus(id: $campusId) {
+             mutateRequest(id: $requestId) {
+               shiftVisitor(id: $idVisitor, as: $as, transition: $transition) {
+                 id
+               }
+             }
+           }
+         }
        `;
 
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
+  const router = useRouter();
+  const client = useApolloClient();
+
+  const userData = client.readQuery({
+    query: gql`
+        query getUserId {
+            me {
+             id
+            }
+        }
+    `,
+  });
+
+
+  const { addAlert } = useSnackBar();
 
   const {
-    data, error, loading,
+    data, loading,
   } = useQuery(READ_REQUEST, {
     variables: { requestId },
   });
 
+  const [deleteVisitor] = useMutation(DELETE_VISITOR);
+
   if (loading) return <p>Loading ....</p>;
 
+  if (data && userData && data.getCampus.getRequest.owner.id !== userData.me.id) {
+    router.push('/');
+    return <div />;
+  }
+
   // @todo a real 404 page
-  if (error) return <p>page 404</p>;
+  // if (error) return <p>page 404</p>;
 
   return (
     <Template>
@@ -113,11 +151,9 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
-              {/* @todo change title if treated */}
-              Demandes à traiter :
+              Demandes en cours :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
-              {/* @todo change title if treated */}
               {data.getCampus.getRequest.id}
             </Typography>
           </Box>
@@ -126,18 +162,23 @@ export default function RequestDetails({ requestId }) {
           <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <TabRequestVisitorsProgress visitors={data.visitors} />
+          <TabRequestVisitorsProgress
+            visitors={data.getCampus.getRequest.listVisitors.list}
+            onDelete={async (idVisitor) => {
+              try {
+                // @todo waiting back to delete
+                await deleteVisitor({ variables: { requestId, idVisitor, transition: 'cancel' } });
+              } catch (e) {
+                addAlert({ message: e.message, severity: 'error' });
+              }
+            }}
+          />
         </Grid>
         <Grid item sm={12}>
           <Grid container justify="flex-end">
             <div>
-              <Button variant="outlined" color="primary" style={{ marginRight: '5px' }}>
-                Annuler
-              </Button>
-            </div>
-            <div>
               <Button variant="contained" color="primary">
-                Envoyer
+                Retour
               </Button>
             </div>
           </Grid>

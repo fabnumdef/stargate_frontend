@@ -1,42 +1,50 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
 import { makeStyles } from '@material-ui/core/styles';
+import Link from 'next/link';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
 import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
+import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
-import EmptyArray from '../../styled/emptyArray';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
-
+import EmptyArray from '../../styled/emptyArray';
 
 const columns = [
   { id: 'id', label: 'N° demande' },
-  { id: 'periode', label: 'Période' },
+  { id: 'periode', label: 'Période', width: '100px' },
+  { id: 'owner', label: 'Demandeur' },
+  { id: 'places', label: 'Lieu' },
   { id: 'reason', label: 'Motif' },
-  { id: 'type', label: 'Type de demande' },
 ];
 
 function createData({
-  id, from, to, reason,
+  id, owner, from, to, reason, places,
 }) {
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
+    owner: owner
+      ? `
+          ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
+          ${owner.unit}`
+      : '',
+
+    places: places.map((place, index) => {
+      if (index === places.length - 1) return `${place.label}.`;
+      return `${place.label}, `;
+    }),
     reason,
-    type: 'Simple',
   };
 }
 
@@ -44,21 +52,27 @@ const useStyles = makeStyles({
   root: {
     width: '100%',
   },
+  container: {
+    maxHeight: 440,
+  },
   icon: {
     marginBottom: '-20px',
     marginTop: '-20px',
   },
-  deleteIcon: {
-    marginTop: '-20px',
-    marginLeft: '10px',
-    marginBottom: '-20px',
+  buttons: {
+    marginTop: '1vh',
+    marginBottom: '1vh',
   },
-  cellVisitors: {
-    border: 'none',
+  export: {
+    color: 'white',
+  },
+  exportContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
 });
 
-export default function TabMyRequestToTreat({ request }) {
+export default function TabMyRequestUntreated({ request, detailLink }) {
   const classes = useStyles();
 
   const rows = request.reduce((acc, dem) => {
@@ -67,8 +81,6 @@ export default function TabMyRequestToTreat({ request }) {
   }, []);
 
   const [hover, setHover] = useState({});
-  const [del, setDel] = useState({});
-
 
   const handleMouseEnter = (index) => {
     setHover((prevState) => ({ ...prevState, [index]: true }));
@@ -79,127 +91,84 @@ export default function TabMyRequestToTreat({ request }) {
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
-  const handleDelete = (index) => {
-    setDel((prevState) => ({ ...prevState, [index]: true }));
-  };
-
-  const handleDeleteConfirm = () => {
-    // todo
-  };
-
-  // @todo : Cancel or delete visitor
-  // const handleDeleteConfirm = (id) => {
-  //   setDel({});
-  //   delete method
-  // };
-
-  const handleDeleteAvorted = () => {
-    setDel({});
-  };
-
   return request.length > 0 ? (
-    <Table aria-label="sticky table">
+    <Table>
       <TableHead>
         <TableRow>
           {columns.map((column) => (
-            <CustomTableCellHeader key={column.id} style={{ width: column.minWidth }}>
+            <CustomTableCellHeader
+              key={column.id}
+              align={column.align}
+              style={{ width: column.width }}
+            >
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" style={{ minWidth: '150px' }} />
+          <CustomTableCellHeader key="actions" style={{ minWidth: '100px' }} />
         </TableRow>
       </TableHead>
-
       <TableBody>
-        {rows.map((row, index) => {
-          if (del[index]) {
-            return (
-              <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                <TableCell key="delete" align="justify" colspan={columns.length + 1}>
-                  <Grid container>
-                    <Grid item sm={10}>
-                      <Typography variant="body1">
-                        Êtes-vous sûr de vouloir supprimer la demande
-                        {' '}
-                        {row.id}
-                        {' '}
-                        ?
-                      </Typography>
-                      {rows.length === 1 && (
-                        <Typography variant="body1" color="error">
-                          Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                        </Typography>
-                      )}
-                    </Grid>
-                    <Grid item sm={2}>
-                      <IconButton
-                        aria-label="valide"
-                        className={classes.icon}
-                        onClick={() => handleDeleteConfirm(row.id)}
-                      >
-                        <DoneIcon />
-                      </IconButton>
-
-                      <IconButton
-                        aria-label="cancel"
-                        className={classes.icon}
-                        onClick={() => handleDeleteAvorted(index)}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
+        {rows.map((row, index) => (
+          <TableRow
+            hover
+            onMouseOver={() => handleMouseEnter(index)}
+            onFocus={() => handleMouseEnter(index)}
+            onMouseLeave={() => handleMouseLeave(index)}
+            role="checkbox"
+            tabIndex={-1}
+            key={row.code}
+          >
+            {columns.map((column) => {
+              const value = row[column.id];
+              return column.id === 'criblage' ? (
+                <TableCell key={column.id} align={column.align}>
+                  {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
                 </TableCell>
-              </TableRow>
-            );
-          }
-          return (
-            <TableRow
-              hover
-              onMouseOver={() => handleMouseEnter(index)}
-              onFocus={() => handleMouseEnter(index)}
-              onMouseLeave={() => handleMouseLeave(index)}
-              key={row.code}
-            >
-              {columns.map((column) => {
-                const value = row[column.id];
-                return (
-                  <TableCell key={column.id} align={column.align} component="td" scope="row">
-                    {column.format && typeof value === 'number' ? column.format(value) : value}
-                  </TableCell>
-                );
-              })}
-              <TableCell key="actions">
-                {hover[index] && (
-                  <>
-                    <IconButton color="primary" aria-label="link" className={classes.icon}>
+              ) : (
+                <TableCell key={column.id} align={column.align}>
+                  {column.format && typeof value === 'number' ? column.format(value) : value}
+                </TableCell>
+              );
+            })}
+            <TableCell key="modif">
+              {hover[index] && (
+                <>
+                  <Link href={`/demandes/${detailLink}/${row.id}`}>
+                    <IconButton aria-label="modifier" className={classes.icon} color="primary">
                       <DescriptionIcon />
                     </IconButton>
-                    <IconButton
-                      color="primary"
-                      aria-label="delete"
-                      className={classes.icon}
-                      onClick={() => handleDelete(index)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )}
-              </TableCell>
-            </TableRow>
-          );
-        })}
+                  </Link>
+                </>
+              )}
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   ) : (
-    <EmptyArray type="en cours" />
+    <EmptyArray type="à traiter" />
   );
 }
 
-TabMyRequestToTreat.propTypes = {
-  request: PropTypes.arrayOf(PropTypes.shape()),
+TabMyRequestUntreated.propTypes = {
+  request: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      from: PropTypes.date,
+      to: PropTypes.date,
+      owner: PropTypes.shape({
+        firstname: PropTypes.string,
+        birthLastname: PropTypes.string,
+        rank: PropTypes.string,
+        company: PropTypes.string,
+      }),
+      places: PropTypes.arrayOf(PropTypes.string),
+      reason: PropTypes.string,
+    }),
+  ),
+  detailLink: PropTypes.string.isRequired,
 };
 
-TabMyRequestToTreat.defaultProps = {
+TabMyRequestUntreated.defaultProps = {
   request: [],
 };

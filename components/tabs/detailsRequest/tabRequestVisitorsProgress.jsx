@@ -14,31 +14,30 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { useLogin } from '../../../lib/loginContext';
 import CustomTableCell from '../../styled/customTableCellHeader';
 
-import ckeckStatusVisitor from '../../../utils/mappers/checkStatusVisitor';
+import { EMPLOYEE_TYPE } from '../../../utils/constants/enums';
 
 const useStyles = makeStyles({
   container: {
     maxHeight: 440,
   },
   icon: {
-    margin: '-20px',
+    marginTop: '-20px',
+    marginBottom: '-20px',
   },
 });
 
 function createData({
-  id, firstname, birthLastname, rank, company, type, status,
-}, activeRole) {
+  id, firstname, birthLastname, rank, company, employeeType,
+}) {
   return {
     id,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
-    type,
-    step: ckeckStatusVisitor(status, activeRole),
+    type: EMPLOYEE_TYPE[employeeType],
   };
 }
 
@@ -49,13 +48,11 @@ const columns = [
   { id: 'step', label: 'Etape de validation' },
 ];
 
-export default function TabRequestVisitors({ visitors }) {
+export default function TabRequestVisitors({ visitors, onDelete }) {
   const classes = useStyles();
 
-  const { activeRole } = useLogin();
-
   const rows = visitors.reduce((acc, vis) => {
-    acc.push(createData(vis, activeRole));
+    acc.push(createData(vis));
     return acc;
   }, []);
 
@@ -70,9 +67,8 @@ export default function TabRequestVisitors({ visitors }) {
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-  // eslint-disable-next-line no-unused-vars
   const handleDeleteConfirm = (id) => {
-    // @todo changeStatut of visitor
+    onDelete(id);
     setDel({});
   };
 
@@ -94,6 +90,7 @@ export default function TabRequestVisitors({ visitors }) {
               {column.label}
             </CustomTableCell>
           ))}
+          <CustomTableCell key="actions" style={{ minWidth: '80px' }} />
         </TableRow>
       </TableHead>
       <TableBody>
@@ -109,9 +106,9 @@ export default function TabRequestVisitors({ visitors }) {
                          de la demande ?`}
                       </Typography>
                       {rows.length === 1 && (
-                      <Typography variant="body1" color="error">
-                        Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                      </Typography>
+                        <Typography variant="body1" color="error">
+                          Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                        </Typography>
                       )}
                     </Grid>
                     <Grid item sm={2}>
@@ -126,7 +123,7 @@ export default function TabRequestVisitors({ visitors }) {
                       <IconButton
                         aria-label="cancel"
                         className={classes.icon}
-                        onClick={() => handleDeleteAvorted(index)}
+                        onClick={() => handleDeleteAvorted()}
                       >
                         <CloseIcon />
                       </IconButton>
@@ -151,7 +148,8 @@ export default function TabRequestVisitors({ visitors }) {
                   case 'step':
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        value.activeStep.step
+                        {/* TODO checkActualStep after rework checkStatus */}
+                        Unité
                       </TableCell>
                     );
                   default:
@@ -164,16 +162,16 @@ export default function TabRequestVisitors({ visitors }) {
               })}
               <TableCell key="actions">
                 {hover[index] && (
-                <>
-                  <IconButton
-                    color="primary"
-                    aria-label="delete"
-                    className={classes.icon}
-                    onClick={() => handleDelete(index)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </>
+                  <>
+                    <IconButton
+                      color="primary"
+                      aria-label="delete"
+                      className={classes.icon}
+                      onClick={() => handleDelete(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
                 )}
               </TableCell>
             </TableRow>
@@ -189,5 +187,10 @@ TabRequestVisitors.propTypes = {
     PropTypes.shape({
       firstname: PropTypes.string,
     }),
-  ).isRequired,
+  ),
+  onDelete: PropTypes.func.isRequired,
+};
+
+TabRequestVisitors.defaultProps = {
+  visitors: [],
 };

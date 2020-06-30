@@ -16,11 +16,14 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 
 
-import { TabPanel, TabMesDemandes, TabDemandesTraitees } from '../components';
+import {
+  TabPanel, TabMesDemandesToTreat, TabDemandesProgress,
+} from '../components';
 import Template from './template';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
+import { urlAuthorization } from '../utils/permissions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,19 +78,6 @@ const AntTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 
-// @todo check to implement fragments
-// const REQUEST_ATTRIBUTES = {
-//   requestResult: gql`
-//   fragment RequestResult on Request {
-//     id
-//     to
-//     places {
-//       label
-//     }
-//   }
-// `,
-// };
-
 export const LIST_REQUESTS = gql`
          query listRequests(
            $campusId: String!
@@ -97,11 +87,6 @@ export const LIST_REQUESTS = gql`
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              listRequests(as: $as, filters: $filters) {
-               meta {
-                 offset
-                 first
-                 total
-               }
                list {
                  id
                  from
@@ -116,6 +101,9 @@ export const LIST_REQUESTS = gql`
                    unit
                  }
                }
+               meta {
+                   total
+               }
              }
            }
          }
@@ -126,11 +114,6 @@ export const LIST_MY_REQUESTS = gql`
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              listMyRequests {
-               meta {
-                 offset
-                 first
-                 total
-               }
                list {
                  id
                  from
@@ -139,6 +122,9 @@ export const LIST_MY_REQUESTS = gql`
                  places {
                    label
                  }
+               }
+               meta {
+                   total
                }
              }
            }
@@ -177,15 +163,33 @@ export default function MenuRequest() {
     },
   );
 
-  const {
-    data: inProgress,
-    fetchMore: fetchInProgress,
-  } = useQuery(LIST_MY_REQUESTS, {
+  const { data: inProgress, fetchMore: fetchInProgress } = useQuery(LIST_MY_REQUESTS, {
     variables: {
+      filters: { status: STATE_REQUEST.STATE_CREATED.state },
       cursor: {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
+    },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const { data: treated, fetchMore: fetchTreated } = useQuery(LIST_REQUESTS, {
+    variables: {
+      filters: {
+        status: [
+          STATE_REQUEST.STATE_CANCELED.state,
+          STATE_REQUEST.STATE_ACCEPTED.state,
+          STATE_REQUEST.STATE_REJECTED.state,
+          STATE_REQUEST.STATE_MIXED.state,
+        ],
+      },
+      cursor: {
+        first: rowsPerPage,
+        offset: page * rowsPerPage,
+      },
+      as: { role: activeRole.role, unit: activeRole.unitLabel },
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
@@ -228,6 +232,29 @@ export default function MenuRequest() {
           },
         });
         break;
+      case 2:
+        fetchTreated({
+          variables: {
+            filters: {
+              status: [
+                STATE_REQUEST.STATE_CANCELED.state,
+                STATE_REQUEST.STATE_ACCEPTED.state,
+                STATE_REQUEST.STATE_REJECTED.state,
+                STATE_REQUEST.STATE_MIXED.state,
+              ],
+            },
+            cursor: {
+              first: rowsPerPage,
+              offset: page * rowsPerPage,
+            },
+            as: { role: activeRole.role, unit: activeRole.unitLabel },
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prev;
+            return fetchMoreResult;
+          },
+        });
+        break;
       default:
     }
   };
@@ -243,6 +270,51 @@ export default function MenuRequest() {
     setPage(0);
   };
 
+  const refetchQueries = [
+    {
+      query: LIST_MY_REQUESTS,
+      variables: {
+        filters: { status: STATE_REQUEST.STATE_CREATED.state },
+      },
+      fetchPolicy: 'cache-and-network',
+    },
+    {
+      query: LIST_REQUESTS,
+      variables: {
+        filters: { status: STATE_REQUEST.STATE_CREATED.state },
+        as: { role: activeRole.role, unit: activeRole.unitLabel },
+      },
+      fetchPolicy: 'cache-and-network',
+    }];
+
+
+  const tabList = [
+    {
+      label: `A traiter ${
+        toTreat && toTreat.getCampus.listRequests.meta.total > 0
+          ? `(${toTreat.getCampus.listRequests.meta.total})`
+          : ''
+      }`,
+      access: true,
+    },
+    {
+      label: `En cours ${
+        inProgress && inProgress.getCampus.listMyRequests.meta.total > 0
+          ? `(${inProgress.getCampus.listMyRequests.meta.total})`
+          : ''
+      }`,
+      access: urlAuthorization('/nouvelle-demande', activeRole.role),
+    },
+    {
+      label: `Traitées ${
+        treated && treated.getCampus.listRequests.meta.total > 0
+          ? `(${treated.getCampus.listRequests.meta.total})`
+          : ''
+      }`,
+      access: true,
+    },
+  ];
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setPage(0);
@@ -256,29 +328,14 @@ export default function MenuRequest() {
       case 1:
         if (!inProgress) return 0;
         return inProgress.getCampus.listMyRequests.meta.total;
+      case 2:
+        if (!treated) return 0;
+        return treated.getCampus.listRequests.meta.total;
       default:
         return 0;
     }
   };
 
-  // Modify number with API data
-  const tabList = [
-    {
-      label: `A traiter ${
-        toTreat && toTreat.getCampus.listRequests.meta.total > 0
-          ? `(${toTreat.getCampus.listRequests.meta.total})`
-          : ''
-      }`,
-    },
-    {
-      label: `En cours ${
-        inProgress && inProgress.getCampus.listMyRequests.meta.total > 0
-          ? `(${inProgress.getCampus.listMyRequests.meta.total})`
-          : ''
-      }`,
-    },
-    { label: 'Traitées' },
-  ];
 
   return (
     <Template>
@@ -303,12 +360,8 @@ export default function MenuRequest() {
             aria-label="simple tabs example"
           >
             {tabList.map((tab, index) => (
-              <AntTab
-                label={tab.label}
-                id={index}
-                aria-controls={index}
-                key={tab.label}
-              />
+              tab.access
+              && <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
             ))}
           </Tabs>
         </Grid>
@@ -340,17 +393,18 @@ export default function MenuRequest() {
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes
-              request={toTreat && toTreat.getCampus.listRequests.list}
-            />
+            <TabMesDemandesToTreat request={toTreat ? toTreat.getCampus.listRequests.list : []} detailLink="a-traiter" />
           </TabPanel>
+          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees
-              request={inProgress && inProgress.getCampus.listMyRequests.list}
+            <TabDemandesProgress
+              request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
+              queries={refetchQueries}
             />
           </TabPanel>
+          )}
           <TabPanel value={value} index={2}>
-            <TabMesDemandes request={[]} />
+            <TabMesDemandesToTreat request={treated ? treated.getCampus.listRequests.list : []} detailLink="traitees" />
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>

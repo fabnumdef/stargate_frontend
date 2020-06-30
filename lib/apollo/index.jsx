@@ -56,6 +56,7 @@ export default function createApolloClient(initialState, ctx) {
         roles: [{
           role: '',
           units: [{
+            id: '',
             label: '',
             __typename: 'Unit',
           }],
