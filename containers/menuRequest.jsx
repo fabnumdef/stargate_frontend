@@ -319,7 +319,6 @@ export default function MenuRequest() {
   ];
 
   const handleChange = (event, newValue) => {
-    console.log(newValue);
     setValue(newValue);
     setPage(0);
   };
