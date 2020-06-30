@@ -114,7 +114,6 @@ export const MUTATE_VISITOR = gql`
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
   const { activeRole } = useLogin();
-  const router = useRouter();
 
   const { addAlert } = useSnackBar();
 
