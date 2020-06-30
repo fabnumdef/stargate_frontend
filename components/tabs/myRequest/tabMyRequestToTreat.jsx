@@ -21,23 +21,23 @@ import EmptyArray from '../../styled/emptyArray';
 const columns = [
   { id: 'id', label: 'N° demande' },
   { id: 'periode', label: 'Période', width: '100px' },
-  { id: 'demandeur', label: 'Demandeur' },
+  { id: 'owner', label: 'Demandeur' },
   { id: 'places', label: 'Lieu' },
   { id: 'reason', label: 'Motif' },
 ];
 
 function createData({
-  id, demandeur, from, to, reason, places,
+  id, owner, from, to, reason, places,
 }) {
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
-    demandeur: demandeur
+    owner: owner
       ? `
-          ${demandeur.rank} ${demandeur.birthLastname.toUpperCase()} ${demandeur.firstname}
-          ${demandeur.company}`
+          ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
+          ${owner.unit}`
       : '',
 
     places: places.map((place, index) => {
@@ -47,19 +47,6 @@ function createData({
     reason,
   };
 }
-
-/*
-function formattedDate(d) {
-let day = String(d.getDate());
-let month = String(d.getMonth() + 1);
-const year = String(d.getFullYear());
-
-if (month.length < 2) month = `0${ month}`;
-if (day.length < 2) day = `0${ day}`;
-
-return `${day}/${month}/${year}`;
-}
-*/
 
 const useStyles = makeStyles({
   root: {
@@ -85,7 +72,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabMyRequestUntreated({ request }) {
+export default function TabMyRequestUntreated({ request, detailLink }) {
   const classes = useStyles();
 
   const rows = request.reduce((acc, dem) => {
@@ -146,7 +133,7 @@ export default function TabMyRequestUntreated({ request }) {
             <TableCell key="modif">
               {hover[index] && (
                 <>
-                  <Link href={`/demandes/a-traiter/${row.id}`}>
+                  <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
                       <DescriptionIcon />
                     </IconButton>
@@ -179,6 +166,7 @@ TabMyRequestUntreated.propTypes = {
       reason: PropTypes.string,
     }),
   ),
+  detailLink: PropTypes.string.isRequired,
 };
 
 TabMyRequestUntreated.defaultProps = {
