@@ -290,6 +290,7 @@ export default function MenuRequest() {
 
   const tabList = [
     {
+      index: 0,
       label: `A traiter ${
         toTreat && toTreat.getCampus.listRequests.meta.total > 0
           ? `(${toTreat.getCampus.listRequests.meta.total})`
@@ -298,6 +299,7 @@ export default function MenuRequest() {
       access: true,
     },
     {
+      index: 1,
       label: `En cours ${
         inProgress && inProgress.getCampus.listMyRequests.meta.total > 0
           ? `(${inProgress.getCampus.listMyRequests.meta.total})`
@@ -306,6 +308,7 @@ export default function MenuRequest() {
       access: urlAuthorization('/nouvelle-demande', activeRole.role),
     },
     {
+      index: 2,
       label: `Traitées ${
         treated && treated.getCampus.listRequests.meta.total > 0
           ? `(${treated.getCampus.listRequests.meta.total})`
@@ -316,6 +319,7 @@ export default function MenuRequest() {
   ];
 
   const handleChange = (event, newValue) => {
+    console.log(newValue);
     setValue(newValue);
     setPage(0);
   };
@@ -342,10 +346,7 @@ export default function MenuRequest() {
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
-            <Typography
-              variant="h5"
-              className={classes.pageTitle}
-            >
+            <Typography variant="h5" className={classes.pageTitle}>
               Mes Demandes
             </Typography>
           </Box>
@@ -359,65 +360,78 @@ export default function MenuRequest() {
             scrollButtons="off"
             aria-label="simple tabs example"
           >
-            {tabList.map((tab, index) => (
-              tab.access
-              && <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
-            ))}
+            {tabList.map(
+              (tab) => tab.access && (
+              <AntTab
+                label={tab.label}
+                value={tab.index}
+                id={tab.index}
+                aria-controls={tab.index}
+                key={tab.label}
+              />
+              ),
+            )}
           </Tabs>
         </Grid>
         <Grid container className={classes.searchField}>
           <Grid item sm={12} xs={12} md={12} lg={12}>
             {handlePageSize() > 0 && (
-            <TextField
-              style={{ float: 'right' }}
-              margin="dense"
-              variant="outlined"
-              onChange={() => {
-                setPage(0);
-                // setSearch(event.target.value);
-              }}
-              placeholder="Rechercher..."
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                inputProps: {
-                  'data-testid': 'searchField',
-                },
-              }}
-            />
+              <TextField
+                style={{ float: 'right' }}
+                margin="dense"
+                variant="outlined"
+                onChange={() => {
+                  setPage(0);
+                  // setSearch(event.target.value);
+                }}
+                placeholder="Rechercher..."
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  inputProps: {
+                    'data-testid': 'searchField',
+                  },
+                }}
+              />
             )}
           </Grid>
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandesToTreat request={toTreat ? toTreat.getCampus.listRequests.list : []} detailLink="a-traiter" />
-          </TabPanel>
-          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
-          <TabPanel value={value} index={1}>
-            <TabDemandesProgress
-              request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
-              queries={refetchQueries}
+            <TabMesDemandesToTreat
+              request={toTreat ? toTreat.getCampus.listRequests.list : []}
+              detailLink="a-traiter"
             />
           </TabPanel>
+          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
+            <TabPanel value={value} index={1}>
+              <TabDemandesProgress
+                request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
+                queries={refetchQueries}
+              />
+            </TabPanel>
           )}
           <TabPanel value={value} index={2}>
-            <TabMesDemandesToTreat request={treated ? treated.getCampus.listRequests.list : []} detailLink="traitees" />
+            <TabMesDemandesToTreat
+              request={treated ? treated.getCampus.listRequests.list : []}
+              detailLink="traitees"
+            />
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
           {handlePageSize() > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[10, 20, 30, 40, 50]}
-            component="div"
-            count={handlePageSize()}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 30, 40, 50]}
+              component="div"
+              count={handlePageSize()}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
           )}
         </Grid>
       </Grid>
