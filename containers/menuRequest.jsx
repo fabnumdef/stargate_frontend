@@ -83,10 +83,11 @@ export const LIST_REQUESTS = gql`
            $campusId: String!
            $as: ValidationPersonas!
            $filters: RequestFilters!
+           $cursor: OffsetCursor!
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listRequests(as: $as, filters: $filters) {
+             listRequests(as: $as, filters: $filters, cursor: $cursor) {
                list {
                  id
                  from
@@ -102,7 +103,7 @@ export const LIST_REQUESTS = gql`
                  }
                }
                meta {
-                   total
+                 total
                }
              }
            }
@@ -110,10 +111,14 @@ export const LIST_REQUESTS = gql`
        `;
 
 export const LIST_MY_REQUESTS = gql`
-         query listMyRequests($campusId: String!) {
+         query listMyRequests(
+           $campusId: String!
+           $cursor: OffsetCursor!
+           $filters: RequestFilters!
+         ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listMyRequests {
+             listMyRequests(filters: $filters, cursor: $cursor) {
                list {
                  id
                  from
@@ -124,7 +129,7 @@ export const LIST_MY_REQUESTS = gql`
                  }
                }
                meta {
-                   total
+                 total
                }
              }
            }
