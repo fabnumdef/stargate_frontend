@@ -73,7 +73,7 @@ DetailsInfosRequest.propTypes = {
   request: PropTypes.shape({
     owner: PropTypes.shape({
       rank: PropTypes.string,
-      birthLastname: PropTypes.string,
+      lastname: PropTypes.string,
       firstname: PropTypes.string,
     }),
     places: PropTypes.arrayOf(

@@ -115,7 +115,7 @@ export default function TabMyRequestToTreat({ request, queries }) {
         addAlert({ message: 'La demande a bien été supprimée', severity: 'Success' });
       }
     } catch (e) {
-      console.log(e);
+      addAlert({ message: e.message, severity: 'error' });
     }
   };
 
