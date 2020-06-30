@@ -70,7 +70,9 @@ export const READ_REQUEST = gql`
                         company
                         state {
                             value
-                            validationDate
+                            records {
+                                date
+                            }
                         }
                         status {
                             unitId
@@ -80,6 +82,7 @@ export const READ_REQUEST = gql`
                                 step
                                 behavior
                                 status
+                                date
                                 done
                             }
                         }

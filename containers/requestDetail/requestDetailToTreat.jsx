@@ -151,13 +151,8 @@ export default function RequestDetails({ requestId }) {
         }
       }
     }));
-    if (visitors.every((visitor) => visitor.status)) {
-      addAlert({ message: `Traitement terminé pour la demande ${requestId}`, severity: 'success' });
 
-      router.push('/');
-    } else {
-      refetch();
-    }
+    refetch();
   };
 
 

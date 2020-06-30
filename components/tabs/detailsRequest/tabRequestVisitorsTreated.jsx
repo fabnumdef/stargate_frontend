@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import CustomTableCell from '../../styled/customTableCellHeader';
 
 import { EMPLOYEE_TYPE, VISITOR_STATUS } from '../../../utils/constants/enums';
+import findValidationDate from '../../../utils/mappers/findValidationDate';
 
 function createData({
   id, firstname, birthLastname, state, rank, company, employeeType,
@@ -21,7 +22,7 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
-    date: format(new Date(state.validationDate), "dd/MM/yyyy à k'h'mm"),
+    date: format(findValidationDate(state), "dd/MM/yyyy à k'h'mm"),
     status: VISITOR_STATUS[state.value],
   };
 }
