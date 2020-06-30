@@ -64,7 +64,8 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
   };
 
   const handleDelete = (index) => {
-    setDel((prevState) => ({ ...prevState, [index]: true }));
+    setHover({});
+    setDel({ [index]: true });
   };
 
   const handleDeleteConfirm = (id) => {
