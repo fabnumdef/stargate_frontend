@@ -95,8 +95,6 @@ function UserAdministration() {
     return setUsersList(data);
   };
 
-  const setPaginationCount = (totalItems) => Math.ceil(totalItems / 10) || 1;
-
   const handleChangePage = (event, selectedPage) => {
     setPage(selectedPage);
     getList();
@@ -168,7 +166,7 @@ function UserAdministration() {
           <TablePagination
             rowsPerPageOptions={[10, 20, 30, 40, 50]}
             component="div"
-            count={setPaginationCount()}
+            count={usersList && usersList.listUsers.meta.total}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}

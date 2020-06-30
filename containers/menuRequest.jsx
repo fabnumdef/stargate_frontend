@@ -74,8 +74,6 @@ const AntTab = withStyles((theme) => ({
 // eslint-disable-next-line react/jsx-props-no-spreading
 }))((props) => <Tab disableRipple {...props} />);
 
-// Modify number with API data
-const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label: 'Traitées' }];
 
 // @todo check to implement fragments
 // const REQUEST_ATTRIBUTES = {
@@ -91,23 +89,32 @@ const tabList = [{ label: 'A traiter (2)' }, { label: 'En cours (3)' }, { label:
 // };
 
 export const LIST_REQUESTS = gql`
-         query listRequests($campusId: String!, $as: ValidationPersonas!, $filters: RequestFilters!) {
+         query listRequests(
+           $campusId: String!
+           $as: ValidationPersonas!
+           $filters: RequestFilters!
+         ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              listRequests(as: $as, filters: $filters) {
+               meta {
+                 offset
+                 first
+                 total
+               }
                list {
-                   id
-                   from
-                   to
-                   reason
-                   places {
-                       label
-                   }
-                   owner {
-                       firstname
-                       lastname
-                       unit
-                   }
+                 id
+                 from
+                 to
+                 reason
+                 places {
+                   label
+                 }
+                 owner {
+                   firstname
+                   lastname
+                   unit
+                 }
                }
              }
            }
@@ -115,20 +122,23 @@ export const LIST_REQUESTS = gql`
        `;
 
 export const LIST_MY_REQUESTS = gql`
-         query listMyRequests(
-           $campusId: String!
-         ) {
+         query listMyRequests($campusId: String!) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              listMyRequests {
+               meta {
+                 offset
+                 first
+                 total
+               }
                list {
-                   id
-                   from
-                   to
-                   reason
-                   places {
-                       label
-                   }
+                 id
+                 from
+                 to
+                 reason
+                 places {
+                   label
+                 }
                }
              }
            }
@@ -146,40 +156,57 @@ export default function MenuRequest() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const {
-    data: toTreat,
-    fetchMore: fetchToTreat,
-  } = useQuery(LIST_REQUESTS, {
-    variables: {
-      cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-      filters: { status: STATE_REQUEST.STATE_CREATED.state },
-      as: { role: activeRole.role, unit: activeRole.unitLabel },
+  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
+    LIST_REQUESTS,
+    {
+      variables: {
+        cursor: {
+          first: rowsPerPage,
+          offset: page * rowsPerPage,
+        },
+        filters: {
+          status: STATE_REQUEST.STATE_CREATED.state,
+        },
+        as: {
+          role: activeRole.role,
+          unit: activeRole.unitLabel,
+        },
+      },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
-  });
-
+  );
 
   const {
     data: inProgress,
     fetchMore: fetchInProgress,
   } = useQuery(LIST_MY_REQUESTS, {
     variables: {
-      cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+      cursor: {
+        first: rowsPerPage,
+        offset: page * rowsPerPage,
+      },
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
   });
-
 
   const handleFetchMore = async () => {
     switch (value) {
       case 0:
         fetchToTreat({
           variables: {
-            cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-            filters: { status: STATE_REQUEST.STATE_CREATED.state },
-            as: { role: activeRole.role, unit: activeRole.unitLabel },
+            cursor: {
+              first: rowsPerPage,
+              offset: page * rowsPerPage,
+            },
+            filters: {
+              status: STATE_REQUEST.STATE_CREATED.state,
+            },
+            as: {
+              role: activeRole.role,
+              unit: activeRole.unitLabel,
+            },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
@@ -190,7 +217,10 @@ export default function MenuRequest() {
       case 1:
         fetchInProgress({
           variables: {
-            cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+            cursor: {
+              first: rowsPerPage,
+              offset: page * rowsPerPage,
+            },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
@@ -218,12 +248,47 @@ export default function MenuRequest() {
     setPage(0);
   };
 
+  const handlePageSize = () => {
+    switch (value) {
+      case 0:
+        if (!toTreat) return 0;
+        return toTreat.getCampus.listRequests.meta.total;
+      case 1:
+        if (!inProgress) return 0;
+        return inProgress.getCampus.listMyRequests.meta.total;
+      default:
+        return 0;
+    }
+  };
+
+  // Modify number with API data
+  const tabList = [
+    {
+      label: `A traiter ${
+        toTreat && toTreat.getCampus.listRequests.meta.total > 0
+          ? `(${toTreat.getCampus.listRequests.meta.total})`
+          : ''
+      }`,
+    },
+    {
+      label: `En cours ${
+        inProgress && inProgress.getCampus.listMyRequests.meta.total > 0
+          ? `(${inProgress.getCampus.listMyRequests.meta.total})`
+          : ''
+      }`,
+    },
+    { label: 'Traitées' },
+  ];
+
   return (
     <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
-            <Typography variant="h5" className={classes.pageTitle}>
+            <Typography
+              variant="h5"
+              className={classes.pageTitle}
+            >
               Mes Demandes
             </Typography>
           </Box>
@@ -238,12 +303,18 @@ export default function MenuRequest() {
             aria-label="simple tabs example"
           >
             {tabList.map((tab, index) => (
-              <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
+              <AntTab
+                label={tab.label}
+                id={index}
+                aria-controls={index}
+                key={tab.label}
+              />
             ))}
           </Tabs>
         </Grid>
         <Grid container className={classes.searchField}>
           <Grid item sm={12} xs={12} md={12} lg={12}>
+            {handlePageSize() > 0 && (
             <TextField
               style={{ float: 'right' }}
               margin="dense"
@@ -259,32 +330,41 @@ export default function MenuRequest() {
                     <SearchIcon />
                   </InputAdornment>
                 ),
-                inputProps: { 'data-testid': 'searchField' },
+                inputProps: {
+                  'data-testid': 'searchField',
+                },
               }}
             />
+            )}
           </Grid>
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={value} index={0}>
-            <TabMesDemandes request={toTreat && toTreat.getCampus.listRequests.list} />
+            <TabMesDemandes
+              request={toTreat && toTreat.getCampus.listRequests.list}
+            />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TabDemandesTraitees request={inProgress && inProgress.getCampus.listMyRequests.list} />
+            <TabDemandesTraitees
+              request={inProgress && inProgress.getCampus.listMyRequests.list}
+            />
           </TabPanel>
           <TabPanel value={value} index={2}>
             <TabMesDemandes request={[]} />
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
+          {handlePageSize() > 0 && (
           <TablePagination
             rowsPerPageOptions={[10, 20, 30, 40, 50]}
             component="div"
-            count={10}
+            count={handlePageSize()}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
+          )}
         </Grid>
       </Grid>
     </Template>
