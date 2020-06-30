@@ -137,8 +137,10 @@ export default function MenuRequest() {
 
   const [value, setValue] = React.useState(0);
 
-  // paginator and searchField
-  // const [search, setSearch] = React.useState('');
+  /** @todo searchField filters
+  const [search, setSearch] = React.useState('');
+   */
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -381,6 +383,7 @@ export default function MenuRequest() {
                 variant="outlined"
                 onChange={() => {
                   setPage(0);
+                  // @todo
                   // setSearch(event.target.value);
                 }}
                 placeholder="Rechercher..."
