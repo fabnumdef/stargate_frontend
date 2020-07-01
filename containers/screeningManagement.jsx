@@ -171,14 +171,7 @@ export default function ScreeningManagement() {
 
   const sortArray = () => {
     if (!data) return [];
-    return tableSort(data.getCampus.listVisitors.list, getComparator(order, orderBy))
-      .filter((row) => Object.keys(row).some((x) => {
-        if (search.length === 0) return true;
-        if (search && typeof row[x] === 'string') {
-          return row[x].toUpperCase().includes(search.toUpperCase());
-        }
-        return false;
-      }));
+    return tableSort(data.getCampus.listVisitors.list, getComparator(order, orderBy));
   };
 
   const csvData = sortArray().map((row) => ({

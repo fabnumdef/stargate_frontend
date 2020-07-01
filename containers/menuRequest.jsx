@@ -142,8 +142,6 @@ export default function MenuRequest() {
 
   const {
     data: toTreat,
-    loading: loadingToTreat,
-    error: errorToTreat,
   } = useQuery(LIST_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
@@ -210,17 +208,6 @@ export default function MenuRequest() {
     setValue(newValue);
   };
 
-  // to remove
-  if (loadingToTreat || loadingInProgress || loadingTreated) return 'loading screen toDO';
-  if (errorToTreat || errorInProgress || errorTreated) {
-    return (
-      <Template>
-        Error:
-        {' '}
-        {errorToTreat}
-      </Template>
-    );
-  }
 
   return (
     <Template>

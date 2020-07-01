@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
@@ -348,3 +349,15 @@ export default function ScreeningTable({
     </div>
   );
 }
+
+ScreeningTable.propTypes = {
+  visitors: PropTypes.arrayOf(PropTypes.object),
+  onChange: PropTypes.func.isRequired,
+  sortHandler: PropTypes.func.isRequired,
+  order: PropTypes.number.isRequired,
+  orderBy: PropTypes.number.isRequired,
+};
+
+ScreeningTable.defaultProps = {
+  visitors: [],
+};
