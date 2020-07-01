@@ -149,7 +149,7 @@ export default function RequestDetails({ requestId }) {
         }
       }
     }));
-    // refresh the query
+
     refetch();
   };
 

@@ -45,6 +45,34 @@ const GET_ME = gql`
     }
 `;
 
+const INIT_CACHE = gql`
+    query initCache {
+        initializedCache
+        me {
+            id
+            firstname
+            lastname
+            roles {
+                role
+                campuses {
+                  id
+                  label
+                }
+                units {
+                    id
+                    label
+                }
+            }
+        }
+        activeRoleCache {
+            role
+            unit
+            unitLabel
+        }
+        campusId
+    }
+`;
+
 const GET_INITIALIZEDCACHE = gql`
     query getInitCache {
         initializedCache @client
@@ -133,7 +161,8 @@ export function LoginContextProvider(props) {
         ? me.roles[activeRoleNumber].campuses[0].id
         : null;
 
-      await client.cache.writeData({
+      await client.cache.writeQuery({
+        query: INIT_CACHE,
         data: {
           initializedCache: true,
           me,

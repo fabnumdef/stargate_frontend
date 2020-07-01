@@ -55,11 +55,7 @@ export default function createApolloClient(initialState, ctx) {
         lastname: '',
         roles: [{
           role: '',
-          units: [{
-            id: '',
-            label: '',
-            __typename: 'Unit',
-          }],
+          units: [],
           __typename: 'UserRole',
         }],
         __typename: 'User',
@@ -67,6 +63,7 @@ export default function createApolloClient(initialState, ctx) {
       activeRoleCache: {
         role: 'ROLE_HOST',
         unit: null,
+        unitLabel: null,
         __typename: 'activeRoleCache',
       },
     },
