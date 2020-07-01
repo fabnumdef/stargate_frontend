@@ -16,7 +16,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 
+import { format } from 'date-fns';
 import { CSVLink } from 'react-csv';
+
 import {
   TabPanel, TabScreeningVisitors,
 } from '../components';
@@ -76,7 +78,7 @@ function createData({
   return {
     id,
     nationality,
-    birthday,
+    birthday: format(new Date(birthday), 'dd/MM/yyyy'),
     birthplace,
     firstname,
     birthLastname,
@@ -119,7 +121,7 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
+  const { data, fetchMore } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
     },
@@ -151,7 +153,7 @@ export default function ScreeningManagement() {
   ];
 
   const handleFetchMore = async () => {
-    fetchMore({
+    await fetchMore({
       variables: {
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       },
@@ -169,19 +171,21 @@ export default function ScreeningManagement() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    handleFetchMore();
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-    handleFetchMore();
   };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setPage(0);
   };
+
+  React.useEffect(() => {
+    handleFetchMore();
+  }, [page, rowsPerPage]);
 
   const csvData = () => visitors.map((row) => ({
     vBirthName: row.birthLastname.toUpperCase(),
@@ -190,7 +194,6 @@ export default function ScreeningManagement() {
     vFirstName: row.firstname.toUpperCase(),
     vNationality: row.nationality.toUpperCase(),
   }));
-
 
   return (
     <Template>
@@ -216,6 +219,7 @@ export default function ScreeningManagement() {
               <Grid item sm={2} xs={12} md={1} lg={1}>
                 {data && (
                   <CSVLink
+                    style={{ textDecoration: 'none' }}
                     className={classes.linkCsv}
                     data={csvData()}
                     separator=";"

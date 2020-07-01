@@ -16,11 +16,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
-
-
 import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import CustomTableHeader from '../styled/customTableCellHeader';
+
+import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 
 import { ROLES } from '../../utils/constants/enums';
 import { useLogin } from '../../lib/loginContext';
@@ -238,7 +238,7 @@ export default function ScreeningTable({ visitors, onChange }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {visitors.map((row, index) => (
+            {tableSort(visitors, getComparator(order, orderBy)).map((row, index) => (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
