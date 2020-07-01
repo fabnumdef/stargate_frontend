@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AntTab = withStyles((theme) => ({
+export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
     color: '#0d40a0',

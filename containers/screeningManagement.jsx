@@ -3,11 +3,10 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 // Material Import
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
@@ -24,7 +23,7 @@ import {
 } from '../components';
 import Template from './template';
 
-import { tableSort, getComparator } from '../utils/mappers/sortArrays';
+import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
@@ -45,42 +44,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 'auto',
   },
 }));
-
-const AntTab = withStyles((theme) => ({
-  root: {
-    textTransform: 'none',
-    color: '#0d40a0',
-    minWidth: 72,
-    fontSize: 22,
-    fontWeight: theme.typography.fontWeightRegular,
-    marginRight: theme.spacing(4),
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-    '&:hover': {
-      opacity: 1,
-    },
-    '&$selected': {
-      color: '#0d40a0',
-      fontWeight: theme.typography.fontWeightBold,
-      backgroundColor: 'rgba(219, 227, 239, 0)',
-    },
-    backgroundColor: 'rgba(219, 227, 239, .6)',
-    borderRadius: '5%',
-  },
-  selected: {},
-  // Many props needed by Material-UI
-  // eslint-disable-next-line react/jsx-props-no-spreading
-}))((props) => <Tab disableRipple {...props} />);
 
 
 function csvName() {
@@ -135,9 +98,6 @@ export default function ScreeningManagement() {
   const [value, setValue] = useState(0);
 
   // filters
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('birthLastname');
-  const [search, setSearch] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -162,25 +122,16 @@ export default function ScreeningManagement() {
     },
   ];
 
-  const createSortHandler = (property) => () => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+  const csvData = () => {
+    if (!data) return {};
+    return data.getCampus.listVisitors.list.map((row) => ({
+      vBirthName: row.birthLastname.toUpperCase(),
+      vBirthDate: row.birthdate,
+      vBirthPlace: row.birthplace.toUpperCase(),
+      vFirstName: row.firstname.toUpperCase(),
+      vNationality: row.nationality.toUpperCase(),
+    }));
   };
-
-
-  const sortArray = () => {
-    if (!data) return [];
-    return tableSort(data.getCampus.listVisitors.list, getComparator(order, orderBy));
-  };
-
-  const csvData = sortArray().map((row) => ({
-    vBirthName: row.birthLastname.toUpperCase(),
-    vBirthDate: row.birthdate,
-    vBirthPlace: row.birthplace.toUpperCase(),
-    vFirstName: row.firstname.toUpperCase(),
-    vNationality: row.nationality.toUpperCase(),
-  }));
 
   const handleFetchMore = async () => {
     fetchMore({
@@ -215,26 +166,6 @@ export default function ScreeningManagement() {
     setPage(0);
   };
 
-  const submitForm = async () => {
-    await Promise.all(
-      visitors.map(async (visitor) => {
-        if (visitor.validation !== null) {
-          try {
-            await shiftVisitor({
-              variables: { requestId, visitorId: visitor.id, transition: visitor.report },
-            });
-          } catch (e) {
-            addAlert({
-              message: e.message,
-              severity: 'error',
-            });
-          }
-        }
-      }),
-    );
-    // refresh the query
-    refetch();
-  };
 
   return (
     <Template>
@@ -258,17 +189,22 @@ export default function ScreeningManagement() {
           <TabPanel value={value} index={0}>
             <Grid container spacing={1} className={classes.searchField}>
               <Grid item sm={2} xs={12} md={1} lg={1}>
-                <Button size="small" variant="contained" color="primary" endIcon={<NoteAddIcon />}>
-                  <CSVLink
-                    className={classes.linkCsv}
-                    data={csvData}
-                    separator=";"
-                    headers={csvHeaders}
-                    filename={csvName()}
+                <CSVLink
+                  className={classes.linkCsv}
+                  data={csvData}
+                  separator=";"
+                  headers={csvHeaders}
+                  filename={csvName()}
+                >
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    endIcon={<NoteAddIcon />}
                   >
                     Export
-                  </CSVLink>
-                </Button>
+                  </Button>
+                </CSVLink>
               </Grid>
               <Grid item sm={6} xs={12} md={8} lg={8}>
                 <TablePagination
@@ -286,9 +222,8 @@ export default function ScreeningManagement() {
                   style={{ float: 'right' }}
                   margin="dense"
                   variant="outlined"
-                  onChange={(event) => {
+                  onChange={() => {
                     setPage(0);
-                    setSearch(event.target.value);
                   }}
                   placeholder="Rechercher..."
                   InputProps={{
@@ -303,10 +238,7 @@ export default function ScreeningManagement() {
               </Grid>
             </Grid>
             <TabScreeningVisitors
-              visitors={sortArray()}
-              sortHandler={createSortHandler}
-              oder={order}
-              orderBy={orderBy}
+              visitors={data ? data.getCampus.listVisitors.list : []}
               onChange={(visitorsChange) => setVisitors(visitorsChange)}
             />
           </TabPanel>
@@ -319,7 +251,6 @@ export default function ScreeningManagement() {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={submitForm}
                 disabled={!visitors.find((visitor) => visitor.report !== null)}
               >
                 Soumettre

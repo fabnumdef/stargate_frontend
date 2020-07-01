@@ -132,12 +132,11 @@ const columns = [
 ];
 
 
-export default function ScreeningTable({
-  visitors, onChange, sortHandler,
-  order,
-  orderBy,
-}) {
+export default function ScreeningTable({ visitors, onChange }) {
   const { activeRole } = useLogin();
+
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('birthLastname');
 
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
@@ -145,6 +144,13 @@ export default function ScreeningTable({
       return acc;
     }, []),
   );
+
+  const createSortHandler = (property) => () => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
 
   React.useEffect(() => {
     setDataRows(
@@ -223,7 +229,7 @@ export default function ScreeningTable({
                           className={classes.sortedHeader}
                           active={headCell.id === 'birthLastname'}
                           direction={orderBy === headCell.id ? order : 'asc'}
-                          onClick={sortHandler(headCell.id)}
+                          onClick={createSortHandler(headCell.id)}
                         >
                           {headCell.label}
                         </TableSortLabel>
