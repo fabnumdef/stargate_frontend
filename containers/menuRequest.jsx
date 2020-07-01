@@ -235,7 +235,6 @@ export default function MenuRequest() {
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) {
-              console.log('fuck');
               return prev;
             }
             return fetchMoreResult;
