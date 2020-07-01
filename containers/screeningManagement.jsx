@@ -17,7 +17,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 
 import { CSVLink } from 'react-csv';
-import { useSnackBar } from '../lib/ui-providers/snackbar';
 import {
   TabPanel, TabScreeningVisitors,
 } from '../components';
@@ -65,6 +64,27 @@ const csvHeaders = [
   { label: 'Nationalité', key: 'vNationality' },
 ];
 
+function createData({
+  id,
+  nationality,
+  birthday,
+  birthplace,
+  firstname,
+  birthLastname,
+  identityDocuments,
+}) {
+  return {
+    id,
+    nationality,
+    birthday,
+    birthplace,
+    firstname,
+    birthLastname,
+    report: null,
+    vAttachedFile: identityDocuments,
+  };
+}
+
 
 export const LIST_VISITOR_REQUESTS = gql`
   query ListVisitorsRequestQuery($campusId: String!, $search: String, $cursor: OffsetCursor!) {
@@ -78,7 +98,6 @@ export const LIST_VISITOR_REQUESTS = gql`
           birthday
           birthplace
           birthLastname
-          unit
           }
         meta {
           total
@@ -90,7 +109,6 @@ export const LIST_VISITOR_REQUESTS = gql`
 export default function ScreeningManagement() {
   const classes = useStyles();
 
-  const { addAlert } = useSnackBar();
   // submit values
   const [visitors, setVisitors] = useState([]);
 
@@ -109,6 +127,16 @@ export default function ScreeningManagement() {
     fetchPolicy: 'cache-and-network',
   });
 
+  React.useEffect(() => {
+    if (!data) return;
+    setVisitors(
+      data.getCampus.listVisitors.list.reduce((acc, dem) => {
+        acc.push(createData(dem));
+        return acc;
+      }, []),
+    );
+  }, [data]);
+
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
   const tabList = [
@@ -121,17 +149,6 @@ export default function ScreeningManagement() {
       }`,
     },
   ];
-
-  const csvData = () => {
-    if (!data) return {};
-    return data.getCampus.listVisitors.list.map((row) => ({
-      vBirthName: row.birthLastname.toUpperCase(),
-      vBirthDate: row.birthdate,
-      vBirthPlace: row.birthplace.toUpperCase(),
-      vFirstName: row.firstname.toUpperCase(),
-      vNationality: row.nationality.toUpperCase(),
-    }));
-  };
 
   const handleFetchMore = async () => {
     fetchMore({
@@ -166,6 +183,14 @@ export default function ScreeningManagement() {
     setPage(0);
   };
 
+  const csvData = () => visitors.map((row) => ({
+    vBirthName: row.birthLastname.toUpperCase(),
+    vBirthDate: row.birthdate,
+    vBirthPlace: row.birthplace.toUpperCase(),
+    vFirstName: row.firstname.toUpperCase(),
+    vNationality: row.nationality.toUpperCase(),
+  }));
+
 
   return (
     <Template>
@@ -189,22 +214,24 @@ export default function ScreeningManagement() {
           <TabPanel value={value} index={0}>
             <Grid container spacing={1} className={classes.searchField}>
               <Grid item sm={2} xs={12} md={1} lg={1}>
-                <CSVLink
-                  className={classes.linkCsv}
-                  data={csvData}
-                  separator=";"
-                  headers={csvHeaders}
-                  filename={csvName()}
-                >
-                  <Button
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    endIcon={<NoteAddIcon />}
+                {data && (
+                  <CSVLink
+                    className={classes.linkCsv}
+                    data={csvData()}
+                    separator=";"
+                    headers={csvHeaders}
+                    filename={csvName()}
                   >
-                    Export
-                  </Button>
-                </CSVLink>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      endIcon={<NoteAddIcon />}
+                    >
+                      Export
+                    </Button>
+                  </CSVLink>
+                )}
               </Grid>
               <Grid item sm={6} xs={12} md={8} lg={8}>
                 <TablePagination
@@ -222,9 +249,6 @@ export default function ScreeningManagement() {
                   style={{ float: 'right' }}
                   margin="dense"
                   variant="outlined"
-                  onChange={() => {
-                    setPage(0);
-                  }}
                   placeholder="Rechercher..."
                   InputProps={{
                     endAdornment: (
@@ -238,7 +262,7 @@ export default function ScreeningManagement() {
               </Grid>
             </Grid>
             <TabScreeningVisitors
-              visitors={data ? data.getCampus.listVisitors.list : []}
+              visitors={visitors}
               onChange={(visitorsChange) => setVisitors(visitorsChange)}
             />
           </TabPanel>

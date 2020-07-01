@@ -101,26 +101,6 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-function createData({
-  id,
-  nationality,
-  birthday,
-  birthplace,
-  firstname,
-  birthLastname,
-  identityDocuments,
-}) {
-  return {
-    id,
-    nationality,
-    birthday,
-    birthplace,
-    firstname,
-    birthLastname,
-    report: null,
-    vAttachedFile: identityDocuments,
-  };
-}
 
 const columns = [
   { id: 'birthLastname', label: 'Nom de N.', fullLabel: 'Nom de Naissance' },
@@ -135,15 +115,9 @@ const columns = [
 export default function ScreeningTable({ visitors, onChange }) {
   const { activeRole } = useLogin();
 
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('birthLastname');
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('birthLastname');
 
-  const [rows, setDataRows] = useState(
-    visitors.reduce((acc, dem) => {
-      acc.push(createData(dem));
-      return acc;
-    }, []),
-  );
 
   const createSortHandler = (property) => () => {
     const isAsc = orderBy === property && order === 'asc';
@@ -151,32 +125,22 @@ export default function ScreeningTable({ visitors, onChange }) {
     setOrderBy(property);
   };
 
-
-  React.useEffect(() => {
-    setDataRows(
-      visitors.reduce((acc, dem) => {
-        acc.push(createData(dem));
-        return acc;
-      }, []),
-    );
-  }, [visitors]);
-
   const classes = useStyles();
 
-  const [selectAll, setSelectAll] = React.useState([
+  const [selectAll, setSelectAll] = useState([
     { label: 'RAS', value: false, report: ROLES[activeRole.role].workflow.positive },
     { label: 'RES', value: false, report: ROLES[activeRole.role].workflow.negative },
   ]);
 
   // Filter
   const handleSelectAll = (checkbox, checkedValue) => {
-    const newArray = rows.slice();
+    const newArray = visitors.slice();
 
-    rows.forEach((row) => {
+    visitors.forEach((row) => {
       newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
     });
 
-    setDataRows(newArray);
+    onChange(newArray);
 
     const newChecked = selectAll.map((check) => {
       if (checkbox) {
@@ -203,16 +167,12 @@ export default function ScreeningTable({ visitors, onChange }) {
   };
 
   const handleDeselect = (row) => {
-    const newArray = rows.slice();
+    const newArray = visitors.slice();
     if (newArray[newArray.indexOf(row)].report != null) {
       newArray[newArray.indexOf(row)].report = null;
-      setDataRows(newArray);
+      onChange(newArray);
     }
   };
-
-  React.useEffect(() => {
-    onChange(rows);
-  }, [rows]);
 
   return (
     <div className={classes.root}>
@@ -278,7 +238,7 @@ export default function ScreeningTable({ visitors, onChange }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
+            {visitors.map((row, index) => (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
@@ -310,16 +270,16 @@ export default function ScreeningTable({ visitors, onChange }) {
                           key={column.id}
                           align={column.align}
                           className={`${classes.reportRow} ${
-                            index === rows.length - 1 ? classes.reportLastChild : ''
+                            index === visitors.length - 1 ? classes.reportLastChild : ''
                           }`}
                         >
                           <RadioGroup
                             className={classes.radioGroup}
                             value={row.report}
                             onChange={(event) => {
-                              const newArray = rows.slice();
+                              const newArray = visitors.slice();
                               newArray[newArray.indexOf(row)].report = event.target.value;
-                              setDataRows(newArray);
+                              onChange(newArray);
                               deselectAllCheckbox();
                             }}
                           >
@@ -359,9 +319,6 @@ export default function ScreeningTable({ visitors, onChange }) {
 ScreeningTable.propTypes = {
   visitors: PropTypes.arrayOf(PropTypes.object),
   onChange: PropTypes.func.isRequired,
-  sortHandler: PropTypes.func.isRequired,
-  order: PropTypes.number.isRequired,
-  orderBy: PropTypes.number.isRequired,
 };
 
 ScreeningTable.defaultProps = {
