@@ -96,7 +96,8 @@ export default function TabRecapRequest({
   };
 
   const handleDelete = (index) => {
-    setDel((prevState) => ({ ...prevState, [index]: true }));
+    setHover({});
+    setDel({ [index]: true });
   };
 
   const handleDeleteConfirm = (id) => {
