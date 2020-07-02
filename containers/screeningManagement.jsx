@@ -27,6 +27,7 @@ import Template from './template';
 import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
+import getDecisions from '../utils/mappers/getDecisions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -73,6 +74,7 @@ function createData({
   birthplace,
   firstname,
   birthLastname,
+  status,
   identityDocuments,
 }) {
   return {
@@ -83,30 +85,47 @@ function createData({
     firstname,
     birthLastname,
     report: null,
+    screening: getDecisions(status)[0],
     vAttachedFile: identityDocuments,
   };
 }
 
 
 export const LIST_VISITOR_REQUESTS = gql`
-  query ListVisitorsRequestQuery($campusId: String!, $search: String, $cursor: OffsetCursor!) {
-    campusId @client @export(as: "campusId")
-    getCampus(id: $campusId) {
-      listVisitors(search: $search, cursor: $cursor) {
-        list {
-          id
-          firstname
-          nationality
-          birthday
-          birthplace
-          birthLastname
-          }
-        meta {
-          total
-        }
-      }
-    }
-  }`;
+         query ListVisitorsRequestQuery(
+           $campusId: String!
+           $search: String
+           $cursor: OffsetCursor!
+         ) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             listVisitors(search: $search, cursor: $cursor) {
+               list {
+                 id
+                 firstname
+                 nationality
+                 birthday
+                 birthplace
+                 birthLastname
+                 status {
+                   unitId
+                   label
+                   steps {
+                     role
+                     step
+                     behavior
+                     status
+                     done
+                   }
+                 }
+               }
+               meta {
+                 total
+               }
+             }
+           }
+         }
+       `;
 
 export default function ScreeningManagement() {
   const classes = useStyles();

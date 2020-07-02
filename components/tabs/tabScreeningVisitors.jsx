@@ -25,10 +25,6 @@ import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 import { ROLES } from '../../utils/constants/enums';
 import { useLogin } from '../../lib/loginContext';
 
-import ckeckStatusVisitor, {
-  HIDDEN_STEP_STATUS,
-} from '../../../utils/mappers/checkStatusVisitor';
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
@@ -70,7 +66,6 @@ const useStyles = makeStyles((theme) => ({
   searchField: {
     display: 'flex',
     justifyContent: 'space-between',
-
   },
   headers: {
     backgroundColor: fade(theme.palette.primary.main, 0.05),
@@ -80,7 +75,6 @@ const useStyles = makeStyles((theme) => ({
   },
   sortedHeader: {
     color: `${theme.palette.primary.main}!important`,
-
   },
   reportHeader: {
     textAlign: 'center',
@@ -102,7 +96,9 @@ const useStyles = makeStyles((theme) => ({
   paginator: {
     float: 'left',
   },
-
+  inactiveCell: {
+    opacity: '0.2',
+  },
 }));
 
 
@@ -141,7 +137,9 @@ export default function ScreeningTable({ visitors, onChange }) {
     const newArray = visitors.slice();
 
     visitors.forEach((row) => {
-      newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
+      if (row.step.value === null) {
+        newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
+      }
     });
 
     onChange(newArray);
@@ -249,22 +247,38 @@ export default function ScreeningTable({ visitors, onChange }) {
                   switch (column.id) {
                     case 'birthLastname':
                       return row.vAttachedFile === true ? (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                        >
                           {value}
                           <IconButton aria-label="AttachFileIcon">
                             <AttachFileIcon />
                           </IconButton>
                         </TableCell>
                       ) : (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                        >
                           {value}
                         </TableCell>
                       );
                     case 'nationality':
                       return value === 'Française' ? (
-                        <TableCell key={column.id} align={column.align} />
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                        />
                       ) : (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                        >
                           {value}
                         </TableCell>
                       );
@@ -289,12 +303,14 @@ export default function ScreeningTable({ visitors, onChange }) {
                           >
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.positive}
+                              disabled={row.screening.value !== null}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
                             />
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.negative}
+                              disabled={row.screening.value !== null}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
