@@ -5,7 +5,7 @@ export default function getDecisions(status) {
 
   // search screening in workflow and add screening status
   const screeningValue = status.map(
-    (s) => s.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role)
+    (s) => s.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role),
   );
   if (screeningValue.length) {
     steps.push({
