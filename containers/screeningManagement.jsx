@@ -29,6 +29,8 @@ import { AntTab } from './menuRequest';
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 import getDecisions from '../utils/mappers/getDecisions';
 
+import { useSnackBar } from '../lib/ui-providers/snackbar';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,6 +120,9 @@ export const LIST_VISITOR_REQUESTS = gql`
                      done
                    }
                  }
+                 request {
+                   id
+                 }
                }
                meta {
                  total
@@ -130,6 +135,8 @@ export const LIST_VISITOR_REQUESTS = gql`
 export default function ScreeningManagement() {
   const classes = useStyles();
 
+  const { addAlert } = useSnackBar();
+
   // submit values
   const [visitors, setVisitors] = useState([]);
 
@@ -140,7 +147,7 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const { data, fetchMore } = useQuery(LIST_VISITOR_REQUESTS, {
+  const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
     },
@@ -213,6 +220,32 @@ export default function ScreeningManagement() {
     vFirstName: row.firstname.toUpperCase(),
     vNationality: row.nationality.toUpperCase(),
   }));
+
+
+  const submitForm = async () => {
+    await Promise.all(
+      visitors.map(async (visitor) => {
+        if (visitor.report !== null) {
+          try {
+            await shiftVisitor({
+              variables: {
+                requestId: visitor.request.id,
+                visitorId: visitor.id,
+                transition: visitor.validation,
+              },
+            });
+          } catch (e) {
+            addAlert({
+              message: e.message,
+              severity: 'error',
+            });
+          }
+        }
+      }),
+    );
+    // refresh the query
+    refetch();
+  };
 
   return (
     <Template>
@@ -298,6 +331,7 @@ export default function ScreeningManagement() {
               <Button
                 variant="contained"
                 color="primary"
+                onClick={submitForm}
                 disabled={!visitors.find((visitor) => visitor.report !== null)}
               >
                 Soumettre
