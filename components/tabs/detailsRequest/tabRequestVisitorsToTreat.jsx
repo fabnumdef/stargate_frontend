@@ -21,7 +21,7 @@ import { useRouter } from 'next/router';
 import { useLogin } from '../../../lib/loginContext';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 
-import { ROLES } from '../../../utils/constants/enums';
+import { EMPLOYEE_TYPE, ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
   ACTIVE_STEP_STATUS,
@@ -108,16 +108,18 @@ const useStyles = makeStyles((theme) => ({
 function createData({
   id, firstname, birthLastname, rank, company, employeeType, status,
 }, activeRole) {
+  const findStep = ckeckStatusVisitor(status, activeRole);
   return {
     id,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
-    type: employeeType,
-    criblage: checkCriblageVisitor(status, activeRole),
+    type: EMPLOYEE_TYPE[employeeType],
+    criblage: checkCriblageVisitor(status),
     validation: null,
-    step: ckeckStatusVisitor(status, activeRole),
+    step: findStep.step,
+    unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
   };
 }
 

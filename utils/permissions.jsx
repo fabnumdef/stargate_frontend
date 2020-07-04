@@ -56,7 +56,7 @@ export const urlAuthorization = (path, role) => {
 export const checkRequestDetailAuth = (data, activeRole) => {
   const isInWorkflow = data.getCampus.getRequest.listVisitors.list.find(
     (visitor) => visitor.status.find(
-      (s) => s.unitId === activeRole.unit && s.steps.find(
+      (s) => (s.unitId === activeRole.unit || !activeRole.unit) && s.steps.find(
         (step) => step.role === activeRole.role,
       ),
     ),
