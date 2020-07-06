@@ -21,6 +21,7 @@ import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
 
 import { ROLES } from '../../utils/constants/enums';
+import autoValidate from '../../utils/autoValidateVisitor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,15 +125,22 @@ export default function RequestDetails({ requestId }) {
     fetchPolicy: 'cache-and-network',
   });
 
+  const [shiftVisitor] = useMutation(MUTATE_VISITOR);
+
+  const [visitors, setVisitors] = useState([]);
+
   useEffect(() => {
     if (data) {
       refetch();
     }
   }, [activeRole]);
 
-  const [shiftVisitor] = useMutation(MUTATE_VISITOR);
+  useEffect(() => {
+    if (data) {
+      autoValidate(data.getCampus.getRequest.listVisitors.list, shiftVisitor, requestId);
+    }
+  }, [data]);
 
-  const [visitors, setVisitors] = useState([]);
 
   const submitForm = async () => {
     await Promise.all(visitors.map(async (visitor) => {
@@ -156,7 +164,7 @@ export default function RequestDetails({ requestId }) {
       }
     }));
 
-    refetch();
+    await refetch();
   };
 
 
