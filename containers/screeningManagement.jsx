@@ -243,6 +243,7 @@ export default function ScreeningManagement() {
                 requestId: visitor.requestId,
                 visitorId: visitor.id,
                 transition: visitor.report,
+                as: { role: activeRole.role, unit: visitor.unitToShift },
               },
             });
           } catch (e) {
