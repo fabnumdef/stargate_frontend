@@ -23,7 +23,7 @@ import { useRouter } from 'next/router';
 import { format } from 'date-fns';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 import { useLogin } from '../../../lib/loginContext';
-import { ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
+import { EMPLOYEE_TYPE, ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
 import getDecisions from '../../../utils/mappers/getDecisions';
 
 
@@ -32,6 +32,7 @@ import ckeckStatusVisitor, {
   HIDDEN_STEP_STATUS,
   INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
+import checkCriblageVisitor from '../../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -106,17 +107,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, status,
+  id, firstname, birthLastname, rank, company, employeeType, status,
 }, activeRole) {
+  const findStep = ckeckStatusVisitor(status, activeRole);
   return {
     id,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
-    steps: getDecisions(status),
-    step: ckeckStatusVisitor(status, activeRole),
+    type: EMPLOYEE_TYPE[employeeType],
+    criblage: checkCriblageVisitor(status),
     validation: null,
+    steps: getDecisions(status),
+    step: findStep.step,
+    unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
   };
 }
 

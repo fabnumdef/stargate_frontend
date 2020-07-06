@@ -313,7 +313,7 @@ export default function MenuRequest() {
           ? `(${toTreat.getCampus.listRequests.meta.total})`
           : ''
       }`,
-      access: true,
+      access: urlAuthorization('/demandes/a-traiter', activeRole.role),
     },
     {
       index: 1,
@@ -416,12 +416,14 @@ export default function MenuRequest() {
           </Grid>
         </Grid>
         <Grid item sm={12} xs={12}>
+          {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
           <TabPanel value={value} index={0}>
             <TabMesDemandesToTreat
               request={toTreat ? toTreat.getCampus.listRequests.list : []}
               detailLink="a-traiter"
             />
           </TabPanel>
+          )}
           {urlAuthorization('/nouvelle-demande', activeRole.role) && (
             <TabPanel value={value} index={1}>
               <TabDemandesProgress

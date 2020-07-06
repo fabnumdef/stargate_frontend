@@ -69,6 +69,7 @@ export const READ_REQUEST = gql`
                    rank
                    firstname
                    birthLastname
+                   employeeType
                    company
                    status {
                        unitId
@@ -99,7 +100,6 @@ export const MUTATE_VISITOR = gql`
            $transition: String!
          ) {
            campusId @client @export(as: "campusId")
-           activeRoleCache @client @export(as: "as") { role, unit }
            mutateCampus(id: $campusId) {
              mutateRequest(id: $requestId) {
                shiftVisitor(id: $visitorId, as: $as, transition: $transition) {
@@ -139,7 +139,12 @@ export default function RequestDetails({ requestId }) {
       if (visitor.validation !== null) {
         try {
           await shiftVisitor({
-            variables: { requestId, visitorId: visitor.id, transition: visitor.validation },
+            variables: {
+              requestId,
+              visitorId: visitor.id,
+              transition: visitor.validation,
+              as: { role: activeRole.role, unit: visitor.unitToShift },
+            },
           });
         } catch (e) {
           addAlert({
