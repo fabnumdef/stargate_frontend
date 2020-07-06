@@ -45,6 +45,5 @@ export default function ckeckStatusVisitor(status, activeRole) {
   if (activeRole.unitLabel) {
     return checkWithUnit(status, activeRole);
   }
-  console.log('checkStatus result: ', checkWithoutUnit(status, activeRole));
   return checkWithoutUnit(status, activeRole);
 }
