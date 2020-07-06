@@ -137,7 +137,7 @@ export default function ScreeningTable({ visitors, onChange }) {
     const newArray = visitors.slice();
 
     visitors.forEach((row) => {
-      if (row.step.value === null) {
+      if (row.screening === null) {
         newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
       }
     });
@@ -250,7 +250,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                          className={row.screening !== null ? classes.inactiveCell : ''}
                         >
                           {value}
                           <IconButton aria-label="AttachFileIcon">
@@ -261,7 +261,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                          className={row.screening !== null ? classes.inactiveCell : ''}
                         >
                           {value}
                         </TableCell>
@@ -271,13 +271,13 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                          className={row.screening !== null ? classes.inactiveCell : ''}
                         />
                       ) : (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening.value !== null ? classes.inactiveCell : ''}
+                          className={row.screening !== null ? classes.inactiveCell : ''}
                         >
                           {value}
                         </TableCell>
@@ -303,14 +303,14 @@ export default function ScreeningTable({ visitors, onChange }) {
                           >
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.positive}
-                              disabled={row.screening.value !== null}
+                              disabled={row.screening !== null}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
                             />
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.negative}
-                              disabled={row.screening.value !== null}
+                              disabled={row.screening !== null}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }

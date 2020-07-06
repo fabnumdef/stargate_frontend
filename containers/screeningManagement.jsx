@@ -27,7 +27,8 @@ import Template from './template';
 import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
-import getDecisions from '../utils/mappers/getDecisions';
+
+import checkCriblage from '../utils/mappers/checkCriblageVisitor';
 
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 
@@ -78,6 +79,7 @@ function createData({
   birthLastname,
   status,
   identityDocuments,
+  request,
 }) {
   return {
     id,
@@ -87,7 +89,8 @@ function createData({
     firstname,
     birthLastname,
     report: null,
-    screening: getDecisions(status)[0],
+    screening: checkCriblage(status),
+    requestId: request.id,
     vAttachedFile: identityDocuments,
   };
 }
@@ -147,6 +150,8 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  const initMount = React.useRef(true);
+
   const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
@@ -178,8 +183,8 @@ export default function ScreeningManagement() {
     },
   ];
 
-  const handleFetchMore = async () => {
-    await fetchMore({
+  const handleFetchMore = () => {
+    fetchMore({
       variables: {
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       },
@@ -210,6 +215,9 @@ export default function ScreeningManagement() {
   };
 
   React.useEffect(() => {
+    if (initMount.current) {
+      initMount.current = false;
+    }
     handleFetchMore();
   }, [page, rowsPerPage]);
 
@@ -229,9 +237,9 @@ export default function ScreeningManagement() {
           try {
             await shiftVisitor({
               variables: {
-                requestId: visitor.request.id,
+                requestId: visitor.requestId,
                 visitorId: visitor.id,
-                transition: visitor.validation,
+                transition: visitor.report,
               },
             });
           } catch (e) {
