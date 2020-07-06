@@ -25,6 +25,8 @@ import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 import { ROLES } from '../../utils/constants/enums';
 import { useLogin } from '../../lib/loginContext';
 
+import { ACTIVE_STEP_STATUS } from '../../utils/mappers/checkStatusVisitor';
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
@@ -137,7 +139,7 @@ export default function ScreeningTable({ visitors, onChange }) {
     const newArray = visitors.slice();
 
     visitors.forEach((row) => {
-      if (row.screening === null) {
+      if (row.screening === ACTIVE_STEP_STATUS) {
         newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
       }
     });
@@ -250,7 +252,9 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening !== null ? classes.inactiveCell : ''}
+                          className={
+                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                           <IconButton aria-label="AttachFileIcon">
@@ -261,7 +265,9 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening !== null ? classes.inactiveCell : ''}
+                          className={
+                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                         </TableCell>
@@ -271,13 +277,17 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening !== null ? classes.inactiveCell : ''}
+                          className={
+                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         />
                       ) : (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.screening !== null ? classes.inactiveCell : ''}
+                          className={
+                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                         </TableCell>
@@ -303,14 +313,14 @@ export default function ScreeningTable({ visitors, onChange }) {
                           >
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.positive}
-                              disabled={row.screening !== null}
+                              disabled={row.screening !== ACTIVE_STEP_STATUS}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
                             />
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.negative}
-                              disabled={row.screening !== null}
+                              disabled={row.screening !== ACTIVE_STEP_STATUS}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
@@ -321,7 +331,13 @@ export default function ScreeningTable({ visitors, onChange }) {
                       );
                     default:
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={
+                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
+                        >
                           {value}
                         </TableCell>
                       );

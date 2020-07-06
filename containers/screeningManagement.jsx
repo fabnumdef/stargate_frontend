@@ -28,9 +28,11 @@ import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
-import checkCriblage from '../utils/mappers/checkCriblageVisitor';
+import checkStatus from '../utils/mappers/checkStatusVisitor';
 
 import { useSnackBar } from '../lib/ui-providers/snackbar';
+
+import { useLogin } from '../lib/loginContext';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -80,7 +82,7 @@ function createData({
   status,
   identityDocuments,
   request,
-}) {
+}, activeRole) {
   return {
     id,
     nationality,
@@ -89,7 +91,7 @@ function createData({
     firstname,
     birthLastname,
     report: null,
-    screening: checkCriblage(status),
+    screening: checkStatus(status, activeRole),
     requestId: request.id,
     vAttachedFile: identityDocuments,
   };
@@ -139,6 +141,7 @@ export default function ScreeningManagement() {
   const classes = useStyles();
 
   const { addAlert } = useSnackBar();
+  const { activeRole } = useLogin();
 
   // submit values
   const [visitors, setVisitors] = useState([]);
@@ -164,7 +167,7 @@ export default function ScreeningManagement() {
     if (!data) return;
     setVisitors(
       data.getCampus.listVisitors.list.reduce((acc, dem) => {
-        acc.push(createData(dem));
+        acc.push(createData(dem, activeRole));
         return acc;
       }, []),
     );
