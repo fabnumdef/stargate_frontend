@@ -106,21 +106,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// function createData({
-//   id, firstname, birthLastname, rank, company, status,
-// }, activeRole) {
-//   return {
-//     id,
-//     visitor: rank
-//       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
-//       : `${birthLastname.toUpperCase()} ${firstname}`,
-//     company,
-//     steps: getDecisions(status),
-//     step: ckeckStatusVisitor(status, activeRole),
-//     validation: null,
-//   };
-// }
-
 function createData({
   id, firstname, birthLastname, rank, company, employeeType, status,
 }, activeRole) {
