@@ -206,7 +206,7 @@ export default function MenuRequest() {
   const handleFetchMore = async () => {
     switch (value) {
       case 0:
-        fetchToTreat({
+        await fetchToTreat({
           variables: {
             cursor: {
               first: rowsPerPage,
@@ -227,7 +227,7 @@ export default function MenuRequest() {
         });
         break;
       case 1:
-        fetchInProgress({
+        await fetchInProgress({
           variables: {
             cursor: {
               first: rowsPerPage,
@@ -235,13 +235,15 @@ export default function MenuRequest() {
             },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
+            if (!fetchMoreResult) {
+              return prev;
+            }
             return fetchMoreResult;
           },
         });
         break;
       case 2:
-        fetchTreated({
+        await fetchTreated({
           variables: {
             filters: {
               status: [
@@ -269,14 +271,16 @@ export default function MenuRequest() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    handleFetchMore();
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    handleFetchMore();
     setPage(0);
   };
+
+  React.useEffect(() => {
+    handleFetchMore();
+  }, [page, rowsPerPage]);
 
   const refetchQueries = [
     {
@@ -346,7 +350,6 @@ export default function MenuRequest() {
         return 0;
     }
   };
-
 
   return (
     <Template>

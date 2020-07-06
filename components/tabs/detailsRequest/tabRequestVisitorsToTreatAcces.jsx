@@ -19,6 +19,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
+import { useRouter } from 'next/router';
+import { format } from 'date-fns';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 import { useLogin } from '../../../lib/loginContext';
 import { ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
@@ -134,8 +136,7 @@ CellDecision.propTypes = {
 };
 
 function decisionReturn(value) {
-  // @todo cast value.date to string
-  const date = '02/06/2020';
+  const date = value.date ? format(new Date(value.date), 'dd/MM/yyyy') : null;
 
   switch (value.status) {
     case WORKFLOW_BEHAVIOR.VALIDATION.positive:
@@ -176,6 +177,7 @@ const columns = [
 
 export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const { activeRole } = useLogin();
+  const router = useRouter();
 
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
@@ -231,6 +233,10 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   };
 
   useEffect(() => {
+    if (rows.every((row) => row.step === HIDDEN_STEP_STATUS)) {
+      router.push('/');
+    }
+
     onChange(rows);
   }, [onChange, rows]);
 

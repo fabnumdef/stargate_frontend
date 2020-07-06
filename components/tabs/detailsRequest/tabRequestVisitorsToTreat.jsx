@@ -17,6 +17,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import WarningIcon from '@material-ui/icons/Warning';
 
+import { useRouter } from 'next/router';
 import { useLogin } from '../../../lib/loginContext';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 
@@ -142,6 +143,7 @@ function criblageReturn(value) {
 
 export default function TabRequestVisitors({ visitors, onChange }) {
   const { activeRole } = useLogin();
+  const router = useRouter();
 
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
@@ -197,6 +199,9 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   };
 
   useEffect(() => {
+    if (rows.every((row) => row.step === HIDDEN_STEP_STATUS)) {
+      router.push('/');
+    }
     onChange(rows);
   }, [onChange, rows]);
 
