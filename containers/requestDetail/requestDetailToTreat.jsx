@@ -78,6 +78,7 @@ export const READ_REQUEST = gql`
                            step
                            behavior
                            status
+                           date
                            done
                        }
                    }
