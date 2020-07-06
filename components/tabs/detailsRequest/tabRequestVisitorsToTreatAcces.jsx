@@ -20,6 +20,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
 import { useRouter } from 'next/router';
+import { format } from 'date-fns';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 import { useLogin } from '../../../lib/loginContext';
 import { EMPLOYEE_TYPE, ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
@@ -155,8 +156,7 @@ CellDecision.propTypes = {
 };
 
 function decisionReturn(value) {
-  // @todo cast value.date to string
-  const date = '02/06/2020';
+  const date = value.date ? format(new Date(value.date), 'dd/MM/yyyy') : null;
 
   switch (value.status) {
     case WORKFLOW_BEHAVIOR.VALIDATION.positive:
