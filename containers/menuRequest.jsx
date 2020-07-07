@@ -21,7 +21,7 @@ import {
 } from '../components';
 import Template from './template';
 
-import { STATE_REQUEST } from '../utils/constants/enums';
+import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 
@@ -182,8 +182,14 @@ export default function MenuRequest() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const selectRequestTreated = () => (activeRole.role === 'ROLE_HOST' ? LIST_MY_REQUESTS : LIST_REQUESTS);
-  const selectResultTreated = (treated) => (activeRole.role === 'ROLE_HOST' ? treated.getCampus.listMyRequests : treated.getCampus.listRequests);
+  const selectRequestTreated = () => (
+    activeRole.role === ROLES.ROLE_HOST.label ? LIST_MY_REQUESTS : LIST_REQUESTS
+  );
+  const selectResultTreated = (treated) => (
+    activeRole.role === ROLES.ROLE_HOST.label
+      ? treated.getCampus.listMyRequests
+      : treated.getCampus.listRequests
+  );
 
   const { data: treated, fetchMore: fetchTreated } = useQuery(selectRequestTreated(), {
     variables: {
@@ -199,7 +205,9 @@ export default function MenuRequest() {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
-      as: activeRole.role !== 'ROLE_HOST' ? { role: activeRole.role, unit: activeRole.unitLabel } : null,
+      as: activeRole.role !== ROLES.ROLE_HOST.label
+        ? { role: activeRole.role, unit: activeRole.unitLabel }
+        : null,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',

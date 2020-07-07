@@ -165,7 +165,7 @@ export default function RequestDetails({ requestId }) {
       }
     }));
 
-    await refetch();
+    refetch();
   };
 
 
