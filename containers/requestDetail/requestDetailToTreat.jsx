@@ -135,6 +135,7 @@ export default function RequestDetails({ requestId }) {
     }
   }, [activeRole]);
 
+  // TODO delete this useEffect when back will treat autoValidate Screening and Acces Office
   useEffect(() => {
     if (data) {
       autoValidate(data.getCampus.getRequest.listVisitors.list, shiftVisitor, requestId);
