@@ -51,7 +51,7 @@ function autoValidate(visitors, shiftVisitor, requestId) {
         requestId,
         visitorId: visitor.id,
         transition: statusDone.find(
-          (status) => status.visitor === visitor.id && status.role === visitor.stepRole
+          (status) => status.visitor === visitor.id && status.role === visitor.stepRole,
         ).status,
         as: { role: visitor.stepRole, unit: visitor.unit },
       },

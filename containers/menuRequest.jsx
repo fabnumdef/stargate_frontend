@@ -182,7 +182,10 @@ export default function MenuRequest() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const { data: treated, fetchMore: fetchTreated } = useQuery(LIST_REQUESTS, {
+  const selectRequestTreated = () => (activeRole.role === 'ROLE_HOST' ? LIST_MY_REQUESTS : LIST_REQUESTS);
+  const selectResultTreated = (treated) => (activeRole.role === 'ROLE_HOST' ? treated.getCampus.listMyRequests : treated.getCampus.listRequests);
+
+  const { data: treated, fetchMore: fetchTreated } = useQuery(selectRequestTreated(), {
     variables: {
       filters: {
         status: [
@@ -196,7 +199,7 @@ export default function MenuRequest() {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
-      as: { role: activeRole.role, unit: activeRole.unitLabel },
+      as: activeRole.role !== 'ROLE_HOST' ? { role: activeRole.role, unit: activeRole.unitLabel } : null,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
@@ -321,8 +324,8 @@ export default function MenuRequest() {
     {
       index: 2,
       label: `Traitées ${
-        treated && treated.getCampus.listRequests.meta.total > 0
-          ? `(${treated.getCampus.listRequests.meta.total})`
+        treated && selectResultTreated(treated).meta.total > 0
+          ? `(${selectResultTreated(treated).meta.total})`
           : ''
       }`,
       access: true,
@@ -344,7 +347,7 @@ export default function MenuRequest() {
         return inProgress.getCampus.listMyRequests.meta.total;
       case 2:
         if (!treated) return 0;
-        return treated.getCampus.listRequests.meta.total;
+        return selectResultTreated(treated).meta.total;
       default:
         return 0;
     }
@@ -428,7 +431,7 @@ export default function MenuRequest() {
           )}
           <TabPanel value={value} index={2}>
             <TabMesDemandesToTreat
-              request={treated ? treated.getCampus.listRequests.list : []}
+              request={treated ? selectResultTreated(treated).list : []}
               detailLink="traitees"
             />
           </TabPanel>
