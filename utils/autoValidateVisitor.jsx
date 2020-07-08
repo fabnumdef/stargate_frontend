@@ -1,52 +1,52 @@
 // TODO delete this function when back will treat autoValidate Screening and Acces Office
 import { ROLES } from './constants/enums';
 
-function autoValidate(visitors, shiftVisitor, requestId) {
-  const roleToValidate = [ROLES.ROLE_SCREENING.role, ROLES.ROLE_ACCESS_OFFICE.role];
-
-  const isAlreadyValidate = visitors.find(
-    (visitor) => visitor.status.find(
-      (s) => s.steps.find(
-        (step) => roleToValidate.includes(step.role) && step.done,
-      ),
-    ),
-  );
-  if (!isAlreadyValidate) {
-    return null;
-  }
-
+const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
+  const rolesToValidate = [ROLES.ROLE_SCREENING.role, ROLES.ROLE_ACCESS_OFFICE.role];
   const isAnotherActualStep = [];
   const statusDone = [];
 
-  visitors.forEach(
-    (visitor) => {
-      visitor.status.forEach(
-        (s) => s.steps.forEach(
-          (step, index) => {
-            if (
-              roleToValidate.includes(step.role)
-              && !step.done
-              && (index === 0 || s.steps[index - 1].done)
-            ) {
-              isAnotherActualStep.push({
-                id: visitor.id,
-                unit: s.unitId,
-                stepRole: step.role,
-              });
-            }
-            if (roleToValidate.includes(step.role) && step.done) {
-              statusDone.push({ status: step.status, visitor: visitor.id, role: step.role });
-            }
-          },
-        ),
-      );
-    },
-  );
+  rolesToValidate.forEach(((role) => {
+    visitors.forEach(
+      (visitor) => {
+        const isVisitorAlreadyValidate = visitor.status.find(
+          (s) => s.steps.find(
+            (step) => role === step.role && step.done,
+          ),
+        );
+        if (!isVisitorAlreadyValidate) {
+          return null;
+        }
+        visitor.status.forEach(
+          (s) => s.steps.forEach(
+            (step, index) => {
+              if (
+                role === step.role
+                && !step.done
+                && (index === 0 || s.steps[index - 1].done)
+              ) {
+                isAnotherActualStep.push({
+                  id: visitor.id,
+                  unit: s.unitId,
+                  stepRole: step.role,
+                });
+              }
+              if (role === step.role && step.done) {
+                statusDone.push({ status: step.status, visitor: visitor.id, role: step.role });
+              }
+            },
+          ),
+        );
+      },
+    );
+    return null;
+  }));
+
   if (!isAnotherActualStep.length) {
     return null;
   }
-  isAnotherActualStep.forEach((visitor) => {
-    shiftVisitor({
+  await Promise.all(isAnotherActualStep.map(async (visitor) => {
+    await shiftVisitor({
       variables: {
         requestId,
         visitorId: visitor.id,
@@ -56,8 +56,8 @@ function autoValidate(visitors, shiftVisitor, requestId) {
         as: { role: visitor.stepRole, unit: visitor.unit },
       },
     });
-  });
-  return null;
-}
+  }));
+  return readRequest();
+};
 
 export default autoValidate;

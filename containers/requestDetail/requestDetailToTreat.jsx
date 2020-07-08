@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 // Material Import
@@ -114,33 +114,63 @@ export const MUTATE_VISITOR = gql`
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
+  const client = useApolloClient();
   const { activeRole } = useLogin();
 
   const { addAlert } = useSnackBar();
 
-  const {
-    data, error, loading, refetch,
-  } = useQuery(READ_REQUEST, {
-    variables: { requestId },
-    fetchPolicy: 'cache-and-network',
+  const [result, setResult] = useState({
+    data: null,
+    loading: true,
+    error: false,
   });
+
+  const fetchData = async () => {
+    try {
+      const { data } = await client.query({
+        query: READ_REQUEST,
+        variables: { requestId },
+        fetchPolicy: 'no-cache',
+      });
+
+      setResult({
+        data,
+        loading: false,
+        error: false,
+      });
+    } catch {
+      setResult({
+        data: null,
+        loading: false,
+        error: true,
+      });
+    }
+  };
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
   const [visitors, setVisitors] = useState([]);
 
   useEffect(() => {
-    if (data) {
-      refetch();
+    if (result.data) {
+      fetchData();
     }
   }, [activeRole]);
 
   // TODO delete this useEffect when back will treat autoValidate Screening and Acces Office
   useEffect(() => {
-    if (data) {
-      autoValidate(data.getCampus.getRequest.listVisitors.list, shiftVisitor, requestId);
+    if (!result.data && !result.error) {
+      fetchData();
     }
-  }, [data]);
+    if (result.data) {
+      autoValidate(
+        result.data.getCampus.getRequest.listVisitors.list,
+        shiftVisitor,
+        fetchData,
+        requestId,
+      );
+    }
+  }, [result]);
 
 
   const submitForm = async () => {
@@ -164,14 +194,13 @@ export default function RequestDetails({ requestId }) {
         }
       }
     }));
-
-    refetch();
+    fetchData();
   };
 
 
-  if (loading) return <p>Loading ....</p>;
+  if (result.loading) return <p>Loading ....</p>;
 
-  if (error) return <p>page 404</p>;
+  if (result.error) return <p>page 404</p>;
 
   return (
     <Template>
@@ -184,12 +213,12 @@ export default function RequestDetails({ requestId }) {
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
               {/* @todo change title if treated */}
-              {data.getCampus.getRequest.id}
+              {result.data && result.data.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data.getCampus.getRequest} />
+          <DetailsInfosRequest request={result.data && result.data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           {(() => {
@@ -197,7 +226,7 @@ export default function RequestDetails({ requestId }) {
               case ROLES.ROLE_ACCESS_OFFICE.role:
                 return (
                   <TabRequestVisitorsToTreatAcces
-                    visitors={data.getCampus.getRequest.listVisitors.list}
+                    visitors={result.data && result.data.getCampus.getRequest.listVisitors.list}
                     onChange={(entries) => {
                       setVisitors(entries);
                     }}
@@ -206,7 +235,7 @@ export default function RequestDetails({ requestId }) {
               default:
                 return (
                   <TabRequestVisitorsToTreat
-                    visitors={data.getCampus.getRequest.listVisitors.list}
+                    visitors={result.data && result.data.getCampus.getRequest.listVisitors.list}
                     onChange={(entries) => {
                       setVisitors(entries);
                     }}
