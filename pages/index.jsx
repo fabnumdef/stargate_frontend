@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuRequest } from '../containers';
+import { Home } from '../containers';
 import { withApollo } from '../lib/apollo';
 
 function MyRequestsPage() {
@@ -7,7 +7,7 @@ function MyRequestsPage() {
 
   return (
     <>
-      <MenuRequest />
+      <Home />
     </>
   );
 }
