@@ -44,9 +44,6 @@ const useStyles = makeStyles((theme) => ({
   pageTitleControl: {
     marginLeft: 'auto',
   },
-  tabContent: {
-    margin: '20px 0',
-  },
 }));
 
 export const READ_REQUEST = gql`
@@ -186,7 +183,7 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12} xs={12}>
           <DetailsInfosRequest request={data.getCampus.getRequest} />
         </Grid>
-        <Grid item sm={12} xs={12} className={classes.tabContent}>
+        <Grid item sm={12} xs={12}>
           {(() => {
             switch (activeRole.role) {
               case ROLES.ROLE_ACCESS_OFFICE.role:

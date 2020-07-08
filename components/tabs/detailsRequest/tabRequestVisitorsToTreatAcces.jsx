@@ -76,12 +76,18 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '18px',
     fontWeight: '600',
   },
+  list: {
+    right: 0,
+    listStyle: 'none',
+    color: theme.palette.primary.main,
+    fontSize: '10px',
+  },
   sortedHeader: {
     color: `${theme.palette.primary.main}!important`,
   },
   reportHeader: {
     textAlign: 'center',
-    minWidth: '400px',
+    minWidth: '450px',
     borderTop: 'solid 1px',
     whiteSpace: 'nowrap',
   },
@@ -196,21 +202,31 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const [selectAll, setSelectAll] = useState([
     {
       label: 'VA',
+      fullLabel: 'Visiteur Accompagné',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VA'],
     },
     {
       label: 'VL',
+      fullLabel: 'Visiteur Libre',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VL'],
     },
     {
       label: 'VIP',
+      fullLabel: 'Autorité',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VIP'],
+    },
+    {
+      label: 'L',
+      fullLabel: 'Libre',
+      value: false,
+      validation: ROLES[activeRole.role].workflow.positive,
+      tags: ['L'],
     },
     {
       label: 'REFUSER',
@@ -285,7 +301,14 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   }, [onChange, rows]);
 
   return (
-    <div className={classes.root}>
+    <div>
+      <div style={{ float: 'right' }}>
+        <ul className={classes.list}>
+          {selectAll.map((checkbox) => (
+            checkbox.fullLabel && <li>{`${checkbox.label} : ${checkbox.fullLabel}`}</li>
+          ))}
+        </ul>
+      </div>
       <TableContainer>
         <Table size="small" className={classes.table} data-testid="screeningTable">
           <TableHead>
