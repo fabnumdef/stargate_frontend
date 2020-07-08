@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
   reportHeader: {
     textAlign: 'center',
-    minWidth: '300px',
+    minWidth: '400px',
     borderTop: 'solid 1px',
     whiteSpace: 'nowrap',
   },
@@ -193,49 +193,88 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
 
   const classes = useStyles();
 
-  const [selectAll, setSelectAll] = React.useState([
-    { label: 'ACCEPTER', value: false, validation: ROLES[activeRole.role].workflow.positive },
-    { label: 'REFUSER', value: false, validation: ROLES[activeRole.role].workflow.negative },
+  const [selectAll, setSelectAll] = useState([
+    {
+      label: 'VA',
+      value: false,
+      validation: ROLES[activeRole.role].workflow.positive,
+      tags: ['VA'],
+    },
+    {
+      label: 'VL',
+      value: false,
+      validation: ROLES[activeRole.role].workflow.positive,
+      tags: ['VL'],
+    },
+    {
+      label: 'VIP',
+      value: false,
+      validation: ROLES[activeRole.role].workflow.positive,
+      tags: ['VIP'],
+    },
+    {
+      label: 'REFUSER',
+      value: false,
+      validation: ROLES[activeRole.role].workflow.negative,
+      tags: [],
+    },
   ]);
 
-  const handleSelectAll = (checkbox, checkedValue) => {
-    const newArray = rows.slice();
-    newArray.forEach((row) => {
-      if (row.step === ACTIVE_STEP_STATUS) {
-        newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue : null;
-      }
-    });
-    setDataRows(newArray);
+  const handleSelectAll = useCallback(
+    (checkbox, checkedValue) => {
+      const newArray = rows.slice();
+      newArray.forEach((row) => {
+        if (row.step === ACTIVE_STEP_STATUS) {
+          newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue : null;
+        }
+      });
+      setDataRows(newArray);
 
-    const newChecked = selectAll.map((check) => {
-      if (checkbox) {
+      const newChecked = selectAll.map((check) => {
+        if (checkbox) {
+          return {
+            ...check,
+            value: check.validation === checkedValue,
+          };
+        }
         return {
           ...check,
-          value: check.validation === checkedValue,
+          value: null,
         };
+      });
+      setSelectAll(newChecked);
+    },
+    [rows, selectAll],
+  );
+
+
+  const handleChange = useCallback(
+    (event, row, checkbox) => {
+      if (event.target.checked) {
+        const newArray = rows.slice();
+        const indexOfRow = newArray.indexOf(row);
+        newArray[indexOfRow].validation = event.target.value;
+        newArray[indexOfRow].transition = checkbox.validation;
+        newArray[indexOfRow].tags = checkbox.tags;
+        setDataRows(newArray);
+        setSelectAll(
+          selectAll.map((check) => ({
+            ...check,
+            value: null,
+          })),
+        );
       }
-      return {
-        ...check,
-        value: null,
-      };
-    });
-    setSelectAll(newChecked);
-  };
+    },
+    [rows, selectAll],
+  );
 
-  const deselectAllCheckbox = () => {
-    setSelectAll(selectAll.map((check) => ({
-      ...check,
-      value: null,
-    })));
-  };
-
-  const handleDeselect = (row) => {
+  const handleDeselect = useCallback((row) => {
     const newArray = rows.slice();
     if (newArray[newArray.indexOf(row)].validation != null) {
       newArray[newArray.indexOf(row)].validation = null;
       setDataRows(newArray);
     }
-  };
+  }, [rows]);
 
   useEffect(() => {
     if (rows.every((row) => row.step === HIDDEN_STEP_STATUS)) {
@@ -271,9 +310,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                     );
                 }
               })}
-              <CustomTableHeader
-                className={`${classes.reportHeader} ${classes.reportRow}`}
-              >
+              <CustomTableHeader className={`${classes.reportHeader} ${classes.reportRow}`}>
                 Validation
                 <FormGroup row className={classes.reportCheckbox}>
                   {selectAll.map((checkbox) => (
@@ -283,7 +320,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                           color="primary"
                           checked={checkbox.value}
                           onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox.validation);
+                            handleSelectAll(event.target.checked, checkbox.label);
                           }}
                         />
                       )}
@@ -336,36 +373,23 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                   <RadioGroup
                     className={classes.radioGroup}
                     value={row.validation}
-                    onChange={(event) => {
-                      const newArray = rows.slice();
-                      newArray[newArray.indexOf(row)].validation = event.target.value;
-                      setDataRows(newArray);
-                      deselectAllCheckbox();
-                    }}
                     style={{ justifyContent: 'space-evenly' }}
                   >
-                    <FormControlLabel
-                      value={ROLES[activeRole.role].workflow.positive}
-                      disabled={row.step === INACTIVE_STEP_STATUS}
-                      control={(
-                        <Radio
-                          color="primary"
-                          onClick={() => handleDeselect(row)}
-                          disabled={row.step === INACTIVE_STEP_STATUS}
-                        />
-                          )}
-                    />
-                    <FormControlLabel
-                      value={ROLES[activeRole.role].workflow.negative}
-                      disabled={row.step === INACTIVE_STEP_STATUS}
-                      control={(
-                        <Radio
-                          color="primary"
-                          onClick={() => handleDeselect(row)}
-                          disabled={row.step === INACTIVE_STEP_STATUS}
-                        />
-                          )}
-                    />
+                    {selectAll.map((checkbox) => (
+                      <FormControlLabel
+                        value={checkbox.label}
+                        disabled={row.step === INACTIVE_STEP_STATUS}
+                        control={(
+                          <Radio
+                            color="primary"
+                            onChange={(event) => {
+                              handleChange(event, row, checkbox);
+                            }}
+                            onClick={() => handleDeselect(row)}
+                          />
+                            )}
+                      />
+                    ))}
                   </RadioGroup>
                 </TableCell>
               </TableRow>

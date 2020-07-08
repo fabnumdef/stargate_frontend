@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
+import Link from 'next/link';
+
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -97,6 +99,7 @@ export const MUTATE_VISITOR = gql`
            $campusId: String!
            $visitorId: String!
            $as: ValidationPersonas!
+           $tags: [String]
            $transition: String!
          ) {
            campusId @client @export(as: "campusId")
@@ -142,7 +145,8 @@ export default function RequestDetails({ requestId }) {
             variables: {
               requestId,
               visitorId: visitor.id,
-              transition: visitor.validation,
+              transition: visitor.transition,
+              tags: visitor.tags,
               as: { role: activeRole.role, unit: visitor.unitToShift },
             },
           });
@@ -209,9 +213,11 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12}>
           <Grid container justify="flex-end">
             <div>
-              <Button variant="outlined" color="primary" style={{ marginRight: '5px' }}>
-                Annuler
-              </Button>
+              <Link href="/">
+                <Button variant="outlined" color="primary" style={{ marginRight: '5px' }}>
+                  Annuler
+                </Button>
+              </Link>
             </div>
             <div>
               <Button variant="contained" color="primary" onClick={submitForm} disabled={!visitors.find((visitor) => visitor.validation !== null)}>

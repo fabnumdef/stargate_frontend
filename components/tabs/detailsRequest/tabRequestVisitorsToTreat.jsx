@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -146,6 +146,7 @@ function criblageReturn(value) {
 export default function TabRequestVisitors({ visitors, onChange }) {
   const { activeRole } = useLogin();
   const router = useRouter();
+  const classes = useStyles();
 
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
@@ -154,14 +155,46 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     }, []),
   );
 
-  const classes = useStyles();
+  const initSelectAll = () => {
+    if (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role) {
+      return [
+        {
+          label: 'VA',
+          value: false,
+        },
+        {
+          label: 'VL',
+          value: false,
+          validation: ROLES[activeRole.role].workflow.positive,
+          tags: ['VL'],
+        },
+        {
+          label: 'REFUSER',
+          value: false,
+          validation: ROLES[activeRole.role].workflow.negative,
+          tags: [],
+        },
+      ];
+    }
+    return [
+      {
+        label: 'ACCEPTER',
+        value: false,
+        validation: ROLES[activeRole.role].workflow.positive,
+        tags: [],
+      },
+      {
+        label: 'REFUSER',
+        value: false,
+        validation: ROLES[activeRole.role].workflow.negative,
+        tags: [],
+      },
+    ];
+  };
 
-  const [selectAll, setSelectAll] = React.useState([
-    { label: 'ACCEPTER', value: false, validation: ROLES[activeRole.role].workflow.positive },
-    { label: 'REFUSER', value: false, validation: ROLES[activeRole.role].workflow.negative },
-  ]);
+  const [selectAll, setSelectAll] = useState(initSelectAll());
 
-  const handleSelectAll = (checkbox, checkedValue) => {
+  const handleSelectAll = useCallback((checkbox, checkedValue) => {
     const newArray = rows.slice();
     newArray.forEach((row) => {
       if (row.step === ACTIVE_STEP_STATUS) {
@@ -174,7 +207,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       if (checkbox) {
         return {
           ...check,
-          value: check.validation === checkedValue,
+          value: check.label === checkedValue,
         };
       }
       return {
@@ -183,22 +216,33 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       };
     });
     setSelectAll(newChecked);
-  };
+  }, [rows, selectAll]);
 
-  const deselectAllCheckbox = () => {
-    setSelectAll(selectAll.map((check) => ({
-      ...check,
-      value: null,
-    })));
-  };
 
-  const handleDeselect = (row) => {
+  const handleChange = useCallback((event, row, checkbox) => {
+    if (event.target.checked) {
+      const newArray = rows.slice();
+      const indexOfRow = newArray.indexOf(row);
+      newArray[indexOfRow].validation = event.target.value;
+      newArray[indexOfRow].transition = checkbox.validation;
+      newArray[indexOfRow].tags = checkbox.tags;
+      setDataRows(newArray);
+      setSelectAll(
+        selectAll.map((check) => ({
+          ...check,
+          value: null,
+        })),
+      );
+    }
+  }, [rows, selectAll]);
+
+  const handleDeselect = useCallback((row) => {
     const newArray = rows.slice();
     if (newArray[newArray.indexOf(row)].validation != null) {
       newArray[newArray.indexOf(row)].validation = null;
       setDataRows(newArray);
     }
-  };
+  }, [rows]);
 
   useEffect(() => {
     if (rows.every((row) => row.step === HIDDEN_STEP_STATUS)) {
@@ -223,22 +267,19 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     );
                   case 'criblage':
                     return (
-                      (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
-                        && (
+                      activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
                         <CustomTableHeader key={headCell.id}>
                           {/* @todo length etc ... */ `${headCell.label}`}
                         </CustomTableHeader>
-                        )
-                      ));
+                      )
+                    );
                   default:
                     return (
                       <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
                     );
                 }
               })}
-              <CustomTableHeader
-                className={`${classes.reportHeader} ${classes.reportRow}`}
-              >
+              <CustomTableHeader className={`${classes.reportHeader} ${classes.reportRow}`}>
                 Validation
                 <FormGroup row className={classes.reportCheckbox}>
                   {selectAll.map((checkbox) => (
@@ -248,10 +289,10 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           color="primary"
                           checked={checkbox.value}
                           onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox.validation);
+                            handleSelectAll(event.target.checked, checkbox.label);
                           }}
                         />
-                                     )}
+                      )}
                       label={checkbox.label}
                       disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
                       labelPlacement="start"
@@ -270,16 +311,16 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   switch (column.id) {
                     case 'criblage':
                       return (
-                        (activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role
-                        && (
+                        activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}
+                          className={
+                                  row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                                }
                         >
-                          { criblageReturn(value) }
+                          {criblageReturn(value)}
                         </TableCell>
-                        )
                         )
                       );
                     default:
@@ -287,9 +328,9 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={row.step === INACTIVE_STEP_STATUS
-                            ? classes.inactiveCell
-                            : ''}
+                          className={
+                                row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                              }
                         >
                           {value}
                         </TableCell>
@@ -304,36 +345,24 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   <RadioGroup
                     className={classes.radioGroup}
                     value={row.validation}
-                    onChange={(event) => {
-                      const newArray = rows.slice();
-                      newArray[newArray.indexOf(row)].validation = event.target.value;
-                      setDataRows(newArray);
-                      deselectAllCheckbox();
-                    }}
                     style={{ justifyContent: 'space-evenly' }}
                   >
-                    <FormControlLabel
-                      value={ROLES[activeRole.role].workflow.positive}
-                      disabled={row.step === INACTIVE_STEP_STATUS}
-                      control={(
-                        <Radio
-                          color="primary"
-                          onClick={() => handleDeselect(row)}
-                          disabled={row.step === INACTIVE_STEP_STATUS}
-                        />
-                                         )}
-                    />
-                    <FormControlLabel
-                      value={ROLES[activeRole.role].workflow.negative}
-                      disabled={row.step === INACTIVE_STEP_STATUS}
-                      control={(
-                        <Radio
-                          color="primary"
-                          onClick={() => handleDeselect(row)}
-                          disabled={row.step === INACTIVE_STEP_STATUS}
-                        />
-                                         )}
-                    />
+                    {selectAll.map((checkbox) => (
+                      <FormControlLabel
+                        value={checkbox.label}
+                        disabled={row.step === INACTIVE_STEP_STATUS}
+                        control={(
+                          <Radio
+                            color="primary"
+                            onChange={(event) => {
+                              handleChange(event, row, checkbox);
+                            }}
+                            onClick={() => handleDeselect(row)}
+                            disabled={row.step === INACTIVE_STEP_STATUS}
+                          />
+                            )}
+                      />
+                    ))}
                   </RadioGroup>
                 </TableCell>
               </TableRow>
