@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AntTab = withStyles((theme) => ({
+export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
     color: '#0d40a0',
@@ -140,6 +140,7 @@ export default function MenuRequest() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
+
   const [value, setValue] = React.useState(0);
 
   /** @todo searchField filters
@@ -148,6 +149,8 @@ export default function MenuRequest() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const initMount = React.useRef(true);
 
   const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
@@ -202,10 +205,10 @@ export default function MenuRequest() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const handleFetchMore = async () => {
+  const handleFetchMore = () => {
     switch (value) {
       case 0:
-        await fetchToTreat({
+        fetchToTreat({
           variables: {
             cursor: {
               first: rowsPerPage,
@@ -226,7 +229,7 @@ export default function MenuRequest() {
         });
         break;
       case 1:
-        await fetchInProgress({
+        fetchInProgress({
           variables: {
             cursor: {
               first: rowsPerPage,
@@ -242,7 +245,7 @@ export default function MenuRequest() {
         });
         break;
       case 2:
-        await fetchTreated({
+        fetchTreated({
           variables: {
             filters: {
               status: [
@@ -278,6 +281,9 @@ export default function MenuRequest() {
   };
 
   React.useEffect(() => {
+    if (initMount.current) {
+      initMount.current = false;
+    }
     handleFetchMore();
   }, [page, rowsPerPage]);
 
