@@ -65,9 +65,9 @@ function csvName() {
 }
 
 const csvHeaders = [
-  { label: 'Nom de N.', key: 'vBirthName' },
-  { label: 'Date de N.', key: 'vBirthDate' },
-  { label: 'Lieu de N.', key: 'vBirthPlace' },
+  { label: 'Nom de N.', key: 'vBirthName', fullLabel: 'Nom de Naissance' },
+  { label: 'Date de N.', key: 'vBirthDate', fullLabel: 'Date de Naissance' },
+  { label: 'Lieu de N.', key: 'vBirthPlace', fullLabel: 'Lieu de Naissance' },
   { label: 'Prénom', key: 'vFirstName' },
   { label: 'Nationalité', key: 'vNationality' },
 ];
@@ -178,7 +178,7 @@ export default function ScreeningManagement() {
   const tabList = [
     {
       index: 0,
-      label: `A traiter ${
+      label: `À traiter ${
         data && data.getCampus.listVisitors.meta.total > 0
           ? `(${data.getCampus.listVisitors.meta.total})`
           : ''

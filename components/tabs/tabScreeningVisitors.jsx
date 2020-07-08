@@ -107,8 +107,8 @@ const useStyles = makeStyles((theme) => ({
 const columns = [
   { id: 'birthLastname', label: 'Nom de N.', fullLabel: 'Nom de Naissance' },
   { id: 'firstname', label: 'Prénom' },
-  { id: 'birthday', label: 'Date de N.' },
-  { id: 'birthplace', label: 'Lieu de N.' },
+  { id: 'birthday', label: 'Date de N.', fullLabel: 'Date de Naissance' },
+  { id: 'birthplace', label: 'Lieu de N.', fullLabel: 'Lieu de Naissance' },
   { id: 'nationality', label: 'Nationalité' },
   { id: 'report', label: 'Signalement' },
 ];
