@@ -12,12 +12,12 @@ export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestPro
 export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';
 export { default as TabRecapRequest } from './tabs/tabRecapRequest';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
+export { default as TabScreeningVisitors } from './tabs/tabScreeningVisitors';
 
 export { default as TabRequestVisitorsToTreat } from './tabs/detailsRequest/tabRequestVisitorsToTreat';
 export { default as TabRequestVisitorsToTreatAcces } from './tabs/detailsRequest/tabRequestVisitorsToTreatAcces';
 export { default as TabRequestVisitorsProgress } from './tabs/detailsRequest/tabRequestVisitorsProgress';
 export { default as TabRequestVisitorsTreated } from './tabs/detailsRequest/tabRequestVisitorsTreated';
-
 
 // Login Forms
 export { default as LoginForm } from './loginForms/LoginForm';
