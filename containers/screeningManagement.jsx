@@ -33,6 +33,7 @@ import checkStatus from '../utils/mappers/checkStatusVisitor';
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 
 import { useLogin } from '../lib/loginContext';
+import autoValidate from '../utils/autoValidateVisitor';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -160,8 +161,10 @@ export default function ScreeningManagement() {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'no-cache',
   });
+
+  const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
   React.useEffect(() => {
     if (!data) return;
@@ -171,9 +174,13 @@ export default function ScreeningManagement() {
         return acc;
       }, []),
     );
+    autoValidate(
+      data.getCampus.listVisitors.list,
+      shiftVisitor,
+      refetch,
+      null,
+    );
   }, [data]);
-
-  const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
   const tabList = [
     {
@@ -243,7 +250,7 @@ export default function ScreeningManagement() {
                 requestId: visitor.requestId,
                 visitorId: visitor.id,
                 transition: visitor.report,
-                as: { role: activeRole.role, unit: visitor.unitToShift },
+                as: { role: activeRole.role, unit: visitor.screening.unit },
               },
             });
           } catch (e) {

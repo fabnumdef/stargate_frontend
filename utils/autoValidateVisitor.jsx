@@ -6,8 +6,13 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
   const isAnotherActualStep = [];
   const statusDone = [];
 
+  const filterRejected = visitors.map((visitor) => ({
+    ...visitor,
+    status: visitor.status.filter((s) => !s.steps.find((step) => step.behavior === 'Validation' && step.status === 'reject')),
+  }));
+
   rolesToValidate.forEach(((role) => {
-    visitors.forEach(
+    filterRejected.forEach(
       (visitor) => {
         const isVisitorAlreadyValidate = visitor.status.find(
           (s) => s.steps.find(
@@ -37,6 +42,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
             },
           ),
         );
+        return null;
       },
     );
     return null;

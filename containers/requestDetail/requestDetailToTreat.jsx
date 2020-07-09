@@ -119,31 +119,27 @@ export default function RequestDetails({ requestId }) {
 
   const { addAlert } = useSnackBar();
 
-  const [result, setResult] = useState({
-    data: null,
-    loading: true,
-    error: false,
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [result, setResult] = useState({});
 
   const fetchData = async () => {
+    if (!loading) {
+      setLoading(true);
+    }
     try {
       const { data } = await client.query({
         query: READ_REQUEST,
         variables: { requestId },
         fetchPolicy: 'no-cache',
       });
-
-      setResult({
-        data,
-        loading: false,
-        error: false,
-      });
+      if (error) {
+        setError(false);
+      }
+      setResult(data);
+      return setLoading(false);
     } catch {
-      setResult({
-        data: null,
-        loading: false,
-        error: true,
-      });
+      return setError(true);
     }
   };
 
@@ -152,19 +148,19 @@ export default function RequestDetails({ requestId }) {
   const [visitors, setVisitors] = useState([]);
 
   useEffect(() => {
-    if (result.data) {
+    if (result.getCampus) {
       fetchData();
     }
   }, [activeRole]);
 
   // TODO delete this useEffect when back will treat autoValidate Screening and Acces Office
   useEffect(() => {
-    if (!result.data && !result.error) {
+    if (!result.getCampus && !result.error) {
       fetchData();
     }
-    if (result.data) {
+    if (result.getCampus) {
       autoValidate(
-        result.data.getCampus.getRequest.listVisitors.list,
+        result.getCampus.getRequest.listVisitors.list,
         shiftVisitor,
         fetchData,
         requestId,
@@ -198,9 +194,9 @@ export default function RequestDetails({ requestId }) {
   };
 
 
-  if (result.loading) return <p>Loading ....</p>;
+  if (loading) return <p>Loading ....</p>;
 
-  if (result.error) return <p>page 404</p>;
+  if (error) return <p>page 404</p>;
 
   return (
     <Template>
@@ -213,12 +209,12 @@ export default function RequestDetails({ requestId }) {
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
               {/* @todo change title if treated */}
-              {result.data && result.data.getCampus.getRequest.id}
+              {result.getCampus && result.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={result.data && result.data.getCampus.getRequest} />
+          <DetailsInfosRequest request={result.getCampus && result.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           {(() => {
@@ -226,7 +222,7 @@ export default function RequestDetails({ requestId }) {
               case ROLES.ROLE_ACCESS_OFFICE.role:
                 return (
                   <TabRequestVisitorsToTreatAcces
-                    visitors={result.data && result.data.getCampus.getRequest.listVisitors.list}
+                    visitors={result.getCampus && result.getCampus.getRequest.listVisitors.list}
                     onChange={(entries) => {
                       setVisitors(entries);
                     }}
@@ -235,7 +231,7 @@ export default function RequestDetails({ requestId }) {
               default:
                 return (
                   <TabRequestVisitorsToTreat
-                    visitors={result.data && result.data.getCampus.getRequest.listVisitors.list}
+                    visitors={result.getCampus && result.getCampus.getRequest.listVisitors.list}
                     onChange={(entries) => {
                       setVisitors(entries);
                     }}
