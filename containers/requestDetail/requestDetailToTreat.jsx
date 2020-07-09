@@ -143,7 +143,7 @@ export default function RequestDetails({ requestId }) {
               requestId,
               visitorId: visitor.id,
               transition: visitor.transition,
-              tags: visitor.tags,
+              tags: visitor.vip ? [...visitor.tags, 'VIP'] : visitor.tags,
               as: { role: activeRole.role, unit: visitor.unitToShift },
             },
           });
