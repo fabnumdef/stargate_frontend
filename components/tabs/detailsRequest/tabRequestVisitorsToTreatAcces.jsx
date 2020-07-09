@@ -144,25 +144,25 @@ function decisionReturn(value) {
   const date = value.date ? format(new Date(value.date), 'dd/MM/yyyy') : null;
 
   switch (value.status) {
-    case WORKFLOW_BEHAVIOR.VALIDATION.positive:
+    case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive:
       return (
         <CellDecision date={date}>
           <CheckCircleIcon style={{ color: '#28a745' }} />
         </CellDecision>
       );
-    case WORKFLOW_BEHAVIOR.VALIDATION.negative:
+    case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative:
       return (
         <CellDecision date={date}>
           <RemoveCircleIcon style={{ color: '#ffc107' }} />
         </CellDecision>
       );
-    case WORKFLOW_BEHAVIOR.ADVISEMENT.positive:
+    case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.positive:
       return (
         <CellDecision date={date}>
           <CheckCircleIcon style={{ color: '#28a745' }} />
         </CellDecision>
       );
-    case WORKFLOW_BEHAVIOR.ADVISEMENT.negative:
+    case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative:
       return (
         <CellDecision date={date}>
           <RemoveCircleIcon style={{ color: '#ffc107' }} />
