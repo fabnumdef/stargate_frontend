@@ -161,6 +161,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
         {
           label: 'VA',
           value: false,
+          validation: ROLES[activeRole.role].workflow.positive,
+          tags: ['VA'],
         },
         {
           label: 'VL',
