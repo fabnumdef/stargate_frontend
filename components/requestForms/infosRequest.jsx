@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Link from 'next/link';
+
 // React Hook Form Validations
 import { useForm, Controller } from 'react-hook-form';
 
@@ -22,7 +24,6 @@ import FormControl from '@material-ui/core/FormControl';
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
 } from 'date-fns';
-import { useRouter } from 'next/router';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 // Date Validators
 
@@ -178,7 +179,6 @@ export default function FormInfosClaimant({
   formData, setForm, handleNext,
 }) {
   const classes = useStyles();
-  const router = useRouter();
 
   const { addAlert } = useSnackBar();
   const client = useApolloClient();
@@ -446,9 +446,11 @@ export default function FormInfosClaimant({
 
           <Grid item sm={12} xs={12}>
             <Grid container justify="flex-end">
-              <Button variant="outlined" color="primary" className={classes.buttonCancel} onClick={() => router.push('/')}>
-                Annuler
-              </Button>
+              <Link href="/">
+                <Button variant="outlined" color="primary" className={classes.buttonCancel}>
+                  Annuler
+                </Button>
+              </Link>
               <Button type="submit" variant="contained" color="primary">
                 Continuer
               </Button>
