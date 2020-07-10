@@ -103,7 +103,7 @@ export const MUTATE_VISITOR = gql`
            campusId @client @export(as: "campusId")
            mutateCampus(id: $campusId) {
              mutateRequest(id: $requestId) {
-               shiftVisitor(id: $visitorId, as: $as, transition: $transition) {
+               shiftVisitor(id: $visitorId, as: $as, transition: $transition, tags: $tags) {
                  id
                }
              }
