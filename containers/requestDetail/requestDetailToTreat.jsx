@@ -173,7 +173,8 @@ export default function RequestDetails({ requestId }) {
       variables: {
         requestId,
         visitorId: sortVisitors[count].id,
-        transition: sortVisitors[count].validation,
+        transition: sortVisitors[count].transition,
+        tags: sortVisitors[count].vip ? [...sortVisitors[count].tags, 'VIP'] : sortVisitors[count].tags,
         as: { role: activeRole.role, unit: sortVisitors[count].unitToShift },
       },
     }).then(() => {

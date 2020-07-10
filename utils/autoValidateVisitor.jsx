@@ -35,6 +35,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
                 isAnotherActualStep[role].push({
                   id: visitor.id,
                   unit: s.unitId,
+                  tags: visitor.vip ? [...visitor.tags, 'VIP'] : visitor.tags,
                   stepRole: step.role,
                 });
               }
@@ -60,6 +61,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
             (status) => status.visitor === sortVisitors[count].id
               && status.role === sortVisitors[count].stepRole,
           ).status,
+          tags: sortVisitors[count].tags,
           as: { role: ROLES.ROLE_ACCESS_OFFICE.role, unit: sortVisitors[count].unit },
         },
       }).then(() => {
@@ -82,6 +84,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
           transition: statusDone.find(
             (status) => status.visitor === visitor.id && status.role === visitor.stepRole,
           ).status,
+          tags: visitor.tags,
           as: { role: visitor.stepRole, unit: visitor.unit },
         },
       });
