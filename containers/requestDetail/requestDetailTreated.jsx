@@ -120,7 +120,7 @@ export default function RequestDetailsTreated({ requestId }) {
 
   if (data && (
     !checkRequestDetailAuth(data, activeRole)
-    || data.getCampus.getRequest.owner.id !== userData.me.id
+    && !data.getCampus.getRequest.owner.id === userData.me.id
   )) {
     router.push('/');
     return <div />;
