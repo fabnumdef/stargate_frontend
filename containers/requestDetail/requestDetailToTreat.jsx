@@ -168,8 +168,27 @@ export default function RequestDetails({ requestId }) {
     }
   }, [result]);
 
+  const sendChainShiftVisitor = async (sortVisitors, count) => {
+    await shiftVisitor({
+      variables: {
+        requestId,
+        visitorId: sortVisitors[count].id,
+        transition: sortVisitors[count].validation,
+        as: { role: activeRole.role, unit: sortVisitors[count].unitToShift },
+      },
+    }).then(() => {
+      if (count < sortVisitors.length - 1) {
+        return sendChainShiftVisitor(sortVisitors, count + 1);
+      }
+      return fetchData();
+    });
+  };
 
   const submitForm = async () => {
+    if (activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role) {
+      const sortVisitors = visitors.filter((visitor) => visitor.validation !== null);
+      return sendChainShiftVisitor(sortVisitors, 0);
+    }
     await Promise.all(visitors.map(async (visitor) => {
       if (visitor.validation !== null) {
         try {
@@ -190,7 +209,7 @@ export default function RequestDetails({ requestId }) {
         }
       }
     }));
-    fetchData();
+    return fetchData();
   };
 
 

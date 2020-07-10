@@ -2,8 +2,10 @@
 import { ROLES } from './constants/enums';
 
 const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
-  const rolesToValidate = [ROLES.ROLE_SCREENING.role, ROLES.ROLE_ACCESS_OFFICE.role];
-  const isAnotherActualStep = [];
+  const isAnotherActualStep = {
+    [ROLES.ROLE_SCREENING.role]: [],
+    [ROLES.ROLE_ACCESS_OFFICE.role]: [],
+  };
   const statusDone = [];
 
   const filterRejected = visitors.map((visitor) => ({
@@ -11,7 +13,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
     status: visitor.status.filter((s) => !s.steps.find((step) => step.behavior === 'Validation' && step.status === 'reject')),
   }));
 
-  rolesToValidate.forEach(((role) => {
+  Object.keys(isAnotherActualStep).forEach(((role) => {
     filterRejected.forEach(
       (visitor) => {
         const isVisitorAlreadyValidate = visitor.status.find(
@@ -30,7 +32,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
                 && !step.done
                 && (index === 0 || s.steps[index - 1].done)
               ) {
-                isAnotherActualStep.push({
+                isAnotherActualStep[role].push({
                   id: visitor.id,
                   unit: s.unitId,
                   stepRole: step.role,
@@ -48,22 +50,47 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
     return null;
   }));
 
-  if (!isAnotherActualStep.length) {
-    return null;
+  if (isAnotherActualStep[ROLES.ROLE_ACCESS_OFFICE.role].length) {
+    const sendChainShiftVisitor = async (sortVisitors, count) => {
+      await shiftVisitor({
+        variables: {
+          requestId,
+          visitorId: sortVisitors[count].id,
+          transition: statusDone.find(
+            (status) => status.visitor === sortVisitors[count].id
+              && status.role === sortVisitors[count].stepRole,
+          ).status,
+          as: { role: ROLES.ROLE_ACCESS_OFFICE.role, unit: sortVisitors[count].unit },
+        },
+      }).then(() => {
+        if (count < sortVisitors.length - 1) {
+          return sendChainShiftVisitor(sortVisitors, count + 1);
+        }
+        return readRequest();
+      });
+    };
+    sendChainShiftVisitor(isAnotherActualStep[ROLES.ROLE_ACCESS_OFFICE.role], 0);
   }
-  await Promise.all(isAnotherActualStep.map(async (visitor) => {
-    await shiftVisitor({
-      variables: {
-        requestId,
-        visitorId: visitor.id,
-        transition: statusDone.find(
-          (status) => status.visitor === visitor.id && status.role === visitor.stepRole,
-        ).status,
-        as: { role: visitor.stepRole, unit: visitor.unit },
-      },
-    });
-  }));
-  return readRequest();
+
+
+  if (isAnotherActualStep[ROLES.ROLE_SCREENING.role].length) {
+    await Promise.all(isAnotherActualStep[ROLES.ROLE_SCREENING.role].map(async (visitor) => {
+      const { data } = await shiftVisitor({
+        variables: {
+          requestId,
+          visitorId: visitor.id,
+          transition: statusDone.find(
+            (status) => status.visitor === visitor.id && status.role === visitor.stepRole,
+          ).status,
+          as: { role: visitor.stepRole, unit: visitor.unit },
+        },
+      });
+      await setTimeout(() => {}, 1000);
+      return data;
+    }));
+    return readRequest();
+  }
+  return null;
 };
 
 export default autoValidate;
