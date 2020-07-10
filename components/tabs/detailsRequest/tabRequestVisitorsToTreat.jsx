@@ -200,7 +200,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     const newArray = rows.slice();
     newArray.forEach((row) => {
       if (row.step === ACTIVE_STEP_STATUS) {
-        newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue : null;
+        newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue.label : null;
+        newArray[newArray.indexOf(row)].transition = checkbox ? checkedValue.validation : null;
       }
     });
     setDataRows(newArray);
@@ -291,7 +292,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           color="primary"
                           checked={checkbox.value}
                           onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox.label);
+                            handleSelectAll(event.target.checked, checkbox);
                           }}
                         />
                       )}

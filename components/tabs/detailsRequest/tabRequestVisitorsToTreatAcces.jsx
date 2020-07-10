@@ -243,8 +243,9 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
       const newArray = rows.slice();
       newArray.forEach((row) => {
         if (row.step === ACTIVE_STEP_STATUS) {
-          if (checkedValue !== 'VIP') {
-            newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue : null;
+          if (checkedValue.label !== 'VIP') {
+            newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue.label : null;
+            newArray[newArray.indexOf(row)].transition = checkbox ? checkedValue.validation : null;
           } else {
             newArray[newArray.indexOf(row)].vip = checkbox;
           }
@@ -256,7 +257,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
         if (checkbox) {
           return {
             ...check,
-            value: check.label === checkedValue || check.vip === true,
+            value: check.label === checkedValue.label,
           };
         }
         return {
@@ -362,7 +363,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                           color="primary"
                           checked={checkbox.value}
                           onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox.label);
+                            handleSelectAll(event.target.checked, checkbox);
                           }}
                         />
                       )}
