@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
+import Link from 'next/link';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -119,7 +120,7 @@ export default function RequestDetailsTreated({ requestId }) {
 
   if (data && (
     !checkRequestDetailAuth(data, activeRole)
-    || data.getCampus.getRequest.owner.id !== userData.me.id
+    && !data.getCampus.getRequest.owner.id === userData.me.id
   )) {
     router.push('/');
     return <div />;
@@ -152,9 +153,11 @@ export default function RequestDetailsTreated({ requestId }) {
         <Grid item sm={12}>
           <Grid container justify="flex-end">
             <div>
-              <Button variant="contained" color="primary" onClick={() => router.back()}>
-                Retour
-              </Button>
+              <Link href="/">
+                <Button variant="contained" color="primary" onClick={() => router.back()}>
+                  Retour
+                </Button>
+              </Link>
             </div>
           </Grid>
         </Grid>

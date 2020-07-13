@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+
+import Link from 'next/link';
 
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,6 +23,7 @@ import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
 
 import { ROLES } from '../../utils/constants/enums';
+import autoValidate from '../../utils/autoValidateVisitor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,9 +44,6 @@ const useStyles = makeStyles((theme) => ({
   },
   pageTitleControl: {
     marginLeft: 'auto',
-  },
-  tabContent: {
-    margin: '20px 0',
   },
 }));
 
@@ -97,12 +97,13 @@ export const MUTATE_VISITOR = gql`
            $campusId: String!
            $visitorId: String!
            $as: ValidationPersonas!
+           $tags: [String]
            $transition: String!
          ) {
            campusId @client @export(as: "campusId")
            mutateCampus(id: $campusId) {
              mutateRequest(id: $requestId) {
-               shiftVisitor(id: $visitorId, as: $as, transition: $transition) {
+               shiftVisitor(id: $visitorId, as: $as, transition: $transition, tags: $tags) {
                  id
                }
              }
@@ -113,28 +114,82 @@ export const MUTATE_VISITOR = gql`
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
+  const client = useApolloClient();
   const { activeRole } = useLogin();
 
   const { addAlert } = useSnackBar();
 
-  const {
-    data, error, loading, refetch,
-  } = useQuery(READ_REQUEST, {
-    variables: { requestId },
-    fetchPolicy: 'cache-and-network',
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [result, setResult] = useState({});
 
-  useEffect(() => {
-    if (data) {
-      refetch();
+  const fetchData = async () => {
+    if (!loading) {
+      setLoading(true);
     }
-  }, [activeRole]);
+    try {
+      const { data } = await client.query({
+        query: READ_REQUEST,
+        variables: { requestId },
+        fetchPolicy: 'no-cache',
+      });
+      if (error) {
+        setError(false);
+      }
+      setResult(data);
+      return setLoading(false);
+    } catch {
+      return setError(true);
+    }
+  };
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
   const [visitors, setVisitors] = useState([]);
 
+  useEffect(() => {
+    if (result.getCampus) {
+      fetchData();
+    }
+  }, [activeRole]);
+
+  // TODO delete this useEffect when back will treat autoValidate Screening and Acces Office
+  useEffect(() => {
+    if (!result.getCampus && !result.error) {
+      fetchData();
+    }
+    if (result.getCampus) {
+      autoValidate(
+        result.getCampus.getRequest.listVisitors.list,
+        shiftVisitor,
+        fetchData,
+        requestId,
+      );
+    }
+  }, [result]);
+
+  const sendChainShiftVisitor = async (sortVisitors, count) => {
+    await shiftVisitor({
+      variables: {
+        requestId,
+        visitorId: sortVisitors[count].id,
+        transition: sortVisitors[count].transition,
+        tags: sortVisitors[count].vip ? [...sortVisitors[count].tags, 'VIP'] : sortVisitors[count].tags,
+        as: { role: activeRole.role, unit: sortVisitors[count].unitToShift },
+      },
+    }).then(() => {
+      if (count < sortVisitors.length - 1) {
+        return sendChainShiftVisitor(sortVisitors, count + 1);
+      }
+      return fetchData();
+    });
+  };
+
   const submitForm = async () => {
+    if (activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role) {
+      const sortVisitors = visitors.filter((visitor) => visitor.validation !== null);
+      return sendChainShiftVisitor(sortVisitors, 0);
+    }
     await Promise.all(visitors.map(async (visitor) => {
       if (visitor.validation !== null) {
         try {
@@ -142,7 +197,8 @@ export default function RequestDetails({ requestId }) {
             variables: {
               requestId,
               visitorId: visitor.id,
-              transition: visitor.validation,
+              transition: visitor.transition,
+              tags: visitor.vip ? [...visitor.tags, 'VIP'] : visitor.tags,
               as: { role: activeRole.role, unit: visitor.unitToShift },
             },
           });
@@ -155,8 +211,7 @@ export default function RequestDetails({ requestId }) {
         }
       }
     }));
-
-    refetch();
+    return fetchData();
   };
 
 
@@ -175,20 +230,20 @@ export default function RequestDetails({ requestId }) {
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
               {/* @todo change title if treated */}
-              {data.getCampus.getRequest.id}
+              {result.getCampus && result.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data.getCampus.getRequest} />
+          <DetailsInfosRequest request={result.getCampus && result.getCampus.getRequest} />
         </Grid>
-        <Grid item sm={12} xs={12} className={classes.tabContent}>
+        <Grid item sm={12} xs={12}>
           {(() => {
             switch (activeRole.role) {
               case ROLES.ROLE_ACCESS_OFFICE.role:
                 return (
                   <TabRequestVisitorsToTreatAcces
-                    visitors={data.getCampus.getRequest.listVisitors.list}
+                    visitors={result.getCampus && result.getCampus.getRequest.listVisitors.list}
                     onChange={(entries) => {
                       setVisitors(entries);
                     }}
@@ -197,7 +252,7 @@ export default function RequestDetails({ requestId }) {
               default:
                 return (
                   <TabRequestVisitorsToTreat
-                    visitors={data.getCampus.getRequest.listVisitors.list}
+                    visitors={result.getCampus && result.getCampus.getRequest.listVisitors.list}
                     onChange={(entries) => {
                       setVisitors(entries);
                     }}
@@ -209,9 +264,11 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12}>
           <Grid container justify="flex-end">
             <div>
-              <Button variant="outlined" color="primary" style={{ marginRight: '5px' }}>
-                Annuler
-              </Button>
+              <Link href="/">
+                <Button variant="outlined" color="primary" style={{ marginRight: '5px' }}>
+                  Annuler
+                </Button>
+              </Link>
             </div>
             <div>
               <Button variant="contained" color="primary" onClick={submitForm} disabled={!visitors.find((visitor) => visitor.validation !== null)}>

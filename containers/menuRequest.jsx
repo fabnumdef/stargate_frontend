@@ -21,7 +21,7 @@ import {
 } from '../components';
 import Template from './template';
 
-import { STATE_REQUEST } from '../utils/constants/enums';
+import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 
@@ -200,7 +200,16 @@ export default function MenuRequest() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const { data: treated, fetchMore: fetchTreated } = useQuery(LIST_REQUESTS, {
+  const selectRequestTreated = () => (
+    activeRole.role === ROLES.ROLE_HOST.label ? LIST_MY_REQUESTS : LIST_REQUESTS
+  );
+  const selectResultTreated = (treated) => (
+    activeRole.role === ROLES.ROLE_HOST.label
+      ? treated.getCampus.listMyRequests
+      : treated.getCampus.listRequests
+  );
+
+  const { data: treated, fetchMore: fetchTreated } = useQuery(selectRequestTreated(), {
     variables: {
       filters: {
         status: [
@@ -214,7 +223,9 @@ export default function MenuRequest() {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
-      as: { role: activeRole.role, unit: activeRole.unitLabel },
+      as: activeRole.role !== ROLES.ROLE_HOST.label
+        ? { role: activeRole.role, unit: activeRole.unitLabel }
+        : null,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
@@ -342,8 +353,8 @@ export default function MenuRequest() {
     {
       index: 2,
       label: `Traitées ${
-        treated && treated.getCampus.listRequests.meta.total > 0
-          ? `(${treated.getCampus.listRequests.meta.total})`
+        treated && selectResultTreated(treated).meta.total > 0
+          ? `(${selectResultTreated(treated).meta.total})`
           : ''
       }`,
       access: true,
@@ -365,7 +376,7 @@ export default function MenuRequest() {
         return inProgress.getCampus.listMyRequests.meta.total;
       case 2:
         if (!treated) return 0;
-        return treated.getCampus.listRequests.meta.total;
+        return selectResultTreated(treated).meta.total;
       default:
         return 0;
     }
@@ -449,7 +460,7 @@ export default function MenuRequest() {
           )}
           <TabPanel value={value} index={2}>
             <TabMesDemandesToTreat
-              requests={treated ? treated.getCampus.listRequests.list : []}
+              requests={treated ? selectResultTreated(treated).list : []}
               detailLink="traitees"
             />
           </TabPanel>

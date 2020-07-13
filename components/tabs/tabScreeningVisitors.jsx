@@ -139,7 +139,7 @@ export default function ScreeningTable({ visitors, onChange }) {
     const newArray = visitors.slice();
 
     visitors.forEach((row) => {
-      if (row.screening === ACTIVE_STEP_STATUS) {
+      if (row.screening.step === ACTIVE_STEP_STATUS) {
         newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
       }
     });
@@ -253,7 +253,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                           key={column.id}
                           align={column.align}
                           className={
-                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         >
                           {value}
@@ -266,7 +266,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                           key={column.id}
                           align={column.align}
                           className={
-                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         >
                           {value}
@@ -278,7 +278,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                           key={column.id}
                           align={column.align}
                           className={
-                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         />
                       ) : (
@@ -286,7 +286,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                           key={column.id}
                           align={column.align}
                           className={
-                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         >
                           {value}
@@ -313,14 +313,14 @@ export default function ScreeningTable({ visitors, onChange }) {
                           >
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.positive}
-                              disabled={row.screening !== ACTIVE_STEP_STATUS}
+                              disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
                             />
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.negative}
-                              disabled={row.screening !== ACTIVE_STEP_STATUS}
+                              disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
@@ -335,7 +335,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                           key={column.id}
                           align={column.align}
                           className={
-                            row.screening !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         >
                           {value}

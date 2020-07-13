@@ -5,16 +5,25 @@ export const REQUEST_OBJECT = {
 
 export const WORKFLOW_BEHAVIOR = {
   VALIDATION: {
-    positive: 'accept',
-    negative: 'reject',
+    value: 'Validation',
+    RESPONSE: {
+      positive: 'accept',
+      negative: 'reject',
+    },
   },
   ADVISEMENT: {
-    positive: 'positive',
-    negative: 'negative',
-    externally: 'externally',
+    value: 'Advisement',
+    RESPONSE: {
+      positive: 'positive',
+      negative: 'negative',
+      externally: 'externally',
+    },
   },
   INFORMATION: {
-    positive: 'validated',
+    value: 'Information',
+    RESPONSE: {
+      positive: 'validated',
+    },
   },
 };
 
@@ -31,23 +40,31 @@ export const ROLES = {
     role: 'ROLE_UNIT_CORRESPONDENT',
     label: "Correspondant d'unité",
     shortLabel: 'CU',
-    workflow: WORKFLOW_BEHAVIOR.VALIDATION,
+    workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
   },
   ROLE_SECURITY_OFFICER: {
     role: 'ROLE_SECURITY_OFFICER',
     label: 'Officier de sécurité',
     shortLabel: 'OS',
-    workflow: WORKFLOW_BEHAVIOR.VALIDATION,
+    workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
   },
   ROLE_ACCESS_OFFICE: {
     role: 'ROLE_ACCESS_OFFICE',
     label: 'Bureau des accès',
     shortLabel: 'BA',
-    workflow: WORKFLOW_BEHAVIOR.VALIDATION,
+    workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
   },
-  ROLE_SCREENING: { role: 'ROLE_SCREENING', label: 'Criblage', workflow: WORKFLOW_BEHAVIOR.ADVISEMENT },
+  ROLE_SCREENING: {
+    role: 'ROLE_SCREENING',
+    label: 'Criblage',
+    workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
+  },
   ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte' },
-  ROLE_OBSERVER: { role: 'ROLE_OBSERVER', label: 'Observateur', workflow: WORKFLOW_BEHAVIOR.INFORMATION },
+  ROLE_OBSERVER: {
+    role: 'ROLE_OBSERVER',
+    label: 'Observateur',
+    workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
+  },
 };
 
 export const STATE_REQUEST = {
@@ -72,7 +89,7 @@ export const EMPLOYEE_TYPE = {
   TYPE_INTERIM: 'Intérimaire',
   TYPE_TRAINEE: 'Stagiaire',
   TYPE_DELIVERER: 'Livreur',
-  TYPE_ACTIVE_MILITARY: 'Militaire d\'active',
+  TYPE_ACTIVE_MILITARY: "Militaire d'active",
   TYPE_RESERVIST: 'Réserviste',
   TYPE_CIVILIAN_DEFENSE: 'Civil de la défense',
   TYPE_FAMILY: 'Famille',
