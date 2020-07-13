@@ -30,7 +30,7 @@ const checkWithUnit = (status, activeRole) => {
 
 const checkWithoutUnit = (status, activeRole) => {
   const sortRejected = status
-    .filter((s) => s.steps.every((step) => (s.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
+    .filter((s) => s.steps.every((step) => (step.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
       && step.status !== WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
       || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value));
 
