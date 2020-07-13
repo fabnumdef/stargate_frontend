@@ -15,8 +15,63 @@ import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
+import gql from 'graphql-tag';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import EmptyArray from '../../styled/emptyArray';
+import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
+import { useLogin } from '../../../lib/loginContext';
+import { STATE_REQUEST } from '../../../utils/constants/enums';
+
+export const READ_REQUEST = gql`
+    query readRequest($requestId: String!, $campusId: String!) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
+            getRequest(id: $requestId) {
+                id
+                reason
+                from
+                to
+                places {
+                    label
+                }
+                owner {
+                    id
+                    lastname
+                    firstname
+                }
+                listVisitors {
+                    list {
+                        id
+                        rank
+                        firstname
+                        birthLastname
+                        employeeType
+                        company
+                        state {
+                            value
+                            records {
+                                date
+                            }
+                        }
+                        status {
+                            unitId
+                            label
+                            steps {
+                                role
+                                step
+                                behavior
+                                status
+                                date
+                                done
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
 
 const columns = [
   { id: 'id', label: 'N° demande' },
@@ -26,9 +81,15 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
+function checkAllVisitors(visitors, activeRole) {
+  const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
+  return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
+
+}
+
 function createData({
-  id, owner, from, to, reason, places,
-}) {
+  id, owner, from, to, reason, places, listVisitors, status,
+}, activeRole) {
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
@@ -45,6 +106,9 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
+    isActive: status === STATE_REQUEST.STATE_ACCEPTED.state
+      ? checkAllVisitors(listVisitors.list, activeRole)
+      : true,
   };
 }
 
@@ -72,11 +136,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabMyRequestUntreated({ request, detailLink }) {
+export default function TabMyRequestUntreated({ requests, detailLink }) {
   const classes = useStyles();
+  const { activeRole } = useLogin();
 
-  const rows = request.reduce((acc, dem) => {
-    acc.push(createData(dem));
+  const rows = requests.reduce((acc, dem) => {
+    acc.push(createData(dem, activeRole));
     return acc;
   }, []);
 
@@ -91,7 +156,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
-  return request.length > 0 ? (
+  return requests.length > 0 ? (
     <Table>
       <TableHead>
         <TableRow>
@@ -108,7 +173,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows.map((row, index) => (
+        {rows && rows.map((row, index) => (
           <TableRow
             hover
             onMouseOver={() => handleMouseEnter(index)}
@@ -131,7 +196,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
               );
             })}
             <TableCell key="modif">
-              {hover[index] && (
+              {row.isActive && hover[index] && (
                 <>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">

@@ -93,6 +93,7 @@ export const LIST_REQUESTS = gql`
                  from
                  to
                  reason
+                 status
                  places {
                    label
                  }
@@ -100,6 +101,19 @@ export const LIST_REQUESTS = gql`
                    firstname
                    lastname
                    unit
+                 }
+                 listVisitors {
+                     list {
+                       id
+                       status {
+                         unitId
+                         label
+                         steps {
+                            role
+                            done
+                         }
+                       }
+                     }
                  }
                }
                meta {
@@ -124,6 +138,7 @@ export const LIST_MY_REQUESTS = gql`
                  from
                  to
                  reason
+                 status
                  places {
                    label
                  }
@@ -419,7 +434,7 @@ export default function MenuRequest() {
           {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
           <TabPanel value={value} index={0}>
             <TabMesDemandesToTreat
-              request={toTreat ? toTreat.getCampus.listRequests.list : []}
+              requests={toTreat ? toTreat.getCampus.listRequests.list : []}
               detailLink="a-traiter"
             />
           </TabPanel>
@@ -434,7 +449,7 @@ export default function MenuRequest() {
           )}
           <TabPanel value={value} index={2}>
             <TabMesDemandesToTreat
-              request={treated ? treated.getCampus.listRequests.list : []}
+              requests={treated ? treated.getCampus.listRequests.list : []}
               detailLink="traitees"
             />
           </TabPanel>
