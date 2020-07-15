@@ -6,15 +6,16 @@ import { useLogin } from '../lib/loginContext';
 import MenuRequest from './menuRequest';
 import ScreeningRequest from './screeningManagement';
 
+function selectLandingComponent(role) {
+  switch (role) {
+    case ROLES.ROLE_SCREENING.role:
+      return <ScreeningRequest />;
+    default:
+      return <MenuRequest />;
+  }
+}
 
 export default function Home() {
   const { activeRole } = useLogin();
-  return (
-    <>
-      { activeRole.role
-        !== ROLES.ROLE_SCREENING.role
-        ? <MenuRequest />
-        : <ScreeningRequest />}
-    </>
-  );
+  return selectLandingComponent(activeRole.role);
 }

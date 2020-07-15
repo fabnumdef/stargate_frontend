@@ -10,7 +10,6 @@ export const isSuperAdmin = (userRole) => (
 
 export const urlAuthorization = (path, role) => {
   const allRoles = [
-    '/',
     '/compte',
     '/login',
     '/contact',
@@ -19,6 +18,15 @@ export const urlAuthorization = (path, role) => {
   switch (true) {
     case allRoles.includes(path):
       return true;
+    case path === '/':
+      return [
+        ROLES.ROLE_ADMIN.role,
+        ROLES.ROLE_UNIT_CORRESPONDENT.role,
+        ROLES.ROLE_SECURITY_OFFICER.role,
+        ROLES.ROLE_ACCESS_OFFICE.role,
+        ROLES.ROLE_SCREENING.role,
+        ROLES.ROLE_HOST.role,
+      ].includes(role);
     case path.includes('/administration/utilisateurs'):
       return [
         ROLES.ROLE_ADMIN.role,
