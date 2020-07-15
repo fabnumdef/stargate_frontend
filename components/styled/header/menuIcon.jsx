@@ -30,6 +30,9 @@ const GET_ME = gql`
                     id
                     label
                 }
+                campuses {
+                    id
+                }
             }
         }
     }
@@ -109,6 +112,7 @@ export default function MenuIcon() {
     client.cache.writeData({
       data: {
         activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
+        campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
       },
     });
     localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
