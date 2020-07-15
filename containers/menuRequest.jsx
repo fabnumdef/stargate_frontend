@@ -156,7 +156,7 @@ export default function MenuRequest() {
   const { activeRole } = useLogin();
 
 
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
 
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
@@ -201,10 +201,10 @@ export default function MenuRequest() {
   });
 
   const selectRequestTreated = () => (
-    activeRole.role === ROLES.ROLE_HOST.label ? LIST_MY_REQUESTS : LIST_REQUESTS
+    activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS
   );
   const selectResultTreated = (treated) => (
-    activeRole.role === ROLES.ROLE_HOST.label
+    activeRole.role === ROLES.ROLE_HOST.role
       ? treated.getCampus.listMyRequests
       : treated.getCampus.listRequests
   );

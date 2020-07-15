@@ -15,63 +15,11 @@ import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
-import gql from 'graphql-tag';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import EmptyArray from '../../styled/emptyArray';
 import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
 import { useLogin } from '../../../lib/loginContext';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
-
-export const READ_REQUEST = gql`
-    query readRequest($requestId: String!, $campusId: String!) {
-        campusId @client @export(as: "campusId")
-        getCampus(id: $campusId) {
-            getRequest(id: $requestId) {
-                id
-                reason
-                from
-                to
-                places {
-                    label
-                }
-                owner {
-                    id
-                    lastname
-                    firstname
-                }
-                listVisitors {
-                    list {
-                        id
-                        rank
-                        firstname
-                        birthLastname
-                        employeeType
-                        company
-                        state {
-                            value
-                            records {
-                                date
-                            }
-                        }
-                        status {
-                            unitId
-                            label
-                            steps {
-                                role
-                                step
-                                behavior
-                                status
-                                date
-                                done
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
 
 const columns = [
   { id: 'id', label: 'N° demande' },
@@ -84,14 +32,16 @@ const columns = [
 function checkAllVisitors(visitors, activeRole) {
   const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
   return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
-
 }
 
 function createData({
   id, owner, from, to, reason, places, listVisitors, status,
 }, activeRole) {
+  const isActive = status === STATE_REQUEST.STATE_CREATED.state
+    ? checkAllVisitors(listVisitors.list, activeRole)
+    : true;
   return {
-    id,
+    id: isActive ? id : `Traitement terminé - ${id}`,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
@@ -106,9 +56,7 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
-    isActive: status === STATE_REQUEST.STATE_ACCEPTED.state
-      ? checkAllVisitors(listVisitors.list, activeRole)
-      : true,
+    isActive,
   };
 }
 
@@ -133,6 +81,10 @@ const useStyles = makeStyles({
   exportContainer: {
     display: 'flex',
     justifyContent: 'flex-end',
+  },
+  inactive: {
+    opacity: '.3',
+    fontStyle: 'italic',
   },
 });
 
@@ -182,6 +134,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
             role="checkbox"
             tabIndex={-1}
             key={row.code}
+            className={row.isActive ? '' : classes.inactive}
           >
             {columns.map((column) => {
               const value = row[column.id];
