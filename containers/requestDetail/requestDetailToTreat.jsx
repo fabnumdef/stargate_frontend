@@ -22,7 +22,7 @@ import {
 import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
 
-import { ROLES } from '../../utils/constants/enums';
+import { ROLES, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
 import autoValidate from '../../utils/autoValidateVisitor';
 
 const useStyles = makeStyles((theme) => ({
@@ -186,8 +186,12 @@ export default function RequestDetails({ requestId }) {
   };
 
   const submitForm = async () => {
-    if (activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role) {
-      const sortVisitors = visitors.filter((visitor) => visitor.validation !== null);
+    const sortVisitors = visitors.filter((visitor) => visitor.validation !== null);
+    if (activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
+      || sortVisitors.every((visitor) => (
+        visitor.transition === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
+      ))
+    ) {
       return sendChainShiftVisitor(sortVisitors, 0);
     }
     await Promise.all(visitors.map(async (visitor) => {
