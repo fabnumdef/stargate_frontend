@@ -93,6 +93,7 @@ export const LIST_REQUESTS = gql`
                  from
                  to
                  reason
+                 status
                  places {
                    label
                  }
@@ -100,6 +101,19 @@ export const LIST_REQUESTS = gql`
                    firstname
                    lastname
                    unit
+                 }
+                 listVisitors {
+                     list {
+                       id
+                       status {
+                         unitId
+                         label
+                         steps {
+                            role
+                            done
+                         }
+                       }
+                     }
                  }
                }
                meta {
@@ -124,6 +138,7 @@ export const LIST_MY_REQUESTS = gql`
                  from
                  to
                  reason
+                 status
                  places {
                    label
                  }
@@ -141,7 +156,7 @@ export default function MenuRequest() {
   const { activeRole } = useLogin();
 
 
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
 
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
@@ -186,10 +201,10 @@ export default function MenuRequest() {
   });
 
   const selectRequestTreated = () => (
-    activeRole.role === ROLES.ROLE_HOST.label ? LIST_MY_REQUESTS : LIST_REQUESTS
+    activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS
   );
   const selectResultTreated = (treated) => (
-    activeRole.role === ROLES.ROLE_HOST.label
+    activeRole.role === ROLES.ROLE_HOST.role
       ? treated.getCampus.listMyRequests
       : treated.getCampus.listRequests
   );
@@ -430,7 +445,7 @@ export default function MenuRequest() {
           {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
           <TabPanel value={value} index={0}>
             <TabMesDemandesToTreat
-              request={toTreat ? toTreat.getCampus.listRequests.list : []}
+              requests={toTreat ? toTreat.getCampus.listRequests.list : []}
               detailLink="a-traiter"
             />
           </TabPanel>
@@ -445,7 +460,7 @@ export default function MenuRequest() {
           )}
           <TabPanel value={value} index={2}>
             <TabMesDemandesToTreat
-              request={treated ? selectResultTreated(treated).list : []}
+              requests={treated ? selectResultTreated(treated).list : []}
               detailLink="traitees"
             />
           </TabPanel>

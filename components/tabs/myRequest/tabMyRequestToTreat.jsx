@@ -17,6 +17,9 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import { format } from 'date-fns';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import EmptyArray from '../../styled/emptyArray';
+import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
+import { useLogin } from '../../../lib/loginContext';
+import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
   { id: 'id', label: 'N° demande' },
@@ -26,11 +29,19 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
+function checkAllVisitors(visitors, activeRole) {
+  const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
+  return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
+}
+
 function createData({
-  id, owner, from, to, reason, places,
-}) {
+  id, owner, from, to, reason, places, listVisitors, status,
+}, activeRole) {
+  const isActive = status === STATE_REQUEST.STATE_CREATED.state
+    ? checkAllVisitors(listVisitors.list, activeRole)
+    : true;
   return {
-    id,
+    id: isActive ? id : `Traitement terminé - ${id}`,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
@@ -45,6 +56,7 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
+    isActive,
   };
 }
 
@@ -70,13 +82,18 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-end',
   },
+  inactive: {
+    opacity: '.3',
+    fontStyle: 'italic',
+  },
 });
 
-export default function TabMyRequestUntreated({ request, detailLink }) {
+export default function TabMyRequestUntreated({ requests, detailLink }) {
   const classes = useStyles();
+  const { activeRole } = useLogin();
 
-  const rows = request.reduce((acc, dem) => {
-    acc.push(createData(dem));
+  const rows = requests.reduce((acc, dem) => {
+    acc.push(createData(dem, activeRole));
     return acc;
   }, []);
 
@@ -91,7 +108,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
-  return request.length > 0 ? (
+  return requests.length > 0 ? (
     <Table>
       <TableHead>
         <TableRow>
@@ -108,7 +125,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows.map((row, index) => (
+        {rows && rows.map((row, index) => (
           <TableRow
             hover
             onMouseOver={() => handleMouseEnter(index)}
@@ -117,6 +134,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
             role="checkbox"
             tabIndex={-1}
             key={row.code}
+            className={row.isActive ? '' : classes.inactive}
           >
             {columns.map((column) => {
               const value = row[column.id];
@@ -131,7 +149,7 @@ export default function TabMyRequestUntreated({ request, detailLink }) {
               );
             })}
             <TableCell key="modif">
-              {hover[index] && (
+              {row.isActive && hover[index] && (
                 <>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
