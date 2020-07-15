@@ -75,8 +75,8 @@ function CreateUser() {
   if (userData) {
     const selectedRole = userData.me.roles.find((role) => role.role === activeRole.role);
     defaultValues = {
-      campus: selectedRole.campuses[0].id || null,
-      unit: selectedRole.units[0].id || null,
+      campus: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
+      unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
     };
   }
 

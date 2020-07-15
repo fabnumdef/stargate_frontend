@@ -12,7 +12,6 @@ import Slide from '@material-ui/core/Slide';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
-
 function getMenus() {
   return [
     { label: 'Mes Demandes', link: '/' },

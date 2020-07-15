@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
 import { urlAuthorization } from '../utils/permissions';
+import { ROLES } from '../utils/constants/enums';
 
 export const LOGIN = gql`
   mutation login($email: EmailAddress!, $password: String, $token: String) {
@@ -281,7 +282,7 @@ export function LoginContextProvider(props) {
     if ((isLoggedUser
       && router.pathname === '/login') || (isCacheInit && !urlAuthorization(router.pathname, activeRole.role))
     ) {
-      router.push('/');
+      router.push(activeRole.role === ROLES.ROLE_SUPERADMIN.role ? '/administration/utilisateurs' : '/');
     }
 
     if (!isLoggedUser && router.pathname !== '/login') {
