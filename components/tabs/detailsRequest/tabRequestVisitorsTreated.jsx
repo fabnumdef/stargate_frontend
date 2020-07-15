@@ -9,11 +9,21 @@ import TableRow from '@material-ui/core/TableRow';
 import { format } from 'date-fns';
 import CustomTableCell from '../../styled/customTableCellHeader';
 
-import { EMPLOYEE_TYPE, VISITOR_STATUS } from '../../../utils/constants/enums';
+import {
+  EMPLOYEE_TYPE,
+  ROLES,
+  VISITOR_STATUS,
+  WORKFLOW_BEHAVIOR,
+} from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
 
+function findRejectedRole(status) {
+  const sortRole = status.map((s) => `${ROLES[s.steps.find((step) => step.status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative).role].shortLabel} - ${s.label}`);
+  return sortRole.toString();
+}
+
 function createData({
-  id, firstname, birthLastname, state, rank, company, employeeType,
+  id, firstname, birthLastname, state, rank, company, employeeType, status,
 }) {
   return {
     id,
@@ -23,7 +33,9 @@ function createData({
     company,
     type: EMPLOYEE_TYPE[employeeType],
     date: format(findValidationDate(state), "dd/MM/yyyy à k'h'mm"),
-    status: VISITOR_STATUS[state.value],
+    status: VISITOR_STATUS[state.value] === VISITOR_STATUS.rejected
+      ? `${VISITOR_STATUS[state.value]} par ${findRejectedRole(status)}`
+      : VISITOR_STATUS[state.value],
   };
 }
 
