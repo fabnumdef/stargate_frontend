@@ -396,7 +396,9 @@ export default function FormInfosClaimant({
                   variant="outlined"
                   fullWidth
                   multiline
-                  inputRef={register({ required: 'Le motif est obligatoire' })}
+                  inputRef={register({
+                    validate: (value) => value.trim() !== '' || 'Le motif est obligatoire',
+                  })}
                   inputProps={{
                     'data-testid': 'motif-visite',
                   }}

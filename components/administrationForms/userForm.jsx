@@ -131,7 +131,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                   fullWidth
                 />
               )}
-              rules={{ required: 'Le nom est obligatoire' }}
+              rules={{ validate: (value) => value.trim() !== '' || 'Le nom est obligatoire' }}
               control={control}
               name="lastname"
               defaultValue={defaultValues.lastname ? defaultValues.lastname : ''}
@@ -149,7 +149,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                   fullWidth
                 />
               )}
-              rules={{ required: 'Le prénom est obligatoire' }}
+              rules={{ validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire' }}
               control={control}
               name="firstname"
               defaultValue={defaultValues.firstname ? defaultValues.firstname : ''}
@@ -167,7 +167,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                   fullWidth
                 />
               )}
-              rules={{ required: 'L\'adresse e-mail est obligatoire' }}
+              rules={{ validate: (value) => value.trim() !== '' || 'L\'adresse e-mail est obligatoire' }}
               control={control}
               name="email"
               defaultValue={defaultValues.email ? defaultValues.email : ''}
