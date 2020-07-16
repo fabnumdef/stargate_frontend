@@ -79,6 +79,7 @@ export const READ_REQUEST = gql`
                            step
                            behavior
                            status
+                           tags
                            date
                            done
                        }

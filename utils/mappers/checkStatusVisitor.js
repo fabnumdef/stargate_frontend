@@ -43,7 +43,7 @@ const checkWithoutUnit = (status, activeRole) => {
     return { step: HIDDEN_STEP_STATUS };
   }
 
-  const isActiveStep = status.find((s) => s.steps.find(
+  const isActiveStep = sortRejected.find((s) => s.steps.find(
     (step, index) => step.role === activeRole.role && (index === 0 || s.steps[index - 1].done),
   ));
   if (isActiveStep) {
