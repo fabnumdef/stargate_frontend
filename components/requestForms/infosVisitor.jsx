@@ -446,7 +446,7 @@ export default function FormInfoVisitor({
                     name="birthLastname"
                     error={Object.prototype.hasOwnProperty.call(errors, 'birthLastname')}
                     helperText={errors.birthLastname && errors.birthLastname.message}
-                    inputRef={register({ required: 'Le nom est obligatoire' })}
+                    inputRef={register({ validate: (value) => value.trim() !== '' || 'Le nom est obligatoire' })}
                     inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
                   />
                 </Grid>
@@ -479,7 +479,7 @@ export default function FormInfoVisitor({
                       />
                     )}
                     control={control}
-                    rules={{ required: 'Le prénom est obligatoire' }}
+                    rules={{ validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire' }}
                     name="firstname"
                     defaultValue=""
                   />
@@ -499,7 +499,7 @@ export default function FormInfoVisitor({
                     name="company"
                     defaultValue=""
                     rules={{
-                      required: "L'unité ou la société est obligatoire",
+                      validate: (value) => value.trim() !== '' || "L'unité ou la société est obligatoire",
                     }}
                   />
                 </Grid>
@@ -655,7 +655,7 @@ export default function FormInfoVisitor({
                     name="reference"
                     defaultValue=""
                     rules={{
-                      required: 'Le numéro de document est obligatoire',
+                      validate: (value) => value.trim() !== '' || 'Le numéro de document est obligatoire',
                     }}
                   />
                 </Grid>
@@ -702,7 +702,7 @@ export default function FormInfoVisitor({
                     name="birthplace"
                     defaultValue=""
                     rules={{
-                      required: 'Le lieu de naissance est obligatoire',
+                      validate: (value) => value.trim() !== '' || 'Le lieu de naissance est obligatoire',
                     }}
                   />
                 </Grid>

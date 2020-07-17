@@ -54,10 +54,10 @@ export default () => {
             </Button>
             <div className={classes.grow} />
             <MenuIcon />
+            <MenuItems />
           </Toolbar>
         </AppBar>
       </ElevationScroll>
-      <MenuItems />
     </>
   );
 };
