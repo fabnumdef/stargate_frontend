@@ -67,9 +67,9 @@ function csvName() {
 
 const csvHeaders = [
   { label: 'Nom de N.', key: 'vBirthName', fullLabel: 'Nom de Naissance' },
+  { label: 'Prénom', key: 'vFirstName' },
   { label: 'Date de N.', key: 'vBirthDate', fullLabel: 'Date de Naissance' },
   { label: 'Lieu de N.', key: 'vBirthPlace', fullLabel: 'Lieu de Naissance' },
-  { label: 'Prénom', key: 'vFirstName' },
   { label: 'Nationalité', key: 'vNationality' },
 ];
 
@@ -230,15 +230,13 @@ export default function ScreeningManagement() {
     }
     handleFetchMore();
   }, [page, rowsPerPage]);
-
-  const csvData = () => visitors.map((row) => ({
-    vBirthName: row.birthLastname.toUpperCase(),
-    vBirthDate: row.birthdate,
-    vBirthPlace: row.birthplace.toUpperCase(),
-    vFirstName: row.firstname.toUpperCase(),
-    vNationality: row.nationality.toUpperCase(),
+  const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
+    vBirthName: visitor.birthLastname.toUpperCase(),
+    vBirthDate: visitor.birthday,
+    vBirthPlace: visitor.birthplace.toUpperCase(),
+    vFirstName: visitor.firstname.toUpperCase(),
+    vNationality: visitor.nationality.toUpperCase(),
   }));
-
 
   const submitForm = async () => {
     await Promise.all(

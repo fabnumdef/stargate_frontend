@@ -21,19 +21,18 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
+import WarningIcon from '@material-ui/icons/Warning';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 import CustomCheckbox from '../../styled/customCheckbox';
 import { useLogin } from '../../../lib/loginContext';
 import { EMPLOYEE_TYPE, ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
 import getDecisions from '../../../utils/mappers/getDecisions';
 
-
 import ckeckStatusVisitor, {
   ACTIVE_STEP_STATUS,
   HIDDEN_STEP_STATUS,
   INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
-import checkCriblageVisitor from '../../../utils/mappers/checkCriblageVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -124,7 +123,6 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
-    criblage: checkCriblageVisitor(status),
     validation: null,
     vip: false,
     steps: getDecisions(status),
@@ -155,7 +153,9 @@ function decisionReturn(value) {
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive:
       return (
         <CellDecision date={date}>
-          <CheckCircleIcon style={{ color: '#28a745' }} />
+          {value.role === ROLES.ROLE_UNIT_CORRESPONDENT.role
+            ? <CheckCircleIcon style={{ color: '#28a745' }} />
+            : <span style={{ color: '#28a745', fontWeight: 'bold' }}>{value.tags[0]}</span>}
         </CellDecision>
       );
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative:
@@ -173,7 +173,7 @@ function decisionReturn(value) {
     case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative:
       return (
         <CellDecision date={date}>
-          <RemoveCircleIcon style={{ color: '#ffc107' }} />
+          <WarningIcon style={{ color: '#ffc107' }} />
         </CellDecision>
       );
     default:

@@ -105,8 +105,8 @@ export default function MenuIcon() {
     const selectedRole = me.roles.find((role) => role.role === evt.target.value);
     const newRole = {
       role: selectedRole.role,
-      unit: selectedRole.units[0] ? selectedRole.units[0].id : '',
-      unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : '',
+      unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
+      unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : null,
     };
 
     client.cache.writeData({
