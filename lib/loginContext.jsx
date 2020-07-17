@@ -154,7 +154,7 @@ export function LoginContextProvider(props) {
           unit: me.roles[activeRoleNumber].units[0].id,
           unitLabel: me.roles[activeRoleNumber].units[0].label,
         }
-        : { role: me.roles[activeRoleNumber].role };
+        : { role: me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
 
       setActiveRole(newRole);
 

@@ -28,7 +28,6 @@ import { useLogin } from '../../../lib/loginContext';
 import { EMPLOYEE_TYPE, ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
 import getDecisions from '../../../utils/mappers/getDecisions';
 
-
 import ckeckStatusVisitor, {
   ACTIVE_STEP_STATUS,
   HIDDEN_STEP_STATUS,
