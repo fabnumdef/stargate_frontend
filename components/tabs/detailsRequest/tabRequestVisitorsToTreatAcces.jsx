@@ -34,6 +34,7 @@ import ckeckStatusVisitor, {
   INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
 import checkCriblageVisitor from '../../../utils/mappers/checkCriblageVisitor';
+import WarningIcon from '@material-ui/icons/Warning';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -124,7 +125,6 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
-    criblage: checkCriblageVisitor(status),
     validation: null,
     vip: false,
     steps: getDecisions(status),
@@ -175,7 +175,7 @@ function decisionReturn(value) {
     case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative:
       return (
         <CellDecision date={date}>
-          <RemoveCircleIcon style={{ color: '#ffc107' }} />
+          <WarningIcon style={{ color: '#ffc107' }} />
         </CellDecision>
       );
     default:
