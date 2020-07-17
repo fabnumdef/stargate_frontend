@@ -21,6 +21,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
+import WarningIcon from '@material-ui/icons/Warning';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 import CustomCheckbox from '../../styled/customCheckbox';
 import { useLogin } from '../../../lib/loginContext';
@@ -33,8 +34,6 @@ import ckeckStatusVisitor, {
   HIDDEN_STEP_STATUS,
   INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
-import checkCriblageVisitor from '../../../utils/mappers/checkCriblageVisitor';
-import WarningIcon from '@material-ui/icons/Warning';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
