@@ -42,6 +42,9 @@ const GET_ME = gql`
                     label
                 }
             }
+            email {
+                original
+            }
         }
     }
 `;
