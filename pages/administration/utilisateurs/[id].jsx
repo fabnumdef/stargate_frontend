@@ -9,9 +9,15 @@ import UserForm from '../../../components/administrationForms/userForm';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 
-const GET_ME = gql`
-    query getMe {
-        me {
+const GET_USER = gql`
+    query getUser($id: String!) {
+        getUser(id: $id) {
+            id
+            firstname
+            lastname
+            email {
+                original
+            }
             roles {
                 role
                 campuses {
@@ -27,26 +33,27 @@ const GET_ME = gql`
     }
 `;
 
-const CREATE_USER = gql`
-  mutation createUser($user: UserInput!) {
-      createUser(user: $user) {
-          id
-      }
-  }
+const EDIT_USER = gql`
+    mutation editUser($user: UserInput!, $id: String!) {
+        editUser(user: $user, id: $id) {
+            id
+        }
+    }
 `;
 
-function CreateUser() {
+function EditUser() {
   const { addAlert } = useSnackBar();
   const router = useRouter();
-  const [createUser] = useMutation(CREATE_USER);
-  const { data: userData } = useQuery(GET_ME);
+  const { id } = router.query;
+  const [editUser] = useMutation(EDIT_USER);
+  const { data: editUserData } = useQuery(GET_USER, { variables: { id } });
   const { activeRole } = useLogin();
 
-  const submitCreateUser = async (user) => {
+  const submitEditUser = async (user) => {
     try {
-      const { data: { createUser: { id } } } = await createUser({ variables: { user } });
-      if (id) {
-        addAlert({ message: 'L\'utilisateur a bien été créé', severity: 'success' });
+      const { data: { editUser: { id: userId } } } = await editUser({ variables: { user, id } });
+      if (userId) {
+        addAlert({ message: 'L\'utilisateur a bien été modifié', severity: 'success' });
         router.push('/administration/utilisateurs');
       }
       return null;
@@ -71,30 +78,31 @@ function CreateUser() {
     }
   };
 
-  let defaultValues = {};
-  if (userData) {
-    const selectedRole = userData.me.roles.find((role) => role.role === activeRole.role);
-    defaultValues = {
-      campus: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
-      unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
+  const mapEditUser = (data) => {
+    const roleUser = data.roles.find((role) => role.role === 'ROLE_OBSERVER' || 'ROLE_HOST');
+    return {
+      ...data,
+      email: data.email.original,
+      campus: roleUser ? roleUser.campuses[0].id : null,
+      unit: roleUser ? roleUser.units[0].id : null,
+      role: roleUser ? roleUser.role : null,
     };
-  }
-
+  };
 
   return (
     <Template>
-      <PageTitle title="Administration" subtitles={['Utilisateur', 'Nouvel utilisateur']} />
-      {userData
-        && (
+      <PageTitle title="Administration" subtitles={['Utilisateur', 'Modifier utilisateur']} />
+      {editUserData
+      && (
         <UserForm
-          submitForm={submitCreateUser}
-          defaultValues={defaultValues}
+          submitForm={submitEditUser}
+          defaultValues={mapEditUser(editUserData.getUser)}
           userRole={activeRole}
-          type="create"
+          type="edit"
         />
-        )}
+      )}
     </Template>
   );
 }
 
-export default withApollo()(CreateUser);
+export default withApollo()(EditUser);
