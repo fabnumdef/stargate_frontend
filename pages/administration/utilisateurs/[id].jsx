@@ -80,11 +80,12 @@ function EditUser() {
 
   const mapEditUser = (data) => {
     const roleUser = data.roles.find((role) => role.role === 'ROLE_OBSERVER' || 'ROLE_HOST');
+    console.log('roleUser', roleUser)
     return {
       ...data,
       email: data.email.original,
-      campus: roleUser ? roleUser.campuses[0].id : null,
-      unit: roleUser ? roleUser.units[0].id : null,
+      campus: roleUser.campuses[0] ? roleUser.campuses[0].id : null,
+      unit: roleUser.units[0] ? roleUser.units[0].id : null,
       role: roleUser ? roleUser.role : null,
     };
   };
