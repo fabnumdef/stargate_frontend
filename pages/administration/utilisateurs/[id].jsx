@@ -80,7 +80,6 @@ function EditUser() {
 
   const mapEditUser = (data) => {
     const roleUser = data.roles.find((role) => role.role === 'ROLE_OBSERVER' || 'ROLE_HOST');
-    console.log(roleUser)
     return {
       ...data,
       email: data.email.original,
