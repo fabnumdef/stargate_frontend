@@ -18,6 +18,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CustomTableCellHeader from '../styled/customTableCellHeader';
+import { useLogin } from '../../lib/loginContext';
+import { ROLES } from '../../utils/constants/enums';
 
 const useStyles = makeStyles({
   root: {
@@ -50,10 +52,22 @@ export default function TabAdminUsers({
   tabData,
 }) {
   const classes = useStyles();
+  const { activeRole } = useLogin();
 
   const [del, setDel] = useState({});
 
   const [hover, setHover] = useState({});
+
+  const editAuth = (userData) => {
+    switch (activeRole.role) {
+      case ROLES.ROLE_UNIT_CORRESPONDENT.role:
+        return activeRole.unitLabel === userData.unit;
+      case ROLES.ROLE_ADMIN.role:
+        return userData.role !== ROLES.ROLE_SUPERADMIN.role;
+      default:
+        return true;
+    }
+  };
 
   const handleMouseEnter = (index) => {
     setHover((prevState) => ({ ...prevState, [index]: true }));
@@ -156,11 +170,13 @@ export default function TabAdminUsers({
               <TableCell key="modif" align="right">
                 {hover[index] && (
                   <>
-                    <Link href="/administration/utilisateurs">
-                      <IconButton aria-label="modifier" color="primary" className={classes.icon}>
-                        <EditIcon />
-                      </IconButton>
-                    </Link>
+                    {editAuth(row) && (
+                      <Link href={`/administration/utilisateurs/${row.id}`}>
+                        <IconButton aria-label="modifier" color="primary" className={classes.icon}>
+                          <EditIcon />
+                        </IconButton>
+                      </Link>
+                    )}
                     <IconButton
                       aria-label="supprimer"
                       className={classes.icon}

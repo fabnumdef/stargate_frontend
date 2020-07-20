@@ -77,7 +77,9 @@ const GET_UNITS = gql`
     }
 `;
 
-const UserForm = ({ submitForm, defaultValues, userRole }) => {
+const UserForm = ({
+  submitForm, defaultValues, userRole, type,
+}) => {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
   const {
@@ -250,7 +252,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                     )}
                   control={control}
                   name="unit"
-                  defaultValue={isSuperAdmin(userRole.role) ? '' : defaultValues.unit}
+                  defaultValue={(isSuperAdmin(userRole.role) && type === 'create') ? '' : defaultValues.unit}
                   rules={{ required: true }}
                 />
                 {errors.unit && (
@@ -310,7 +312,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
                   control={control}
                   rules={{ required: 'Le rôle est obligatoire' }}
                   name="role"
-                  defaultValue=""
+                  defaultValue={defaultValues.role ? defaultValues.role : ''}
                 />
                 {errors.role && (
                   <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>
@@ -327,7 +329,7 @@ const UserForm = ({ submitForm, defaultValues, userRole }) => {
           </Button>
         </Link>
         <Button type="submit" variant="contained" color="primary">
-          Créer
+          {type === 'create' ? 'Créer' : 'Modifier'}
         </Button>
       </Grid>
     </form>
@@ -347,6 +349,7 @@ UserForm.propTypes = {
   userRole: PropTypes.shape({
     role: PropTypes.string.isRequired,
   }).isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default UserForm;
