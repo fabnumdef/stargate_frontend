@@ -49,6 +49,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export const CHECK_ACTUAL_PASS = gql`  
+    mutation checkActualPass($email: EmailAddress!, $password: String) {
+        me @client {
+            email {
+                original @export(as :"email")
+            }
+        }
+        login(email: $email, password: $password) {
+            jwt
+        }
+    }
+`;
+
 export const EDIT_PASSWORD = gql`
     mutation editPassword($user: OwnUserInput!) {
         editMe(user: $user) {
@@ -59,6 +72,7 @@ export const EDIT_PASSWORD = gql`
 
 export default function Account() {
   const classes = useStyles();
+  const [checkActualPass] = useMutation(CHECK_ACTUAL_PASS);
   const [submitEditPassword] = useMutation(EDIT_PASSWORD);
   const { addAlert } = useSnackBar();
   const {
@@ -70,13 +84,25 @@ export default function Account() {
     },
   });
 
-  const onSubmit = async ({ password }) => {
+  const changePasswordReq = async (password) => {
     try {
       await submitEditPassword({ variables: { user: { password } } });
       reset({ password: '', confirmPassword: '' });
       return addAlert({ message: 'Votre mot de passe a bien été modifié', severity: 'success' });
     } catch (e) {
       return e;
+    }
+  };
+
+  const onSubmit = async ({ password, actualPassword }) => {
+    try {
+      const { data } = await checkActualPass({ variables: { password: actualPassword } });
+      if (data.login.jwt) {
+        return changePasswordReq(password);
+      }
+      return addAlert({ message: 'Merci de vérifier votre mot de passe actuel', severity: 'warning' });
+    } catch (e) {
+      return addAlert({ message: 'Merci de vérifier votre mot de passe actuel', severity: 'warning' });
     }
   };
 
@@ -98,6 +124,21 @@ export default function Account() {
         <form onSubmit={handleSubmit(onSubmit)} className={classes.formPassword}>
           <Grid container spacing={2}>
             <Grid item md={6} sm={6} xs={12}>
+              <Controller
+                as={(
+                  <TextField
+                    label="Mot de passe actuel"
+                    inputProps={{ 'data-testid': 'form-old-password', type: 'password' }}
+                    error={Object.prototype.hasOwnProperty.call(errors, 'actualPassword')}
+                    helperText={errors.password && errors.password.message}
+                    fullWidth
+                  />
+                )}
+                rules={{ minLength: 8, required: true }}
+                control={control}
+                name="actualPassword"
+                defaultValue=""
+              />
               <Controller
                 as={(
                   <TextField
