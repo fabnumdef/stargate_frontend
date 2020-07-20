@@ -6,6 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import { useRouter } from 'next/router';
 
 const MenuItems = dynamic(() => import('./menu'));
 
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default () => {
   const classes = useStyles();
+  const router = useRouter();
 
   return (
     <>
@@ -49,6 +51,7 @@ export default () => {
               className={classes.menuButton}
               color="inherit"
               aria-label="logo"
+              onClick={() => router.push('/')}
             >
               <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
             </Button>

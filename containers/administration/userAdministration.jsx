@@ -115,13 +115,12 @@ function UserAdministration() {
   const deleteUser = async (id) => {
     try {
       await deleteUserMutation({ variables: { id } });
-      setSearchInput(null);
+      setSearchInput('');
       addAlert({ message: 'L\'utilisateur a bien été supprimé', severity: 'success' });
-      if (usersList && usersList.listUsers.list.length === 1 && page > 1) {
-        await setPage(page - 1);
-        return getList(page - 1, searchInput);
+      if (usersList && usersList.listUsers.list.length === 1 && page > 0) {
+        return setPage(page - 1);
       }
-      return getList(page, searchInput);
+      return getList();
     } catch (e) {
       addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
       return e;
