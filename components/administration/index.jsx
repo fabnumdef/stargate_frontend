@@ -22,29 +22,24 @@ const useStyles = makeStyles({
   },
 });
 
-function IndexAdministration({ query, deleteMutation, tabData, columns}) {
-  const client = useApolloClient();
+function IndexAdministration({
+  getList,
+  list,
+  count,
+  searchInput,
+  setSearchInput,
+  deleteMutation,
+  tabData,
+  columns,
+  subtitles,
+}) {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
-
-  const [usersList, setUsersList] = useState(null);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const [searchInput, setSearchInput] = useState('');
-
-  const [deleteItem] = useMutation(deleteMutation);
-
-  const getList = async () => {
-    const filters = searchInput.length ? { lastname: searchInput } : null;
-    const { data } = await client.query({
-      query,
-      variables: { cursor: { first: rowsPerPage, offset: page * rowsPerPage }, filters },
-      fetchPolicy: 'no-cache',
-    });
-    return setUsersList(data);
-  };
+  const [deleteItemReq] = useMutation(deleteMutation);
 
   const handleChangePage = (event, selectedPage) => {
     setPage(selectedPage);
@@ -56,38 +51,32 @@ function IndexAdministration({ query, deleteMutation, tabData, columns}) {
   };
 
   React.useEffect(() => {
-    getList();
+    getList(rowsPerPage, page);
   }, [page, rowsPerPage]);
 
   const handleChangeFilter = (e) => {
     setSearchInput(e.target.value);
-    return getList();
+    return getList(rowsPerPage, page);
   };
 
-  const deleteUser = async (id) => {
+  const deleteItem = async (id) => {
     try {
-      await deleteItem({ variables: { id } });
+      await deleteItemReq({ variables: { id } });
       setSearchInput('');
       addAlert({ message: 'L\'utilisateur a bien été supprimé', severity: 'success' });
-      if (usersList && usersList.listUsers.list.length === 1 && page > 0) {
+      if (list.length === 1 && page > 0) {
         return setPage(page - 1);
       }
-      return getList();
+      return getList(rowsPerPage, page);
     } catch (e) {
       addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
       return e;
     }
   };
 
-  useEffect(() => {
-    if (!usersList) {
-      getList();
-    }
-  });
-
   return (
     <Template>
-      <PageTitle title="Administration" subtitles={['Utilisateur']} />
+      <PageTitle title="Administration" subtitles={subtitles} />
       <Grid container spacing={1} justify="space-between" style={{ margin: '20px 0' }}>
         <Grid item sm={12} xs={12} md={12} lg={12}>
           <TextField
@@ -108,9 +97,9 @@ function IndexAdministration({ query, deleteMutation, tabData, columns}) {
         </Grid>
         <Grid item sm={12}>
           <TabAdminUsers
-            rows={usersList ? mapUsersList(usersList.listUsers.list) : []}
+            rows={list}
             columns={columns}
-            deleteItem={deleteUser}
+            deleteItem={deleteItem}
             tabData={tabData}
           />
         </Grid>
@@ -118,7 +107,7 @@ function IndexAdministration({ query, deleteMutation, tabData, columns}) {
           <TablePagination
             rowsPerPageOptions={[10, 20, 30, 40, 50]}
             component="div"
-            count={usersList && usersList.listUsers.meta.total}
+            count={count}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}

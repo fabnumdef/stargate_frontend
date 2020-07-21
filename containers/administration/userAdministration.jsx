@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import IndexAdministration from '../../components/administration';
+import { mapUsersList } from '../../utils/mappers/adminMappers';
+import { useApolloClient } from '@apollo/react-hooks';
 
 const columns = [
   { id: 'lastname', label: 'Nom' },
@@ -50,12 +52,32 @@ const createUserData = {
 };
 
 function UserAdministration() {
+  const client = useApolloClient();
+
+  const [usersList, setUsersList] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
+
+  const getList = async (rowsPerPage, page) => {
+    const filters = searchInput.length ? { lastname: searchInput } : null;
+    const { data } = await client.query({
+      query: GET_USERS_LIST,
+      variables: { cursor: { first: rowsPerPage, offset: page * rowsPerPage }, filters },
+      fetchPolicy: 'no-cache',
+    });
+    return setUsersList(data);
+  };
+
   return (
     <IndexAdministration
-      query={GET_USERS_LIST}
+      getList={getList}
+      list={usersList ? mapUsersList(usersList.listUsers.list) : []}
+      count={usersList && usersList.listUsers.meta.total}
+      searchInput={searchInput}
+      setSearchInput={setSearchInput}
       deleteMutation={DELETE_USER}
       tabData={createUserData}
       columns={columns}
+      subtitles={['Utilisateurs']}
     />
   );
 }

@@ -8,13 +8,20 @@ import Button from '@material-ui/core/Button';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
-function getMenus() {
+function getMenus(router, setDisplay, display) {
   return [
-    { label: 'Mes Demandes', link: '/' },
-    { label: 'Nouvelle Demande', link: '/nouvelle-demande' },
-    { label: 'Administration', link: '/administration/utilisateurs' },
-    { label: 'A propos', link: '/no-route' },
-    { label: 'Contactez Nous', link: '/no-route' },
+    { label: 'Mes Demandes', permission: '/', action: () => router.push('/') },
+    { label: 'Nouvelle Demande', permission: '/nouvelle-demande', action: () => router.push('/') },
+    { label: 'Administration', permission: '/administration', action: () => setDisplay(!display) },
+    { label: 'A propos', permission: '/no-route', action: () => router.push('/') },
+    { label: 'Contactez Nous', permission: '/no-route', action: () => router.push('/') },
+  ];
+}
+
+function getAdminMenu(router) {
+  return [
+    { label: 'Utilisateurs', permission: '/administration/utilisateurs', action: () => router.push('/administration/utilisateurs') },
+    { label: 'Unités', permission: '/administration/unites', action: () => router.push('/administration/unites') },
   ];
 }
 
@@ -22,6 +29,7 @@ const ButtonMenu = withStyles(() => ({
   root: {
     textTransform: 'none',
     borderRadius: '0px',
+    position: 'relative',
   },
 }))(Button);
 
@@ -34,32 +42,57 @@ const useStyles = makeStyles(() => ({
   grow: {
     flexGrow: 1,
   },
+  subButtons: {
+    position: 'absolute',
+    top: '42px',
+    width: '100%',
+    '& button': {
+      width: '100%',
+    },
+  },
 }));
 
 export default function MenuItems() {
   const { activeRole } = useLogin();
-  const menu = getMenus();
-  const classes = useStyles();
   const router = useRouter();
+  const [display, setDisplay] = React.useState(false);
+
+  const menu = getMenus(router, setDisplay, display);
+  const classes = useStyles();
 
   return (
     <>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Toolbar className={classes.appBar}>
         <div className={classes.grow} />
-        {menu.map(({ link, label }) => (
-          urlAuthorization(link, activeRole.role) && (
-            <Link href={link} key={label}>
-              {router.pathname === link ? (
-                <ButtonMenu size="small" variant="contained" color="secondary">
+        {menu.map(({ permission, action, label }) => (
+          urlAuthorization(permission, activeRole.role) && (
+            <>
+              {router.pathname.includes(permission) ? (
+                <ButtonMenu size="small" variant="contained" color="secondary" onClick={action}>
                   {label}
+                  {display && label === 'Administration' && (
+                    <div className={classes.subButtons}>
+                      {getAdminMenu(router).map((subMenu) => (
+                        urlAuthorization(subMenu.permission, activeRole.role)
+                          && router.pathname.includes(subMenu.permission) ? (
+                            <ButtonMenu size="small" variant="contained" color="secondary" onClick={subMenu.action}>
+                              {subMenu.label}
+                            </ButtonMenu>
+                          ) : (
+                            <ButtonMenu size="small" variant="contained" color="primary" onClick={subMenu.action}>
+                              {subMenu.label}
+                            </ButtonMenu>
+                          )
+                      ))}
+                    </div>
+                  )}
                 </ButtonMenu>
               ) : (
                 <ButtonMenu size="small" variant="contained" color="primary">
                   {label}
                 </ButtonMenu>
               )}
-            </Link>
+            </>
           )
         ))}
       </Toolbar>

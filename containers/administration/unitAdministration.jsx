@@ -1,27 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
+import { useApolloClient } from '@apollo/react-hooks';
 import IndexAdministration from '../../components/administration';
+import { mapUnitsList } from '../../utils/mappers/adminMappers';
 
 const columns = [
+  { id: 'trigram', label: 'Trigramme' },
   { id: 'name', label: 'Nom' },
   { id: 'securityOfficer', label: 'Officer Sécurité' },
   { id: 'unitCorrespondent', label: 'Correspondant' },
 ];
 
 const GET_UNITS_LIST = gql`
-    query listUnits($cursor: OffsetCursor, $filters: UserFilters) {
-        listUnits(cursor: $cursor, filters: $filters) {
-            meta {
-                offset
-                first
-                total
-            }
-            list {
-                id
-                label
+    query listUnits($cursor: OffsetCursor, $filters: UnitFilters, $campusId: String!) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
+            listUnits(cursor: $cursor, filters: $filters) {
+                meta {
+                    offset
+                    first
+                    total
+                }
+                list {
+                    id
+                    label
+                    trigram
+                }
             }
         }
     }
+`;
+
+const GET_UNITS_USERS = gql`
+    query listUsers($filters: UserFilters) {
+          listUsers(filters: $filters) {
+              list {
+                  id
+                  firstname
+                  lastname
+                  roles {
+                      role
+                      units {
+                          id
+                      }
+                  }
+              }
+          }
+      }
 `;
 
 const DELETE_UNIT = gql`
@@ -38,12 +63,40 @@ const createUnitData = {
 };
 
 function UnitAdministration() {
+  const client = useApolloClient();
+
+  const [unitsList, setUnitsList] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
+
+  const getList = async (rowsPerPage, page) => {
+    const filtersUnits = searchInput.length ? { label: searchInput } : null;
+    const { data: listUnits } = await client.query({
+      query: GET_UNITS_LIST,
+      variables: {
+        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+        filters: filtersUnits,
+      },
+      fetchPolicy: 'no-cache',
+    });
+    const { data: unitsUsers } = await client.query({
+      query: GET_UNITS_USERS,
+      variables: { filters: {} },
+    });
+    const mappedList = mapUnitsList(listUnits.getCampus.listUnits.list, unitsUsers.listUsers.list);
+    return setUnitsList({ list: mappedList, total: listUnits.getCampus.listUnits.meta.total });
+  };
+
   return (
     <IndexAdministration
-      query={GET_UNITS_LIST}
+      getList={getList}
+      list={unitsList ? unitsList.list : []}
+      count={unitsList ? unitsList.total : 0}
+      searchInput={searchInput}
+      setSearchInput={setSearchInput}
       deleteMutation={DELETE_UNIT}
       tabData={createUnitData}
       columns={columns}
+      subtitles={['Unités']}
     />
   );
 }
