@@ -52,12 +52,9 @@ function IndexAdministration({
 
   React.useEffect(() => {
     getList(rowsPerPage, page);
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, searchInput]);
 
-  const handleChangeFilter = (e) => {
-    setSearchInput(e.target.value);
-    return getList(rowsPerPage, page);
-  };
+  const handleChangeFilter = (e) => setSearchInput(e.target.value);
 
   const deleteItem = async (id) => {
     try {
