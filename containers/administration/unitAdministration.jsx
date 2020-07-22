@@ -59,7 +59,7 @@ const DELETE_UNIT = gql`
 `;
 
 const createUnitData = {
-  createUserPath: '/administration/unites/creation',
+  createPath: '/administration/unites/creation',
   deleteText: 'Êtes-vous sûr de vouloir supprimer cette unité ?',
 };
 

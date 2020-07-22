@@ -110,7 +110,7 @@ export default function TabAdmin({
             </CustomTableCellHeader>
           ))}
           <CustomTableCellHeader key="actions" align="right">
-            <Link href={tabData.createUserPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
+            <Link href={tabData.createPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
           </CustomTableCellHeader>
         </TableRow>
       </TableHead>
