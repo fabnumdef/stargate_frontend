@@ -7,11 +7,11 @@ import Button from '@material-ui/core/Button';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
-function getMenus(router, setDisplay, display) {
+function getMenus(router, setSubMenuAdmin, subMenuAdmin) {
   return [
     { label: 'Mes Demandes', permission: '/', action: () => router.push('/') },
     { label: 'Nouvelle Demande', permission: '/nouvelle-demande', action: () => router.push('/nouvelle-demande') },
-    { label: 'Administration', permission: '/administration', action: () => setDisplay(!display) },
+    { label: 'Administration', permission: '/administration', action: () => setSubMenuAdmin(!subMenuAdmin) },
     { label: 'A propos', permission: '/no-route', action: () => router.push('/no-route') },
     { label: 'Contactez Nous', permission: '/no-route', action: () => router.push('/no-route') },
   ];
@@ -54,9 +54,9 @@ const useStyles = makeStyles(() => ({
 export default function MenuItems() {
   const { activeRole } = useLogin();
   const router = useRouter();
-  const [display, setDisplay] = React.useState(false);
+  const [subMenuAdmin, setSubMenuAdmin] = React.useState(false);
 
-  const menu = getMenus(router, setDisplay, display);
+  const menu = getMenus(router, setSubMenuAdmin, subMenuAdmin);
   const classes = useStyles();
 
   const checkActiveButton = (permission) => (router.pathname === permission) || (router.pathname.includes(permission) && permission !== '/');
@@ -70,7 +70,7 @@ export default function MenuItems() {
             <>
               <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
-                {display && label === 'Administration' && (
+                {subMenuAdmin && label === 'Administration' && (
                 <div className={classes.subButtons}>
                   {getAdminMenu(router).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
