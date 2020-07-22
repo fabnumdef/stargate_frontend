@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
@@ -70,8 +71,7 @@ export default function MenuItems() {
             <>
               <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
-                {subMenuAdmin && label === 'Administration' && (
-                <div className={classes.subButtons}>
+                <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
                   {getAdminMenu(router).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
                     <ButtonMenu size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
@@ -79,8 +79,7 @@ export default function MenuItems() {
                     </ButtonMenu>
                     )
                   ))}
-                </div>
-                )}
+                </Collapse>
               </ButtonMenu>
             </>
           )

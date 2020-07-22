@@ -9,7 +9,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import Template from '../../containers/template';
 import PageTitle from '../styled/pageTitle';
-import TabAdminUsers from '../tabs/tabAdminUsers';
+import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles({
@@ -96,7 +96,7 @@ function IndexAdministration({
           />
         </Grid>
         <Grid item sm={12}>
-          <TabAdminUsers
+          <TabAdmin
             rows={list}
             columns={columns}
             deleteItem={deleteItem}
