@@ -3,12 +3,13 @@ import gql from 'graphql-tag';
 import { useApolloClient } from '@apollo/react-hooks';
 import IndexAdministration from '../../components/administration';
 import { mapUnitsList } from '../../utils/mappers/adminMappers';
+import { ROLES } from '../../utils/constants/enums';
 
 const columns = [
   { id: 'trigram', label: 'Trigramme' },
   { id: 'name', label: 'Nom' },
-  { id: 'securityOfficer', label: 'Officer Sécurité' },
-  { id: 'unitCorrespondent', label: 'Correspondant' },
+  { id: ROLES.ROLE_SECURITY_OFFICER.role, label: ROLES.ROLE_SECURITY_OFFICER.label },
+  { id: ROLES.ROLE_UNIT_CORRESPONDENT.role, label: ROLES.ROLE_UNIT_CORRESPONDENT.label },
 ];
 
 const GET_UNITS_LIST = gql`

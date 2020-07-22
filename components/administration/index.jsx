@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useApolloClient, useMutation } from '@apollo/react-hooks';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { useMutation } from '@apollo/react-hooks';
 import TablePagination from '@material-ui/core/TablePagination';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,7 +10,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import Template from '../../containers/template';
 import PageTitle from '../styled/pageTitle';
 import TabAdminUsers from '../tabs/tabAdminUsers';
-import { mapUsersList } from '../../utils/mappers/adminMappers';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles({
@@ -118,5 +118,17 @@ function IndexAdministration({
     </Template>
   );
 }
+
+IndexAdministration.propTypes = {
+  getList: PropTypes.func.isRequired,
+  list: PropTypes.arrayOf(PropTypes.object).isRequired,
+  count: PropTypes.number.isRequired,
+  searchInput: PropTypes.string.isRequired,
+  setSearchInput: PropTypes.func.isRequired,
+  deleteMutation: PropTypes.objectOf(PropTypes.shape).isRequired,
+  tabData: PropTypes.objectOf(PropTypes.string.isRequired).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  subtitles: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default IndexAdministration;

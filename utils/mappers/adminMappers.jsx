@@ -36,13 +36,19 @@ export const mapUsersList = (usersList) => usersList.map((user) => ({
 }));
 
 export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
-  const securityOfficer = usersList.find((user) => user.roles.find((role) => role.role === ROLES.ROLE_SECURITY_OFFICER.role && role.units.find((userUnit) => userUnit.id === unit.id)));
-  const unitCorrespondent = usersList.find((user) => user.roles.find((role) => role.role === ROLES.ROLE_UNIT_CORRESPONDENT.role && role.units.find((userUnit) => userUnit.id === unit.id)));
+  const findName = (userRole) => {
+    const findUser = usersList.find(
+      (user) => user.roles.find(
+        (role) => role.role === userRole && role.units.find((userUnit) => userUnit.id === unit.id),
+      ),
+    );
+    return `${findUser.firstname} ${findUser.lastname}`;
+  };
   return {
     id: unit.id,
     trigram: unit.trigram,
     name: unit.label,
-    securityOfficer: `${securityOfficer.firstname} ${securityOfficer.lastname}`,
-    unitCorrespondent: `${unitCorrespondent.firstname} ${unitCorrespondent.lastname}`,
+    [ROLES.ROLE_SECURITY_OFFICER.role]: findName(ROLES.ROLE_SECURITY_OFFICER.role),
+    [ROLES.ROLE_UNIT_CORRESPONDENT.role]: findName(ROLES.ROLE_UNIT_CORRESPONDENT.role),
   };
 });

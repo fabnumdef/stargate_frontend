@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles';
@@ -11,10 +10,10 @@ import { useLogin } from '../../../lib/loginContext';
 function getMenus(router, setDisplay, display) {
   return [
     { label: 'Mes Demandes', permission: '/', action: () => router.push('/') },
-    { label: 'Nouvelle Demande', permission: '/nouvelle-demande', action: () => router.push('/') },
+    { label: 'Nouvelle Demande', permission: '/nouvelle-demande', action: () => router.push('/nouvelle-demande') },
     { label: 'Administration', permission: '/administration', action: () => setDisplay(!display) },
-    { label: 'A propos', permission: '/no-route', action: () => router.push('/') },
-    { label: 'Contactez Nous', permission: '/no-route', action: () => router.push('/') },
+    { label: 'A propos', permission: '/no-route', action: () => router.push('/no-route') },
+    { label: 'Contactez Nous', permission: '/no-route', action: () => router.push('/no-route') },
   ];
 }
 
@@ -60,6 +59,8 @@ export default function MenuItems() {
   const menu = getMenus(router, setDisplay, display);
   const classes = useStyles();
 
+  const checkActiveButton = (permission) => (router.pathname === permission) || (router.pathname.includes(permission) && permission !== '/');
+
   return (
     <>
       <Toolbar className={classes.appBar}>
@@ -67,31 +68,20 @@ export default function MenuItems() {
         {menu.map(({ permission, action, label }) => (
           urlAuthorization(permission, activeRole.role) && (
             <>
-              {router.pathname.includes(permission) ? (
-                <ButtonMenu size="small" variant="contained" color="secondary" onClick={action}>
-                  {label}
-                  {display && label === 'Administration' && (
-                    <div className={classes.subButtons}>
-                      {getAdminMenu(router).map((subMenu) => (
-                        urlAuthorization(subMenu.permission, activeRole.role)
-                          && router.pathname.includes(subMenu.permission) ? (
-                            <ButtonMenu size="small" variant="contained" color="secondary" onClick={subMenu.action}>
-                              {subMenu.label}
-                            </ButtonMenu>
-                          ) : (
-                            <ButtonMenu size="small" variant="contained" color="primary" onClick={subMenu.action}>
-                              {subMenu.label}
-                            </ButtonMenu>
-                          )
-                      ))}
-                    </div>
-                  )}
-                </ButtonMenu>
-              ) : (
-                <ButtonMenu size="small" variant="contained" color="primary">
-                  {label}
-                </ButtonMenu>
-              )}
+              <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
+                {label}
+                {display && label === 'Administration' && (
+                <div className={classes.subButtons}>
+                  {getAdminMenu(router).map((subMenu) => (
+                    urlAuthorization(subMenu.permission, activeRole.role) && (
+                    <ButtonMenu size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
+                      {subMenu.label}
+                    </ButtonMenu>
+                    )
+                  ))}
+                </div>
+                )}
+              </ButtonMenu>
             </>
           )
         ))}

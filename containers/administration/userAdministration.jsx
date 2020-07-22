@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
+import { useApolloClient } from '@apollo/react-hooks';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
-import { useApolloClient } from '@apollo/react-hooks';
 
 const columns = [
   { id: 'lastname', label: 'Nom' },
