@@ -3,7 +3,7 @@ import { useDrag, useDrop } from 'react-dnd';
 
 const containerStyle = {
   textAlign: 'center',
-  margin: '0 25px',
+  margin: '0 20px',
 };
 
 const cardStyle = {
