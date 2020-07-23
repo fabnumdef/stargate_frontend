@@ -73,6 +73,7 @@ const GET_PLACES = gql`
     }
 `;
 
+
 const UnitForm = ({
   submitForm, defaultValues, userRole, type,
 }) => {
@@ -82,7 +83,9 @@ const UnitForm = ({
     handleSubmit, errors, control, watch,
   } = useForm();
 
-  const [cards, setCards] = useState(Object.values(ROLES).filter((role) => role.workflow).map((role, i) => ({ id: i + 1, text: role.label })));
+  const allCards = Object.values(ROLES).filter((role) => role.workflow).map((role, i) => ({ id: i + 1, text: role.label, role: role.role }));
+  const [cards, setCards] = useState(allCards);
+
   const [expanded, setExpanded] = useState(false);
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -175,7 +178,7 @@ const UnitForm = ({
           </Grid>
           <Grid>
             <Typography variant="subtitle3">Parcours de validation: </Typography>
-            <DndModule cards={cards} setCards={setCards} />
+            <DndModule cards={cards} setCards={setCards} allCards={allCards}/>
           </Grid>
         </Grid>
         <Grid sm={6} xs={6}>

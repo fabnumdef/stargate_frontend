@@ -1,15 +1,31 @@
 import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
-const style = {
+const containerStyle = {
+  textAlign: 'center',
+  margin: '0 25px',
+};
+
+const cardStyle = {
   border: 'solid 1px #0e4194',
-  padding: '0.5rem 1rem',
   marginBottom: '.5rem',
   backgroundColor: 'white',
   cursor: 'move',
-  width: '120px',
-  height: '60px',
+  width: '130px',
+  height: '70px',
   borderRadius: '3px',
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const buttonContainer = {
+  alignSelf: 'end',
+};
+
+const buttonStyle = {
+  border: 'none',
+  color: '#0e4194',
+  backgroundColor: 'white',
 };
 
 const ItemTypes = {
@@ -17,7 +33,7 @@ const ItemTypes = {
 };
 
 const DndCard = ({
-  id, text, index, moveCard,
+  id, text, index, moveCard, deleteCard,
 }) => {
   const ref = useRef(null);
   const [, drop] = useDrop({
@@ -57,6 +73,7 @@ const DndCard = ({
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
+      // eslint-disable-next-line no-param-reassign
       item.index = hoverIndex;
     },
   });
@@ -69,8 +86,16 @@ const DndCard = ({
   const opacity = isDragging ? 0 : 1;
   drag(drop(ref));
   return (
-    <div ref={ref} style={{ ...style, opacity }}>
-      {text}
+    <div ref={ref} style={containerStyle}>
+      {index + 1}
+      <div style={{ ...cardStyle, opacity }}>
+        <div style={buttonContainer}>
+          <button type="button" onClick={() => deleteCard(text)} style={buttonStyle}>X</button>
+        </div>
+        <div>
+          {text}
+        </div>
+      </div>
     </div>
   );
 };
