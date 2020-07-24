@@ -6,6 +6,7 @@ import { Select } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 import DndCard from '../components/styled/dndCard';
 
 const style = {
@@ -95,6 +96,12 @@ const DndContainer = ({ cards, setCards, allCards }) => {
       </div>
     </DndProvider>
   );
+};
+
+DndContainer.propTypes = {
+  cards: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.shape)).isRequired,
+  setCards: PropTypes.func.isRequired,
+  allCards: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.shape)).isRequired,
 };
 
 export default DndContainer;

@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import PropTypes from 'prop-types';
 
 const containerStyle = {
   textAlign: 'center',
@@ -98,6 +99,14 @@ const DndCard = ({
       </div>
     </div>
   );
+};
+
+DndCard.propTypes = {
+  id: PropTypes.number.isRequired,
+  text: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  moveCard: PropTypes.func.isRequired,
+  deleteCard: PropTypes.func.isRequired,
 };
 
 export default DndCard;

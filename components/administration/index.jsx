@@ -60,7 +60,7 @@ function IndexAdministration({
     try {
       await deleteItemReq({ variables: { id } });
       setSearchInput('');
-      addAlert({ message: 'L\'utilisateur a bien été supprimé', severity: 'success' });
+      addAlert({ message: tabData.deletedText, severity: 'success' });
       if (list.length === 1 && page > 0) {
         return setPage(page - 1);
       }

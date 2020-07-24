@@ -41,29 +41,34 @@ export const ROLES = {
     label: "Correspondant d'unité",
     shortLabel: 'CU',
     workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
+    behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
   },
   ROLE_SECURITY_OFFICER: {
     role: 'ROLE_SECURITY_OFFICER',
     label: 'Officier de sécurité',
     shortLabel: 'OS',
     workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
+    behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
   },
   ROLE_ACCESS_OFFICE: {
     role: 'ROLE_ACCESS_OFFICE',
     label: 'Bureau des accès',
     shortLabel: 'BA',
     workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
+    behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
   },
   ROLE_SCREENING: {
     role: 'ROLE_SCREENING',
     label: 'Criblage',
     workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
+    behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
   },
   ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte' },
   ROLE_OBSERVER: {
     role: 'ROLE_OBSERVER',
     label: 'Observateur',
     workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
+    behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
   },
 };
 

@@ -26,6 +26,14 @@ export const mapUserData = (data, dataCampuses, dataUnits) => {
   };
 };
 
+export const mapUnitData = (data, cards) => ({
+  label: data.name,
+  trigram: data.trigram.trim().toUpperCase(),
+  workflow: {
+    steps: cards.map((card) => ({ role: card.role, behavior: card.behavior })),
+  },
+});
+
 export const mapUsersList = (usersList) => usersList.map((user) => ({
   id: user.id,
   lastname: user.lastname,
@@ -42,7 +50,7 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
         (role) => role.role === userRole && role.units.find((userUnit) => userUnit.id === unit.id),
       ),
     );
-    return `${findUser.firstname} ${findUser.lastname}`;
+    return findUser ? `${findUser.firstname} ${findUser.lastname}` : '-';
   };
   return {
     id: unit.id,

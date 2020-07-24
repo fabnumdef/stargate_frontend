@@ -122,7 +122,7 @@ export default function TabAdmin({
                 <TableCell key="delete" colSpan={columns.length + 1}>
                   <Grid container>
                     <Grid item sm={10}>
-                      {tabData.deleteText}
+                      {tabData.confirmDeleteText}
                     </Grid>
                     <Grid item sm={2}>
                       <IconButton
@@ -203,7 +203,8 @@ TabAdmin.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteItem: PropTypes.func.isRequired,
   tabData: PropTypes.shape({
-    createUserPath: PropTypes.string.isRequired,
-    deleteText: PropTypes.string.isRequired,
+    createPath: PropTypes.string.isRequired,
+    confirmDeleteText: PropTypes.string.isRequired,
+    deletedText: PropTypes.string.isRequired,
   }).isRequired,
 };
