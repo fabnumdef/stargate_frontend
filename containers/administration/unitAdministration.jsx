@@ -64,7 +64,7 @@ const DELETE_UNIT = gql`
 const createUnitData = {
   createPath: '/administration/unites/creation',
   confirmDeleteText: 'Êtes-vous sûr de vouloir supprimer cette unité ?',
-  deleteText: 'L\'unité a bien été supprimé',
+  deletedText: 'L\'unité a bien été supprimée',
 };
 
 function UnitAdministration() {

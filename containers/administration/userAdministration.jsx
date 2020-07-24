@@ -49,7 +49,7 @@ const DELETE_USER = gql`
 const createUserData = {
   createPath: '/administration/utilisateurs/creation',
   confirmDeleteText: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?',
-  deleteText: 'L\'utilisateur a bien été supprimé',
+  deletedText: 'L\'utilisateur a bien été supprimé',
 };
 
 function UserAdministration() {
