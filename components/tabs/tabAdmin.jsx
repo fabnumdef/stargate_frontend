@@ -17,6 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import { useRouter } from 'next/router';
 import CustomTableCellHeader from '../styled/customTableCellHeader';
 import { useLogin } from '../../lib/loginContext';
 import { ROLES } from '../../utils/constants/enums';
@@ -45,7 +46,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabAdminUsers({
+export default function TabAdmin({
   rows,
   columns,
   deleteItem,
@@ -53,6 +54,7 @@ export default function TabAdminUsers({
 }) {
   const classes = useStyles();
   const { activeRole } = useLogin();
+  const router = useRouter();
 
   const [del, setDel] = useState({});
 
@@ -108,7 +110,7 @@ export default function TabAdminUsers({
             </CustomTableCellHeader>
           ))}
           <CustomTableCellHeader key="actions" align="right">
-            <Link href={tabData.createUserPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
+            <Link href={tabData.createPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
           </CustomTableCellHeader>
         </TableRow>
       </TableHead>
@@ -171,7 +173,7 @@ export default function TabAdminUsers({
                 {hover[index] && (
                   <>
                     {editAuth(row) && (
-                      <Link href={`/administration/utilisateurs/${row.id}`}>
+                      <Link href={`${router.pathname}/${row.id}`}>
                         <IconButton aria-label="modifier" color="primary" className={classes.icon}>
                           <EditIcon />
                         </IconButton>
@@ -196,7 +198,7 @@ export default function TabAdminUsers({
   );
 }
 
-TabAdminUsers.propTypes = {
+TabAdmin.propTypes = {
   rows: PropTypes.arrayOf(PropTypes.object).isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteItem: PropTypes.func.isRequired,

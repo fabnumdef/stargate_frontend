@@ -83,8 +83,8 @@ function EditUser() {
     return {
       ...data,
       email: data.email.original,
-      campus: roleUser ? roleUser.campuses[0].id : null,
-      unit: roleUser ? roleUser.units[0].id : null,
+      campus: roleUser.campuses[0] ? roleUser.campuses[0].id : null,
+      unit: roleUser.units[0] ? roleUser.units[0].id : null,
       role: roleUser ? roleUser.role : null,
     };
   };
