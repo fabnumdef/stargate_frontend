@@ -1,10 +1,12 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import gql from 'graphql-tag';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
+import { useApolloClient } from '@apollo/react-hooks';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
@@ -18,10 +20,11 @@ function getMenus(router, setSubMenuAdmin, subMenuAdmin) {
   ];
 }
 
-function getAdminMenu(router) {
+function getAdminMenu(router, campusId) {
   return [
     { label: 'Utilisateurs', permission: '/administration/utilisateurs', action: () => router.push('/administration/utilisateurs') },
     { label: 'Unités', permission: '/administration/unites', action: () => router.push('/administration/unites') },
+    { label: 'Base', permission: '/administration/base', action: () => router.push(`/administration/base/${campusId}`) },
   ];
 }
 
@@ -55,9 +58,17 @@ const useStyles = makeStyles(() => ({
 export default function MenuItems() {
   const { activeRole } = useLogin();
   const router = useRouter();
+  const client = useApolloClient();
   const [subMenuAdmin, setSubMenuAdmin] = React.useState(false);
 
   const menu = getMenus(router, setSubMenuAdmin, subMenuAdmin);
+  const campus = client.readQuery({
+    query: gql`
+      query getCampusId {
+          campusId
+      }
+    `,
+  });
   const classes = useStyles();
 
   const checkActiveButton = (permission) => (router.pathname === permission) || (router.pathname.includes(permission) && permission !== '/');
@@ -72,7 +83,7 @@ export default function MenuItems() {
               <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
                 <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
-                  {getAdminMenu(router).map((subMenu) => (
+                  {getAdminMenu(router, campus.campusId).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
                     <ButtonMenu size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
                       {subMenu.label}

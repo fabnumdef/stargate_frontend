@@ -27,6 +27,7 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_SCREENING.role,
         ROLES.ROLE_HOST.role,
       ].includes(role);
+    case path.includes('/administration/base'):
     case path.includes('/administration/unites'):
       return [
         ROLES.ROLE_ADMIN.role,
