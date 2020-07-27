@@ -33,6 +33,9 @@ const GET_USERS_LIST = gql`
                       label
                   }
               }
+              email {
+                  original
+              }
           }
         }
     }
@@ -46,11 +49,11 @@ const DELETE_USER = gql`
   }
 `;
 
-const createUserData = {
+const createUserData = (data) => ({
   createPath: '/administration/utilisateurs/creation',
-  confirmDeleteText: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?',
-  deletedText: 'L\'utilisateur a bien été supprimé',
-};
+  confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cet utilisateur: ${data} ?`,
+  deletedText: `L'utilisateur ${data} a bien été supprimé`,
+});
 
 function UserAdministration() {
   const client = useApolloClient();

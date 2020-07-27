@@ -374,7 +374,7 @@ const UnitForm = ({
             </Grid>
           </Grid>
           <Grid className={classes.sectionContainer}>
-            <Typography variant="subtitle2">Parcours de validation: </Typography>
+            <Typography variant="subtitle2">Parcours de validation&nbsp;: </Typography>
             <DndModule cards={cards} setCards={setCards} allCards={allCards} />
           </Grid>
         </Grid>
@@ -382,7 +382,7 @@ const UnitForm = ({
           <Grid className={classes.sectionContainer}>
             <Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle2" style={{ display: 'inline-block' }}>Correspondant:</Typography>
+                <Typography variant="subtitle2" style={{ display: 'inline-block' }}>Correspondant&nbsp;:</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl
@@ -450,7 +450,7 @@ const UnitForm = ({
           <Grid className={classes.sectionContainer}>
             <Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle2" style={{ display: 'inline-block' }}>Officier Sécurité:</Typography>
+                <Typography variant="subtitle2" style={{ display: 'inline-block' }}>Officier Sécurité&nbsp;:</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl
@@ -483,7 +483,7 @@ const UnitForm = ({
                 </FormControl>
               </Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle3">Adjoint(s):</Typography>
+                <Typography variant="subtitle3">Adjoint(s)&nbsp;:</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>

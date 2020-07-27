@@ -61,11 +61,11 @@ const DELETE_UNIT = gql`
     }
 `;
 
-const createUnitData = {
+const createUnitData = (data) => ({
   createPath: '/administration/unites/creation',
-  confirmDeleteText: 'Êtes-vous sûr de vouloir supprimer cette unité ?',
-  deletedText: 'L\'unité a bien été supprimée',
-};
+  confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cette unité: ${data} ?`,
+  deletedText: `L'unité ${data} a bien été supprimée`,
+});
 
 function UnitAdministration() {
   const client = useApolloClient();
