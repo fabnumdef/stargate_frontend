@@ -84,8 +84,8 @@ export default function TabAdmin({
     setDel((prevState) => ({ ...prevState, [index]: true }));
   };
 
-  const handleDeleteConfirm = (id) => {
-    deleteItem(id);
+  const handleDeleteConfirm = (id, deleteLabel) => {
+    deleteItem(id, deleteLabel);
     setDel({});
   };
 
@@ -110,7 +110,7 @@ export default function TabAdmin({
             </CustomTableCellHeader>
           ))}
           <CustomTableCellHeader key="actions" align="right">
-            <Link href={tabData.createPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
+            <Link href={tabData().createPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
           </CustomTableCellHeader>
         </TableRow>
       </TableHead>
@@ -122,13 +122,13 @@ export default function TabAdmin({
                 <TableCell key="delete" colSpan={columns.length + 1}>
                   <Grid container>
                     <Grid item sm={10}>
-                      {tabData.deleteText}
+                      {tabData(row.deleteLabel).confirmDeleteText}
                     </Grid>
                     <Grid item sm={2}>
                       <IconButton
                         aria-label="valide"
                         className={classes.icon}
-                        onClick={() => handleDeleteConfirm(row.id)}
+                        onClick={() => handleDeleteConfirm(row.id, row.deleteLabel)}
                       >
                         <DoneIcon />
                       </IconButton>
@@ -202,8 +202,5 @@ TabAdmin.propTypes = {
   rows: PropTypes.arrayOf(PropTypes.object).isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteItem: PropTypes.func.isRequired,
-  tabData: PropTypes.shape({
-    createUserPath: PropTypes.string.isRequired,
-    deleteText: PropTypes.string.isRequired,
-  }).isRequired,
+  tabData: PropTypes.func.isRequired,
 };

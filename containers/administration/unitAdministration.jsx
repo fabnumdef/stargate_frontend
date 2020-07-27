@@ -51,17 +51,21 @@ const GET_UNITS_USERS = gql`
 `;
 
 const DELETE_UNIT = gql`
-    mutation deleteUnit($id: String!) {
-        deleteUnit(id: $id) {
-            id
+    mutation deleteUnit($campusId: String!, $id: String!) {
+        campusId @client @export(as: "campusId")
+        mutateCampus(id: $campusId) {
+            deleteUnit(id: $id) {
+                id
+            }
         }
     }
 `;
 
-const createUnitData = {
+const createUnitData = (data) => ({
   createPath: '/administration/unites/creation',
-  deleteText: 'Êtes-vous sûr de vouloir supprimer cette unité ?',
-};
+  confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cette unité: ${data} ?`,
+  deletedText: `L'unité ${data} a bien été supprimée`,
+});
 
 function UnitAdministration() {
   const client = useApolloClient();

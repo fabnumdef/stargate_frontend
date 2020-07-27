@@ -56,11 +56,11 @@ function IndexAdministration({
 
   const handleChangeFilter = (e) => setSearchInput(e.target.value);
 
-  const deleteItem = async (id) => {
+  const deleteItem = async (id, deleteLabel) => {
     try {
       await deleteItemReq({ variables: { id } });
       setSearchInput('');
-      addAlert({ message: 'L\'utilisateur a bien été supprimé', severity: 'success' });
+      addAlert({ message: tabData(deleteLabel).deletedText, severity: 'success' });
       if (list.length === 1 && page > 0) {
         return setPage(page - 1);
       }
@@ -123,7 +123,7 @@ IndexAdministration.propTypes = {
   searchInput: PropTypes.string.isRequired,
   setSearchInput: PropTypes.func.isRequired,
   deleteMutation: PropTypes.objectOf(PropTypes.shape).isRequired,
-  tabData: PropTypes.objectOf(PropTypes.string.isRequired).isRequired,
+  tabData: PropTypes.func.isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   subtitles: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

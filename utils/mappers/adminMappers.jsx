@@ -26,6 +26,14 @@ export const mapUserData = (data, dataCampuses, dataUnits) => {
   };
 };
 
+export const mapUnitData = (data, cards) => ({
+  label: data.name,
+  trigram: data.trigram.trim().toUpperCase(),
+  workflow: {
+    steps: cards.map((card) => ({ role: card.role, behavior: card.behavior })),
+  },
+});
+
 export const mapUsersList = (usersList) => usersList.map((user) => ({
   id: user.id,
   lastname: user.lastname,
@@ -33,6 +41,7 @@ export const mapUsersList = (usersList) => usersList.map((user) => ({
   campus: user.roles[0].campuses[0] ? user.roles[0].campuses[0].label : '',
   unit: user.roles[0].units[0] ? user.roles[0].units[0].label : '',
   role: ROLES[user.roles[0].role].label,
+  deleteLabel: user.email.original,
 }));
 
 export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
@@ -42,7 +51,7 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
         (role) => role.role === userRole && role.units.find((userUnit) => userUnit.id === unit.id),
       ),
     );
-    return `${findUser.firstname} ${findUser.lastname}`;
+    return findUser ? `${findUser.firstname} ${findUser.lastname}` : '-';
   };
   return {
     id: unit.id,
@@ -50,5 +59,6 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
     name: unit.label,
     [ROLES.ROLE_SECURITY_OFFICER.role]: findName(ROLES.ROLE_SECURITY_OFFICER.role),
     [ROLES.ROLE_UNIT_CORRESPONDENT.role]: findName(ROLES.ROLE_UNIT_CORRESPONDENT.role),
+    deleteLabel: unit.label,
   };
 });
