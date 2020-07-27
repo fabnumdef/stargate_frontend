@@ -153,9 +153,7 @@ function decisionReturn(value) {
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive:
       return (
         <CellDecision date={date}>
-          {value.role === ROLES.ROLE_UNIT_CORRESPONDENT.role
-            ? <CheckCircleIcon style={{ color: '#28a745' }} />
-            : <span style={{ color: '#28a745', fontWeight: 'bold' }}>{value.tags[0]}</span>}
+          <span style={{ color: '#28a745', fontWeight: 'bold' }}>{value.tags[0]}</span>
         </CellDecision>
       );
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative:
