@@ -16,14 +16,13 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
 import { useRouter } from 'next/router';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 import { ROLES } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import { DndModule } from '../../containers/index';
 import { mapUnitData } from '../../utils/mappers/adminMappers';
+import DeletableList from '../lists/deletableList';
 
 const useStyles = makeStyles((theme) => ({
   createUnitForm: {
@@ -54,10 +53,6 @@ const useStyles = makeStyles((theme) => ({
     width: '250px',
     top: '-5px',
   },
-  assistantList: {
-    width: '250px',
-    marginBottom: '3px',
-  },
   formRadio: {
     width: '100%',
   },
@@ -74,10 +69,6 @@ const useStyles = makeStyles((theme) => ({
     '& button': {
       margin: '3px',
     },
-  },
-  icon: {
-    height: '20px',
-    width: '20px',
   },
   error: {
     color: theme.palette.error.main,
@@ -139,30 +130,6 @@ const EDIT_PLACE = gql`
         }
     }
 `;
-
-const AssistantList = ({ user, deleteAssistant, typeAssistant }) => {
-  const classes = useStyles();
-
-  return (
-    <Grid container justify="space-between" className={classes.assistantList}>
-      <span>{`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}</span>
-      <IconButton
-        aria-label="supprimer"
-        className={classes.icon}
-        color="primary"
-        onClick={() => deleteAssistant(user.id, typeAssistant)}
-      >
-        <DeleteIcon />
-      </IconButton>
-    </Grid>
-  );
-};
-
-AssistantList.propTypes = {
-  user: PropTypes.objectOf(PropTypes.string).isRequired,
-  deleteAssistant: PropTypes.func.isRequired,
-  typeAssistant: PropTypes.string.isRequired,
-};
 
 const UnitForm = ({
   defaultValues, type,
@@ -425,7 +392,12 @@ const UnitForm = ({
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList.corresAssistant.map((user) => (
-                    <AssistantList user={user} deleteAssistant={deleteAssistant} typeAssistant="corresAssistant" />
+                    <DeletableList
+                      label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
+                      id={user.id}
+                      deleteItem={deleteAssistant}
+                      type="corresAssistant"
+                    />
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
@@ -488,7 +460,12 @@ const UnitForm = ({
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList.officerAssistant.map((user) => (
-                    <AssistantList user={user} deleteAssistant={deleteAssistant} typeAssistant="officerAssistant" />
+                    <DeletableList
+                      label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
+                      id={user.id}
+                      deleteItem={deleteAssistant}
+                      type="officerAssistant"
+                    />
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
@@ -515,7 +492,7 @@ const UnitForm = ({
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
         <Link href="/administration/utilisateurs">
-          <Button variant="outlined" color="primary" className={classes.buttonCancel}>
+          <Button variant="outlined" color="primary">
             Annuler
           </Button>
         </Link>

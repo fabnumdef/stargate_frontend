@@ -63,6 +63,7 @@ const theme = createMuiTheme(
       MuiButton: {
         root: {
           lineHeight: '2.65',
+          minWidth: '0',
         },
       },
       MuiTableCell: {

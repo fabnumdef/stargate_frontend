@@ -12,6 +12,12 @@ import { Select } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { useQuery } from '@apollo/react-hooks';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import Link from 'next/link';
+import Button from '@material-ui/core/Button';
+import { PlaceAdministration } from '../../containers';
+import DeletableList from '../lists/deletableList';
 
 const useStyles = makeStyles(() => ({
   baseForm: {
@@ -24,7 +30,32 @@ const useStyles = makeStyles(() => ({
   formSelect: {
     width: '300px',
     top: '-13px',
-    marginLeft: '20px',
+  },
+  titleUserSelect: {
+    display: 'inline-block',
+    width: '160px',
+    textAlign: 'right',
+  },
+  userSelect: {
+    display: 'inline-block',
+    width: '70%',
+    padding: '0 0 15px 16px',
+  },
+  assistantSelect: {
+    width: '250px',
+    top: '-5px',
+  },
+  assistantList: {
+    width: '250px',
+    marginBottom: '3px',
+  },
+  buttonsContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '30px',
+    '& button': {
+      margin: '3px',
+    },
   },
 }));
 
@@ -40,14 +71,24 @@ const GET_USERS = gql`
     }
 `;
 
-const BaseForm = ({ submitForm, defaultValues }) => {
-  console.log(defaultValues)
+const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
   const classes = useStyles();
   const {
     handleSubmit, errors, control,
   } = useForm();
 
   const { data: usersList } = useQuery(GET_USERS);
+  const [assistantsList, setAssistantsList] = useState({
+    adminAssistant: defaultValues.assistants,
+  });
+  const addAssistant = (event, typeAssistant) => {
+    setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
+  };
+  const deleteAssistant = (id, typeAssistant) => {
+    const newUsers = assistantsList[typeAssistant].filter((user) => user.id !== id);
+    setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
+  };
+
 
   const onSubmit = (data) => {
     console.log(data);
@@ -65,7 +106,7 @@ const BaseForm = ({ submitForm, defaultValues }) => {
       <Grid container item sm={12} xs={12}>
         <Grid sm={6} xs={6}>
           <Grid container>
-            <Typography variant="h6">Nom:</Typography>
+            <Typography variant="subtitle2">Nom&nbsp;:</Typography>
             <Controller
               as={(
                 <TextField
@@ -84,42 +125,90 @@ const BaseForm = ({ submitForm, defaultValues }) => {
         </Grid>
         <Grid sm={6} xs={6}>
           <Grid container>
-            <Typography variant="h6">Administrateur:</Typography>
-            <FormControl
-              variant="outlined"
-              error={Object.prototype.hasOwnProperty.call(errors, 'unitCorrespondent')}
-              className={classes.formSelect}
-            >
-              <InputLabel ref={inputLabel} id="select-outlined-label">
-                Responsable
-              </InputLabel>
-              <Controller
-                as={(
-                  <Select
-                    labelId="create-unit-unitCorrespondent"
-                    id="unitCorrespondent"
-                    labelWidth={labelWidth}
-                  >
-                    {usersList && usersList.listUsers.list.map((user) => (
-                      <MenuItem key={user.id} value={user.id}>
-                        {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
-                      </MenuItem>
-                    ))}
-                  </Select>
+            <Grid className={classes.titleUserSelect}>
+              <Typography variant="subtitle2">Administrateur&nbsp;:</Typography>
+            </Grid>
+            <Grid className={classes.userSelect}>
+              <FormControl
+                variant="outlined"
+                error={Object.prototype.hasOwnProperty.call(errors, 'campusAdmin')}
+                className={classes.formSelect}
+              >
+                <InputLabel ref={inputLabel} id="select-outlined-label">
+                  Responsable
+                </InputLabel>
+                <Controller
+                  as={(
+                    <Select
+                      labelId="create-campus-admin"
+                      id="campusAdmin"
+                      labelWidth={labelWidth}
+                    >
+                      {usersList && usersList.listUsers.list.map((user) => (
+                        <MenuItem key={user.id} value={user.id}>
+                          {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                  control={control}
+                  defaultValue={defaultValues.admin.id || ''}
+                  name="campusAdmin"
+                  rules={{ required: true }}
+                />
+                {errors.campusAdmin && (
+                  <FormHelperText className={classes.errorText}>
+                    Administrateur obligatoire
+                  </FormHelperText>
                 )}
-                control={control}
-                defaultValue={defaultValues.admin || ''}
-                name="unitCorrespondent"
-                rules={{ required: true }}
-              />
-              {errors.unitCorrespondent && (
-                <FormHelperText className={classes.errorText}>
-                  Administrateur obligatoire
-                </FormHelperText>
-              )}
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Grid className={classes.titleUserSelect}>
+            <Typography variant="subtitle3">Adjoint(s):</Typography>
+          </Grid>
+          <Grid className={classes.userSelect}>
+            <FormControl className={classes.assistantSelect}>
+              {assistantsList.adminAssistant.map((user) => (
+                <DeletableList
+                  label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
+                  id={user.id}
+                  deleteItem={deleteAssistant}
+                  type="adminAssistant"
+                />
+              ))}
+              <Select
+                labelId="demo-mutiple-chip-label"
+                id="demo-mutiple-chip"
+                multiple
+                displayEmpty
+                value={assistantsList.adminAssistant}
+                renderValue={() => (<em>optionnel</em>)}
+                onChange={(evt) => addAssistant(evt, 'adminAssistant')}
+              >
+                {usersList && usersList.listUsers.list.map((user) => (
+                  <MenuItem key={user.id} value={user}>
+                    <Checkbox checked={assistantsList.adminAssistant.indexOf(user) > -1} />
+                    <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
           </Grid>
+          <Grid>
+            <PlaceAdministration campusId={campusId} />
+          </Grid>
         </Grid>
+      </Grid>
+      <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
+        <Link href="/">
+          <Button variant="outlined" color="primary">
+            Annuler
+          </Button>
+        </Link>
+        <Button type="submit" variant="contained" color="primary">
+          {type === 'create' ? 'Créer' : 'Modifier'}
+        </Button>
       </Grid>
     </form>
   );
@@ -128,6 +217,7 @@ const BaseForm = ({ submitForm, defaultValues }) => {
 BaseForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default BaseForm;

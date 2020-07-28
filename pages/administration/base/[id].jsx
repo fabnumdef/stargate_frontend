@@ -63,10 +63,14 @@ function EditCampus() {
     }
   };
 
-  const mapEditCampus = () => ({
-    name: editCampusData.getCampus.label,
-    admin: getAdminData.listUsers.list[0],
-  });
+  const mapEditCampus = () => {
+    const firstAdmin = getAdminData.listUsers.list.shift();
+    return {
+      name: editCampusData.getCampus.label,
+      admin: firstAdmin,
+      assistants: getAdminData.listUsers.list,
+    };
+  };
 
   return (
     <Template>
@@ -77,6 +81,8 @@ function EditCampus() {
           submitForm={submitEditCampus}
           defaultValues={mapEditCampus()}
           userRole={activeRole}
+          type="edit"
+          campusId={id}
         />
       )}
     </Template>
