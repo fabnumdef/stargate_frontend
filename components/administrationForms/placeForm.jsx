@@ -44,22 +44,14 @@ const PlaceForm = ({ list, createPlace, deletePlace }) => {
 
   const handleCreate = async () => {
     setLoadSubmit(true);
-    const place = await createPlace(placeName);
-    if (place) {
-      const newPlaces = [...placesList, place];
-      setPlacesList(newPlaces);
-      setPlaceName('');
-    }
+    await createPlace(placeName);
+    setPlaceName('');
     return setLoadSubmit(false);
   };
 
   const handleDelete = async (id) => {
     setLoadSubmit(true);
-    const place = await deletePlace(id);
-    if (place) {
-      const newPlaces = placesList.filter((p) => p.id !== id);
-      setPlacesList(newPlaces);
-    }
+    await deletePlace(id);
     return setLoadSubmit(false);
   };
 

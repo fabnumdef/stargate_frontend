@@ -41,7 +41,7 @@ const DELETE_PLACE = gql`
 
 const PlaceAdministration = ({ campusId }) => {
   const { addAlert } = useSnackBar();
-  const { data } = useQuery(GET_PLACES, { variables: { campusId } });
+  const { data, refetch } = useQuery(GET_PLACES, { variables: { campusId } });
   const [createPlaceReq] = useMutation(CREATE_PLACE);
   const [deletePlaceReq] = useMutation(DELETE_PLACE);
 
@@ -53,7 +53,7 @@ const PlaceAdministration = ({ campusId }) => {
           place: { label: placeName },
         },
       });
-      return createdPlace.mutateCampus.createPlace;
+      refetch()
     } catch (e) {
       addAlert({ message: "Une erreur est survenue à l'ajout du lieu", severity: 'error' });
     }
@@ -68,7 +68,7 @@ const PlaceAdministration = ({ campusId }) => {
           id,
         },
       });
-      return deletedPlace.mutateCampus.deletePlace;
+      refetch();
     } catch (e) {
       addAlert({ message: 'Une erreur est survenue à la suppression du lieu', severity: 'error' });
     }
