@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import DeletableList from '../lists/deletableList';
 
 const useStyles = makeStyles(() => ({
@@ -28,31 +27,28 @@ const useStyles = makeStyles(() => ({
     width: '20px',
     height: '20px',
     borderRadius: '5px',
-    boxShadow: '5px 3px 6px 0',
+    boxShadow: '5px 3px 6px 0 rgba(0, 0, 0, 0.16)',
   },
 }));
 
-const PlaceForm = ({ list, createPlace, deletePlace }) => {
+const PlaceForm = ({ list, setList }) => {
   const classes = useStyles();
-  const [placesList, setPlacesList] = useState(list);
   const [placeName, setPlaceName] = useState('');
-  const [loadSubmit, setLoadSubmit] = useState(false);
 
-  useEffect(() => {
-    setPlacesList(list);
-  }, [list]);
-
-  const handleCreate = async () => {
-    setLoadSubmit(true);
-    await createPlace(placeName);
+  const handleAdd = async () => {
+    const newList = [...list, { label: placeName }];
+    setList(newList);
     setPlaceName('');
-    return setLoadSubmit(false);
   };
 
-  const handleDelete = async (id) => {
-    setLoadSubmit(true);
-    await deletePlace(id);
-    return setLoadSubmit(false);
+  const handleDelete = async (label) => {
+    const newList = list.map((place) => {
+      if (place.label === label) {
+        return { ...place, toDelete: true };
+      }
+      return place;
+    });
+    setList(newList);
   };
 
   return (
@@ -61,8 +57,10 @@ const PlaceForm = ({ list, createPlace, deletePlace }) => {
         <Typography variant="subtitle2">Lieux</Typography>
       </Grid>
       <Grid className={classes.placesForm}>
-        {placesList.map((place) => (
-          <DeletableList label={place.label} id={place.id} deleteItem={handleDelete} />
+        {list.map((place) => (
+          !place.toDelete && (
+            <DeletableList label={place.label} id={place.label} deleteItem={handleDelete} />
+          )
         ))}
         <Grid container md={12} sm={12} xs={12} justify="space-between" alignItems="flex-end" className={classes.inputContainer}>
           <TextField
@@ -70,16 +68,10 @@ const PlaceForm = ({ list, createPlace, deletePlace }) => {
             value={placeName}
             onChange={(e) => setPlaceName(e.target.value)}
           />
-          {loadSubmit
-            ? <CircularProgress className={classes.loader} size={15} />
-
-            : (
-              <Button type="button" className={classes.submitButton} variant="contained" color="primary" onClick={handleCreate}>
-                +
-              </Button>
-            )}
+          <Button type="button" className={classes.submitButton} variant="contained" color="primary" onClick={handleAdd}>
+            +
+          </Button>
         </Grid>
-
       </Grid>
     </Grid>
   );

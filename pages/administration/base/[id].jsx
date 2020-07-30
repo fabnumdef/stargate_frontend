@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
@@ -7,7 +7,48 @@ import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
-import { useLogin } from '../../../lib/loginContext';
+import { ROLES } from '../../../utils/constants/enums';
+import { mapEditCampus } from '../../../utils/mappers/adminMappers';
+
+const GET_USERS = gql`
+    query listUsers {
+        listUsers {
+            list {
+                id
+                firstname
+                lastname
+                roles {
+                    role
+                    userInCharge 
+                    campuses {
+                        id
+                        label
+                    }
+                    units {
+                        id
+                        label
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const EDIT_USER = gql`
+    mutation editUser($id: String! $user: UserInput) {
+        editUser(id: $id, user: $user) {
+          id
+        }
+    }
+`;
+
+const DELETE_ROLE = gql`
+    mutation deleteUserRole($id: String! $user: UserInput) {
+        deleteUserRole(id: $id, user: $user) {
+            id
+        }
+    }
+`;
 
 const GET_CAMPUS = gql`
     query getCampus($id: String!) {
@@ -19,20 +60,43 @@ const GET_CAMPUS = gql`
 `;
 
 const EDIT_CAMPUS = gql`
-    mutation editCampus($user: CampusInput!, $id: String!) {
+    mutation editCampus($campus: CampusInput!, $id: String!) {
         editCampus(campus: $campus, id: $id) {
             id
         }
     }
 `;
 
-const GET_ADMINS = gql`
-    query listUsers($filters: UserFilters) {
-        listUsers(filters: $filters) {
-            list {
+const GET_PLACES = gql`
+    query listPlaces($id: String!) {
+        getCampus(id: $id) {
+            id
+            listPlaces {
+                list {
+                    id
+                    label
+                }
+            }
+        }
+    }
+`;
+
+const CREATE_PLACE = gql`
+    mutation createPlaces($campusId: String!, $place: PlaceInput!) {
+        mutateCampus(id: $campusId) {
+            createPlace(place: $place) {
                 id
-                firstname
-                lastname
+                label
+            }
+        }
+    }
+`;
+
+const DELETE_PLACE = gql`
+    mutation deletePlaces($campusId: String!, $id: String!) {
+        mutateCampus(id: $campusId) {
+            deletePlace(id: $id) {
+                id
             }
         }
     }
@@ -43,19 +107,129 @@ function EditCampus() {
   const router = useRouter();
   const { id } = router.query;
   const [editCampus] = useMutation(EDIT_CAMPUS);
-  const { activeRole } = useLogin();
+  const [editUserReq] = useMutation(EDIT_USER);
+  const [deleteUserRoleReq] = useMutation(DELETE_ROLE);
+  const [createPlaceReq] = useMutation(CREATE_PLACE);
+  const [deletePlaceReq] = useMutation(DELETE_PLACE);
 
+  const { data: placesList } = useQuery(GET_PLACES, { variables: { id } });
+  const { data: usersList } = useQuery(GET_USERS);
   const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id } });
-  const { data: getAdminData } = useQuery(GET_ADMINS, {
-    variables: { filters: {} },
-  });
+  const [defaultValues, setDefaultValues] = useState(null);
 
-  const submitEditCampus = async (campus) => {
+  const createPlace = async (placeName) => {
     try {
-      const { data } = await editCampus({ variables: { campus, id } });
-
-      return null;
+      const { data: createdPlace } = await createPlaceReq({
+        variables: {
+          campusId: id,
+          place: { label: placeName },
+        },
+      });
+      return createdPlace;
     } catch (e) {
+      addAlert({ message: "Une erreur est survenue à l'ajout du lieu", severity: 'error' });
+    }
+    return null;
+  };
+
+  const deletePlace = async (placeId) => {
+    try {
+      const { data: deletedPlace } = await deletePlaceReq({
+        variables: {
+          campusId: id,
+          id: placeId,
+        },
+      });
+      return deletedPlace;
+    } catch (e) {
+      addAlert({ message: 'Une erreur est survenue à la suppression du lieu', severity: 'error' });
+    }
+    return null;
+  };
+
+  const editUser = async (user, userInChargeId) => {
+    const variables = {
+      id: user.id,
+      user: {
+        roles: {
+          role: ROLES.ROLE_ADMIN.role,
+          userInCharge: userInChargeId,
+          campuses: [{
+            id,
+            label: editCampusData.getCampus.label,
+          }],
+        },
+      },
+    };
+    try {
+      const { data: userData } = await editUserReq({ variables });
+      return userData;
+    } catch (e) {
+      console.log(e);
+      return addAlert({ message: 'Erreur lors de l\'attribution des rôles', severity: 'error' });
+    }
+  };
+
+  const submitPlaces = async (places) => {
+    try {
+      const sendPlaces = await Promise.all(places.map(async (place) => {
+        if (!place.id && !place.toDelete) {
+          await createPlace(place.label);
+        }
+        if (place.id && place.toDelete) {
+          await deletePlace(place.id);
+        }
+      }));
+      return sendPlaces;
+    } catch (e) {
+      return e;
+    }
+  };
+
+  const deleteAssistant = async (assistant) => {
+    await deleteUserRoleReq({
+      variables: {
+        id: assistant.id,
+        user: {
+          roles: {
+            role: ROLES.ROLE_ADMIN.role,
+          },
+        },
+      },
+    });
+  };
+
+  const submitEditCampus = async (data, assistantsList, places) => {
+    try {
+      if (data.name !== editCampusData.getCampus.label) {
+        await editCampus({ variables: { id, campus: { label: data.name } } });
+      }
+      if (!defaultValues.admin || (defaultValues.admin.id !== data.campusAdmin.id)) {
+        if (defaultValues.admin) {
+          await deleteAssistant(defaultValues.admin);
+        }
+        await editUser(data.campusAdmin, data.campusAdmin.id);
+      }
+      await Promise.all(assistantsList.adminAssistant.map(async (assistant) => {
+        if (assistant.toDelete) {
+          await deleteAssistant(assistant);
+          return assistant;
+        }
+        const haveRole = assistant.roles.find(
+          (role) => role.role === ROLES.ROLE_ADMIN.role && role.campuses.find(
+            (campus) => campus.id === id,
+          ),
+        );
+        if ((!haveRole || haveRole.userInCharge !== data.campusAdmin.id)) {
+          await editUser(assistant, data.campusAdmin.id);
+        }
+
+        return assistant;
+      }));
+      await submitPlaces(places);
+      return console.log('submitForm', data, assistantsList, places);
+    } catch (e) {
+      console.log(e);
       return addAlert({
         message: 'Erreur serveur, merci de réessayer',
         severity: 'warning',
@@ -63,25 +237,21 @@ function EditCampus() {
     }
   };
 
-  const mapEditCampus = () => {
-    const firstAdmin = getAdminData.listUsers.list.shift();
-    return {
-      name: editCampusData.getCampus.label,
-      admin: firstAdmin,
-      assistants: getAdminData.listUsers.list,
-    };
-  };
+  useEffect(() => {
+    if (editCampusData && usersList && placesList) {
+      setDefaultValues(mapEditCampus(usersList, id, editCampusData.getCampus.label, placesList));
+    }
+  }, [editCampusData, usersList, placesList]);
 
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Base']} />
-      {(editCampusData && getAdminData)
+      {defaultValues
       && (
         <BaseForm
           submitForm={submitEditCampus}
-          defaultValues={mapEditCampus()}
-          userRole={activeRole}
-          type="edit"
+          defaultValues={defaultValues}
+          usersList={usersList}
           campusId={id}
         />
       )}

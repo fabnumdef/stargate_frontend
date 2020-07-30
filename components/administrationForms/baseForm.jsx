@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { Controller, useForm } from 'react-hook-form';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,12 +10,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import { useQuery } from '@apollo/react-hooks';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 import Link from 'next/link';
 import Button from '@material-ui/core/Button';
-import { PlaceAdministration } from '../../containers';
+import PlaceForm from './placeForm';
 import DeletableList from '../lists/deletableList';
 
 const useStyles = makeStyles(() => ({
@@ -59,25 +57,12 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const GET_USERS = gql`
-    query listUsers {
-        listUsers {
-            list {
-                id
-                firstname
-                lastname
-            }
-        }
-    }
-`;
-
-const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
+const BaseForm = ({ submitForm, defaultValues, usersList }) => {
   const classes = useStyles();
   const {
     handleSubmit, errors, control,
   } = useForm();
 
-  const { data: usersList } = useQuery(GET_USERS);
   const [assistantsList, setAssistantsList] = useState({
     adminAssistant: defaultValues.assistants,
   });
@@ -85,13 +70,19 @@ const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
   };
   const deleteAssistant = (id, typeAssistant) => {
-    const newUsers = assistantsList[typeAssistant].filter((user) => user.id !== id);
+    const newUsers = assistantsList[typeAssistant].map((user) => {
+      if (user.id === id) {
+        return { ...user, toDelete: true };
+      }
+      return user;
+    });
     setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
   };
 
+  const [placesList, setPlacesList] = useState(defaultValues.placesList);
 
   const onSubmit = (data) => {
-    console.log(data);
+    submitForm(data, assistantsList, placesList);
   };
 
   const inputLabel = useRef(null);
@@ -145,14 +136,14 @@ const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
                       labelWidth={labelWidth}
                     >
                       {usersList && usersList.listUsers.list.map((user) => (
-                        <MenuItem key={user.id} value={user.id}>
+                        <MenuItem key={user.id} value={user}>
                           {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                         </MenuItem>
                       ))}
                     </Select>
                   )}
                   control={control}
-                  defaultValue={defaultValues.admin.id || ''}
+                  defaultValue={defaultValues.admin ? defaultValues.admin : ''}
                   name="campusAdmin"
                   rules={{ required: true }}
                 />
@@ -170,12 +161,14 @@ const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
           <Grid className={classes.userSelect}>
             <FormControl className={classes.assistantSelect}>
               {assistantsList.adminAssistant.map((user) => (
+                !user.toDelete && (
                 <DeletableList
                   label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                   id={user.id}
                   deleteItem={deleteAssistant}
                   type="adminAssistant"
                 />
+                )
               ))}
               <Select
                 labelId="demo-mutiple-chip-label"
@@ -184,7 +177,10 @@ const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
                 displayEmpty
                 value={assistantsList.adminAssistant}
                 renderValue={() => (<em>optionnel</em>)}
-                onChange={(evt) => addAssistant(evt, 'adminAssistant')}
+                onChange={(evt) => {
+                  console.log('value', evt.target.value);
+                  return addAssistant(evt, 'adminAssistant');
+                }}
               >
                 {usersList && usersList.listUsers.list.map((user) => (
                   <MenuItem key={user.id} value={user}>
@@ -196,7 +192,7 @@ const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
             </FormControl>
           </Grid>
           <Grid>
-            <PlaceAdministration campusId={campusId} />
+            <PlaceForm list={placesList} setList={setPlacesList} />
           </Grid>
         </Grid>
       </Grid>
@@ -207,7 +203,7 @@ const BaseForm = ({ submitForm, defaultValues, type, campusId }) => {
           </Button>
         </Link>
         <Button type="submit" variant="contained" color="primary">
-          {type === 'create' ? 'Créer' : 'Modifier'}
+          Valider
         </Button>
       </Grid>
     </form>
