@@ -36,9 +36,12 @@ const PlaceForm = ({ list, setList }) => {
   const [placeName, setPlaceName] = useState('');
 
   const handleAdd = async () => {
+    if (!placeName.length) {
+      return null;
+    }
     const newList = [...list, { label: placeName }];
     setList(newList);
-    setPlaceName('');
+    return setPlaceName('');
   };
 
   const handleDelete = async (label) => {

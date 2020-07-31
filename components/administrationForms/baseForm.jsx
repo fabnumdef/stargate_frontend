@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import PlaceForm from './placeForm';
 import DeletableList from '../lists/deletableList';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   baseForm: {
     padding: '20px',
   },
@@ -55,13 +55,61 @@ const useStyles = makeStyles(() => ({
       margin: '3px',
     },
   },
+  loadMore: {
+    marginTop: '8px',
+    color: theme.palette.primary.main,
+    textAlign: 'center',
+    '&:hover': {
+      cursor: 'pointer',
+      textDecoration: 'underline',
+    },
+  },
 }));
 
-const BaseForm = ({ submitForm, defaultValues, usersList }) => {
+const PaginationButton = ({
+  users,
+  fetchMore,
+  selectList,
+  setSelectList,
+}) => {
+  const classes = useStyles();
+
+  const fetchMoreUsers = () => {
+    fetchMore({
+      variables: {
+        cursor: { offset: users.list.length },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        console.log(prev, fetchMoreResult);
+        return setSelectList({
+          listUsers:
+            {
+              list: [...selectList.listUsers.list, ...fetchMoreResult.listUsers.list],
+              meta: fetchMoreResult.listUsers.meta,
+            },
+        });
+      },
+    });
+  };
+
+  return users.list.length < users.meta.total && (
+    <Grid className={classes.loadMore} onClick={fetchMoreUsers}>
+      Charger plus...
+    </Grid>
+  );
+};
+
+const BaseForm = ({
+  submitForm, defaultValues, usersList, fetchMore,
+}) => {
   const classes = useStyles();
   const {
     handleSubmit, errors, control,
   } = useForm();
+
+  const [selectList, setSelectList] = useState(usersList);
+  console.log(selectList);
 
   const [assistantsList, setAssistantsList] = useState({
     adminAssistant: defaultValues.assistants,
@@ -135,11 +183,17 @@ const BaseForm = ({ submitForm, defaultValues, usersList }) => {
                       id="campusAdmin"
                       labelWidth={labelWidth}
                     >
-                      {usersList && usersList.listUsers.list.map((user) => (
+                      {selectList && selectList.listUsers.list.map((user) => (
                         <MenuItem key={user.id} value={user}>
                           {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                         </MenuItem>
                       ))}
+                      <PaginationButton
+                        users={selectList.listUsers}
+                        fetchMore={fetchMore}
+                        selectList={selectList}
+                        setSelectList={setSelectList}
+                      />
                     </Select>
                   )}
                   control={control}
@@ -177,17 +231,22 @@ const BaseForm = ({ submitForm, defaultValues, usersList }) => {
                 displayEmpty
                 value={assistantsList.adminAssistant}
                 renderValue={() => (<em>optionnel</em>)}
-                onChange={(evt) => {
-                  console.log('value', evt.target.value);
-                  return addAssistant(evt, 'adminAssistant');
-                }}
+                onChange={(evt) => addAssistant(evt, 'adminAssistant')}
               >
-                {usersList && usersList.listUsers.list.map((user) => (
+                {selectList && selectList.listUsers.list.map((user) => (
+                  (!defaultValues.admin || user.id !== defaultValues.admin.id) && (
                   <MenuItem key={user.id} value={user}>
                     <Checkbox checked={assistantsList.adminAssistant.indexOf(user) > -1} />
                     <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                   </MenuItem>
+                  )
                 ))}
+                <PaginationButton
+                  users={selectList.listUsers}
+                  fetchMore={fetchMore}
+                  selectList={selectList}
+                  setSelectList={setSelectList}
+                />
               </Select>
             </FormControl>
           </Grid>

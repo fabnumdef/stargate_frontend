@@ -11,8 +11,8 @@ import { ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
 
 const GET_USERS = gql`
-    query listUsers {
-        listUsers {
+    query listUsers($cursor: OffsetCursor) {
+        listUsers(cursor: $cursor) {
             list {
                 id
                 firstname
@@ -29,6 +29,11 @@ const GET_USERS = gql`
                         label
                     }
                 }
+            }
+            meta {
+                offset
+                first
+                total
             }
         }
     }
@@ -113,7 +118,9 @@ function EditCampus() {
   const [deletePlaceReq] = useMutation(DELETE_PLACE);
 
   const { data: placesList } = useQuery(GET_PLACES, { variables: { id } });
-  const { data: usersList } = useQuery(GET_USERS);
+  const { data: usersList, fetchMore } = useQuery(GET_USERS, {
+    variables: { cursor: { offset: 0, first: 5 } },
+  });
   const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id } });
   const [defaultValues, setDefaultValues] = useState(null);
 
@@ -126,10 +133,9 @@ function EditCampus() {
         },
       });
       return createdPlace;
-    } catch (e) {
-      addAlert({ message: "Une erreur est survenue à l'ajout du lieu", severity: 'error' });
+    } catch {
+      return null;
     }
-    return null;
   };
 
   const deletePlace = async (placeId) => {
@@ -141,10 +147,9 @@ function EditCampus() {
         },
       });
       return deletedPlace;
-    } catch (e) {
-      addAlert({ message: 'Une erreur est survenue à la suppression du lieu', severity: 'error' });
+    } catch {
+      return null;
     }
-    return null;
   };
 
   const editUser = async (user, userInChargeId) => {
@@ -164,15 +169,14 @@ function EditCampus() {
     try {
       const { data: userData } = await editUserReq({ variables });
       return userData;
-    } catch (e) {
-      console.log(e);
-      return addAlert({ message: 'Erreur lors de l\'attribution des rôles', severity: 'error' });
+    } catch {
+      return null;
     }
   };
 
   const submitPlaces = async (places) => {
     try {
-      const sendPlaces = await Promise.all(places.map(async (place) => {
+      const resPlaces = await Promise.all(places.map(async (place) => {
         if (!place.id && !place.toDelete) {
           await createPlace(place.label);
         }
@@ -180,23 +184,28 @@ function EditCampus() {
           await deletePlace(place.id);
         }
       }));
-      return sendPlaces;
-    } catch (e) {
-      return e;
+      return resPlaces;
+    } catch {
+      return null;
     }
   };
 
   const deleteAssistant = async (assistant) => {
-    await deleteUserRoleReq({
-      variables: {
-        id: assistant.id,
-        user: {
-          roles: {
-            role: ROLES.ROLE_ADMIN.role,
+    try {
+      const resAssistant = await deleteUserRoleReq({
+        variables: {
+          id: assistant.id,
+          user: {
+            roles: {
+              role: ROLES.ROLE_ADMIN.role,
+            },
           },
         },
-      },
-    });
+      });
+      return resAssistant;
+    } catch {
+      return null;
+    }
   };
 
   const submitEditCampus = async (data, assistantsList, places) => {
@@ -204,12 +213,14 @@ function EditCampus() {
       if (data.name !== editCampusData.getCampus.label) {
         await editCampus({ variables: { id, campus: { label: data.name } } });
       }
+
       if (!defaultValues.admin || (defaultValues.admin.id !== data.campusAdmin.id)) {
         if (defaultValues.admin) {
           await deleteAssistant(defaultValues.admin);
         }
         await editUser(data.campusAdmin, data.campusAdmin.id);
       }
+
       await Promise.all(assistantsList.adminAssistant.map(async (assistant) => {
         if (assistant.toDelete) {
           await deleteAssistant(assistant);
@@ -223,13 +234,13 @@ function EditCampus() {
         if ((!haveRole || haveRole.userInCharge !== data.campusAdmin.id)) {
           await editUser(assistant, data.campusAdmin.id);
         }
-
         return assistant;
       }));
+
       await submitPlaces(places);
-      return console.log('submitForm', data, assistantsList, places);
+
+      return true;
     } catch (e) {
-      console.log(e);
       return addAlert({
         message: 'Erreur serveur, merci de réessayer',
         severity: 'warning',
@@ -253,6 +264,7 @@ function EditCampus() {
           defaultValues={defaultValues}
           usersList={usersList}
           campusId={id}
+          fetchMore={fetchMore}
         />
       )}
     </Template>
