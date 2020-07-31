@@ -11,8 +11,8 @@ import { ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
 
 const GET_USERS = gql`
-    query listUsers($cursor: OffsetCursor) {
-        listUsers(cursor: $cursor) {
+    query listUsers($cursor: OffsetCursor, $hasRole: String) {
+        listUsers(cursor: $cursor, hasRole: $hasRole) {
             list {
                 id
                 firstname
@@ -119,7 +119,10 @@ function EditCampus() {
 
   const { data: placesList } = useQuery(GET_PLACES, { variables: { id } });
   const { data: usersList, fetchMore } = useQuery(GET_USERS, {
-    variables: { cursor: { offset: 0, first: 5 } },
+    variables: { cursor: { offset: 0, first: 10 } },
+  });
+  const { data: adminsList } = useQuery(GET_USERS, {
+    variables: { cursor: { offset: 0, first: 10 }, hasRole: ROLES.ROLE_ADMIN.role },
   });
   const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id } });
   const [defaultValues, setDefaultValues] = useState(null);
@@ -249,10 +252,15 @@ function EditCampus() {
   };
 
   useEffect(() => {
-    if (editCampusData && usersList && placesList) {
-      setDefaultValues(mapEditCampus(usersList, id, editCampusData.getCampus.label, placesList));
+    if (editCampusData && usersList && placesList && adminsList) {
+      setDefaultValues(mapEditCampus(
+        id,
+        editCampusData.getCampus.label,
+        placesList,
+        adminsList.listUsers.list,
+      ));
     }
-  }, [editCampusData, usersList, placesList]);
+  }, [editCampusData, usersList, placesList, adminsList]);
 
   return (
     <Template>

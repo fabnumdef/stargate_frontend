@@ -63,18 +63,11 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
   };
 });
 
-export const mapEditCampus = (usersList, campusId, campusName, placesList) => {
-  const listAdmin = usersList.listUsers.list.filter(
-    (user) => user.roles.find(
-      (role) => role.role === ROLES.ROLE_ADMIN.role && role.campuses.find(
-        (campus) => campus.id === campusId,
-      ),
-    ),
-  );
-  const admin = listAdmin.find(
+export const mapEditCampus = (campusId, campusName, placesList, adminsList) => {
+  const admin = adminsList.find(
     (user) => user.roles.find((role) => role.userInCharge === user.id),
   );
-  const assistants = listAdmin.filter(
+  const assistants = adminsList.filter(
     (user) => user.roles.find((role) => role.userInCharge && role.userInCharge !== user.id),
   );
   return {

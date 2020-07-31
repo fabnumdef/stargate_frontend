@@ -56,9 +56,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   loadMore: {
-    marginTop: '8px',
+    margin: '4px',
+    paddingTop: '4px',
     color: theme.palette.primary.main,
     textAlign: 'center',
+    borderTop: '1px solid rgba(15, 65, 148, 0.1)',
     '&:hover': {
       cursor: 'pointer',
       textDecoration: 'underline',
@@ -81,7 +83,6 @@ const PaginationButton = ({
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
-        console.log(prev, fetchMoreResult);
         return setSelectList({
           listUsers:
             {
@@ -105,11 +106,10 @@ const BaseForm = ({
 }) => {
   const classes = useStyles();
   const {
-    handleSubmit, errors, control,
+    handleSubmit, errors, control, watch,
   } = useForm();
 
   const [selectList, setSelectList] = useState(usersList);
-  console.log(selectList);
 
   const [assistantsList, setAssistantsList] = useState({
     adminAssistant: defaultValues.assistants,
@@ -234,7 +234,7 @@ const BaseForm = ({
                 onChange={(evt) => addAssistant(evt, 'adminAssistant')}
               >
                 {selectList && selectList.listUsers.list.map((user) => (
-                  (!defaultValues.admin || user.id !== defaultValues.admin.id) && (
+                  (!watch('campusAdmin') || watch('campusAdmin').id !== user.id) && (
                   <MenuItem key={user.id} value={user}>
                     <Checkbox checked={assistantsList.adminAssistant.indexOf(user) > -1} />
                     <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
