@@ -41,6 +41,7 @@ const GET_UNITS_USERS = gql`
                   lastname
                   roles {
                       role
+                      userInCharge
                       units {
                           id
                       }

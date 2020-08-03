@@ -48,7 +48,9 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
   const findName = (userRole) => {
     const findUser = usersList.find(
       (user) => user.roles.find(
-        (role) => role.role === userRole && role.units.find((userUnit) => userUnit.id === unit.id),
+        (role) => role.role === userRole
+          && role.userInCharge === user.id
+          && role.units.find((userUnit) => userUnit.id === unit.id),
       ),
     );
     return findUser ? `${findUser.firstname} ${findUser.lastname}` : '-';
