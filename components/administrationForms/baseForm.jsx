@@ -16,6 +16,7 @@ import Link from 'next/link';
 import Button from '@material-ui/core/Button';
 import PlaceForm from './placeForm';
 import DeletableList from '../lists/deletableList';
+import { FORMS_LIST } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   baseForm: {
@@ -112,7 +113,7 @@ const BaseForm = ({
   const [selectList, setSelectList] = useState(usersList);
 
   const [assistantsList, setAssistantsList] = useState({
-    adminAssistant: defaultValues.assistants,
+    [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
   });
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
@@ -128,6 +129,8 @@ const BaseForm = ({
   };
 
   const [placesList, setPlacesList] = useState(defaultValues.placesList);
+
+  const findCampusAdmin = () => selectList.listUsers.list.find((user) => user.id === defaultValues.admin.id) || '';
 
   const onSubmit = (data) => {
     submitForm(data, assistantsList, placesList);
@@ -197,7 +200,7 @@ const BaseForm = ({
                     </Select>
                   )}
                   control={control}
-                  defaultValue={defaultValues.admin ? defaultValues.admin : ''}
+                  defaultValue={findCampusAdmin}
                   name="campusAdmin"
                   rules={{ required: true }}
                 />
@@ -214,13 +217,13 @@ const BaseForm = ({
           </Grid>
           <Grid className={classes.userSelect}>
             <FormControl className={classes.assistantSelect}>
-              {assistantsList.adminAssistant.map((user) => (
+              {assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].map((user) => (
                 !user.toDelete && (
                 <DeletableList
                   label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                   id={user.id}
                   deleteItem={deleteAssistant}
-                  type="adminAssistant"
+                  type={FORMS_LIST.ADMIN_ASSISTANTS}
                 />
                 )
               ))}
@@ -229,14 +232,16 @@ const BaseForm = ({
                 id="demo-mutiple-chip"
                 multiple
                 displayEmpty
-                value={assistantsList.adminAssistant}
+                value={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS]}
                 renderValue={() => (<em>optionnel</em>)}
-                onChange={(evt) => addAssistant(evt, 'adminAssistant')}
+                onChange={(evt) => addAssistant(evt, FORMS_LIST.ADMIN_ASSISTANTS)}
               >
                 {selectList && selectList.listUsers.list.map((user) => (
                   (!watch('campusAdmin') || watch('campusAdmin').id !== user.id) && (
                   <MenuItem key={user.id} value={user}>
-                    <Checkbox checked={assistantsList.adminAssistant.indexOf(user) > -1} />
+                    <Checkbox
+                      checked={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].indexOf(user) > -1}
+                    />
                     <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                   </MenuItem>
                   )

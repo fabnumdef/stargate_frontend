@@ -7,7 +7,7 @@ import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
-import { ROLES } from '../../../utils/constants/enums';
+import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
 
 const GET_USERS = gql`
@@ -224,7 +224,7 @@ function EditCampus() {
         await editUser(data.campusAdmin, data.campusAdmin.id);
       }
 
-      await Promise.all(assistantsList.adminAssistant.map(async (assistant) => {
+      await Promise.all(assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].map(async (assistant) => {
         if (assistant.toDelete) {
           await deleteAssistant(assistant);
           return assistant;
@@ -242,7 +242,8 @@ function EditCampus() {
 
       await submitPlaces(places);
 
-      return true;
+      addAlert({ message: 'La base a bien été modifiée', severity: 'success' });
+      return router.push('/');
     } catch (e) {
       return addAlert({
         message: 'Erreur serveur, merci de réessayer',

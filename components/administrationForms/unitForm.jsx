@@ -18,7 +18,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useRouter } from 'next/router';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
-import { ROLES } from '../../utils/constants/enums';
+import { FORMS_LIST, ROLES } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import { DndModule } from '../../containers/index';
 import { mapUnitData } from '../../utils/mappers/adminMappers';
@@ -149,8 +149,8 @@ const UnitForm = ({
   const [cards, setCards] = useState(allCards);
 
   const [assistantsList, setAssistantsList] = React.useState({
-    corresAssistant: [],
-    officerAssistant: [],
+    [FORMS_LIST.CORRES_ASSISTANTS]: [],
+    [FORMS_LIST.OFFICER_ASSISTANTS]: [],
   });
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
@@ -217,8 +217,8 @@ const UnitForm = ({
           },
         );
       }));
-      if (assistantsList.corresAssistant.length) {
-        await Promise.all(assistantsList.corresAssistant.map(async (user) => {
+      if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
+        await Promise.all(assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
           await editUser(
             user.id,
             {
@@ -239,8 +239,8 @@ const UnitForm = ({
           },
         );
       }
-      if (assistantsList.officerAssistant.length) {
-        await Promise.all(assistantsList.officerAssistant.map(async (user) => {
+      if (assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].length) {
+        await Promise.all(assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map(async (user) => {
           await editUser(
             user.id,
             {
@@ -391,12 +391,12 @@ const UnitForm = ({
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
-                  {assistantsList.corresAssistant.map((user) => (
+                  {assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map((user) => (
                     <DeletableList
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
-                      type="corresAssistant"
+                      type={FORMS_LIST.CORRES_ASSISTANTS}
                     />
                   ))}
                   <Select
@@ -404,13 +404,15 @@ const UnitForm = ({
                     id="demo-mutiple-chip"
                     multiple
                     displayEmpty
-                    value={assistantsList.corresAssistant}
+                    value={assistantsList[FORMS_LIST.CORRES_ASSISTANTS]}
                     renderValue={() => (<em>optionnel</em>)}
-                    onChange={(evt) => addAssistant(evt, 'corresAssistant')}
+                    onChange={(evt) => addAssistant(evt, FORMS_LIST.CORRES_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
                       <MenuItem key={user.id} value={user}>
-                        <Checkbox checked={assistantsList.corresAssistant.indexOf(user) > -1} />
+                        <Checkbox
+                          checked={assistantsList[FORMS_LIST.CORRES_ASSISTANTS].indexOf(user) > -1}
+                        />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
                     ))}
@@ -459,12 +461,12 @@ const UnitForm = ({
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
-                  {assistantsList.officerAssistant.map((user) => (
+                  {assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map((user) => (
                     <DeletableList
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
-                      type="officerAssistant"
+                      type={FORMS_LIST.OFFICER_ASSISTANTS}
                     />
                   ))}
                   <Select
@@ -472,13 +474,15 @@ const UnitForm = ({
                     id="demo-mutiple-chip"
                     multiple
                     displayEmpty
-                    value={assistantsList.officerAssistant}
+                    value={assistantsList[FORMS_LIST.OFFICER_ASSISTANTS]}
                     renderValue={() => (<em>optionnel</em>)}
-                    onChange={(evt) => addAssistant(evt, 'officerAssistant')}
+                    onChange={(evt) => addAssistant(evt, FORMS_LIST.OFFICER_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
                       <MenuItem key={user.id} value={user}>
-                        <Checkbox checked={assistantsList.officerAssistant.indexOf(user) > -1} />
+                        <Checkbox
+                          checked={assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].indexOf(user) > -1}
+                        />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
                     ))}

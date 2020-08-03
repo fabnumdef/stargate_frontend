@@ -285,7 +285,12 @@ export function LoginContextProvider(props) {
     if ((isLoggedUser
       && router.pathname === '/login') || (isCacheInit && !urlAuthorization(router.pathname, activeRole.role))
     ) {
-      router.push(activeRole.role === ROLES.ROLE_SUPERADMIN.role ? '/administration/utilisateurs' : '/');
+      router.push(
+        (activeRole.role === ROLES.ROLE_SUPERADMIN.role
+          || activeRole.role === ROLES.ROLE_ADMIN.role)
+          ? '/administration/utilisateurs'
+          : '/',
+      );
     }
 
     if (!isLoggedUser && router.pathname !== '/login') {

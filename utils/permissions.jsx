@@ -20,7 +20,6 @@ export const urlAuthorization = (path, role) => {
       return true;
     case path === '/':
       return [
-        ROLES.ROLE_ADMIN.role,
         ROLES.ROLE_UNIT_CORRESPONDENT.role,
         ROLES.ROLE_SECURITY_OFFICER.role,
         ROLES.ROLE_ACCESS_OFFICE.role,
