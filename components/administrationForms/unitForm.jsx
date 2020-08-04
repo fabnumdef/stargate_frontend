@@ -12,15 +12,17 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from 'next/link';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
+
 import { FORMS_LIST, ROLES } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import { DndModule } from '../../containers/index';
 import { mapUnitData } from '../../utils/mappers/adminMappers';
 import DeletableList from '../lists/deletableList';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles((theme) => ({
   createUnitForm: {
@@ -103,6 +105,8 @@ const UnitForm = ({
   defaultValues, type, submitForm,
 }) => {
   const classes = useStyles();
+  const client = useApolloClient();
+  const { addAlert } = useSnackBar();
   const {
     handleSubmit, errors, control,
   } = useForm();
@@ -129,24 +133,38 @@ const UnitForm = ({
   const [expanded, setExpanded] = useState(false);
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
+  const [placesList, setPlacesList] = useState(null);
 
-  const { data: placesList } = useQuery(GET_PLACES, {
-    variables: {
-      filters: { unitInCharge: null },
-    },
-  });
+  const getPlacesList = async () => {
+    try {
+      const { data } = await client.query({
+        query: GET_PLACES,
+        variables: {
+          filters: { unitInCharge: null },
+        },
+        fetchPolicy: 'no-cache',
+      });
+      return setPlacesList(data.getCampus.listPlaces.list);
+    } catch (e) {
+      return addAlert({ message: 'Erreur lors du chargement de la liste de lieux, merci de rafraichir la page', severity: 'warning' });
+    }
+  };
   const { data: usersList } = useQuery(GET_USERS);
 
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
+    if (!placesList) {
+      getPlacesList();
+    }
+  }, [placesList]);
 
   const onSubmit = async (formData) => {
     const unitData = mapUnitData(formData, cards);
     await submitForm(formData, unitData, assistantsList);
   };
+  console.log(placesList);
 
-  return (
+  return placesList ? (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUnitForm}>
       <Typography style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Tous les champs sont obligatoires</Typography>
       <Grid container item sm={12} xs={12}>
@@ -205,7 +223,7 @@ const UnitForm = ({
               <Controller
                 as={(
                   <ListLieux
-                    options={placesList ? placesList.getCampus.listPlaces.list : []}
+                    options={placesList || []}
                     expanded={expanded}
                     setExpanded={setExpanded}
                     onChange={(checked) => checked}
@@ -223,7 +241,7 @@ const UnitForm = ({
                 defaultValue={[]}
               />
               {errors.places && (
-                <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
+              <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
               )}
             </Grid>
           </Grid>
@@ -267,9 +285,9 @@ const UnitForm = ({
                     rules={{ required: true }}
                   />
                   {errors.unitCorrespondent && (
-                    <FormHelperText className={classes.errorText}>
-                      Correspondant obligatoire
-                    </FormHelperText>
+                  <FormHelperText className={classes.errorText}>
+                    Correspondant obligatoire
+                  </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
@@ -392,7 +410,7 @@ const UnitForm = ({
         </Button>
       </Grid>
     </form>
-  );
+  ) : <div />;
 };
 
 UnitForm.propTypes = {

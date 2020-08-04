@@ -87,6 +87,7 @@ function UnitAdministration() {
     const { data: unitsUsers } = await client.query({
       query: GET_UNITS_USERS,
       variables: { filters: {} },
+      fetchPolicy: 'no-cache',
     });
     const mappedList = mapUnitsList(listUnits.getCampus.listUnits.list, unitsUsers.listUsers.list);
     return setUnitsList({ list: mappedList, total: listUnits.getCampus.listUnits.meta.total });
