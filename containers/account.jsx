@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -11,6 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
+import { useRouter } from 'next/router';
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 import Template from './template';
 
@@ -72,9 +73,19 @@ export const EDIT_PASSWORD = gql`
 
 export default function Account() {
   const classes = useStyles();
+  const router = useRouter();
   const [checkActualPass] = useMutation(CHECK_ACTUAL_PASS);
   const [submitEditPassword] = useMutation(EDIT_PASSWORD);
   const { addAlert } = useSnackBar();
+  const [resetPass, setResetPass] = useState(() => {
+    if (router.query.token && router.query.email) {
+      return {
+        email: router.query.email,
+        token: router.query.token,
+      };
+    }
+    return null;
+  });
   const {
     handleSubmit, errors, control, reset, watch,
   } = useForm({
@@ -88,13 +99,19 @@ export default function Account() {
     try {
       await submitEditPassword({ variables: { user: { password } } });
       reset({ password: '', confirmPassword: '' });
-      return addAlert({ message: 'Votre mot de passe a bien été modifié', severity: 'success' });
+      if (resetPass) {
+        setResetPass(null);
+      }
+      return addAlert({ message: 'Votre mot de passe a bien été enregistré', severity: 'success' });
     } catch (e) {
       return e;
     }
   };
 
   const onSubmit = async ({ password, actualPassword }) => {
+    if (resetPass) {
+      return changePasswordReq(password);
+    }
     try {
       const { data } = await checkActualPass({ variables: { password: actualPassword } });
       if (data.login.jwt) {
@@ -118,12 +135,16 @@ export default function Account() {
         </Grid>
         <Grid item xs={3} sm={3} className={classes.subtitleContainer}>
           <Typography variant="subtitle2" gutterBottom>
-            Changement de mot de passe:
+            {resetPass ? 'Réinitialisation du mot de passe:' : 'Changement de mot de passe:'}
           </Typography>
         </Grid>
-        <form onSubmit={handleSubmit(onSubmit)} className={classes.formPassword}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={classes.formPassword}
+        >
           <Grid container spacing={2}>
             <Grid item md={6} sm={6} xs={12}>
+              {!resetPass && (
               <Controller
                 as={(
                   <TextField
@@ -139,6 +160,7 @@ export default function Account() {
                 name="actualPassword"
                 defaultValue=""
               />
+              )}
               <Controller
                 as={(
                   <TextField

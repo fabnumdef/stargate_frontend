@@ -189,7 +189,7 @@ export function LoginContextProvider(props) {
         token: router.query.token,
       };
     }
-    return false;
+    return null;
   });
 
   const setToken = (token) => {
@@ -274,7 +274,7 @@ export function LoginContextProvider(props) {
   useEffect(() => {
     async function resetPassSignIn(email, token) {
       await signIn(decodeURIComponent(email), null, token);
-      setResetPass(false);
+      setResetPass(null);
     }
 
     if (resetPass) {
@@ -291,7 +291,7 @@ export function LoginContextProvider(props) {
     if (!isLoggedUser && router.pathname !== '/login') {
       router.push('/login');
     }
-  }, [isLoggedUser, activeRole, isCacheInit]);
+  }, [isLoggedUser, activeRole, isCacheInit, resetPass]);
 
   if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) {
     return <div />;
@@ -303,6 +303,7 @@ export function LoginContextProvider(props) {
       signOut,
       setActiveRole,
       activeRole,
+      resetPass
     }}
     >
       {children}

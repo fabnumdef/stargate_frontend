@@ -13,7 +13,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import LinkOffOutlinedIcon from '@material-ui/icons/LinkOffOutlined';
 import gql from 'graphql-tag';
-import { useApolloClient } from '@apollo/react-hooks';
+import { useApolloClient, useQuery } from '@apollo/react-hooks';
 import { Select } from '@material-ui/core';
 import { useLogin } from '../../../lib/loginContext';
 import Avatar from './icon';
@@ -85,7 +85,7 @@ export default function MenuIcon() {
   const { signOut, setActiveRole, activeRole } = useLogin();
   const client = useApolloClient();
 
-  const { me } = client.readQuery({ query: GET_ME });
+  const { data: { me } } = useQuery(GET_ME);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
