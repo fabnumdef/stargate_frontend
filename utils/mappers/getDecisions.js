@@ -18,8 +18,7 @@ export default function getDecisions(status) {
   // for each unit get os or cu decisions
   status.forEach((unit) => {
     unit.steps.forEach((step) => {
-      if ((step.role === ROLES.ROLE_SECURITY_OFFICER.role
-          || step.role === ROLES.ROLE_UNIT_CORRESPONDENT.role)) {
+      if (step.role === ROLES.ROLE_SECURITY_OFFICER.role) {
         steps.push({ label: `Décision ${ROLES[step.role].shortLabel} ${unit.label}`, value: step });
       }
     });

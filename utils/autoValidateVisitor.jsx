@@ -37,6 +37,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
                   unit: s.unitId,
                   tags: visitor.vip ? [...visitor.tags, 'VIP'] : visitor.tags,
                   stepRole: step.role,
+                  requestId: role === ROLES.ROLE_SCREENING.role ? visitor.request.id : null,
                 });
               }
               if (role === step.role && step.done) {
@@ -79,7 +80,7 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
     await Promise.all(isAnotherActualStep[ROLES.ROLE_SCREENING.role].map(async (visitor) => {
       const { data } = await shiftVisitor({
         variables: {
-          requestId,
+          requestId: visitor.requestId,
           visitorId: visitor.id,
           transition: statusDone.find(
             (status) => status.visitor === visitor.id && status.role === visitor.stepRole,
