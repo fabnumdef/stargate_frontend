@@ -111,7 +111,7 @@ export function LoginContextProvider(props) {
         expiredToken: true,
       };
     }
-    const payload = localStorage.getItem('token').split('.')[1];
+    const payload = token.split('.')[1];
     const { exp, iat } = JSON.parse(window.atob(payload));
     const cur = Math.floor(Date.now() / 1000);
     const duration = exp - iat;
@@ -149,7 +149,7 @@ export function LoginContextProvider(props) {
   const getUserData = async () => {
     try {
       const { data: { me } } = await client.query({ query: GET_ME });
-      const activeRoleNumber = localStorage.getItem('activeRoleNumber');
+      const activeRoleNumber = localStorage.getItem('activeRoleNumber') || 0;
 
       const newRole = me.roles[activeRoleNumber].units[0]
         ? {
@@ -181,16 +181,6 @@ export function LoginContextProvider(props) {
       return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
     }
   };
-
-  const [resetPass, setResetPass] = useState(() => {
-    if (router.query.token && router.query.email) {
-      return {
-        email: router.query.email,
-        token: router.query.token,
-      };
-    }
-    return false;
-  });
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
@@ -231,11 +221,6 @@ export function LoginContextProvider(props) {
     }
   };
 
-  if (isLoggedUser && !isCacheInit) {
-    authRenew();
-    getUserData();
-  }
-
   const signIn = async (email, password, resetToken = null) => {
     try {
       const {
@@ -272,24 +257,24 @@ export function LoginContextProvider(props) {
   };
 
   useEffect(() => {
-    async function resetPassSignIn(email, token) {
-      await signIn(decodeURIComponent(email), null, token);
-      setResetPass(false);
+    if (router.query.token && !isLoggedUser) {
+      signIn(decodeURIComponent(router.query.email), null, router.query.token);
     }
 
-    if (resetPass) {
-      const { email, token } = resetPass;
-      resetPassSignIn(email, token);
+    if (!router.query.token) {
+      if (isLoggedUser && !isCacheInit) {
+        authRenew();
+        getUserData();
+      }
+      if (!isLoggedUser && router.pathname !== '/login') {
+        router.push('/login');
+      }
     }
 
     if ((isLoggedUser
       && router.pathname === '/login') || (isCacheInit && !urlAuthorization(router.pathname, activeRole.role))
     ) {
       router.push(activeRole.role === ROLES.ROLE_SUPERADMIN.role ? '/administration/utilisateurs' : '/');
-    }
-
-    if (!isLoggedUser && router.pathname !== '/login') {
-      router.push('/login');
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
