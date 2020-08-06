@@ -12,18 +12,17 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from 'next/link';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import { useRouter } from 'next/router';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
-import { ROLES } from '../../utils/constants/enums';
+
+import { FORMS_LIST, ROLES } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import { DndModule } from '../../containers/index';
 import { mapUnitData } from '../../utils/mappers/adminMappers';
+import DeletableList from '../lists/deletableList';
+import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles((theme) => ({
   createUnitForm: {
@@ -54,10 +53,6 @@ const useStyles = makeStyles((theme) => ({
     width: '250px',
     top: '-5px',
   },
-  assistantList: {
-    width: '250px',
-    marginBottom: '3px',
-  },
   formRadio: {
     width: '100%',
   },
@@ -74,10 +69,6 @@ const useStyles = makeStyles((theme) => ({
     '& button': {
       margin: '3px',
     },
-  },
-  icon: {
-    height: '20px',
-    width: '20px',
   },
   error: {
     color: theme.palette.error.main,
@@ -110,65 +101,11 @@ const GET_USERS = gql`
       }
 `;
 
-const CREATE_UNIT = gql`
-    mutation createUnit($campusId: String!, $unit: UnitInput!) {
-        campusId @client @export(as: "campusId")
-        mutateCampus(id: $campusId) {
-            createUnit(unit: $unit) {
-                id
-            }
-        }
-    }
-`;
-
-const EDIT_USER = gql`
-    mutation editUser($id: String!, $user: UserInput!) {
-        editUser(id: $id, user: $user) {
-            id
-        }
-    }
-`;
-
-const EDIT_PLACE = gql`
-    mutation editPlace($campusId: String!, $id: String!, $place: PlaceInput!) {
-        campusId @client @export(as: "campusId")
-        mutateCampus(id: $campusId) {
-            editPlace(id: $id, place: $place) {
-                id
-            }
-        }
-    }
-`;
-
-const AssistantList = ({ user, deleteAssistant, typeAssistant }) => {
-  const classes = useStyles();
-
-  return (
-    <Grid container justify="space-between" className={classes.assistantList}>
-      <span>{`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}</span>
-      <IconButton
-        aria-label="supprimer"
-        className={classes.icon}
-        color="primary"
-        onClick={() => deleteAssistant(user.id, typeAssistant)}
-      >
-        <DeleteIcon />
-      </IconButton>
-    </Grid>
-  );
-};
-
-AssistantList.propTypes = {
-  user: PropTypes.objectOf(PropTypes.string).isRequired,
-  deleteAssistant: PropTypes.func.isRequired,
-  typeAssistant: PropTypes.string.isRequired,
-};
-
 const UnitForm = ({
-  defaultValues, type,
+  defaultValues, type, submitForm,
 }) => {
   const classes = useStyles();
-  const router = useRouter();
+  const client = useApolloClient();
   const { addAlert } = useSnackBar();
   const {
     handleSubmit, errors, control,
@@ -182,8 +119,8 @@ const UnitForm = ({
   const [cards, setCards] = useState(allCards);
 
   const [assistantsList, setAssistantsList] = React.useState({
-    corresAssistant: [],
-    officerAssistant: [],
+    [FORMS_LIST.CORRES_ASSISTANTS]: [],
+    [FORMS_LIST.OFFICER_ASSISTANTS]: [],
   });
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
@@ -196,103 +133,38 @@ const UnitForm = ({
   const [expanded, setExpanded] = useState(false);
   const inputLabel = useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
+  const [placesList, setPlacesList] = useState(null);
 
-  const { data: placesList } = useQuery(GET_PLACES, {
-    variables: {
-      filters: { unitInCharge: null },
-    },
-  });
+  const getPlacesList = async () => {
+    try {
+      const { data } = await client.query({
+        query: GET_PLACES,
+        variables: {
+          filters: { unitInCharge: null },
+        },
+        fetchPolicy: 'no-cache',
+      });
+      return setPlacesList(data.getCampus.listPlaces.list);
+    } catch (e) {
+      return addAlert({ message: 'Erreur lors du chargement de la liste de lieux, merci de rafraichir la page', severity: 'warning' });
+    }
+  };
   const { data: usersList } = useQuery(GET_USERS);
-  const [createUnit] = useMutation(CREATE_UNIT);
-  const [editUserReq] = useMutation(EDIT_USER);
-  const [editPlaceReq] = useMutation(EDIT_PLACE);
 
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
-
-  const editUser = async (id, roles) => {
-    try {
-      await editUserReq({
-        variables: {
-          id,
-          user: { roles },
-        },
-      });
-    } catch (e) {
-      addAlert({ message: 'Une erreur est survenue', severity: 'error' });
+    if (!placesList) {
+      getPlacesList();
     }
-    return true;
-  };
+  }, [placesList]);
 
   const onSubmit = async (formData) => {
     const unitData = mapUnitData(formData, cards);
-    try {
-      const { data: unitResponse } = await createUnit({ variables: { unit: unitData } });
-      const unitId = unitResponse.mutateCampus.createUnit.id;
-      await editUser(
-        formData.unitCorrespondent,
-        {
-          role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-          campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-          units: { id: unitId, label: unitData.label },
-        },
-      );
-      await Promise.all(formData.places.map(async (place) => {
-        await editPlaceReq(
-          {
-            variables:
-              {
-                id: place,
-                place:
-                  { unitInCharge: unitId },
-              },
-          },
-        );
-      }));
-      if (assistantsList.corresAssistant.length) {
-        await Promise.all(assistantsList.corresAssistant.map(async (user) => {
-          await editUser(
-            user.id,
-            {
-              role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-              campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-              units: { id: unitId, label: unitData.label },
-            },
-          );
-        }));
-      }
-      if (formData.unitOfficer) {
-        await editUser(
-          formData.unitOfficer,
-          {
-            role: ROLES.ROLE_SECURITY_OFFICER.role,
-            campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-            units: { id: unitId, label: unitData.label },
-          },
-        );
-      }
-      if (assistantsList.officerAssistant.length) {
-        await Promise.all(assistantsList.officerAssistant.map(async (user) => {
-          await editUser(
-            user.id,
-            {
-              role: ROLES.ROLE_SECURITY_OFFICER.role,
-              campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-              units: { id: unitId, label: unitData.label },
-            },
-          );
-        }));
-      }
-      addAlert({ message: 'L\'unité a bien été créé', severity: 'success' });
-      return router.push('/administration/unites');
-    } catch (e) {
-      addAlert({ message: 'Une erreur est survenue', severity: 'error' });
-    }
-    return null;
+    await submitForm(formData, unitData, assistantsList);
   };
+  console.log(placesList);
 
-  return (
+  return placesList ? (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUnitForm}>
       <Typography style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Tous les champs sont obligatoires</Typography>
       <Grid container item sm={12} xs={12}>
@@ -351,7 +223,7 @@ const UnitForm = ({
               <Controller
                 as={(
                   <ListLieux
-                    options={placesList ? placesList.getCampus.listPlaces.list : []}
+                    options={placesList || []}
                     expanded={expanded}
                     setExpanded={setExpanded}
                     onChange={(checked) => checked}
@@ -369,7 +241,7 @@ const UnitForm = ({
                 defaultValue={[]}
               />
               {errors.places && (
-                <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
+              <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
               )}
             </Grid>
           </Grid>
@@ -413,9 +285,9 @@ const UnitForm = ({
                     rules={{ required: true }}
                   />
                   {errors.unitCorrespondent && (
-                    <FormHelperText className={classes.errorText}>
-                      Correspondant obligatoire
-                    </FormHelperText>
+                  <FormHelperText className={classes.errorText}>
+                    Correspondant obligatoire
+                  </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
@@ -424,21 +296,28 @@ const UnitForm = ({
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
-                  {assistantsList.corresAssistant.map((user) => (
-                    <AssistantList user={user} deleteAssistant={deleteAssistant} typeAssistant="corresAssistant" />
+                  {assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map((user) => (
+                    <DeletableList
+                      label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
+                      id={user.id}
+                      deleteItem={deleteAssistant}
+                      type={FORMS_LIST.CORRES_ASSISTANTS}
+                    />
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
                     id="demo-mutiple-chip"
                     multiple
                     displayEmpty
-                    value={assistantsList.corresAssistant}
+                    value={assistantsList[FORMS_LIST.CORRES_ASSISTANTS]}
                     renderValue={() => (<em>optionnel</em>)}
-                    onChange={(evt) => addAssistant(evt, 'corresAssistant')}
+                    onChange={(evt) => addAssistant(evt, FORMS_LIST.CORRES_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
                       <MenuItem key={user.id} value={user}>
-                        <Checkbox checked={assistantsList.corresAssistant.indexOf(user) > -1} />
+                        <Checkbox
+                          checked={assistantsList[FORMS_LIST.CORRES_ASSISTANTS].indexOf(user) > -1}
+                        />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
                     ))}
@@ -487,21 +366,28 @@ const UnitForm = ({
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
-                  {assistantsList.officerAssistant.map((user) => (
-                    <AssistantList user={user} deleteAssistant={deleteAssistant} typeAssistant="officerAssistant" />
+                  {assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map((user) => (
+                    <DeletableList
+                      label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
+                      id={user.id}
+                      deleteItem={deleteAssistant}
+                      type={FORMS_LIST.OFFICER_ASSISTANTS}
+                    />
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
                     id="demo-mutiple-chip"
                     multiple
                     displayEmpty
-                    value={assistantsList.officerAssistant}
+                    value={assistantsList[FORMS_LIST.OFFICER_ASSISTANTS]}
                     renderValue={() => (<em>optionnel</em>)}
-                    onChange={(evt) => addAssistant(evt, 'officerAssistant')}
+                    onChange={(evt) => addAssistant(evt, FORMS_LIST.OFFICER_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
                       <MenuItem key={user.id} value={user}>
-                        <Checkbox checked={assistantsList.officerAssistant.indexOf(user) > -1} />
+                        <Checkbox
+                          checked={assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].indexOf(user) > -1}
+                        />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
                     ))}
@@ -515,7 +401,7 @@ const UnitForm = ({
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
         <Link href="/administration/utilisateurs">
-          <Button variant="outlined" color="primary" className={classes.buttonCancel}>
+          <Button variant="outlined" color="primary">
             Annuler
           </Button>
         </Link>
@@ -524,7 +410,7 @@ const UnitForm = ({
         </Button>
       </Grid>
     </form>
-  );
+  ) : <div />;
 };
 
 UnitForm.propTypes = {

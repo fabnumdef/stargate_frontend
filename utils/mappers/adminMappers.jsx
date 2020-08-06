@@ -48,7 +48,9 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
   const findName = (userRole) => {
     const findUser = usersList.find(
       (user) => user.roles.find(
-        (role) => role.role === userRole && role.units.find((userUnit) => userUnit.id === unit.id),
+        (role) => role.role === userRole
+          && role.userInCharge === user.id
+          && role.units.find((userUnit) => userUnit.id === unit.id),
       ),
     );
     return findUser ? `${findUser.firstname} ${findUser.lastname}` : '-';
@@ -62,3 +64,18 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
     deleteLabel: unit.label,
   };
 });
+
+export const mapEditCampus = (campusId, campusName, placesList, adminsList) => {
+  const admin = adminsList.find(
+    (user) => user.roles.find((role) => role.userInCharge === user.id),
+  );
+  const assistants = adminsList.filter(
+    (user) => user.roles.find((role) => role.userInCharge && role.userInCharge !== user.id),
+  );
+  return {
+    name: campusName,
+    admin: admin || null,
+    assistants,
+    placesList: placesList.getCampus.listPlaces.list,
+  };
+};
