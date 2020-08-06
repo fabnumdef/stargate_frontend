@@ -200,7 +200,7 @@ const BaseForm = ({
                     </Select>
                   )}
                   control={control}
-                  defaultValue={findCampusAdmin}
+                  defaultValue={defaultValues.admin ? findCampusAdmin : ''}
                   name="campusAdmin"
                   rules={{ required: true }}
                 />
