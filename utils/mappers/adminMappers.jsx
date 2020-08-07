@@ -1,4 +1,4 @@
-import { ROLES } from '../constants/enums';
+import { FORMS_LIST, ROLES } from '../constants/enums';
 
 export const mapUserData = (data, dataCampuses, dataUnits) => {
   const { listCampuses: { list: campuses } } = dataCampuses;
@@ -33,6 +33,39 @@ export const mapUnitData = (data, cards) => ({
     steps: cards.map((card) => ({ role: card.role, behavior: card.behavior })),
   },
 });
+
+export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesList) => {
+  const cards = unitData.workflow.steps.map((step, i) => ({
+    id: i + 1, text: ROLES[step.role].label, role: step.role, behavior: step.behavior,
+  }));
+
+  const unitCorrespondentIndex = unitCorresList.findIndex(
+    (u) => u.roles.find((r) => r.unitInCharge === u.id),
+  );
+  const unitCorrespondent = unitCorrespondentIndex !== -1
+    ? unitCorresList.splice(unitCorrespondentIndex, 1)
+    : [{}];
+
+  const unitOfficerIndex = unitOfficerList.findIndex(
+    (u) => u.roles.find((r) => r.unitInCharge === u.id),
+  );
+  const unitOfficer = unitOfficerIndex !== -1
+    ? unitOfficerList.splice(unitOfficerIndex, 1)
+    : [{}];
+
+  return {
+    name: unitData.label,
+    trigram: unitData.trigram,
+    cards,
+    unitCorrespondent,
+    unitOfficer,
+    assistantsList: {
+      [FORMS_LIST.CORRES_ASSISTANTS]: unitCorresList,
+      [FORMS_LIST.OFFICER_ASSISTANTS]: unitOfficerList,
+    },
+    placesList,
+  };
+};
 
 export const mapUsersList = (usersList) => usersList.map((user) => ({
   id: user.id,

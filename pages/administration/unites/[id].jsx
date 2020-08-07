@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
 import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
@@ -9,12 +9,74 @@ import UnitForm from '../../../components/administrationForms/unitForm';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
+import { mapEditUnit } from '../../../utils/mappers/adminMappers';
 
-const CREATE_UNIT = gql`
-    mutation createUnit($campusId: String!, $unit: UnitInput!) {
+const GET_UNIT = gql`
+    query getUnit($campusId: String!, $id: String!) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
+            getUnit(id: $id) {
+                id
+                label
+                trigram
+                workflow {
+                    steps {
+                        role
+                        behavior
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const GET_USERS = gql`
+    query listUsers($cursor: OffsetCursor, $hasRole: HasRoleInput) {
+        listUsers(cursor: $cursor, hasRole: $hasRole) {
+            list {
+                id
+                firstname
+                lastname
+                roles {
+                    role
+                    userInCharge
+                    campuses {
+                        id
+                        label
+                    }
+                    units {
+                        id
+                        label
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const GET_PLACES = gql`
+    query listPlaces($campusId: String!, $filters: PlaceFilters) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
+            listPlaces(filters: $filters) {
+                list {
+                    id
+                    label
+                    unitInCharge {
+                        id
+                        label
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const EDIT_UNIT = gql`
+    mutation editUnit($campusId: String!,$id: String!, $unit: UnitInput!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
-            createUnit(unit: $unit) {
+            editUnit(id: $id, unit: $unit) {
                 id
             }
         }
@@ -43,16 +105,30 @@ const EDIT_PLACE = gql`
 function CreateUnit() {
   const { addAlert } = useSnackBar();
   const router = useRouter();
-  const [createUnit] = useMutation(CREATE_UNIT);
+  const { id } = router.query;
+  const { data: getUnitData } = useQuery(GET_UNIT, { variables: { id } });
+  const { data: unitCorresDatas } = useQuery(GET_USERS, {
+    variables: { hasRole: { role: ROLES.ROLE_UNIT_CORRESPONDENT.role, unit: id } },
+  });
+  const { data: unitOfficerDatas } = useQuery(GET_USERS, {
+    variables: { hasRole: { role: ROLES.ROLE_SECURITY_OFFICER.role, unit: id } },
+  });
+  const { data: placesData } = useQuery(GET_PLACES, {
+    variables: { filters: { unitInCharge: { id } } },
+  });
+
+  const [editUnit] = useMutation(EDIT_UNIT);
   const [editUserReq] = useMutation(EDIT_USER);
   const [editPlaceReq] = useMutation(EDIT_PLACE);
   const { activeRole } = useLogin();
 
-  const editUser = async (id, roles) => {
+  const [defaultValues, setDefaultValues] = useState(null);
+
+  const editUser = async (userId, roles) => {
     try {
       await editUserReq({
         variables: {
-          id,
+          id: userId,
           user: { roles },
         },
       });
@@ -62,10 +138,10 @@ function CreateUnit() {
     return true;
   };
 
-  const submitCreateUnit = async (formData, unitData, assistantsList) => {
+  const submitEditUnit = async (formData, unitData, assistantsList) => {
     try {
-      const { data: unitResponse } = await createUnit({ variables: { unit: unitData } });
-      const unitId = unitResponse.mutateCampus.createUnit.id;
+      await editUnit({ variables: { id, unit: unitData } });
+      const unitId = id;
       await editUser(
         formData.unitCorrespondent,
         {
@@ -124,30 +200,36 @@ function CreateUnit() {
           );
         }));
       }
-      addAlert({ message: 'L\'unité a bien été créé', severity: 'success' });
+      addAlert({ message: 'L\'unité a bien été modifiée', severity: 'success' });
       return router.push('/administration/unites');
     } catch (e) {
       return addAlert({ message: 'Une erreur est survenue', severity: 'error' });
     }
   };
 
-  const defaultValues = {
-    assistantsList: {
-      [FORMS_LIST.CORRES_ASSISTANTS]: [],
-      [FORMS_LIST.OFFICER_ASSISTANTS]: [],
-    },
-    placesList: [],
-  };
+  useEffect(() => {
+    if (getUnitData && unitCorresDatas && unitOfficerDatas && placesData) {
+      setDefaultValues(mapEditUnit(
+        getUnitData.getCampus.getUnit,
+        unitCorresDatas.listUsers.list,
+        unitOfficerDatas.listUsers.list,
+        placesData.getCampus.listPlaces.list,
+      ));
+    }
+  }, [getUnitData, unitCorresDatas, unitOfficerDatas, placesData]);
+
 
   return (
     <Template>
-      <PageTitle title="Administration" subtitles={['Unité', 'Nouvelle unité']} />
+      <PageTitle title="Administration" subtitles={['Unité', 'Editer unité']} />
+      {defaultValues && (
       <UnitForm
-        submitForm={submitCreateUnit}
+        submitForm={submitEditUnit}
         defaultValues={defaultValues}
         userRole={activeRole}
-        type="create"
+        type="edit"
       />
+      )}
     </Template>
   );
 }

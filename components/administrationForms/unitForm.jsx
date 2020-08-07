@@ -116,12 +116,9 @@ const UnitForm = ({
     .map((role, i) => ({
       id: i + 1, text: role.label, role: role.role, behavior: role.behavior,
     }));
-  const [cards, setCards] = useState(allCards);
+  const [cards, setCards] = useState(type === 'create' ? allCards : defaultValues.cards);
 
-  const [assistantsList, setAssistantsList] = React.useState({
-    [FORMS_LIST.CORRES_ASSISTANTS]: [],
-    [FORMS_LIST.OFFICER_ASSISTANTS]: [],
-  });
+  const [assistantsList, setAssistantsList] = React.useState(defaultValues.assistantsList);
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
   };
@@ -162,7 +159,6 @@ const UnitForm = ({
     const unitData = mapUnitData(formData, cards);
     await submitForm(formData, unitData, assistantsList);
   };
-  console.log(placesList);
 
   return placesList ? (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUnitForm}>
@@ -223,10 +219,11 @@ const UnitForm = ({
               <Controller
                 as={(
                   <ListLieux
-                    options={placesList || []}
+                    options={placesList.concat(defaultValues.placesList) || []}
                     expanded={expanded}
                     setExpanded={setExpanded}
                     onChange={(checked) => checked}
+                    defaultChecked={defaultValues.placesList}
                     label="Lieux"
                     className={classes.placesList}
                   />
@@ -238,7 +235,7 @@ const UnitForm = ({
                 }}
                 control={control}
                 name="places"
-                defaultValue={[]}
+                defaultValue={defaultValues.placesList}
               />
               {errors.places && (
               <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>

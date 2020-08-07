@@ -73,9 +73,9 @@ const ListStyled = withStyles(() => ({
 }))(List);
 
 export default function ListLieux({
-  options, label, expanded, onChange, setExpanded,
+  options, label, expanded, onChange, setExpanded, defaultChecked,
 }) {
-  const [checked, setChecked] = React.useState([]);
+  const [checked, setChecked] = React.useState(defaultChecked);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -156,10 +156,15 @@ export default function ListLieux({
   );
 }
 
+ListLieux.defaultProps = {
+  defaultChecked: [],
+};
+
 ListLieux.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   label: PropTypes.string.isRequired,
   expanded: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   setExpanded: PropTypes.func.isRequired,
+  defaultChecked: PropTypes.arrayOf(PropTypes.object),
 };
