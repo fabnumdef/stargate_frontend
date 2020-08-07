@@ -123,7 +123,12 @@ const UnitForm = ({
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
   };
   const deleteAssistant = (id, typeAssistant) => {
-    const newUsers = assistantsList[typeAssistant].filter((user) => user.id !== id);
+    const newUsers = assistantsList[typeAssistant].map((user) => {
+      if (user.id === id) {
+        return { ...user, toDelete: true, toCreate: false };
+      }
+      return user;
+    });
     setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
   };
 
@@ -277,7 +282,7 @@ const UnitForm = ({
                       </Select>
                     )}
                     control={control}
-                    defaultValue={defaultValues.unitCorrespondent ? defaultValues.unitCorrespondent : ''}
+                    defaultValue={defaultValues.unitCorrespondent.id ? defaultValues.unitCorrespondent.id : ''}
                     name="unitCorrespondent"
                     rules={{ required: true }}
                   />
@@ -294,12 +299,14 @@ const UnitForm = ({
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map((user) => (
+                    !user.toDelete && (
                     <DeletableList
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
                       type={FORMS_LIST.CORRES_ASSISTANTS}
                     />
+                    )
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
@@ -352,7 +359,7 @@ const UnitForm = ({
                         ))}
                       </Select>
                     )}
-                    defaultValue={defaultValues.unitOfficer ? defaultValues.unitOfficer : ''}
+                    defaultValue={defaultValues.unitOfficer.id ? defaultValues.unitOfficer.id : ''}
                     control={control}
                     name="unitOfficer"
                   />
@@ -364,12 +371,14 @@ const UnitForm = ({
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map((user) => (
+                    !user.toDelete && (
                     <DeletableList
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
                       type={FORMS_LIST.OFFICER_ASSISTANTS}
                     />
+                    )
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"

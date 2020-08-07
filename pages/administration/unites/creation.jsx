@@ -89,6 +89,9 @@ function CreateUnit() {
       }));
       if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
         await Promise.all(assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
+          if (user.toDelete) {
+            return user;
+          }
           await editUser(
             user.id,
             {
@@ -98,6 +101,7 @@ function CreateUnit() {
               units: { id: unitId, label: unitData.label },
             },
           );
+          return user;
         }));
       }
       if (formData.unitOfficer) {
@@ -113,6 +117,9 @@ function CreateUnit() {
       }
       if (assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].length) {
         await Promise.all(assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map(async (user) => {
+          if (user.toDelete) {
+            return user;
+          }
           await editUser(
             user.id,
             {
@@ -122,6 +129,7 @@ function CreateUnit() {
               units: { id: unitId, label: unitData.label },
             },
           );
+          return user;
         }));
       }
       addAlert({ message: 'L\'unité a bien été créé', severity: 'success' });
@@ -137,6 +145,8 @@ function CreateUnit() {
       [FORMS_LIST.OFFICER_ASSISTANTS]: [],
     },
     placesList: [],
+    unitOfficer: {},
+    unitCorrespondent: {},
   };
 
   return (

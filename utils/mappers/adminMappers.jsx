@@ -40,18 +40,20 @@ export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesLis
   }));
 
   const unitCorrespondentIndex = unitCorresList.findIndex(
-    (u) => u.roles.find((r) => r.unitInCharge === u.id),
+    (u) => u.roles.find(
+      (r) => r.role === ROLES.ROLE_UNIT_CORRESPONDENT.role && r.userInCharge === u.id,
+    ),
   );
   const unitCorrespondent = unitCorrespondentIndex !== -1
-    ? unitCorresList.splice(unitCorrespondentIndex, 1)
-    : [{}];
+    ? unitCorresList.splice(unitCorrespondentIndex, 1)[0]
+    : {};
 
   const unitOfficerIndex = unitOfficerList.findIndex(
-    (u) => u.roles.find((r) => r.unitInCharge === u.id),
+    (u) => u.roles.find((r) => r.userInCharge === u.id),
   );
   const unitOfficer = unitOfficerIndex !== -1
-    ? unitOfficerList.splice(unitOfficerIndex, 1)
-    : [{}];
+    ? unitOfficerList.splice(unitOfficerIndex, 1)[0]
+    : {};
 
   return {
     name: unitData.label,

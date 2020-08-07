@@ -55,10 +55,10 @@ const GET_USERS = gql`
 `;
 
 const GET_PLACES = gql`
-    query listPlaces($campusId: String!, $filters: PlaceFilters) {
+    query listPlaces($campusId: String!, $hasUnit: HasUnitFilter) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
-            listPlaces(filters: $filters) {
+            listPlaces(hasUnit: $hasUnit) {
                 list {
                     id
                     label
@@ -91,6 +91,14 @@ const EDIT_USER = gql`
     }
 `;
 
+const DELETE_ROLE = gql`
+    mutation deleteUserRole($id: String! $user: UserInput) {
+        deleteUserRole(id: $id, user: $user) {
+            id
+        }
+    }
+`;
+
 const EDIT_PLACE = gql`
     mutation editPlace($campusId: String!, $id: String!, $place: PlaceInput!) {
         campusId @client @export(as: "campusId")
@@ -114,22 +122,30 @@ function CreateUnit() {
     variables: { hasRole: { role: ROLES.ROLE_SECURITY_OFFICER.role, unit: id } },
   });
   const { data: placesData } = useQuery(GET_PLACES, {
-    variables: { filters: { unitInCharge: { id } } },
+    variables: { hasUnit: { id } },
   });
 
   const [editUnit] = useMutation(EDIT_UNIT);
   const [editUserReq] = useMutation(EDIT_USER);
   const [editPlaceReq] = useMutation(EDIT_PLACE);
+  const [deleteUserRoleReq] = useMutation(DELETE_ROLE);
   const { activeRole } = useLogin();
 
   const [defaultValues, setDefaultValues] = useState(null);
 
-  const editUser = async (userId, roles) => {
+  const editUser = async (userId, role, userInCharge) => {
     try {
       await editUserReq({
         variables: {
           id: userId,
-          user: { roles },
+          user: {
+            roles: {
+              role,
+              userInCharge,
+              campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
+              units: { id, label: getUnitData.getCampus.getUnit.label },
+            },
+          },
         },
       });
     } catch (e) {
@@ -138,66 +154,110 @@ function CreateUnit() {
     return true;
   };
 
+  const deleteRole = async (user, role) => {
+    try {
+      const userRoleDeleted = await deleteUserRoleReq({
+        variables: {
+          id: user.id,
+          user: {
+            roles: {
+              role,
+            },
+          },
+        },
+      });
+      return userRoleDeleted;
+    } catch {
+      return null;
+    }
+  };
+
+  const editPlace = async (placeId, data) => {
+    try {
+      await editPlaceReq(
+        {
+          variables:
+            {
+              id: placeId,
+              place:
+                { unitInCharge: data },
+            },
+        },
+      );
+      return true;
+    } catch (e) {
+      return e;
+    }
+  };
+
   const submitEditUnit = async (formData, unitData, assistantsList) => {
     try {
       await editUnit({ variables: { id, unit: unitData } });
       const unitId = id;
-      await editUser(
-        formData.unitCorrespondent,
-        {
-          role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-          userInCharge: formData.unitCorrespondent,
-          campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-          units: { id: unitId, label: unitData.label },
-        },
-      );
-      await Promise.all(formData.places.map(async (place) => {
-        await editPlaceReq(
-          {
-            variables:
-              {
-                id: place,
-                place:
-                  { unitInCharge: unitId },
-              },
-          },
+
+      if (!defaultValues.unitCorrespondent.id
+        || (defaultValues.unitCorrespondent.id !== formData.unitCorrespondent)) {
+        if (defaultValues.unitCorrespondent.id) {
+          await deleteRole(defaultValues.unitCorrespondent.id, ROLES.ROLE_UNIT_CORRESPONDENT.role);
+        }
+        await editUser(
+          formData.unitCorrespondent,
+          ROLES.ROLE_UNIT_CORRESPONDENT.role,
+          formData.unitCorrespondent,
         );
-      }));
-      if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
-        await Promise.all(assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
-          await editUser(
-            user.id,
-            {
-              role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-              userInCharge: formData.unitCorrespondent,
-              campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-              units: { id: unitId, label: unitData.label },
-            },
-          );
-        }));
       }
-      if (formData.unitOfficer) {
+      if (!defaultValues.unitOfficer.id
+        || (defaultValues.unitOfficer.id !== formData.unitOfficer)) {
+        if (defaultValues.unitOfficer.id) {
+          await deleteRole(defaultValues.unitOfficer.id, ROLES.ROLE_SECURITY_OFFICER.role);
+        }
         await editUser(
           formData.unitOfficer,
-          {
-            role: ROLES.ROLE_SECURITY_OFFICER.role,
-            userInCharge: formData.unitOfficer,
-            campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-            units: { id: unitId, label: unitData.label },
-          },
+          ROLES.ROLE_SECURITY_OFFICER.role,
+          formData.unitOfficer,
         );
       }
+
+      const placesToDelete = defaultValues.placesList.filter(
+        (place) => !formData.placesList.find((p) => p.id === place.id),
+      );
+      const placesToAdd = formData.placesList.filter(
+        (place) => !defaultValues.placesList.find((p) => p.id === place.id),
+      );
+      await Promise.all(placesToDelete.places.map(async (place) => {
+        await editPlace(place.id, null);
+      }));
+      await Promise.all(placesToAdd.places.map(async (place) => {
+        await editPlace(place.id, unitId);
+      }));
+
+      if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
+        await Promise.all(assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
+          if (user.toDelete) {
+            return deleteRole(user.id, ROLES.ROLE_UNIT_CORRESPONDENT.role);
+          }
+          const haveRole = user.roles.find(
+            (role) => role.role === ROLES.ROLE_UNIT_CORRESPONDENT.role,
+          );
+          if ((!haveRole || haveRole.userInCharge !== formData.unitCorrespondent)) {
+            await editUser(user, ROLES.ROLE_UNIT_CORRESPONDENT.role, formData.unitCorrespondent);
+          }
+          return user;
+        }));
+      }
+
       if (assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].length) {
         await Promise.all(assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map(async (user) => {
-          await editUser(
-            user.id,
-            {
-              role: ROLES.ROLE_SECURITY_OFFICER.role,
-              userInCharge: formData.unitOfficer,
-              campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-              units: { id: unitId, label: unitData.label },
-            },
+          if (user.toDelete) {
+            return deleteRole(user.id, ROLES.ROLE_SECURITY_OFFICER.role);
+          }
+          const haveRole = user.roles.find(
+            (role) => role.role === ROLES.ROLE_SECURITY_OFFICER.role,
           );
+          if ((!haveRole || haveRole.userInCharge !== formData.unitCorrespondent)) {
+            await editUser(user, ROLES.ROLE_SECURITY_OFFICER.role, formData.unitCorrespondent);
+          }
+          return user;
         }));
       }
       addAlert({ message: 'L\'unité a bien été modifiée', severity: 'success' });
