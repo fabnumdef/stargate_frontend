@@ -76,6 +76,7 @@ const DndContainer = ({ cards, setCards, allCards }) => {
               labelId="create-unit-workflow"
               id="workFlow"
               disabled={null}
+              defaultValue=""
               open={openMenu}
               onClose={() => toggleMenu(false)}
               onChange={(evt) => addCard(evt.target.value)}

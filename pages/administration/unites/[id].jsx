@@ -154,11 +154,11 @@ function CreateUnit() {
     return true;
   };
 
-  const deleteRole = async (user, role) => {
+  const deleteRole = async (userId, role) => {
     try {
       const userRoleDeleted = await deleteUserRoleReq({
         variables: {
-          id: user.id,
+          id: userId,
           user: {
             roles: {
               role,
@@ -206,8 +206,9 @@ function CreateUnit() {
           formData.unitCorrespondent,
         );
       }
-      if (!defaultValues.unitOfficer.id
-        || (defaultValues.unitOfficer.id !== formData.unitOfficer)) {
+      if ((!defaultValues.unitOfficer.id && formData.unitOfficer.length)
+        || (defaultValues.unitOfficer.id
+          && defaultValues.unitOfficer.id !== formData.unitOfficer)) {
         if (defaultValues.unitOfficer.id) {
           await deleteRole(defaultValues.unitOfficer.id, ROLES.ROLE_SECURITY_OFFICER.role);
         }
@@ -219,28 +220,28 @@ function CreateUnit() {
       }
 
       const placesToDelete = defaultValues.placesList.filter(
-        (place) => !formData.placesList.find((p) => p.id === place.id),
+        (place) => !formData.places.find((p) => p.id === place.id),
       );
-      const placesToAdd = formData.placesList.filter(
+      const placesToAdd = formData.places.filter(
         (place) => !defaultValues.placesList.find((p) => p.id === place.id),
       );
-      await Promise.all(placesToDelete.places.map(async (place) => {
+      await Promise.all(placesToDelete.map(async (place) => {
         await editPlace(place.id, null);
       }));
-      await Promise.all(placesToAdd.places.map(async (place) => {
-        await editPlace(place.id, unitId);
+      await Promise.all(placesToAdd.map(async (place) => {
+        await editPlace(place.id, { id: unitId });
       }));
 
       if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
         await Promise.all(assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
-          if (user.toDelete) {
+          if (user.toDelete && user.id !== formData.unitCorrespondent) {
             return deleteRole(user.id, ROLES.ROLE_UNIT_CORRESPONDENT.role);
           }
           const haveRole = user.roles.find(
             (role) => role.role === ROLES.ROLE_UNIT_CORRESPONDENT.role,
           );
           if ((!haveRole || haveRole.userInCharge !== formData.unitCorrespondent)) {
-            await editUser(user, ROLES.ROLE_UNIT_CORRESPONDENT.role, formData.unitCorrespondent);
+            await editUser(user.id, ROLES.ROLE_UNIT_CORRESPONDENT.role, formData.unitCorrespondent);
           }
           return user;
         }));
@@ -248,14 +249,14 @@ function CreateUnit() {
 
       if (assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].length) {
         await Promise.all(assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map(async (user) => {
-          if (user.toDelete) {
+          if (user.toDelete && user.id !== formData.unitOfficer) {
             return deleteRole(user.id, ROLES.ROLE_SECURITY_OFFICER.role);
           }
           const haveRole = user.roles.find(
             (role) => role.role === ROLES.ROLE_SECURITY_OFFICER.role,
           );
-          if ((!haveRole || haveRole.userInCharge !== formData.unitCorrespondent)) {
-            await editUser(user, ROLES.ROLE_SECURITY_OFFICER.role, formData.unitCorrespondent);
+          if ((!haveRole || haveRole.userInCharge !== formData.unitOfficer)) {
+            await editUser(user.id, ROLES.ROLE_SECURITY_OFFICER.role, formData.unitOfficer);
           }
           return user;
         }));

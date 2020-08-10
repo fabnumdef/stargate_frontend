@@ -80,9 +80,9 @@ function CreateUnit() {
           {
             variables:
               {
-                id: place,
+                id: place.id,
                 place:
-                  { unitInCharge: unitId },
+                  { unitInCharge: { id: unitId } },
               },
           },
         );

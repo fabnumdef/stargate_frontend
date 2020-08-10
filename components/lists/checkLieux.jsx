@@ -87,7 +87,7 @@ export default function ListLieux({
       newChecked.splice(currentIndex, 1);
     }
     setChecked(newChecked);
-    onChange(newChecked.map((place) => place.id));
+    onChange(newChecked.map((place) => place));
   };
 
   const handleChange = () => () => {
@@ -98,7 +98,7 @@ export default function ListLieux({
     const newChecked = [...checked];
     newChecked.splice(index, 1);
     setChecked(newChecked);
-    onChange(newChecked.map((place) => place.id));
+    onChange(newChecked.map((place) => place));
   };
 
   const classes = useStyles();
@@ -113,13 +113,13 @@ export default function ListLieux({
       >
         <div>
           <Typography className={classes.heading}>{label}</Typography>
-          {checked.map((place) => (
+          {checked.map((place, i) => (
             <Chip
               color="primary"
               style={{ margin: '2px' }}
               key={place.id}
               label={place.label}
-              onDelete={handleDelete}
+              onDelete={() => handleDelete(i)}
             />
           ))}
         </div>

@@ -96,6 +96,10 @@ const GET_USERS = gql`
                   id
                   firstname
                   lastname
+                  roles {
+                      role
+                      userInCharge
+                  }
               }
           }
       }
@@ -108,7 +112,7 @@ const UnitForm = ({
   const client = useApolloClient();
   const { addAlert } = useSnackBar();
   const {
-    handleSubmit, errors, control,
+    handleSubmit, errors, control, watch,
   } = useForm();
 
   const allCards = Object.values(ROLES)
@@ -125,7 +129,7 @@ const UnitForm = ({
   const deleteAssistant = (id, typeAssistant) => {
     const newUsers = assistantsList[typeAssistant].map((user) => {
       if (user.id === id) {
-        return { ...user, toDelete: true, toCreate: false };
+        return { ...user, toDelete: true };
       }
       return user;
     });
@@ -153,6 +157,10 @@ const UnitForm = ({
   };
   const { data: usersList } = useQuery(GET_USERS);
 
+  const isAssistant = (userId, typeAssistant) => assistantsList[typeAssistant].find(
+    (user) => user.id === userId && !user.toDelete,
+  );
+
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
     if (!placesList) {
@@ -169,7 +177,7 @@ const UnitForm = ({
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUnitForm}>
       <Typography style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Tous les champs sont obligatoires</Typography>
       <Grid container item sm={12} xs={12}>
-        <Grid sm={6} xs={6}>
+        <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>
             <Typography variant="subtitle2">Description: </Typography>
             <Grid className={classes.textFieldBlock}>
@@ -240,7 +248,6 @@ const UnitForm = ({
                 }}
                 control={control}
                 name="places"
-                defaultValue={defaultValues.placesList}
               />
               {errors.places && (
               <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
@@ -252,7 +259,7 @@ const UnitForm = ({
             <DndModule cards={cards} setCards={setCards} allCards={allCards} />
           </Grid>
         </Grid>
-        <Grid sm={6} xs={6}>
+        <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>
             <Grid>
               <Grid className={classes.titleUserSelect}>
@@ -275,9 +282,12 @@ const UnitForm = ({
                         labelWidth={labelWidth}
                       >
                         {usersList && usersList.listUsers.list.map((user) => (
+                          !isAssistant(user.id, FORMS_LIST.CORRES_ASSISTANTS)
+                          && (
                           <MenuItem key={user.id} value={user.id}>
                             {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                           </MenuItem>
+                          )
                         ))}
                       </Select>
                     )}
@@ -294,13 +304,14 @@ const UnitForm = ({
                 </FormControl>
               </Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle3">Adjoint(s):</Typography>
+                <Typography>Adjoint(s):</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map((user) => (
                     !user.toDelete && (
                     <DeletableList
+                      key={user.id}
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
@@ -318,12 +329,14 @@ const UnitForm = ({
                     onChange={(evt) => addAssistant(evt, FORMS_LIST.CORRES_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
+                      user.id !== watch('unitCorrespondent') && (
                       <MenuItem key={user.id} value={user}>
                         <Checkbox
                           checked={assistantsList[FORMS_LIST.CORRES_ASSISTANTS].indexOf(user) > -1}
                         />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
+                      )
                     ))}
                   </Select>
                 </FormControl>
@@ -353,9 +366,12 @@ const UnitForm = ({
                         labelWidth={labelWidth}
                       >
                         {usersList && usersList.listUsers.list.map((user) => (
+                          !isAssistant(user.id, FORMS_LIST.OFFICER_ASSISTANTS)
+                          && (
                           <MenuItem key={user.id} value={user.id}>
                             {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                           </MenuItem>
+                          )
                         ))}
                       </Select>
                     )}
@@ -366,13 +382,14 @@ const UnitForm = ({
                 </FormControl>
               </Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle3">Adjoint(s)&nbsp;:</Typography>
+                <Typography>Adjoint(s)&nbsp;:</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map((user) => (
                     !user.toDelete && (
                     <DeletableList
+                      key={user.id}
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
@@ -390,12 +407,15 @@ const UnitForm = ({
                     onChange={(evt) => addAssistant(evt, FORMS_LIST.OFFICER_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
+                      user.id !== watch('unitOfficer')
+                      && (
                       <MenuItem key={user.id} value={user}>
                         <Checkbox
                           checked={assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].indexOf(user) > -1}
                         />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
+                      )
                     ))}
                   </Select>
                 </FormControl>
@@ -406,7 +426,7 @@ const UnitForm = ({
         </Grid>
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Link href="/administration/utilisateurs">
+        <Link href="/administration/unites">
           <Button variant="outlined" color="primary">
             Annuler
           </Button>
@@ -422,6 +442,7 @@ const UnitForm = ({
 UnitForm.propTypes = {
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
   type: PropTypes.string.isRequired,
+  submitForm: PropTypes.func.isRequired,
 };
 
 export default UnitForm;
