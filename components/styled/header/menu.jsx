@@ -30,6 +30,8 @@ function getAdminMenu(router, campusId) {
 
 const ButtonMenu = withStyles(() => ({
   root: {
+    width: '150px',
+    height: '35px',
     textTransform: 'none',
     borderRadius: '0px',
     position: 'relative',
@@ -39,7 +41,7 @@ const ButtonMenu = withStyles(() => ({
 const useStyles = makeStyles(() => ({
   appBar: {
     position: 'fixed',
-    top: '61px',
+    top: '57px',
     right: '0px',
   },
   grow: {

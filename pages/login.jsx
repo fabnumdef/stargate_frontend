@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { LoginForm, ForgotPassForm } from '../components';
 import { withApollo } from '../lib/apollo';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   mainLoginForm: {
     marginTop: '10vh',
   },
@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
     width: '40vh',
     minWidth: '450px',
     minHeight: '450px',
-    margin: 'auto',
+    margin: '30px auto',
     borderRadius: '50%',
     border: '1.2rem solid rgba(255, 255, 255, .2)',
     boxShadow: '5px 5px 6px 0 rgba(0, 0, 0, 0.16)',
@@ -39,8 +39,17 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     fontSize: '1rem',
   },
-  logo: {
-    height: '10vh',
+  star: {
+    fontSize: '2.8em',
+    lineHeight: '1.34',
+    letterSpacing: '0.4px',
+    color: theme.palette.primary.main,
+  },
+  gate: {
+    fontSize: '2.8em',
+    lineHeight: '1.34',
+    letterSpacing: '0.4px',
+    color: theme.palette.secondary.main,
   },
   buttonStyle: {
     outline: 'none',
@@ -63,7 +72,8 @@ function LoginPage() {
   return (
     <div className={classes.mainLoginForm}>
       <div className={classes.logoContainer}>
-        <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
+        <span className={classes.star}>STAR</span>
+        <span className={classes.gate}>GATE</span>
       </div>
       <div className={classes.subLoginForm}>
         {forgottenPass ? <ForgotPassForm switchForms={switchForms} /> : <LoginForm />}

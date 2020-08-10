@@ -2,11 +2,11 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 // Material Imports
 import { makeStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import { useRouter } from 'next/router';
 
 const MenuItems = dynamic(() => import('./menu'));
 
@@ -20,11 +20,78 @@ function ElevationScroll(props) {
   });
 
   return React.cloneElement(props.children, {
-    elevation: trigger ? 3 : 0,
+    elevation: trigger ? 0 : 0,
   });
 }
 
 const useStyles = makeStyles((theme) => ({
+  ellipse1: {
+    width: '90px',
+    height: '90px',
+    borderRadius: '50%',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    zIndex: 2,
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: fade(theme.palette.primary.main, 0.85),
+  },
+  ellipse2: {
+    marginTop: '10px',
+    width: '120px',
+    height: '120px',
+    borderRadius: '50%',
+    position: 'relative',
+    backgroundColor: fade(theme.palette.primary.main, 0.65),
+    zIndex: 'auto',
+  },
+  spanStar: {
+    fontSize: '2.2em',
+    position: 'absolute',
+    lineHeight: '1.34',
+    letterSpacing: '0.4px',
+    top: '40%',
+    right: '0',
+    transform: 'translate(0, -50%)',
+    color: '#ffffff',
+    zIndex: 3,
+  },
+  spanGate: {
+    fontSize: '2.2em',
+    position: 'absolute',
+    lineHeight: '1.34',
+    letterSpacing: '0.4px',
+    top: '40%',
+    right: '0',
+    transform: 'translate(100%, -50%)',
+    color: theme.palette.secondary.main,
+    zIndex: 3,
+  },
+  lineLogo: {
+    position: 'absolute',
+    backgroundColor: fade(theme.palette.primary.main, 0.65),
+    width: '2000px',
+    height: '2px',
+    top: '50%',
+    left: '100%',
+  },
+  lineLogoWhite: {
+    position: 'absolute',
+    backgroundColor: '#ffffff',
+    width: '2000px',
+    height: '4px',
+    top: '52%',
+    left: '100%',
+  },
+  name: {
+    position: 'absolute',
+    color: fade(theme.palette.primary.main, 0.65),
+    backgroundColor: '#ffffff',
+    top: '55%',
+    left: '110%',
+    width: '510px',
+    height: '22px',
+  },
   grow: {
     flexGrow: 1,
   },
@@ -32,29 +99,37 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   logo: {
-    height: '4vh',
+    position: 'absolute',
+    top: 0,
   },
 }));
 
+const Logo = () => {
+  const classes = useStyles();
+  return (
+    <div className={classes.logo}>
+      <div className={classes.ellipse2}>
+        <div className={classes.ellipse1} />
+        <span className={classes.spanStar}>STAR</span>
+        <span className={classes.spanGate}>GATE</span>
+        <div className={classes.lineLogo} />
+        <div className={classes.lineLogoWhite} />
+        <span className={classes.name}>
+          Système de Traitement des Accès Règlementés Généralisé À Toute les Entités
+        </span>
+      </div>
+    </div>
+  );
+};
 export default () => {
   const classes = useStyles();
-  const router = useRouter();
 
   return (
     <>
       <ElevationScroll>
         <AppBar>
           <Toolbar variant="regular">
-            <Button
-              edge="start"
-              size="small"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="logo"
-              onClick={() => router.push('/')}
-            >
-              <img className={classes.logo} src="/img/logo/stargate.png" alt="logo" />
-            </Button>
+            <Logo />
             <div className={classes.grow} />
             <MenuIcon />
             <MenuItems />

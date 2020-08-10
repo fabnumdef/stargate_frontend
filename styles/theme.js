@@ -6,6 +6,20 @@ import red from '@material-ui/core/colors/red';
 // Create a theme instance.
 const theme = createMuiTheme(
   {
+    typography: {
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+    },
     palette: {
       primary: {
         main: '#0f4194',
@@ -45,6 +59,7 @@ const theme = createMuiTheme(
         },
       },
       MuiAppBar: {
+        opacity: 0,
         colorPrimary: {
           color: '#000000',
           backgroundColor: '#ffffff',
