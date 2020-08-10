@@ -1,6 +1,6 @@
 #Dependences
 node_modules/
-
+/public
 flow-typed/
 
 #Conf

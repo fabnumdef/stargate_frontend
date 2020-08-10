@@ -142,7 +142,7 @@ export const initOnContext = (ctx) => {
  * to a next.js Page or AppTree.
  * @param  {Object} withApolloOptions
  * @param  {Boolean} [withApolloOptions.ssr=false]
- * @returns {(PageComponent: ReactNode) => ReactNode}
+ * @returns {Object}
  */
 export const withApollo = ({ ssr = false } = {}) => (PageComponent) => {
   const WithApollo = ({ apolloClient, apolloState, ...pageProps }) => {
