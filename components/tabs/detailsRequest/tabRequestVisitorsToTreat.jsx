@@ -10,10 +10,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import WarningIcon from '@material-ui/icons/Warning';
 
@@ -71,11 +69,18 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
   },
-  headers: {
+  cellNoBorder: {
+    border: 'none',
+  },
+  borderRight: {
+    borderRight: 'solid 1px',
+  },
+  borderLeft: {
+    borderLeft: 'solid 1px',
+  },
+  rowForm: {
     backgroundColor: fade(theme.palette.primary.main, 0.05),
-    color: theme.palette.primary.main,
-    fontSize: '18px',
-    fontWeight: '600',
+    color: `${theme.palette.primary.main}!important`,
   },
   sortedHeader: {
     color: `${theme.palette.primary.main}!important`,
@@ -239,10 +244,11 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     }
   }, [rows, selectAll]);
 
-  const handleDeselect = useCallback((row) => {
+  const handleDeselect = useCallback((index) => {
     const newArray = rows.slice();
-    if (newArray[newArray.indexOf(row)].validation != null) {
-      newArray[newArray.indexOf(row)].validation = null;
+    if (newArray[index].validation != null) {
+      newArray[index].transition = null;
+      newArray[index].validation = null;
       setDataRows(newArray);
     }
   }, [rows]);
@@ -264,45 +270,51 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                 switch (headCell.id) {
                   case 'visitors':
                     return (
-                      <CustomTableHeader key={headCell.id}>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
                         {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
                   case 'criblage':
                     return (
                       activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
-                        <CustomTableHeader key={headCell.id}>
+                        <CustomTableHeader rowSpan={2} key={headCell.id}>
                           {/* @todo length etc ... */ `${headCell.label}`}
                         </CustomTableHeader>
                       )
                     );
                   default:
                     return (
-                      <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        {headCell.label}
+                      </CustomTableHeader>
                     );
                 }
               })}
-              <CustomTableHeader className={`${classes.reportHeader} ${classes.reportRow}`}>
+              <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
                 Validation
-                <FormGroup row className={classes.reportCheckbox}>
-                  {selectAll.map((checkbox) => (
-                    <FormControlLabel
-                      control={(
-                        <Checkbox
-                          color="primary"
-                          checked={checkbox.value}
-                          onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox);
-                          }}
-                        />
-                      )}
-                      label={checkbox.label}
-                      disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
-                      labelPlacement="start"
-                    />
-                  ))}
-                </FormGroup>
               </CustomTableHeader>
+            </TableRow>
+            <TableRow>
+
+              {selectAll.map((checkbox, index) => (
+                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
+                  <FormControlLabel
+                    control={(
+                      <Checkbox
+                        color="primary"
+                        checked={checkbox.value}
+                        onChange={(event) => {
+                          handleSelectAll(event.target.checked, checkbox);
+                        }}
+                      />
+                      )}
+                    label={checkbox.label}
+                    disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
+                    labelPlacement="start"
+                  />
+                </CustomTableHeader>
+              ))}
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -340,34 +352,33 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                       );
                   }
                 })}
-                <TableCell
-                  className={`${classes.reportRow} ${
-                    index === rows.length - 1 ? classes.reportLastChild : ''
-                  }`}
-                >
-                  <RadioGroup
-                    className={classes.radioGroup}
-                    value={row.validation}
-                    style={{ justifyContent: 'space-evenly' }}
-                  >
-                    {selectAll.map((checkbox) => (
+                  {selectAll.map((checkbox, indexCheck) => (
+                    <TableCell
+                      className={`${
+                        index === rows.length - 1 ? classes.reportLastChild : ''
+                      }
+                      ${indexCheck === selectAll.length - 1 ? classes.borderRight : ''}
+                      ${indexCheck === 0 ? classes.borderLeft : ''}
+                    `}
+                      style={{ textAlign: 'center' }}
+                    >
                       <FormControlLabel
                         value={checkbox.label}
                         disabled={row.step === INACTIVE_STEP_STATUS}
                         control={(
                           <Radio
                             color="primary"
+                            checked={rows[index].transition === checkbox.validation}
                             onChange={(event) => {
                               handleChange(event, row, checkbox);
                             }}
-                            onClick={() => handleDeselect(row)}
+                            onClick={() => handleDeselect(index)}
                             disabled={row.step === INACTIVE_STEP_STATUS}
                           />
                             )}
                       />
-                    ))}
-                  </RadioGroup>
-                </TableCell>
+                    </TableCell>
+                  ))}
               </TableRow>
               ),
             )}
