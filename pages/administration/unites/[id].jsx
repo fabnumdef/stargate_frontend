@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
 import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
@@ -112,9 +112,16 @@ const EDIT_PLACE = gql`
 
 function CreateUnit() {
   const { addAlert } = useSnackBar();
+  const client = useApolloClient();
   const router = useRouter();
   const { id } = router.query;
-  const { data: getUnitData } = useQuery(GET_UNIT, { variables: { id } });
+  const [unitData, setUnitData] = useState(null);
+
+  const getUnit = async () => {
+    const { data } = await client.query({ query: GET_UNIT, variables: { id }, fetchPolicy: 'no-cache' });
+    return setUnitData(data.getCampus.getUnit);
+  };
+
   const { data: unitCorresDatas } = useQuery(GET_USERS, {
     variables: { hasRole: { role: ROLES.ROLE_UNIT_CORRESPONDENT.role, unit: id } },
   });
@@ -143,7 +150,7 @@ function CreateUnit() {
               role,
               userInCharge,
               campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-              units: { id, label: getUnitData.getCampus.getUnit.label },
+              units: { id, label: unitData.label },
             },
           },
         },
@@ -190,9 +197,9 @@ function CreateUnit() {
     }
   };
 
-  const submitEditUnit = async (formData, unitData, assistantsList) => {
+  const submitEditUnit = async (formData, editUnitData, assistantsList) => {
     try {
-      await editUnit({ variables: { id, unit: unitData } });
+      await editUnit({ variables: { id, unit: editUnitData } });
       const unitId = id;
 
       if (!defaultValues.unitCorrespondent.id
@@ -269,15 +276,21 @@ function CreateUnit() {
   };
 
   useEffect(() => {
-    if (getUnitData && unitCorresDatas && unitOfficerDatas && placesData) {
+    if (!unitData) {
+      getUnit();
+    }
+  }, [unitData]);
+
+  useEffect(() => {
+    if (unitData && unitCorresDatas && unitOfficerDatas && placesData) {
       setDefaultValues(mapEditUnit(
-        getUnitData.getCampus.getUnit,
+        unitData,
         unitCorresDatas.listUsers.list,
         unitOfficerDatas.listUsers.list,
         placesData.getCampus.listPlaces.list,
       ));
     }
-  }, [getUnitData, unitCorresDatas, unitOfficerDatas, placesData]);
+  }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);
 
 
   return (

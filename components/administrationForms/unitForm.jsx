@@ -120,7 +120,10 @@ const UnitForm = ({
     .map((role, i) => ({
       id: i + 1, text: role.label, role: role.role, behavior: role.behavior,
     }));
-  const [cards, setCards] = useState(type === 'create' ? allCards : defaultValues.cards);
+  const createDefaultCards = () => allCards.filter(
+    (card) => defaultValues.cards.find((c) => c.role === card.role),
+  );
+  const [cards, setCards] = useState(type === 'create' ? allCards : createDefaultCards);
 
   const [assistantsList, setAssistantsList] = React.useState(defaultValues.assistantsList);
   const addAssistant = (event, typeAssistant) => {
@@ -246,6 +249,7 @@ const UnitForm = ({
                     valide: (value) => (value && value.length > 0) || 'Le choix d\'un lieu est obligatoire',
                   },
                 }}
+                defaultValue={defaultValues.placesList}
                 control={control}
                 name="places"
               />
