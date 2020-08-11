@@ -359,7 +359,7 @@ export default function FormInfosClaimant({
 
               {/* Item 5: Période d'acces */}
               <Grid className={classes.comps} item xs={12} sm={12}>
-                <Grid container spacing={1} style={{ color: '#ffa000' }}>
+                <Grid container spacing={1} style={{ color: '#c78005' }}>
                   <Grid item sm={12}>
                     <Typography variant="body2" gutterBottom>
                       Délais de traitement avant la date de visite:

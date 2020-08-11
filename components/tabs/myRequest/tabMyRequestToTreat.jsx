@@ -22,8 +22,10 @@ import { useLogin } from '../../../lib/loginContext';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
-  { id: 'id', label: 'N° demande' },
-  { id: 'periode', label: 'Période', width: '100px' },
+  { id: 'id', label: 'N° demande', width: '220px' },
+  {
+    id: 'periode', label: 'Période', width: '100px', style: { textAlign: 'center' },
+  },
   { id: 'owner', label: 'Demandeur' },
   { id: 'places', label: 'Lieu' },
   { id: 'reason', label: 'Motif' },
@@ -121,7 +123,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" style={{ minWidth: '100px' }} />
+          <CustomTableCellHeader key="actions" style={{ minWidth: '120px', width: '130px' }} />
         </TableRow>
       </TableHead>
       <TableBody>
@@ -143,20 +145,20 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
                   {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
                 </TableCell>
               ) : (
-                <TableCell key={column.id} align={column.align}>
+                <TableCell key={column.id} align={column.align} style={column.style}>
                   {column.format && typeof value === 'number' ? column.format(value) : value}
                 </TableCell>
               );
             })}
             <TableCell key="modif">
               {row.isActive && hover[index] && (
-                <>
+                <div style={{ float: 'right' }}>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
                       <DescriptionIcon />
                     </IconButton>
                   </Link>
-                </>
+                </div>
               )}
             </TableCell>
           </TableRow>

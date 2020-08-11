@@ -14,7 +14,6 @@ import { useMutation } from '@apollo/react-hooks';
 import { format } from 'date-fns';
 
 import Button from '@material-ui/core/Button';
-import SaveIcon from '@material-ui/icons/Save';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
@@ -181,7 +180,6 @@ export default function InfosFinalView({
           <Button
             variant="contained"
             color="primary"
-            startIcon={<SaveIcon />}
             onClick={() => createRequest({ variables: { idRequest: formData.id, transition: 'CREATE' } })}
           >
             Valider

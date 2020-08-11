@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: {
     position: 'absolute',
-    top: 0,
+    top: '13px',
   },
 }));
 

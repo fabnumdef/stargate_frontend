@@ -26,6 +26,11 @@ const columns = [
     label: 'Unité/Société',
     minWidth: 150,
   },
+  {
+    id: 'type',
+    label: 'Type',
+    minWidth: 150,
+  },
 ];
 
 function createData({
@@ -130,6 +135,7 @@ export default function TabRecapRequest({
               color="primary"
               onClick={handleAddVisitor}
               startIcon={<AddIcon />}
+              style={{ float: 'right' }}
             >
               Ajouter
             </Button>
@@ -160,21 +166,24 @@ export default function TabRecapRequest({
                         )}
                       </Grid>
                       <Grid item sm={2}>
-                        <IconButton
-                          aria-label="valide"
-                          className={classes.icon}
-                          onClick={() => handleDeleteConfirm(row.id)}
-                        >
-                          <DoneIcon />
-                        </IconButton>
+                        <div style={{ float: 'right' }}>
+                          <IconButton
+                            aria-label="valide"
+                            className={classes.icon}
+                            color="secondary"
+                            onClick={() => handleDeleteConfirm(row.id)}
+                          >
+                            <DoneIcon />
+                          </IconButton>
 
-                        <IconButton
-                          aria-label="cancel"
-                          className={classes.icon}
-                          onClick={() => handleDeleteAvorted(index)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
+                          <IconButton
+                            aria-label="cancel"
+                            className={classes.icon}
+                            onClick={() => handleDeleteAvorted(index)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
                       </Grid>
                     </Grid>
                   </TableCell>
@@ -200,7 +209,7 @@ export default function TabRecapRequest({
                 })}
                 <TableCell key="actions">
                   {hover[index] && (
-                    <>
+                    <div style={{ float: 'right' }}>
                       <IconButton
                         aria-label="edit"
                         className={classes.icon}
@@ -217,7 +226,7 @@ export default function TabRecapRequest({
                       >
                         <DeleteIcon />
                       </IconButton>
-                    </>
+                    </div>
                   )}
                 </TableCell>
               </TableRow>

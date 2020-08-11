@@ -40,8 +40,10 @@ const CANCEL_REQUEST = gql`
 
 
 const columns = [
-  { id: 'id', label: 'N° demande' },
-  { id: 'periode', label: 'Période', width: '100px' },
+  { id: 'id', label: 'N° demande', width: '220px' },
+  {
+    id: 'periode', label: 'Période', width: '100px', style: { textAlign: 'center' },
+  },
   { id: 'reason', label: 'Motif' },
   { id: 'type', label: 'Type de demande' },
 ];
@@ -139,7 +141,7 @@ export default function TabMyRequestToTreat({ request, queries }) {
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader style={{ minWidth: '120px' }} />
+          <CustomTableCellHeader style={{ minWidth: '120px', width: '130px' }} />
         </TableRow>
       </TableHead>
 
@@ -160,21 +162,24 @@ export default function TabMyRequestToTreat({ request, queries }) {
                       </Typography>
                     </Grid>
                     <Grid item sm={2}>
-                      <IconButton
-                        aria-label="valide"
-                        className={classes.icon}
-                        onClick={() => handleDeleteConfirm(row.id)}
-                      >
-                        <DoneIcon />
-                      </IconButton>
+                      <div style={{ float: 'right' }}>
+                        <IconButton
+                          aria-label="valide"
+                          color="secondary"
+                          className={classes.icon}
+                          onClick={() => handleDeleteConfirm(row.id)}
+                        >
+                          <DoneIcon />
+                        </IconButton>
 
-                      <IconButton
-                        aria-label="cancel"
-                        className={classes.icon}
-                        onClick={() => handleDeleteAvorted(index)}
-                      >
-                        <CloseIcon />
-                      </IconButton>
+                        <IconButton
+                          aria-label="cancel"
+                          className={classes.icon}
+                          onClick={() => handleDeleteAvorted(index)}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
                     </Grid>
                   </Grid>
                 </TableCell>
@@ -192,14 +197,14 @@ export default function TabMyRequestToTreat({ request, queries }) {
               {columns.map((column) => {
                 const value = row[column.id];
                 return (
-                  <TableCell key={column.id} align={column.align} component="td" scope="row">
+                  <TableCell key={column.id} align={column.align} component="td" scope="row" style={column.style}>
                     {column.format && typeof value === 'number' ? column.format(value) : value}
                   </TableCell>
                 );
               })}
               <TableCell key="actions">
                 {hover[index] && (
-                  <>
+                  <div style={{ float: 'right' }}>
                     <Link href={`/demandes/en-cours/${row.id}`}>
                       <IconButton color="primary" aria-label="link" className={classes.icon}>
                         <DescriptionIcon />
@@ -213,7 +218,7 @@ export default function TabMyRequestToTreat({ request, queries }) {
                     >
                       <DeleteIcon />
                     </IconButton>
-                  </>
+                  </div>
                 )}
               </TableCell>
             </TableRow>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { LoginForm, ForgotPassForm } from '../components';
 import { withApollo } from '../lib/apollo';
+
 
 const useStyles = makeStyles((theme) => ({
   mainLoginForm: {
@@ -43,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '2.8em',
     lineHeight: '1.34',
     letterSpacing: '0.4px',
-    color: theme.palette.primary.main,
+    color: fade(theme.palette.primary.main, 0.65),
   },
   gate: {
     fontSize: '2.8em',

@@ -113,21 +113,24 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                       )}
                     </Grid>
                     <Grid item sm={2}>
-                      <IconButton
-                        aria-label="valide"
-                        className={classes.icon}
-                        onClick={() => handleDeleteConfirm(row.id)}
-                      >
-                        <DoneIcon />
-                      </IconButton>
+                      <div style={{ float: 'right' }}>
+                        <IconButton
+                          aria-label="valide"
+                          color="secondary"
+                          className={classes.icon}
+                          onClick={() => handleDeleteConfirm(row.id)}
+                        >
+                          <DoneIcon />
+                        </IconButton>
 
-                      <IconButton
-                        aria-label="cancel"
-                        className={classes.icon}
-                        onClick={() => handleDeleteAvorted()}
-                      >
-                        <CloseIcon />
-                      </IconButton>
+                        <IconButton
+                          aria-label="cancel"
+                          className={classes.icon}
+                          onClick={() => handleDeleteAvorted()}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
                     </Grid>
                   </Grid>
                 </TableCell>
