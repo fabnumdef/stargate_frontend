@@ -11,7 +11,7 @@ import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
 
 const GET_USERS = gql`
-    query listUsers($cursor: OffsetCursor, $hasRole: String) {
+    query listUsers($cursor: OffsetCursor, $hasRole: HasRoleInput) {
         listUsers(cursor: $cursor, hasRole: $hasRole) {
             list {
                 id
@@ -122,7 +122,7 @@ function EditCampus() {
     variables: { cursor: { offset: 0, first: 10 } },
   });
   const { data: adminsList } = useQuery(GET_USERS, {
-    variables: { cursor: { offset: 0, first: 10 }, hasRole: ROLES.ROLE_ADMIN.role },
+    variables: { cursor: { offset: 0, first: 10 }, hasRole: { role: ROLES.ROLE_ADMIN.role } },
   });
   const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id } });
   const [defaultValues, setDefaultValues] = useState(null);

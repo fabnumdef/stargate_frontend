@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import { useApolloClient } from '@apollo/react-hooks';
+import Grid from '@material-ui/core/Grid';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
@@ -79,20 +80,20 @@ export default function MenuItems() {
         <div className={classes.grow} />
         {menu.map(({ permission, action, label }) => (
           urlAuthorization(permission, activeRole.role) && (
-            <>
+            <Grid key={label}>
               <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
                 <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
                   {getAdminMenu(router, campus.campusId).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
-                    <ButtonMenu size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
+                    <ButtonMenu key={subMenu.label} size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
                       {subMenu.label}
                     </ButtonMenu>
                     )
                   ))}
                 </Collapse>
               </ButtonMenu>
-            </>
+            </Grid>
           )
         ))}
       </Toolbar>
