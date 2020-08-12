@@ -30,7 +30,6 @@ function getAdminMenu(router, campusId) {
 
 const ButtonMenu = withStyles(() => ({
   root: {
-    width: '150px',
     height: '35px',
     textTransform: 'none',
     borderRadius: '0px',

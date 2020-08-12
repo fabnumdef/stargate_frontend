@@ -13,10 +13,12 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import TableContainer from '@material-ui/core/TableContainer';
 
 import CustomTableCell from '../../styled/customTableCellHeader';
 
 import { EMPLOYEE_TYPE } from '../../../utils/constants/enums';
+
 
 const useStyles = makeStyles({
   container: {
@@ -83,89 +85,90 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
   };
 
   return (
-    <Table stickyHeader aria-label="sticky table">
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <CustomTableCell key={column.id} align={column.align}>
-              {column.label}
-            </CustomTableCell>
-          ))}
-          <CustomTableCell key="actions" style={{ minWidth: '80px' }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows.map((row, index) => {
-          if (del[index]) {
-            return (
-              <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                <TableCell key="delete" align="justify" colspan={columns.length + 1}>
-                  <Grid container>
-                    <Grid item sm={10}>
-                      <Typography variant="body1">
-                        {`Êtes-vous sûr de vouloir supprimer ${row.visiteur}
+    <TableContainer>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <CustomTableCell key={column.id} align={column.align}>
+                {column.label}
+              </CustomTableCell>
+            ))}
+            <CustomTableCell key="actions" style={{ minWidth: '80px' }} />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => {
+            if (del[index]) {
+              return (
+                <TableRow tabIndex={-1} key={row.emailVisiteur}>
+                  <TableCell key="delete" align="justify" colspan={columns.length + 1}>
+                    <Grid container>
+                      <Grid item sm={10}>
+                        <Typography variant="body1">
+                          {`Êtes-vous sûr de vouloir supprimer ${row.visiteur}
                          de la demande ?`}
-                      </Typography>
-                      {rows.length === 1 && (
+                        </Typography>
+                        {rows.length === 1 && (
                         <Typography variant="body1" color="error">
                           Si il n&apos;y a plus de visiteur, la demande va être supprimée.
                         </Typography>
-                      )}
-                    </Grid>
-                    <Grid item sm={2}>
-                      <div style={{ float: 'right' }}>
-                        <IconButton
-                          aria-label="valide"
-                          color="secondary"
-                          className={classes.icon}
-                          onClick={() => handleDeleteConfirm(row.id)}
-                        >
-                          <DoneIcon />
-                        </IconButton>
+                        )}
+                      </Grid>
+                      <Grid item sm={2}>
+                        <div style={{ float: 'right' }}>
+                          <IconButton
+                            aria-label="valide"
+                            color="secondary"
+                            className={classes.icon}
+                            onClick={() => handleDeleteConfirm(row.id)}
+                          >
+                            <DoneIcon />
+                          </IconButton>
 
-                        <IconButton
-                          aria-label="cancel"
-                          className={classes.icon}
-                          onClick={() => handleDeleteAvorted()}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
+                          <IconButton
+                            aria-label="cancel"
+                            className={classes.icon}
+                            onClick={() => handleDeleteAvorted()}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </TableCell>
-              </TableRow>
-            );
-          }
-          return (
-            <TableRow
-              onMouseOver={() => handleMouseEnter(index)}
-              onFocus={() => handleMouseEnter(index)}
-              onMouseLeave={() => handleMouseLeave(index)}
-              role="checkbox"
-              tabIndex={-1}
-              key={row.id}
-            >
-              {columns.map((column) => {
-                const value = row[column.id];
-                switch (column.id) {
-                  case 'step':
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {/* TODO checkActualStep after rework checkStatus */}
-                        Unité
-                      </TableCell>
-                    );
-                  default:
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    );
-                }
-              })}
-              <TableCell key="actions">
-                {hover[index] && (
+                  </TableCell>
+                </TableRow>
+              );
+            }
+            return (
+              <TableRow
+                onMouseOver={() => handleMouseEnter(index)}
+                onFocus={() => handleMouseEnter(index)}
+                onMouseLeave={() => handleMouseLeave(index)}
+                role="checkbox"
+                tabIndex={-1}
+                key={row.id}
+              >
+                {columns.map((column) => {
+                  const value = row[column.id];
+                  switch (column.id) {
+                    case 'step':
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {/* TODO checkActualStep after rework checkStatus */}
+                          Unité
+                        </TableCell>
+                      );
+                    default:
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </TableCell>
+                      );
+                  }
+                })}
+                <TableCell key="actions">
+                  {hover[index] && (
                   <>
                     <IconButton
                       color="primary"
@@ -176,13 +179,14 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                       <DeleteIcon />
                     </IconButton>
                   </>
-                )}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

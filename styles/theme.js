@@ -58,6 +58,11 @@ const theme = createMuiTheme(
           fontSize: '0.75rem',
         },
       },
+      MuiTable: {
+        root: {
+          overflow: 'auto',
+        },
+      },
       MuiAppBar: {
         opacity: 0,
         colorPrimary: {

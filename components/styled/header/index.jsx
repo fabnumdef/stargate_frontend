@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 // Material Imports
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   lineLogo: {
     position: 'absolute',
     backgroundColor: fade(theme.palette.primary.main, 0.65),
-    width: '2000px',
+    width: '100vw',
     height: '2px',
     top: '50%',
     left: '100%',
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
   lineLogoWhite: {
     position: 'absolute',
     backgroundColor: '#ffffff',
-    width: '2000px',
+    width: '100vw',
     height: '4px',
     top: '52%',
     left: '100%',
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffffff',
     top: '55%',
     left: '110%',
-    width: '510px',
+    width: '38vw',
     height: '22px',
   },
   grow: {
@@ -106,21 +106,27 @@ const useStyles = makeStyles((theme) => ({
 
 const Logo = () => {
   const classes = useStyles();
-  return (
-    <div className={classes.logo}>
-      <div className={classes.ellipse2}>
-        <div className={classes.ellipse1} />
-        <span className={classes.spanStar}>STAR</span>
-        <span className={classes.spanGate}>GATE</span>
-        <div className={classes.lineLogo} />
-        <div className={classes.lineLogoWhite} />
-        <span className={classes.name}>
-          Système de Traitement des Accès Règlementés Généralisé À Toute les Entités
-        </span>
+  const matches = useMediaQuery('(min-width: 740px)');
+
+  if (matches) {
+    return (
+      <div className={classes.logo}>
+        <div className={classes.ellipse2}>
+          <div className={classes.ellipse1} />
+          <span className={classes.spanStar}>STAR</span>
+          <span className={classes.spanGate}>GATE</span>
+          <div className={classes.lineLogo} />
+          <div className={classes.lineLogoWhite} />
+          <span className={classes.name}>
+            Système de Traitement des Accès Règlementés Généralisé À Toute les Entités
+          </span>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+  return <></>;
 };
+
 export default () => {
   const classes = useStyles();
 

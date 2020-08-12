@@ -15,7 +15,10 @@ import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
+import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
+
+
 import EmptyArray from '../../styled/emptyArray';
 import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
 import { useLogin } from '../../../lib/loginContext';
@@ -111,47 +114,48 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
   };
 
   return requests.length > 0 ? (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <CustomTableCellHeader
-              key={column.id}
-              align={column.align}
-              style={{ width: column.width }}
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <CustomTableCellHeader
+                key={column.id}
+                align={column.align}
+                style={{ width: column.width }}
+              >
+                {column.label}
+              </CustomTableCellHeader>
+            ))}
+            <CustomTableCellHeader key="actions" style={{ minWidth: '120px', width: '130px' }} />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows && rows.map((row, index) => (
+            <TableRow
+              hover
+              onMouseOver={() => handleMouseEnter(index)}
+              onFocus={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave(index)}
+              role="checkbox"
+              tabIndex={-1}
+              key={row.code}
+              className={row.isActive ? '' : classes.inactive}
             >
-              {column.label}
-            </CustomTableCellHeader>
-          ))}
-          <CustomTableCellHeader key="actions" style={{ minWidth: '120px', width: '130px' }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows && rows.map((row, index) => (
-          <TableRow
-            hover
-            onMouseOver={() => handleMouseEnter(index)}
-            onFocus={() => handleMouseEnter(index)}
-            onMouseLeave={() => handleMouseLeave(index)}
-            role="checkbox"
-            tabIndex={-1}
-            key={row.code}
-            className={row.isActive ? '' : classes.inactive}
-          >
-            {columns.map((column) => {
-              const value = row[column.id];
-              return column.id === 'criblage' ? (
-                <TableCell key={column.id} align={column.align}>
-                  {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
-                </TableCell>
-              ) : (
-                <TableCell key={column.id} align={column.align} style={column.style}>
-                  {column.format && typeof value === 'number' ? column.format(value) : value}
-                </TableCell>
-              );
-            })}
-            <TableCell key="modif">
-              {row.isActive && hover[index] && (
+              {columns.map((column) => {
+                const value = row[column.id];
+                return column.id === 'criblage' ? (
+                  <TableCell key={column.id} align={column.align}>
+                    {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
+                  </TableCell>
+                ) : (
+                  <TableCell key={column.id} align={column.align} style={column.style}>
+                    {column.format && typeof value === 'number' ? column.format(value) : value}
+                  </TableCell>
+                );
+              })}
+              <TableCell key="modif">
+                {row.isActive && hover[index] && (
                 <div style={{ float: 'right' }}>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
@@ -159,14 +163,15 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
                     </IconButton>
                   </Link>
                 </div>
-              )}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   ) : (
-    <EmptyArray type="à traiter" />
+    <EmptyArray type="" />
   );
 }
 
