@@ -268,7 +268,7 @@ export default function ScreeningManagement() {
     <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
+          <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
               Demandes de contrôle
             </Typography>

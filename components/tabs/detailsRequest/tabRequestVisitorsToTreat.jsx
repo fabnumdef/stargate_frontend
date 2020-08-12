@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -148,6 +148,12 @@ function criblageReturn(value) {
       return null;
   }
 }
+
+const StyledFormLabel = withStyles({
+  root: {
+    margin: 'auto',
+  },
+})(FormControlLabel);
 
 export default function TabRequestVisitors({ visitors, onChange }) {
   const { activeRole } = useLogin();
@@ -363,7 +369,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     `}
                       style={{ textAlign: 'center' }}
                     >
-                      <FormControlLabel
+                      <StyledFormLabel
                         value={checkbox.label}
                         disabled={row.step === INACTIVE_STEP_STATUS}
                         control={(
@@ -377,6 +383,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                             disabled={row.step === INACTIVE_STEP_STATUS}
                           />
                             )}
+                        style={{ marginLeft: '10px' }}
                       />
                     </TableCell>
                   ))}

@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -192,6 +191,12 @@ const columns = [
   { id: 'type', label: 'Type' },
   { id: 'steps' },
 ];
+
+const StyledFormLabel = withStyles({
+  root: {
+    margin: 'auto',
+  },
+})(FormControlLabel);
 
 export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const { activeRole } = useLogin();
@@ -454,7 +459,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                       `}
                         style={{ textAlign: 'center' }}
                       >
-                        <FormControlLabel
+                        <StyledFormLabel
                           value={checkbox.label}
                           disabled={row.step === INACTIVE_STEP_STATUS}
                           control={(
@@ -466,7 +471,8 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                               }}
                               onClick={() => handleDeselect(index)}
                             />
-                      )}
+                          )}
+                          style={{ marginLeft: '10px' }}
                         />
                       </TableCell>
                     )))}

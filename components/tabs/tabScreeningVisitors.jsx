@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,10 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
@@ -75,6 +73,19 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '18px',
     fontWeight: '600',
   },
+  cellNoBorder: {
+    border: 'none',
+  },
+  borderRight: {
+    borderRight: 'solid 1px',
+  },
+  borderLeft: {
+    borderLeft: 'solid 1px',
+  },
+  rowForm: {
+    backgroundColor: fade(theme.palette.primary.main, 0.05),
+    color: `${theme.palette.primary.main}!important`,
+  },
   sortedHeader: {
     color: `${theme.palette.primary.main}!important`,
   },
@@ -110,8 +121,13 @@ const columns = [
   { id: 'birthday', label: 'Date de N.', fullLabel: 'Date de Naissance' },
   { id: 'birthplace', label: 'Lieu de N.', fullLabel: 'Lieu de Naissance' },
   { id: 'nationality', label: 'Nationalité' },
-  { id: 'report', label: 'Signalement' },
 ];
+
+const StyledFormLabel = withStyles({
+  root: {
+    margin: 'auto',
+  },
+})(FormControlLabel);
 
 
 export default function ScreeningTable({ visitors, onChange }) {
@@ -188,7 +204,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                 switch (headCell.id) {
                   case 'birthLastname':
                     return (
-                      <CustomTableHeader key={headCell.id}>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
                         <TableSortLabel
                           className={classes.sortedHeader}
                           active={headCell.id === 'birthLastname'}
@@ -201,49 +217,55 @@ export default function ScreeningTable({ visitors, onChange }) {
                     );
                   case 'nationality':
                     return (
-                      <CustomTableHeader key={headCell.id}>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
                         {headCell.label}
                         <Typography ariant="subtitle2">Étrangère</Typography>
                       </CustomTableHeader>
                     );
-                  case 'report':
-                    return (
-                      <CustomTableHeader
-                        className={`${classes.reportHeader} ${classes.reportRow}`}
-                        key={headCell.id}
-                      >
-                        {headCell.label}
-
-                        <FormGroup row className={classes.reportCheckbox}>
-                          {selectAll.map((checkbox) => (
-                            <FormControlLabel
-                              control={(
-                                <Checkbox
-                                  color="primary"
-                                  checked={checkbox.value}
-                                  onChange={(event) => {
-                                    handleSelectAll(event.target.checked, checkbox.report);
-                                  }}
-                                />
-                              )}
-                              label={checkbox.label}
-                              labelPlacement="start"
-                            />
-                          ))}
-                        </FormGroup>
-                      </CustomTableHeader>
-                    );
                   default:
                     return (
-                      <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        {headCell.label}
+                      </CustomTableHeader>
                     );
                 }
               })}
+
+              <CustomTableHeader
+                colSpan={selectAll.length}
+                className={`${classes.reportHeader} ${classes.reportRow}`}
+                style={{ borderBottom: 'none' }}
+              >
+                Signalement
+              </CustomTableHeader>
+
+            </TableRow>
+            <TableRow>
+
+
+              {selectAll.map((checkbox, index) => (
+                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
+                  <FormControlLabel
+                    control={(
+                      <Checkbox
+                        color="primary"
+                        checked={checkbox.value}
+                        onChange={(event) => {
+                          handleSelectAll(event.target.checked, checkbox.report);
+                        }}
+                      />
+                              )}
+                    label={checkbox.label}
+                    labelPlacement="start"
+                  />
+                </CustomTableHeader>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {tableSort(visitors, getComparator(order, orderBy)).map((row, index) => (
               <TableRow hover tabIndex={-1} key={row.code}>
+
                 {columns.map((column) => {
                   const value = row[column.id];
                   switch (column.id) {
@@ -292,43 +314,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                           {value}
                         </TableCell>
                       );
-                    case 'report':
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          className={`${classes.reportRow} ${
-                            index === visitors.length - 1 ? classes.reportLastChild : ''
-                          }`}
-                        >
-                          <RadioGroup
-                            className={classes.radioGroup}
-                            value={row.report}
-                            onChange={(event) => {
-                              const newArray = visitors.slice();
-                              newArray[newArray.indexOf(row)].report = event.target.value;
-                              onChange(newArray);
-                              deselectAllCheckbox();
-                            }}
-                          >
-                            <FormControlLabel
-                              value={ROLES[activeRole.role].workflow.positive}
-                              disabled={row.screening.step !== ACTIVE_STEP_STATUS}
-                              control={
-                                <Radio color="primary" onClick={() => handleDeselect(row)} />
-                              }
-                            />
-                            <FormControlLabel
-                              value={ROLES[activeRole.role].workflow.negative}
-                              disabled={row.screening.step !== ACTIVE_STEP_STATUS}
-                              control={
-                                <Radio color="primary" onClick={() => handleDeselect(row)} />
-                              }
-                              style={{ marginRight: '0px' }}
-                            />
-                          </RadioGroup>
-                        </TableCell>
-                      );
                     default:
                       return (
                         <TableCell
@@ -343,6 +328,56 @@ export default function ScreeningTable({ visitors, onChange }) {
                       );
                   }
                 })}
+                <TableCell
+                  className={`${
+                    index === visitors.length - 1 ? classes.reportLastChild : ''
+                  } ${classes.borderLeft}`}
+                >
+                  <StyledFormLabel
+                    disabled={row.screening.step !== ACTIVE_STEP_STATUS}
+                    control={(
+                      <Radio
+                        value={ROLES[activeRole.role].workflow.positive}
+                        color="primary"
+                        checked={row.report === ROLES[activeRole.role].workflow.positive}
+                        onChange={(event) => {
+                          const newArray = visitors.slice();
+                          newArray[newArray.indexOf(row)].report = event.target.value;
+                          onChange(newArray);
+                          deselectAllCheckbox();
+                        }}
+                        onClick={() => handleDeselect(row)}
+                      />
+                    )}
+                    style={{ marginLeft: '10px' }}
+                  />
+                </TableCell>
+
+
+                <TableCell
+                  className={`${
+                    index === visitors.length - 1 ? classes.reportLastChild : ''
+                  } ${classes.borderRight}`}
+                >
+                  <StyledFormLabel
+                    disabled={row.screening.step !== ACTIVE_STEP_STATUS}
+                    control={(
+                      <Radio
+                        value={ROLES[activeRole.role].workflow.negative}
+                        color="primary"
+                        checked={row.report === ROLES[activeRole.role].workflow.negative}
+                        onChange={(event) => {
+                          const newArray = visitors.slice();
+                          newArray[newArray.indexOf(row)].report = event.target.value;
+                          onChange(newArray);
+                          deselectAllCheckbox();
+                        }}
+                        onClick={() => handleDeselect(row)}
+                      />
+                    )}
+                    style={{ marginLeft: '10px' }}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
