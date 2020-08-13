@@ -18,6 +18,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
+import { STATE_REQUEST } from '../../utils/constants/enums';
 
 const useStyles = makeStyles({
   root: {
@@ -119,7 +120,7 @@ export default function InfosFinalView({
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
-      if (data.mutateCampus.shiftRequest.status === 'created') {
+      if (data.mutateCampus.shiftRequest.status === STATE_REQUEST.STATE_CREATED.state) {
         router.push('/');
         addAlert({
           message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créé`,

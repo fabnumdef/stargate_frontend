@@ -17,9 +17,6 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import { format } from 'date-fns';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import EmptyArray from '../../styled/emptyArray';
-import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
-import { useLogin } from '../../../lib/loginContext';
-import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
   { id: 'id', label: 'N° demande' },
@@ -29,19 +26,11 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
-function checkAllVisitors(visitors, activeRole) {
-  const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
-  return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
-}
-
 function createData({
-  id, owner, from, to, reason, places, listVisitors, status,
-}, activeRole) {
-  const isActive = status === STATE_REQUEST.STATE_CREATED.state
-    ? checkAllVisitors(listVisitors.list, activeRole)
-    : true;
+  id, owner, from, to, reason, places,
+}) {
   return {
-    id: isActive ? id : `Traitement terminé - ${id}`,
+    id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
@@ -56,7 +45,6 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
-    isActive,
   };
 }
 
@@ -90,10 +78,9 @@ const useStyles = makeStyles({
 
 export default function TabMyRequestUntreated({ requests, detailLink }) {
   const classes = useStyles();
-  const { activeRole } = useLogin();
 
   const rows = requests.reduce((acc, dem) => {
-    acc.push(createData(dem, activeRole));
+    acc.push(createData(dem));
     return acc;
   }, []);
 
@@ -134,7 +121,6 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
             role="checkbox"
             tabIndex={-1}
             key={row.code}
-            className={row.isActive ? '' : classes.inactive}
           >
             {columns.map((column) => {
               const value = row[column.id];
@@ -149,7 +135,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
               );
             })}
             <TableCell key="modif">
-              {row.isActive && hover[index] && (
+              {hover[index] && (
                 <>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
