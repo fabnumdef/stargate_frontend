@@ -57,6 +57,13 @@ const theme = createMuiTheme(
         body2: {
           fontSize: '0.75rem',
         },
+        h5: {
+          fontSize: '1.35rem',
+          fontWeight: 600,
+          fontStretch: 'normal',
+          lineHeight: 1.32,
+          letterSpacing: '0.22px',
+        },
       },
       MuiTable: {
         root: {

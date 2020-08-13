@@ -2,8 +2,6 @@ import React from 'react';
 import { useRouter } from 'next/router';
 
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
@@ -17,15 +15,6 @@ import Button from '@material-ui/core/Button';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
-
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-  },
-  container: {
-    maxHeight: 440,
-  },
-});
 
 const DELETE_VISITOR = gql`
   mutation deleteVisitor($idRequest: String!, $idVisitor: String!, $campusId: String!) {
@@ -66,7 +55,6 @@ const CREATE_REQUEST = gql`
 export default function InfosFinalView({
   formData, setForm, handleBack, setSelectVisitor,
 }) {
-  const classes = useStyles();
   const router = useRouter();
 
   const { addAlert } = useSnackBar();
@@ -161,19 +149,17 @@ export default function InfosFinalView({
         </Typography>
       </Grid>
       <Grid item sm={12}>
-        <Paper className={classes.root}>
-          <TabRecapRequest
-            visitors={formData.visitors}
-            setSelectVisitor={setSelectVisitor}
-            onDelete={(idVisitor) => {
-              deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
-              if (formData.visitors && formData.visitors.length === 1) {
-                deleteRequest({ variables: { idRequest: formData.id } });
-              }
-            }}
-            handleBack={handleBack}
-          />
-        </Paper>
+        <TabRecapRequest
+          visitors={formData.visitors}
+          setSelectVisitor={setSelectVisitor}
+          onDelete={(idVisitor) => {
+            deleteVisitor({ variables: { idRequest: formData.id, idVisitor } });
+            if (formData.visitors && formData.visitors.length === 1) {
+              deleteRequest({ variables: { idRequest: formData.id } });
+            }
+          }}
+          handleBack={handleBack}
+        />
       </Grid>
       <Grid item xs={12} sm={12}>
         <Grid container justify="flex-end">

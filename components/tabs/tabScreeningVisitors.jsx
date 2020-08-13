@@ -73,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '18px',
     fontWeight: '600',
   },
+  textCenter: {
+    textAlign: 'center',
+  },
   cellNoBorder: {
     border: 'none',
   },
@@ -244,8 +247,8 @@ export default function ScreeningTable({ visitors, onChange }) {
 
 
               {selectAll.map((checkbox, index) => (
-                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
-                  <FormControlLabel
+                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''} ${classes.textCenter}`}>
+                  <StyledFormLabel
                     control={(
                       <Checkbox
                         color="primary"
@@ -331,7 +334,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                 <TableCell
                   className={`${
                     index === visitors.length - 1 ? classes.reportLastChild : ''
-                  } ${classes.borderLeft}`}
+                  } ${classes.borderLeft} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
                     disabled={row.screening.step !== ACTIVE_STEP_STATUS}
@@ -357,7 +360,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                 <TableCell
                   className={`${
                     index === visitors.length - 1 ? classes.reportLastChild : ''
-                  } ${classes.borderRight}`}
+                  } ${classes.borderRight} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
                     disabled={row.screening.step !== ACTIVE_STEP_STATUS}
@@ -375,7 +378,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                         onClick={() => handleDeselect(row)}
                       />
                     )}
-                    style={{ marginLeft: '10px' }}
                   />
                 </TableCell>
               </TableRow>

@@ -38,6 +38,11 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
   },
+  tab: {
+    '& .MuiBox-root': {
+      padding: 'Opx',
+    },
+  },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
@@ -118,12 +123,12 @@ export default function RequestAccesForm() {
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <TabPanel value={activeStep} index={0}>
+          <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
             <NoSsr>
               <FormInfosRequest formData={formData} setForm={setForm} handleNext={handleNext} />
             </NoSsr>
           </TabPanel>
-          <TabPanel value={activeStep} index={1}>
+          <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
             <NoSsr>
               <FormInfosVisitor
                 formData={formData}
@@ -134,7 +139,7 @@ export default function RequestAccesForm() {
               />
             </NoSsr>
           </TabPanel>
-          <TabPanel value={activeStep} index={2}>
+          <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>
             <NoSsr>
               <FormInfosRecapDemande
                 formData={formData}

@@ -169,7 +169,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                 })}
                 <TableCell key="actions">
                   {hover[index] && (
-                  <>
+                  <div style={{ float: 'right' }}>
                     <IconButton
                       color="primary"
                       aria-label="delete"
@@ -178,7 +178,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                     >
                       <DeleteIcon />
                     </IconButton>
-                  </>
+                  </div>
                   )}
                 </TableCell>
               </TableRow>

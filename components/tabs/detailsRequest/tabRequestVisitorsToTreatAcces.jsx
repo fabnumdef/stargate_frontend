@@ -364,15 +364,15 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                     );
                 }
               })}
-              <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`}>
+              <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
                 Validation
               </CustomTableHeader>
             </TableRow>
             <TableRow>
 
               {selectAll.map((checkbox, index) => (
-                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
-                  <FormControlLabel
+                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`} style={{ textAlign: 'center' }}>
+                  <StyledFormLabel
                     control={(
                       <Checkbox
                         color="primary"
@@ -435,7 +435,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                     `}
                         style={{ textAlign: 'center' }}
                       >
-                        <FormControlLabel
+                        <StyledFormLabel
                           disabled={row.step === INACTIVE_STEP_STATUS}
                           control={(
                             <CustomCheckbox
@@ -446,6 +446,8 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                               color="primary"
                             />
                               )}
+                          style={{ marginLeft: '10px' }}
+
                         />
                       </TableCell>
                     )
@@ -457,7 +459,6 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                         ${indexCheck === selectAll.length - 1 ? classes.borderRight : ''}
                         ${indexCheck === 0 ? classes.borderLeft : ''}
                       `}
-                        style={{ textAlign: 'center' }}
                       >
                         <StyledFormLabel
                           value={checkbox.label}
@@ -465,7 +466,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                           control={(
                             <Radio
                               color="primary"
-                              checked={rows[index].transition === checkbox.validation}
+                              checked={rows[index].validation === checkbox.validation}
                               onChange={(event) => {
                                 handleChange(event, row, checkbox);
                               }}

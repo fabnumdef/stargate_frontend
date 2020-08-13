@@ -11,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import TablePagination from '@material-ui/core/TablePagination';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
+// import TextField from '@material-ui/core/TextField';
+// import InputAdornment from '@material-ui/core/InputAdornment';
+// import SearchIcon from '@material-ui/icons/Search';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 
 import { format } from 'date-fns';
@@ -39,6 +39,11 @@ import autoValidate from '../utils/autoValidateVisitor';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
+  },
+  tab: {
+    '& .MuiBox-root': {
+      padding: 'Opx',
+    },
   },
   pageTitle: {
     margin: '16px 0',
@@ -283,7 +288,7 @@ export default function ScreeningManagement() {
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <TabPanel value={value} index={0}>
+          <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
             <Grid container spacing={1} className={classes.searchField}>
               <Grid item sm={2} xs={12} md={1} lg={1}>
                 {data && (
@@ -318,7 +323,7 @@ export default function ScreeningManagement() {
                 />
               </Grid>
               <Grid item sm={3} xs={12} md={2} lg={2}>
-                <TextField
+                {/* <TextField
                   style={{ float: 'right' }}
                   margin="dense"
                   variant="outlined"
@@ -331,7 +336,7 @@ export default function ScreeningManagement() {
                     ),
                     inputProps: { 'data-testid': 'searchField' },
                   }}
-                />
+                /> */}
               </Grid>
             </Grid>
             <TabScreeningVisitors
