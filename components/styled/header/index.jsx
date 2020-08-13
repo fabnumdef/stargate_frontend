@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.primary.main, 0.65),
     width: '100vw',
     height: '2px',
-    top: '50%',
+    top: '51%',
     left: '100%',
   },
   lineLogoWhite: {
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffffff',
     width: '100vw',
     height: '4px',
-    top: '52%',
+    top: '54%',
     left: '100%',
   },
   name: {

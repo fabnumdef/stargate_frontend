@@ -40,7 +40,7 @@ const ButtonMenu = withStyles(() => ({
 const useStyles = makeStyles(() => ({
   appBar: {
     position: 'fixed',
-    top: '70px',
+    top: '71px',
     right: '0',
   },
   grow: {
