@@ -23,4 +23,11 @@ export const mapVisitorEdit = (data) => ({
   birthday: new Date(data.birthday),
 });
 
+export const mapRequestEdit = (data) => ({
+  from: new Date(data.from),
+  to: new Date(data.to),
+  object: data.object,
+  reason: data.reason,
+});
+
 export default {};
