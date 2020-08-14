@@ -106,18 +106,19 @@ export const LIST_REQUESTS = gql`
                  listVisitors {
                      list {
                        id
-                       status
                        units {
-                        steps {
-                            role
-                            behavior
-                            state {
-                                value
-                                isOK
-                                date
-                                tags
+                        workflow {
+                            steps {
+                                role
+                                behavior
+                                state {
+                                    value
+                                    isOK
+                                    date
+                                    tags
+                                }
                             }
-                        }
+                         }
                        }
                      }
                  }

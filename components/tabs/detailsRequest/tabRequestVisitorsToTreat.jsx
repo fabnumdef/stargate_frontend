@@ -106,9 +106,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, status,
+  id, firstname, birthLastname, rank, company, employeeType, units,
 }, activeRole) {
-  const findStep = ckeckStatusVisitor(status, activeRole);
+  const findStep = ckeckStatusVisitor(units, activeRole);
   return {
     id,
     visitor: rank
@@ -116,7 +116,7 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
-    criblage: checkCriblageVisitor(status),
+    criblage: checkCriblageVisitor(units),
     validation: null,
     step: findStep.step,
     unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
@@ -201,7 +201,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     newArray.forEach((row) => {
       if (row.step === ACTIVE_STEP_STATUS) {
         newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue.label : null;
-        newArray[newArray.indexOf(row)].transition = checkbox ? checkedValue.validation : null;
+        newArray[newArray.indexOf(row)].decision = checkbox ? checkedValue.validation : null;
       }
     });
     setDataRows(newArray);
@@ -227,7 +227,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       const newArray = rows.slice();
       const indexOfRow = newArray.indexOf(row);
       newArray[indexOfRow].validation = event.target.value;
-      newArray[indexOfRow].transition = checkbox.validation;
+      newArray[indexOfRow].decision = checkbox.validation;
       newArray[indexOfRow].tags = checkbox.tags;
       setDataRows(newArray);
       setSelectAll(

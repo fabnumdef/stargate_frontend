@@ -33,9 +33,9 @@ function createData({
     company,
     type: EMPLOYEE_TYPE[employeeType],
     date: format(findValidationDate(state), "dd/MM/yyyy à k'h'mm"),
-    status: VISITOR_STATUS[state.value] === VISITOR_STATUS.rejected
-      ? `${VISITOR_STATUS[state.value]} par ${findRejectedRole(status)}`
-      : VISITOR_STATUS[state.value],
+    status: VISITOR_STATUS[status] === VISITOR_STATUS.rejected
+      ? `${VISITOR_STATUS[status]} par ${findRejectedRole(status)}`
+      : VISITOR_STATUS[status],
   };
 }
 

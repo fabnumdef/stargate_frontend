@@ -69,22 +69,18 @@ export const READ_REQUEST = gql`
                         birthLastname
                         employeeType
                         company
-                        state {
-                            value
-                            records {
-                                date
-                            }
-                        }
-                        status {
-                            unitId
-                            label
-                            steps {
-                                role
-                                step
-                                behavior
-                                status
-                                date
-                                done
+                        units {
+                            id
+                            workflow {
+                                steps {
+                                    role
+                                    behavior
+                                    state {
+                                       isOK
+                                       date
+                                       tags
+                                    }
+                                }
                             }
                         }
                     }

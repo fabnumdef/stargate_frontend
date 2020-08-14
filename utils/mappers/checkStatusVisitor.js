@@ -4,23 +4,24 @@ export const INACTIVE_STEP_STATUS = 'inactiveSteps';
 export const ACTIVE_STEP_STATUS = 'activeSteps';
 export const HIDDEN_STEP_STATUS = 'hiddenSteps';
 
-const checkWithUnit = (status, activeRole) => {
-  const statu = status.find((item) => item.label === activeRole.unitLabel);
-  const userIndex = statu.steps.findIndex((step) => step.role === activeRole.role);
+const checkWithUnit = (units, activeRole) => {
+  console.log(units)
+  const unit = units.find((item) => item.id === activeRole.unit);
+  const userIndex = unit.workflow.steps.findIndex((step) => step.role === activeRole.role);
 
   if (
-    statu
-    && (statu.steps[userIndex].done
-      || statu.steps.find(
+    unit
+    && (unit.workflow.steps[userIndex].state.isOK
+      || unit.workflow.steps.find(
         (s) => s.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
-          && s.status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
+          && s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
       ))
   ) {
     return { step: HIDDEN_STEP_STATUS };
   }
 
-  if (statu && !statu.steps[userIndex].done) {
-    if (userIndex === 0 || statu.steps[userIndex - 1].done) {
+  if (unit && !unit.workflow.steps[userIndex].done) {
+    if (userIndex === 0 || unit.workflow.steps[userIndex - 1].state.isOK) {
       return { step: ACTIVE_STEP_STATUS, unit: activeRole.unit };
     }
     return { step: INACTIVE_STEP_STATUS };
@@ -28,16 +29,18 @@ const checkWithUnit = (status, activeRole) => {
   return null;
 };
 
-const checkWithoutUnit = (status, activeRole) => {
-  const sortRejected = status
-    .filter((s) => s.steps.every((step) => (step.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
-      && step.status !== WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
-      || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value));
+const checkWithoutUnit = (units, activeRole) => {
+  const sortRejected = units
+    .filter((s) => s.workflow.steps.every(
+      (step) => (step.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
+      && step.state.value !== WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
+      || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value
+    ));
 
   // check if Screening or Acces office are already done for a visitor
   // or if visitor was rejected by each unit
   if (
-    status.find((s) => s.steps.find((step) => step.role === activeRole.role && step.done))
+    units.find((s) => s.steps.find((step) => step.role === activeRole.role && step.done))
     || !sortRejected.length
   ) {
     return { step: HIDDEN_STEP_STATUS };
@@ -52,9 +55,9 @@ const checkWithoutUnit = (status, activeRole) => {
   return { step: INACTIVE_STEP_STATUS };
 };
 
-export default function ckeckStatusVisitor(status, activeRole) {
+export default function ckeckStatusVisitor(units, activeRole) {
   if (activeRole.unitLabel) {
-    return checkWithUnit(status, activeRole);
+    return checkWithUnit(units, activeRole);
   }
-  return checkWithoutUnit(status, activeRole);
+  return checkWithoutUnit(units, activeRole);
 }
