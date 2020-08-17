@@ -256,7 +256,7 @@ export default function FormInfosClaimant({
       updateRequest({
         variables: {
           id: formData.id,
-          request: data,
+          request: { ...data, places },
         },
       });
     }
