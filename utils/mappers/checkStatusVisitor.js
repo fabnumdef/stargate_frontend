@@ -5,7 +5,6 @@ export const ACTIVE_STEP_STATUS = 'activeSteps';
 export const HIDDEN_STEP_STATUS = 'hiddenSteps';
 
 const checkWithUnit = (units, activeRole) => {
-  console.log(units)
   const unit = units.find((item) => item.id === activeRole.unit);
   const userIndex = unit.workflow.steps.findIndex((step) => step.role === activeRole.role);
 
@@ -34,7 +33,7 @@ const checkWithoutUnit = (units, activeRole) => {
     .filter((s) => s.workflow.steps.every(
       (step) => (step.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
       && step.state.value !== WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
-      || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value
+      || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value,
     ));
 
   // check if Screening or Acces office are already done for a visitor

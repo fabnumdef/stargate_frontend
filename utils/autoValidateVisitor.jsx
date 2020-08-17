@@ -7,7 +7,6 @@ const autoValidate = async (visitors, shiftVisitor, readRequest, requestId) => {
     [ROLES.ROLE_ACCESS_OFFICE.role]: [],
   };
   const statusDone = [];
-  console.log(visitors)
   const filterRejected = visitors.map((visitor) => ({
     ...visitor,
     status: visitor.units.filter((s) => !s.workflow.steps.find(

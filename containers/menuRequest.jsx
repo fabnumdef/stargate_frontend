@@ -84,11 +84,11 @@ export const LIST_REQUESTS = gql`
            $as: ValidationPersonas!
            $filters: RequestVisitorFilters
            $cursor: OffsetCursor!
-           $isDone: Boolean!
+           $isOK: Boolean!
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-               listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
+               listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isOK: $isOK) {
                list {
                  id
                  from
@@ -186,7 +186,7 @@ export default function MenuRequest() {
           role: activeRole.role,
           unit: activeRole.unitLabel,
         },
-        isDone: false,
+        isOK: false,
       },
       notifyOnNetworkStatusChange: true,
       fetchPolicy: 'cache-and-network',
@@ -223,7 +223,7 @@ export default function MenuRequest() {
       as: activeRole.role !== ROLES.ROLE_HOST.label
         ? { role: activeRole.role, unit: activeRole.unitLabel }
         : null,
-      isDone: true,
+      isOK: true,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
@@ -242,7 +242,7 @@ export default function MenuRequest() {
               role: activeRole.role,
               unit: activeRole.unitLabel,
             },
-            isDone: false,
+            isOK: false,
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
@@ -274,7 +274,7 @@ export default function MenuRequest() {
               offset: page * rowsPerPage,
             },
             as: { role: activeRole.role, unit: activeRole.unitLabel },
-            isDone: true,
+            isOK: true,
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
@@ -313,7 +313,7 @@ export default function MenuRequest() {
     {
       query: LIST_REQUESTS,
       variables: {
-        isDone: true,
+        isOK: true,
         as: { role: activeRole.role, unit: activeRole.unitLabel },
       },
       fetchPolicy: 'cache-and-network',

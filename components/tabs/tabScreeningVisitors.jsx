@@ -139,9 +139,7 @@ export default function ScreeningTable({ visitors, onChange }) {
     const newArray = visitors.slice();
 
     visitors.forEach((row) => {
-      if (row.screening.step === ACTIVE_STEP_STATUS) {
-        newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
-      }
+      newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
     });
 
     onChange(newArray);
@@ -252,9 +250,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
-                          }
                         >
                           {value}
                           <IconButton aria-label="AttachFileIcon">
@@ -265,9 +260,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
-                          }
                         >
                           {value}
                         </TableCell>
@@ -277,17 +269,11 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
-                          }
                         />
                       ) : (
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
-                          }
                         >
                           {value}
                         </TableCell>
@@ -313,14 +299,12 @@ export default function ScreeningTable({ visitors, onChange }) {
                           >
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.positive}
-                              disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
                             />
                             <FormControlLabel
                               value={ROLES[activeRole.role].workflow.negative}
-                              disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                               control={
                                 <Radio color="primary" onClick={() => handleDeselect(row)} />
                               }
@@ -334,9 +318,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
-                          className={
-                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
-                          }
                         >
                           {value}
                         </TableCell>

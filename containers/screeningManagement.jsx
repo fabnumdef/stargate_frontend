@@ -28,8 +28,6 @@ import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
-import checkStatus from '../utils/mappers/checkStatusVisitor';
-
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 
 import { useLogin } from '../lib/loginContext';
@@ -92,7 +90,7 @@ function createData({
     firstname,
     birthLastname,
     report: null,
-    screening: checkStatus(status, activeRole),
+    //screening: checkStatus(status, activeRole),
     requestId: request.id,
     vAttachedFile: identityDocuments,
   };
@@ -104,10 +102,11 @@ export const LIST_VISITOR_REQUESTS = gql`
            $campusId: String!
            $search: String
            $cursor: OffsetCursor!
+           $isOK: RequestVisitorIsOK
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listVisitors(search: $search, cursor: $cursor) {
+             listVisitors(search: $search, cursor: $cursor, isOK: $isOK) {
                list {
                  id
                  firstname
@@ -115,16 +114,18 @@ export const LIST_VISITOR_REQUESTS = gql`
                  birthday
                  birthplace
                  birthLastname
-                 status {
-                   unitId
-                   label
-                   steps {
-                     role
-                     step
-                     behavior
-                     status
-                     done
-                   }
+                 units {
+                     id
+                     label
+                     workflow {
+                         steps {
+                            role
+                             state {                             
+                                 isOK
+                                 value
+                             }
+                         }
+                     }
                  }
                  request {
                    id
@@ -158,6 +159,7 @@ export default function ScreeningManagement() {
 
   const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
+      isOK: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
     },
     notifyOnNetworkStatusChange: true,
@@ -196,6 +198,7 @@ export default function ScreeningManagement() {
   const handleFetchMore = () => {
     fetchMore({
       variables: {
+        isOK: { role: activeRole.role, value: false },
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -230,7 +233,7 @@ export default function ScreeningManagement() {
     }
     handleFetchMore();
   }, [page, rowsPerPage]);
-  const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
+  const csvData = () => visitors.map((visitor) => ({
     vBirthName: visitor.birthLastname.toUpperCase(),
     vBirthDate: visitor.birthday,
     vBirthPlace: visitor.birthplace.toUpperCase(),
@@ -248,7 +251,7 @@ export default function ScreeningManagement() {
                 requestId: visitor.requestId,
                 visitorId: visitor.id,
                 transition: visitor.report,
-                as: { role: activeRole.role, unit: visitor.screening.unit },
+                as: { role: activeRole.role },
               },
             });
           } catch (e) {
