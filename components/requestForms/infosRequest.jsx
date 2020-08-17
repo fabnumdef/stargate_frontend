@@ -192,13 +192,16 @@ export default function FormInfosClaimant({
   const checkSelection = async (value) => {
     const { data } = await client.query({ query: GET_PLACES_LIST });
     const filter = data.getCampus.listPlaces.list.filter(
-      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unitLabel,
+      (place) => value.find(
+        (p) => p.id === place.id && place.unitInCharge.label === activeRole.unitLabel,
+      ),
     );
     return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
   };
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
+      console.log(data.mutateCampus.createRequest);
       setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
       handleNext();
     },
@@ -246,9 +249,9 @@ export default function FormInfosClaimant({
   const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
-    console.log(data);
+    const places = data.places.map((p) => p.id);
     if (!formData.id) {
-      createRequest({ variables: { request: data } });
+      createRequest({ variables: { request: { ...data, places } } });
     } else {
       updateRequest({
         variables: {
@@ -442,6 +445,7 @@ export default function FormInfosClaimant({
                       options={placesList ? placesList.getCampus.listPlaces.list : []}
                       expanded={expanded}
                       setExpanded={setExpanded}
+                      defaultChecked={formData.places}
                       onChange={(checked) => checked}
                       label="Lieux"
                     />
@@ -454,7 +458,7 @@ export default function FormInfosClaimant({
                   }}
                   control={control}
                   name="places"
-                  defaultValue={[]}
+                  defaultValue={formData.places}
                 />
                 {errors.places && (
                   <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>

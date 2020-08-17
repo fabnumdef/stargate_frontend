@@ -741,7 +741,7 @@ export default function FormInfoVisitor({
                   style={{ marginRight: '5px' }}
                   onClick={handleClickCancel}
                 >
-                  Annuler
+                  Retour
                 </Button>
               </div>
               <div>

@@ -71,6 +71,8 @@ export const READ_REQUEST = gql`
                    birthLastname
                    employeeType
                    company
+                   vip
+                   vipReason
                    status {
                        unitId
                        label
