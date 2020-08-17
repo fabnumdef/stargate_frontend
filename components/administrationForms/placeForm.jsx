@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -78,6 +79,11 @@ const PlaceForm = ({ list, setList }) => {
       </Grid>
     </Grid>
   );
+};
+
+PlaceForm.propTypes = {
+  list: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setList: PropTypes.func.isRequired,
 };
 
 export default PlaceForm;

@@ -189,7 +189,9 @@ export default function FormInfosClaimant({
   const checkSelection = async (value) => {
     const { data } = await client.query({ query: GET_PLACES_LIST });
     const filter = data.getCampus.listPlaces.list.filter(
-      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unitLabel,
+      (place) => value.find(
+        (p) => p.id === place.id && place.unitInCharge.label === activeRole.unitLabel,
+      ),
     );
     return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
   };
@@ -230,8 +232,9 @@ export default function FormInfosClaimant({
   const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
+    const places = data.places.map((p) => p.id);
     if (!formData.id) {
-      createRequest({ variables: { request: data } });
+      createRequest({ variables: { request: { ...data, places } } });
     } else {
       updateRequest({
         variables: {
