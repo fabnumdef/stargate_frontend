@@ -22,8 +22,12 @@ export default class MyDocument extends Document {
         </body>
         <style jsx>
           {`
+            html {
+              overflow-x: hidden;
+            }
             body {
               height: auto;
+              overflow-x: hidden;
             }
           `}
         </style>

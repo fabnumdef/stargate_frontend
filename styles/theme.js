@@ -6,12 +6,29 @@ import red from '@material-ui/core/colors/red';
 // Create a theme instance.
 const theme = createMuiTheme(
   {
+    typography: {
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+    },
     palette: {
       primary: {
         main: '#0f4194',
       },
       secondary: {
         main: '#a51c81',
+      },
+      success: {
+        main: '#28a745',
       },
       error: {
         main: red.A400,
@@ -43,8 +60,21 @@ const theme = createMuiTheme(
         body2: {
           fontSize: '0.75rem',
         },
+        h5: {
+          fontSize: '1.35rem',
+          fontWeight: 600,
+          fontStretch: 'normal',
+          lineHeight: 1.32,
+          letterSpacing: '0.22px',
+        },
+      },
+      MuiTable: {
+        root: {
+          overflow: 'auto',
+        },
       },
       MuiAppBar: {
+        opacity: 0,
         colorPrimary: {
           color: '#000000',
           backgroundColor: '#ffffff',

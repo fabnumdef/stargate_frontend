@@ -1,20 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
@@ -22,6 +18,8 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
 import WarningIcon from '@material-ui/icons/Warning';
+import TableContainer from '@material-ui/core/TableContainer';
+
 import CustomTableHeader from '../../styled/customTableCellHeader';
 import CustomCheckbox from '../../styled/customCheckbox';
 import { useLogin } from '../../../lib/loginContext';
@@ -70,17 +68,24 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
   },
-  headers: {
-    backgroundColor: fade(theme.palette.primary.main, 0.05),
-    color: theme.palette.primary.main,
-    fontSize: '18px',
-    fontWeight: '600',
-  },
   list: {
     right: 0,
     listStyle: 'none',
     color: theme.palette.primary.main,
     fontSize: '10px',
+  },
+  cellNoBorder: {
+    border: 'none',
+  },
+  borderRight: {
+    borderRight: 'solid 1px',
+  },
+  borderLeft: {
+    borderLeft: 'solid 1px',
+  },
+  rowForm: {
+    backgroundColor: fade(theme.palette.primary.main, 0.05),
+    color: `${theme.palette.primary.main}!important`,
   },
   sortedHeader: {
     color: `${theme.palette.primary.main}!important`,
@@ -186,6 +191,12 @@ const columns = [
   { id: 'type', label: 'Type' },
   { id: 'steps' },
 ];
+
+const StyledFormLabel = withStyles({
+  root: {
+    margin: 'auto',
+  },
+})(FormControlLabel);
 
 export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const { activeRole } = useLogin();
@@ -302,10 +313,11 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
     );
   }, [rows, selectAll]);
 
-  const handleDeselect = useCallback((row) => {
+  const handleDeselect = useCallback((index) => {
     const newArray = rows.slice();
-    if (newArray[newArray.indexOf(row)].validation != null) {
-      newArray[newArray.indexOf(row)].validation = null;
+    if (newArray[index].validation != null) {
+      newArray[index].transition = null;
+      newArray[index].validation = null;
       setDataRows(newArray);
     }
   }, [rows]);
@@ -314,7 +326,6 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
     if (rows.every((row) => row.step === HIDDEN_STEP_STATUS)) {
       router.push('/');
     }
-
     onChange(rows);
   }, [onChange, rows]);
 
@@ -335,42 +346,48 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                 switch (headCell.id) {
                   case 'visitors':
                     return (
-                      <CustomTableHeader key={headCell.id}>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
                         {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
                   case 'steps':
                     return rows[0].steps.map((column) => (
-                      <CustomTableHeader key={column.label}>
+                      <CustomTableHeader rowSpan={2} key={column.label}>
                         {/* @todo length etc ... */ `${column.label}`}
                       </CustomTableHeader>
                     ));
                   default:
                     return (
-                      <CustomTableHeader key={headCell.id}>{headCell.label}</CustomTableHeader>
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        {headCell.label}
+                      </CustomTableHeader>
                     );
                 }
               })}
-              <CustomTableHeader className={`${classes.reportHeader} ${classes.reportRow}`}>
+              <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
                 Validation
-                <FormGroup row className={classes.reportCheckbox}>
-                  {selectAll.map((checkbox) => (
-                    <FormControlLabel
-                      control={(
-                        <Checkbox
-                          color="primary"
-                          checked={checkbox.value}
-                          onChange={(event) => {
-                            handleSelectAll(event.target.checked, checkbox);
-                          }}
-                        />
-                      )}
-                      label={checkbox.label}
-                      labelPlacement="start"
-                    />
-                  ))}
-                </FormGroup>
               </CustomTableHeader>
+            </TableRow>
+            <TableRow>
+
+              {selectAll.map((checkbox, index) => (
+                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`} style={{ textAlign: 'center' }}>
+                  <StyledFormLabel
+                    control={(
+                      <Checkbox
+                        color="primary"
+                        checked={checkbox.value}
+                        onChange={(event) => {
+                          handleSelectAll(event.target.checked, checkbox);
+                        }}
+                      />
+                        )}
+                    label={checkbox.label}
+                    labelPlacement="start"
+                  />
+                </CustomTableHeader>
+              ))}
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -406,49 +423,60 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                       );
                   }
                 })}
-                <TableCell
-                  className={`${classes.reportRow} ${
-                    index === rows.length - 1 ? classes.reportLastChild : ''
-                  }`}
-                >
-                  <RadioGroup
-                    className={classes.radioGroup}
-                    value={row.validation}
-                    style={{ justifyContent: 'space-evenly' }}
-                  >
-                    {selectAll.map((checkbox) => (
-                      (checkbox.label === 'VIP')
-                        ? (
-                          <FormControlLabel
-                            disabled={row.step === INACTIVE_STEP_STATUS}
-                            control={(
-                              <CustomCheckbox
-                                checked={row.vip}
-                                onChange={(event) => {
-                                  handleVip(event, row);
-                                }}
-                                color="primary"
-                              />
+
+
+                {selectAll.map((checkbox, indexCheck) => (
+                  (checkbox.label === 'VIP')
+                    ? (
+                      <TableCell
+                        className={`${
+                          index === rows.length - 1 ? classes.reportLastChild : ''
+                        }
+                    `}
+                        style={{ textAlign: 'center' }}
+                      >
+                        <StyledFormLabel
+                          disabled={row.step === INACTIVE_STEP_STATUS}
+                          control={(
+                            <CustomCheckbox
+                              checked={row.vip}
+                              onChange={(event) => {
+                                handleVip(event, row);
+                              }}
+                              color="primary"
+                            />
                               )}
-                          />
-                        )
-                        : (
-                          <FormControlLabel
-                            value={checkbox.label}
-                            disabled={row.step === INACTIVE_STEP_STATUS}
-                            control={(
-                              <Radio
-                                color="primary"
-                                onChange={(event) => {
-                                  handleChange(event, row, checkbox);
-                                }}
-                                onClick={() => handleDeselect(row)}
-                              />
-                            )}
-                          />
-                        )))}
-                  </RadioGroup>
-                </TableCell>
+                          style={{ marginLeft: '10px' }}
+
+                        />
+                      </TableCell>
+                    )
+                    : (
+                      <TableCell
+                        className={`${
+                          index === rows.length - 1 ? classes.reportLastChild : ''
+                        }
+                        ${indexCheck === selectAll.length - 1 ? classes.borderRight : ''}
+                        ${indexCheck === 0 ? classes.borderLeft : ''}
+                      `}
+                      >
+                        <StyledFormLabel
+                          value={checkbox.label}
+                          disabled={row.step === INACTIVE_STEP_STATUS}
+                          control={(
+                            <Radio
+                              color="primary"
+                              checked={rows[index].validation === checkbox.validation}
+                              onChange={(event) => {
+                                handleChange(event, row, checkbox);
+                              }}
+                              onClick={() => handleDeselect(index)}
+                            />
+                          )}
+                          style={{ marginLeft: '10px' }}
+                        />
+                      </TableCell>
+                    )))}
               </TableRow>
               ),
             )}
