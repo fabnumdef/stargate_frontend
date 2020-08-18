@@ -107,11 +107,11 @@ export const LIST_VISITOR_REQUESTS = gql`
            $campusId: String!
            $search: String
            $cursor: OffsetCursor!
-           $isOK: RequestVisitorIsOK
+           $isDone: RequestVisitorIsDone
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listVisitors(search: $search, cursor: $cursor, isOK: $isOK) {
+             listVisitors(search: $search, cursor: $cursor, isDone: $isDone) {
                list {
                  id
                  firstname
@@ -164,7 +164,7 @@ export default function ScreeningManagement() {
 
   const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
-      isOK: { role: activeRole.role, value: false },
+      isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
     },
     notifyOnNetworkStatusChange: true,
@@ -203,7 +203,7 @@ export default function ScreeningManagement() {
   const handleFetchMore = () => {
     fetchMore({
       variables: {
-        isOK: { role: activeRole.role, value: false },
+        isDone: { role: activeRole.role, value: false },
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -255,7 +255,7 @@ export default function ScreeningManagement() {
               variables: {
                 requestId: visitor.requestId,
                 visitorId: visitor.id,
-                transition: visitor.report,
+                decision: visitor.report,
                 as: { role: activeRole.role },
               },
             });

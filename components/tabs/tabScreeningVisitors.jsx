@@ -320,7 +320,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                   } ${classes.borderLeft} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
-                    disabled={row.screening.step !== ACTIVE_STEP_STATUS}
+                    //disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                     control={(
                       <Radio
                         value={ROLES[activeRole.role].workflow.positive}
@@ -346,7 +346,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                   } ${classes.borderRight} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
-                    disabled={row.screening.step !== ACTIVE_STEP_STATUS}
+                    //disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                     control={(
                       <Radio
                         value={ROLES[activeRole.role].workflow.negative}

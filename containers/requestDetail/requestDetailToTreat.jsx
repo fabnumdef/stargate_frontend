@@ -172,13 +172,14 @@ export default function RequestDetails({ requestId }) {
   }, [result]);
 
   const sendChainShiftVisitor = async (sortVisitors, count) => {
+    console.log(sortVisitors)
     await validateVisitorStep({
       variables: {
         requestId,
         visitorId: sortVisitors[count].id,
         decision: sortVisitors[count].decision,
         tags: sortVisitors[count].vip ? [...sortVisitors[count].tags, 'VIP'] : sortVisitors[count].tags,
-        as: { role: activeRole.role, unit: sortVisitors[count].unitToShift },
+        as: { role: activeRole.role },
       },
     }).then(() => {
       if (count < sortVisitors.length - 1) {
