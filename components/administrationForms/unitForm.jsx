@@ -96,6 +96,10 @@ const GET_USERS = gql`
                   id
                   firstname
                   lastname
+                  roles {
+                      role
+                      userInCharge
+                  }
               }
           }
       }
@@ -108,7 +112,7 @@ const UnitForm = ({
   const client = useApolloClient();
   const { addAlert } = useSnackBar();
   const {
-    handleSubmit, errors, control,
+    handleSubmit, errors, control, watch,
   } = useForm();
 
   const allCards = Object.values(ROLES)
@@ -116,17 +120,22 @@ const UnitForm = ({
     .map((role, i) => ({
       id: i + 1, text: role.label, role: role.role, behavior: role.behavior,
     }));
-  const [cards, setCards] = useState(allCards);
+  const createDefaultCards = () => allCards.filter(
+    (card) => defaultValues.cards.find((c) => c.role === card.role),
+  );
+  const [cards, setCards] = useState(type === 'create' ? allCards : createDefaultCards);
 
-  const [assistantsList, setAssistantsList] = React.useState({
-    [FORMS_LIST.CORRES_ASSISTANTS]: [],
-    [FORMS_LIST.OFFICER_ASSISTANTS]: [],
-  });
+  const [assistantsList, setAssistantsList] = React.useState(defaultValues.assistantsList);
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
   };
   const deleteAssistant = (id, typeAssistant) => {
-    const newUsers = assistantsList[typeAssistant].filter((user) => user.id !== id);
+    const newUsers = assistantsList[typeAssistant].map((user) => {
+      if (user.id === id) {
+        return { ...user, toDelete: true };
+      }
+      return user;
+    });
     setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
   };
 
@@ -151,6 +160,10 @@ const UnitForm = ({
   };
   const { data: usersList } = useQuery(GET_USERS);
 
+  const isAssistant = (userId, typeAssistant) => assistantsList[typeAssistant].find(
+    (user) => user.id === userId && !user.toDelete,
+  );
+
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
     if (!placesList) {
@@ -162,13 +175,12 @@ const UnitForm = ({
     const unitData = mapUnitData(formData, cards);
     await submitForm(formData, unitData, assistantsList);
   };
-  console.log(placesList);
 
   return placesList ? (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUnitForm}>
       <Typography style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Tous les champs sont obligatoires</Typography>
       <Grid container item sm={12} xs={12}>
-        <Grid sm={6} xs={6}>
+        <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>
             <Typography variant="subtitle2">Description: </Typography>
             <Grid className={classes.textFieldBlock}>
@@ -223,10 +235,11 @@ const UnitForm = ({
               <Controller
                 as={(
                   <ListLieux
-                    options={placesList || []}
+                    options={placesList.concat(defaultValues.placesList) || []}
                     expanded={expanded}
                     setExpanded={setExpanded}
                     onChange={(checked) => checked}
+                    defaultChecked={defaultValues.placesList}
                     label="Lieux"
                     className={classes.placesList}
                   />
@@ -236,9 +249,9 @@ const UnitForm = ({
                     valide: (value) => (value && value.length > 0) || 'Le choix d\'un lieu est obligatoire',
                   },
                 }}
+                defaultValue={defaultValues.placesList}
                 control={control}
                 name="places"
-                defaultValue={[]}
               />
               {errors.places && (
               <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
@@ -250,7 +263,7 @@ const UnitForm = ({
             <DndModule cards={cards} setCards={setCards} allCards={allCards} />
           </Grid>
         </Grid>
-        <Grid sm={6} xs={6}>
+        <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>
             <Grid>
               <Grid className={classes.titleUserSelect}>
@@ -273,14 +286,17 @@ const UnitForm = ({
                         labelWidth={labelWidth}
                       >
                         {usersList && usersList.listUsers.list.map((user) => (
+                          !isAssistant(user.id, FORMS_LIST.CORRES_ASSISTANTS)
+                          && (
                           <MenuItem key={user.id} value={user.id}>
                             {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                           </MenuItem>
+                          )
                         ))}
                       </Select>
                     )}
                     control={control}
-                    defaultValue={defaultValues.unitCorrespondent ? defaultValues.unitCorrespondent : ''}
+                    defaultValue={defaultValues.unitCorrespondent.id ? defaultValues.unitCorrespondent.id : ''}
                     name="unitCorrespondent"
                     rules={{ required: true }}
                   />
@@ -292,17 +308,20 @@ const UnitForm = ({
                 </FormControl>
               </Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle3">Adjoint(s):</Typography>
+                <Typography>Adjoint(s):</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map((user) => (
+                    !user.toDelete && (
                     <DeletableList
+                      key={user.id}
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
                       type={FORMS_LIST.CORRES_ASSISTANTS}
                     />
+                    )
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
@@ -314,12 +333,14 @@ const UnitForm = ({
                     onChange={(evt) => addAssistant(evt, FORMS_LIST.CORRES_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
+                      user.id !== watch('unitCorrespondent') && (
                       <MenuItem key={user.id} value={user}>
                         <Checkbox
                           checked={assistantsList[FORMS_LIST.CORRES_ASSISTANTS].indexOf(user) > -1}
                         />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
+                      )
                     ))}
                   </Select>
                 </FormControl>
@@ -349,30 +370,36 @@ const UnitForm = ({
                         labelWidth={labelWidth}
                       >
                         {usersList && usersList.listUsers.list.map((user) => (
+                          !isAssistant(user.id, FORMS_LIST.OFFICER_ASSISTANTS)
+                          && (
                           <MenuItem key={user.id} value={user.id}>
                             {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                           </MenuItem>
+                          )
                         ))}
                       </Select>
                     )}
-                    defaultValue={defaultValues.unitOfficer ? defaultValues.unitOfficer : ''}
+                    defaultValue={defaultValues.unitOfficer.id ? defaultValues.unitOfficer.id : ''}
                     control={control}
                     name="unitOfficer"
                   />
                 </FormControl>
               </Grid>
               <Grid className={classes.titleUserSelect}>
-                <Typography variant="subtitle3">Adjoint(s)&nbsp;:</Typography>
+                <Typography>Adjoint(s)&nbsp;:</Typography>
               </Grid>
               <Grid className={classes.userSelect}>
                 <FormControl className={classes.assistantSelect}>
                   {assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map((user) => (
+                    !user.toDelete && (
                     <DeletableList
+                      key={user.id}
                       label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
                       id={user.id}
                       deleteItem={deleteAssistant}
                       type={FORMS_LIST.OFFICER_ASSISTANTS}
                     />
+                    )
                   ))}
                   <Select
                     labelId="demo-mutiple-chip-label"
@@ -384,12 +411,15 @@ const UnitForm = ({
                     onChange={(evt) => addAssistant(evt, FORMS_LIST.OFFICER_ASSISTANTS)}
                   >
                     {usersList && usersList.listUsers.list.map((user) => (
+                      user.id !== watch('unitOfficer')
+                      && (
                       <MenuItem key={user.id} value={user}>
                         <Checkbox
                           checked={assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].indexOf(user) > -1}
                         />
                         <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                       </MenuItem>
+                      )
                     ))}
                   </Select>
                 </FormControl>
@@ -400,7 +430,7 @@ const UnitForm = ({
         </Grid>
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Link href="/administration/utilisateurs">
+        <Link href="/administration/unites">
           <Button variant="outlined" color="primary">
             Annuler
           </Button>
@@ -416,6 +446,7 @@ const UnitForm = ({
 UnitForm.propTypes = {
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
   type: PropTypes.string.isRequired,
+  submitForm: PropTypes.func.isRequired,
 };
 
 export default UnitForm;

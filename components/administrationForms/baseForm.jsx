@@ -102,6 +102,13 @@ const PaginationButton = ({
   );
 };
 
+PaginationButton.propTypes = {
+  users: PropTypes.objectOf(PropTypes.array).isRequired,
+  fetchMore: PropTypes.func.isRequired,
+  selectList: PropTypes.objectOf(PropTypes.object).isRequired,
+  setSelectList: PropTypes.func.isRequired,
+};
+
 const BaseForm = ({
   submitForm, defaultValues, usersList, fetchMore,
 }) => {
@@ -277,7 +284,8 @@ const BaseForm = ({
 BaseForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
-  type: PropTypes.string.isRequired,
+  usersList: PropTypes.arrayOf(PropTypes.object).isRequired,
+  fetchMore: PropTypes.func.isRequired,
 };
 
 export default BaseForm;

@@ -4,11 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   footer: {
-    width: '100%',
+    width: '100vw',
     height: '80px',
     backgroundColor: theme.palette.primary.main,
   },
   footerImg: {
+    width: 'auto',
     height: '151px',
     position: 'relative',
     top: '-90%',

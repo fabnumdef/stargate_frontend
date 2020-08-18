@@ -73,9 +73,13 @@ const StyledMenuItem = withStyles((theme) => ({
 
 const useStyles = makeStyles(() => ({
   root: {
+    margin: '10px 0 10px 0',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  iconButton: {
+    margin: '0 0 0 10px',
   },
 }));
 
@@ -138,7 +142,7 @@ export default function MenuIcon() {
         </Select>
         <span>{activeRole.unitLabel ? activeRole.unitLabel : ''}</span>
       </Box>
-      <IconButton size="small" onClick={handleOpenMenu}>
+      <IconButton className={classes.iconButton} size="small" onClick={handleOpenMenu}>
         <Avatar />
       </IconButton>
       <StyledMenu

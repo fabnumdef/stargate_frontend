@@ -189,7 +189,9 @@ export default function FormInfosClaimant({
   const checkSelection = async (value) => {
     const { data } = await client.query({ query: GET_PLACES_LIST });
     const filter = data.getCampus.listPlaces.list.filter(
-      (place) => value.includes(place.id) && place.unitInCharge.label === activeRole.unitLabel,
+      (place) => value.find(
+        (p) => p.id === place.id && place.unitInCharge.label === activeRole.unitLabel,
+      ),
     );
     return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
   };
@@ -230,8 +232,9 @@ export default function FormInfosClaimant({
   const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
+    const places = data.places.map((p) => p.id);
     if (!formData.id) {
-      createRequest({ variables: { request: data } });
+      createRequest({ variables: { request: { ...data, places } } });
     } else {
       updateRequest({
         variables: {
@@ -359,7 +362,7 @@ export default function FormInfosClaimant({
 
               {/* Item 5: Période d'acces */}
               <Grid className={classes.comps} item xs={12} sm={12}>
-                <Grid container spacing={1} style={{ color: '#ffa000' }}>
+                <Grid container spacing={1} style={{ color: '#c78005' }}>
                   <Grid item sm={12}>
                     <Typography variant="body2" gutterBottom>
                       Délais de traitement avant la date de visite:

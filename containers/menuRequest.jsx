@@ -11,9 +11,9 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 import TablePagination from '@material-ui/core/TablePagination';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
+// import TextField from '@material-ui/core/TextField';
+// import InputAdornment from '@material-ui/core/InputAdornment';
+// import SearchIcon from '@material-ui/icons/Search';
 
 
 import {
@@ -28,6 +28,11 @@ import { urlAuthorization } from '../utils/permissions';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
+  },
+  tab: {
+    '& .MuiBox-root': {
+      padding: 'Opx',
+    },
   },
   pageTitle: {
     margin: '16px 0',
@@ -48,19 +53,7 @@ export const AntTab = withStyles((theme) => ({
     color: '#0d40a0',
     minWidth: 72,
     fontWeight: theme.typography.fontWeightRegular,
-    marginRight: theme.spacing(4),
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
+    marginRight: theme.spacing(5),
     '&:hover': {
       opacity: 1,
     },
@@ -405,7 +398,7 @@ export default function MenuRequest() {
         </Grid>
         <Grid container className={classes.searchField}>
           <Grid item sm={12} xs={12} md={12} lg={12}>
-            {handlePageSize() > 0 && (
+            {/* handlePageSize() > 0 && (
               <TextField
                 style={{ float: 'right' }}
                 margin="dense"
@@ -427,12 +420,12 @@ export default function MenuRequest() {
                   },
                 }}
               />
-            )}
+            ) */}
           </Grid>
         </Grid>
         <Grid item sm={12} xs={12}>
           {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
-          <TabPanel value={value} index={0}>
+          <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
             <TabMesDemandesToTreat
               requests={toTreat ? toTreat.getCampus.listRequestByVisitorStatus.list : []}
               detailLink="a-traiter"
@@ -440,14 +433,14 @@ export default function MenuRequest() {
           </TabPanel>
           )}
           {urlAuthorization('/nouvelle-demande', activeRole.role) && (
-            <TabPanel value={value} index={1}>
+            <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
               <TabDemandesProgress
                 request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
                 queries={refetchQueries}
               />
             </TabPanel>
           )}
-          <TabPanel value={value} index={2}>
+          <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
             <TabMesDemandesToTreat
               requests={treated ? selectResultTreated(treated).list : []}
               detailLink="traitees"

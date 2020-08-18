@@ -69,3 +69,6 @@ deploy:production:
 deploy:production:uninstall:
   variables:
     HELM_NAME: frontend
+
+pages:
+  extends: .igloo:npm:pages-docs

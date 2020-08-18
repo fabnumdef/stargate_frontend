@@ -15,12 +15,17 @@ import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
+import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
+
+
 import EmptyArray from '../../styled/emptyArray';
 
 const columns = [
-  { id: 'id', label: 'N° demande' },
-  { id: 'periode', label: 'Période', width: '100px' },
+  { id: 'id', label: 'N° demande', width: '220px' },
+  {
+    id: 'periode', label: 'Période', width: '100px', style: { textAlign: 'center' },
+  },
   { id: 'owner', label: 'Demandeur' },
   { id: 'places', label: 'Lieu' },
   { id: 'reason', label: 'Motif' },
@@ -96,61 +101,63 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
   };
 
   return requests.length > 0 ? (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <CustomTableCellHeader
-              key={column.id}
-              align={column.align}
-              style={{ width: column.width }}
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <CustomTableCellHeader
+                key={column.id}
+                align={column.align}
+                style={{ width: column.width }}
+              >
+                {column.label}
+              </CustomTableCellHeader>
+            ))}
+            <CustomTableCellHeader key="actions" style={{ minWidth: '120px', width: '130px' }} />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows && rows.map((row, index) => (
+            <TableRow
+              hover
+              onMouseOver={() => handleMouseEnter(index)}
+              onFocus={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave(index)}
+              role="checkbox"
+              tabIndex={-1}
+              key={row.code}
             >
-              {column.label}
-            </CustomTableCellHeader>
-          ))}
-          <CustomTableCellHeader key="actions" style={{ minWidth: '100px' }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows && rows.map((row, index) => (
-          <TableRow
-            hover
-            onMouseOver={() => handleMouseEnter(index)}
-            onFocus={() => handleMouseEnter(index)}
-            onMouseLeave={() => handleMouseLeave(index)}
-            role="checkbox"
-            tabIndex={-1}
-            key={row.code}
-          >
-            {columns.map((column) => {
-              const value = row[column.id];
-              return column.id === 'criblage' ? (
-                <TableCell key={column.id} align={column.align}>
-                  {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
-                </TableCell>
-              ) : (
-                <TableCell key={column.id} align={column.align}>
-                  {column.format && typeof value === 'number' ? column.format(value) : value}
-                </TableCell>
-              );
-            })}
-            <TableCell key="modif">
-              {hover[index] && (
-                <>
+              {columns.map((column) => {
+                const value = row[column.id];
+                return column.id === 'criblage' ? (
+                  <TableCell key={column.id} align={column.align}>
+                    {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
+                  </TableCell>
+                ) : (
+                  <TableCell key={column.id} align={column.align} style={column.style}>
+                    {column.format && typeof value === 'number' ? column.format(value) : value}
+                  </TableCell>
+                );
+              })}
+              <TableCell key="modif">
+                {hover[index] && (
+                <div style={{ float: 'right' }}>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
                       <DescriptionIcon />
                     </IconButton>
                   </Link>
-                </>
-              )}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                </div>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   ) : (
-    <EmptyArray type="à traiter" />
+    <EmptyArray type="" />
   );
 }
 
