@@ -450,7 +450,7 @@ export default function FormInfoVisitor({
                     inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
                   />
                 </Grid>
-                <Grid item md={6} sm={6} xs={12}>
+                <Grid item md={12} sm={12} xs={12}>
                   <Controller
                     as={(
                       <TextField
@@ -467,7 +467,7 @@ export default function FormInfoVisitor({
                   <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
                 </Grid>
 
-                <Grid item md={6} sm={6} xs={12}>
+                <Grid item md={12} sm={12} xs={12}>
                   <Controller
                     as={(
                       <TextField
@@ -638,7 +638,7 @@ export default function FormInfoVisitor({
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={6}>
+                <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
                       <TextField
@@ -660,7 +660,7 @@ export default function FormInfoVisitor({
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={6}>
+                <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
                       <DatePicker

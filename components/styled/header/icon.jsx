@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import FaceIcon from '@material-ui/icons/Face';
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -14,5 +14,5 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AvatarIcone() {
   const classes = useStyles();
-  return <AccountCircleIcon className={`${classes.large} ${classes.style}`} />;
+  return <FaceIcon className={`${classes.large} ${classes.style}`} />;
 }

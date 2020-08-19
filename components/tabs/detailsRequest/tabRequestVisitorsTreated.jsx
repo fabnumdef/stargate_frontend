@@ -7,7 +7,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { format } from 'date-fns';
+import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
+
 
 import {
   EMPLOYEE_TYPE,
@@ -54,35 +56,37 @@ export default function TabRequestVisitors({ visitors }) {
   }, []);
 
   return (
-    <Table stickyHeader aria-label="sticky table">
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <CustomTableCell key={column.id} align={column.align}>
-              {column.label}
-            </CustomTableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows.map((row) => (
-          <TableRow
-            role="checkbox"
-            tabIndex={-1}
-            key={row.id}
-          >
-            {columns.map((column) => {
-              const value = row[column.id];
-              return (
-                <TableCell key={column.id} align={column.align}>
-                  {column.format && typeof value === 'number' ? column.format(value) : value}
-                </TableCell>
-              );
-            })}
+    <TableContainer>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <CustomTableCell key={column.id} align={column.align}>
+                {column.label}
+              </CustomTableCell>
+            ))}
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              role="checkbox"
+              tabIndex={-1}
+              key={row.id}
+            >
+              {columns.map((column) => {
+                const value = row[column.id];
+                return (
+                  <TableCell key={column.id} align={column.align}>
+                    {column.format && typeof value === 'number' ? column.format(value) : value}
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

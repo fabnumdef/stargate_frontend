@@ -7,7 +7,7 @@ import { Header, Footer } from '../components';
 
 const useStyles = makeStyles(() => ({
   container: {
-    paddingTop: '15vh',
+    paddingTop: '20vh',
     minHeight: '100vh',
     marginBottom: '10%',
   },

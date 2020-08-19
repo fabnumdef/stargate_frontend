@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     strokeWidth: 2,
     stroke: '#fff',
     strokeMiterlimit: 10,
-    boxShadow: `inset 0px 0px 0px ${theme.palette.secondary.main}`,
+    boxShadow: `inset 0px 0px 0px ${theme.palette.success.main}`,
     animation: '$fill 0.5s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both',
   },
   checkmark__circle: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     strokeDashoffset: 166,
     strokeWidth: 2,
     strokeMiterlimit: 10,
-    stroke: theme.palette.secondary.main,
+    stroke: theme.palette.success.main,
     fill: 'none',
     animation: '$stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards',
   },
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     '50%': { transform: 'scale3d(1.1, 1.1, 1)' },
   },
   '@keyframes fill': {
-    '100%': { boxShadow: `inset 0px 0px 0px 30px ${theme.palette.secondary.main}` },
+    '100%': { boxShadow: `inset 0px 0px 0px 30px ${theme.palette.success.main}` },
   },
   '@keyframes stroke': {
     '100%': { strokeDashoffset: 0 },

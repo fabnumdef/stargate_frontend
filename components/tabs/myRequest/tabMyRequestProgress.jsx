@@ -19,9 +19,11 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import { format } from 'date-fns';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import TableContainer from '@material-ui/core/TableContainer';
 import EmptyArray from '../../styled/emptyArray';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+
 
 const CANCEL_REQUEST = gql`
   mutation cancelRequest(
@@ -40,8 +42,10 @@ const CANCEL_REQUEST = gql`
 
 
 const columns = [
-  { id: 'id', label: 'N° demande' },
-  { id: 'periode', label: 'Période', width: '100px' },
+  { id: 'id', label: 'N° demande', width: '220px' },
+  {
+    id: 'periode', label: 'Période', width: '100px', style: { textAlign: 'center' },
+  },
   { id: 'reason', label: 'Motif' },
   { id: 'type', label: 'Type de demande' },
 ];
@@ -131,75 +135,79 @@ export default function TabMyRequestToTreat({ request, queries }) {
   };
 
   return request.length > 0 ? (
-    <Table aria-label="sticky table">
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <CustomTableCellHeader key={column.id} style={{ width: column.width }}>
-              {column.label}
-            </CustomTableCellHeader>
-          ))}
-          <CustomTableCellHeader style={{ minWidth: '120px' }} />
-        </TableRow>
-      </TableHead>
+    <TableContainer>
+      <Table aria-label="sticky table">
+        <TableHead>
+          <TableRow>
+            {columns.map((column) => (
+              <CustomTableCellHeader key={column.id} style={{ width: column.width }}>
+                {column.label}
+              </CustomTableCellHeader>
+            ))}
+            <CustomTableCellHeader style={{ minWidth: '120px', width: '130px' }} />
+          </TableRow>
+        </TableHead>
 
-      <TableBody>
-        {rows.map((row, index) => {
-          if (del[index]) {
-            return (
-              <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                <TableCell key="delete" align="justify" colspan={columns.length + 1}>
-                  <Grid container>
-                    <Grid item sm={10}>
-                      <Typography variant="body1">
-                        Êtes-vous sûr de vouloir supprimer la demande
-                        {' '}
-                        {row.id}
-                        {' '}
-                        ?
-                      </Typography>
-                    </Grid>
-                    <Grid item sm={2}>
-                      <IconButton
-                        aria-label="valide"
-                        className={classes.icon}
-                        onClick={() => handleDeleteConfirm(row.id)}
-                      >
-                        <DoneIcon />
-                      </IconButton>
+        <TableBody>
+          {rows.map((row, index) => {
+            if (del[index]) {
+              return (
+                <TableRow tabIndex={-1} key={row.emailVisiteur}>
+                  <TableCell key="delete" align="justify" colspan={columns.length + 1}>
+                    <Grid container>
+                      <Grid item sm={10}>
+                        <Typography variant="body1">
+                          Êtes-vous sûr de vouloir supprimer la demande
+                          {' '}
+                          {row.id}
+                          {' '}
+                          ?
+                        </Typography>
+                      </Grid>
+                      <Grid item sm={2}>
+                        <div style={{ float: 'right' }}>
+                          <IconButton
+                            aria-label="valide"
+                            color="secondary"
+                            className={classes.icon}
+                            onClick={() => handleDeleteConfirm(row.id)}
+                          >
+                            <DoneIcon />
+                          </IconButton>
 
-                      <IconButton
-                        aria-label="cancel"
-                        className={classes.icon}
-                        onClick={() => handleDeleteAvorted(index)}
-                      >
-                        <CloseIcon />
-                      </IconButton>
+                          <IconButton
+                            aria-label="cancel"
+                            className={classes.icon}
+                            onClick={() => handleDeleteAvorted(index)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </TableCell>
-              </TableRow>
-            );
-          }
-          return (
-            <TableRow
-              hover
-              onMouseOver={() => handleMouseEnter(index)}
-              onFocus={() => handleMouseEnter(index)}
-              onMouseLeave={() => handleMouseLeave(index)}
-              key={row.code}
-            >
-              {columns.map((column) => {
-                const value = row[column.id];
-                return (
-                  <TableCell key={column.id} align={column.align} component="td" scope="row">
-                    {column.format && typeof value === 'number' ? column.format(value) : value}
                   </TableCell>
-                );
-              })}
-              <TableCell key="actions">
-                {hover[index] && (
-                  <>
+                </TableRow>
+              );
+            }
+            return (
+              <TableRow
+                hover
+                onMouseOver={() => handleMouseEnter(index)}
+                onFocus={() => handleMouseEnter(index)}
+                onMouseLeave={() => handleMouseLeave(index)}
+                key={row.code}
+              >
+                {columns.map((column) => {
+                  const value = row[column.id];
+                  return (
+                    <TableCell key={column.id} align={column.align} component="td" scope="row" style={column.style}>
+                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                    </TableCell>
+                  );
+                })}
+                <TableCell key="actions">
+                  {hover[index] && (
+                  <div style={{ float: 'right' }}>
                     <Link href={`/demandes/en-cours/${row.id}`}>
                       <IconButton color="primary" aria-label="link" className={classes.icon}>
                         <DescriptionIcon />
@@ -213,14 +221,15 @@ export default function TabMyRequestToTreat({ request, queries }) {
                     >
                       <DeleteIcon />
                     </IconButton>
-                  </>
-                )}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                  </div>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
   ) : (
     <EmptyArray type="en cours" />
   );
