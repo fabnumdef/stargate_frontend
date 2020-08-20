@@ -255,7 +255,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   const handleDeselect = useCallback((index) => {
     const newArray = rows.slice();
     if (newArray[index].validation != null) {
-      newArray[index].transition = null;
+      newArray[index].decision = null;
       newArray[index].validation = null;
       setDataRows(newArray);
     }
@@ -376,7 +376,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           <Radio
                             color="primary"
                             checked={
-                              rows[index].transition === checkbox.validation
+                              rows[index].decision === checkbox.validation
                               && rows[index].tags === checkbox.tags
                               }
                             onChange={(event) => {

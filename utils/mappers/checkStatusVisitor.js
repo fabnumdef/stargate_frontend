@@ -29,27 +29,29 @@ const checkWithUnit = (units, activeRole) => {
 };
 
 const checkWithoutUnit = (units, activeRole) => {
-  const sortRejected = units
-    .filter((s) => s.workflow.steps.every(
-      (step) => (step.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
-      && step.state.value !== WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
-      || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value,
-    ));
+//   const sortRejected = units
+//     .filter((u) => u.workflow.steps.every(
+//       (step) => (step.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value
+//       && step.state.value !== WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
+//       || step.behavior !== WORKFLOW_BEHAVIOR.VALIDATION.value,
+//     ));
+//
+//    // check if Screening or Acces office are already done for a visitor
+//    // or if visitor was rejected by each unit
+//   if (
+// eslint-disable-next-line max-len
+//     units.find((u) => u.workflow.steps.find((step) => step.role === activeRole.role && step.done))
+//     || !sortRejected.length
+//   ) {
+//     return { step: HIDDEN_STEP_STATUS };
+//   }
 
-  // check if Screening or Acces office are already done for a visitor
-  // or if visitor was rejected by each unit
-  if (
-    units.find((s) => s.steps.find((step) => step.role === activeRole.role && step.done))
-    || !sortRejected.length
-  ) {
-    return { step: HIDDEN_STEP_STATUS };
-  }
-
-  const isActiveStep = sortRejected.find((s) => s.steps.find(
-    (step, index) => step.role === activeRole.role && (index === 0 || s.steps[index - 1].done),
+  const isActiveStep = units.find((u) => u.workflow.steps.find(
+    (step, index) => step.role === activeRole.role
+      && (index === 0 || u.workflow.steps[index - 1].state.done),
   ));
   if (isActiveStep) {
-    return { step: ACTIVE_STEP_STATUS, unit: isActiveStep.unitId };
+    return { step: ACTIVE_STEP_STATUS };
   }
   return { step: INACTIVE_STEP_STATUS };
 };

@@ -73,12 +73,14 @@ export const READ_REQUEST = gql`
                    company
                    units {
                        id
+                       label
                        workflow {
                            steps {
                                role
                                behavior
                                state {
                                    value
+                                   done
                                    isOK
                                    date
                                    tags
@@ -172,7 +174,6 @@ export default function RequestDetails({ requestId }) {
   }, [result]);
 
   const sendChainShiftVisitor = async (sortVisitors, count) => {
-    console.log(sortVisitors)
     await validateVisitorStep({
       variables: {
         requestId,

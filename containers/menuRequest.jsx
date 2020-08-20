@@ -83,38 +83,39 @@ export const LIST_REQUESTS = gql`
            getCampus(id: $campusId) {
                listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
                list {
-                 id
-                 from
-                 to
-                 reason
-                 status
-                 places {
-                   label
-                 }
-                 owner {
-                   firstname
-                   lastname
-                   unit
-                 }
-                 listVisitors {
-                     list {
+                   id
+                   requestData {
+                       from
+                       to
+                       reason
+                       status
+                       places {
+                           label
+                       }
+                       owner {
+                           firstname
+                           lastname
+                           unit
+                       }
+                   }
+                   visitors {
                        id
                        units {
-                        workflow {
-                            steps {
-                                role
-                                behavior
-                                state {
-                                    value
-                                    isOK
-                                    date
-                                    tags
-                                }
-                            }
-                         }
+                           workflow {
+                               steps {
+                                   role
+                                   behavior
+                                   state {
+                                       value
+                                       isOK
+                                       date
+                                       tags
+                                   }
+                               }
+                           }
                        }
-                     }
-                 }
+                   }
+
                }
                meta {
                  total

@@ -9,9 +9,7 @@ export default function getDecisions(units) {
   if (screeningValue.length) {
     steps.push({
       label: 'Criblage',
-      value: screeningValue.find((step) => step.state.value)
-        ? screeningValue.find((step) => step.state.value)
-        : { status: null },
+      value: screeningValue[0].state,
     });
   }
 
@@ -19,7 +17,7 @@ export default function getDecisions(units) {
   units.forEach((u) => {
     u.workflow.steps.forEach((step) => {
       if (step.role === ROLES.ROLE_SECURITY_OFFICER.role) {
-        steps.push({ label: `Décision ${ROLES[step.role].shortLabel} ${u.label}`, value: step });
+        steps.push({ label: `Décision ${ROLES[step.role].shortLabel} ${u.label}`, value: step.state });
       }
     });
   });

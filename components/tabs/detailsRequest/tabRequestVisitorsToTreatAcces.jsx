@@ -120,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
 function createData({
   id, firstname, birthLastname, rank, company, employeeType, units,
 }, activeRole) {
-  //const findStep = ckeckStatusVisitor(status, activeRole);
+  const findStep = ckeckStatusVisitor(units, activeRole);
   return {
     id,
     visitor: rank
@@ -131,8 +131,7 @@ function createData({
     validation: null,
     vip: false,
     steps: getDecisions(units),
-    //step: findStep.step,
-    //unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
+    step: findStep.step,
   };
 }
 
@@ -151,31 +150,31 @@ CellDecision.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-function decisionReturn(value) {
-  const date = value.date ? format(new Date(value.date), 'dd/MM/yyyy') : null;
+function decisionReturn({ date, value, tags }) {
+  const validationDate = date ? format(new Date(date), 'dd/MM/yyyy') : null;
 
-  switch (value.status) {
+  switch (value) {
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive:
       return (
-        <CellDecision date={date}>
-          <span style={{ color: '#28a745', fontWeight: 'bold' }}>{value.tags[0]}</span>
+        <CellDecision date={validationDate}>
+          <span style={{ color: '#28a745', fontWeight: 'bold' }}>{tags[0]}</span>
         </CellDecision>
       );
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative:
       return (
-        <CellDecision date={date}>
+        <CellDecision date={validationDate}>
           <RemoveCircleIcon style={{ color: '#ffc107' }} />
         </CellDecision>
       );
     case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.positive:
       return (
-        <CellDecision date={date}>
+        <CellDecision date={validationDate}>
           <CheckCircleIcon style={{ color: '#28a745' }} />
         </CellDecision>
       );
     case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative:
       return (
-        <CellDecision date={date}>
+        <CellDecision date={validationDate}>
           <WarningIcon style={{ color: '#ffc107' }} />
         </CellDecision>
       );
@@ -463,7 +462,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                           control={(
                             <Radio
                               color="primary"
-                              checked={rows[index].validation === checkbox.validation}
+                              checked={rows[index].validation === checkbox.label}
                               onChange={(event) => {
                                 handleChange(event, row, checkbox);
                               }}

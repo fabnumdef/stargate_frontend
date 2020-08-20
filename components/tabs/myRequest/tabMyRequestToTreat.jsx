@@ -32,8 +32,11 @@ const columns = [
 ];
 
 function createData({
-  id, owner, from, to, reason, places,
+  id, requestData,
 }) {
+  const {
+    owner, from, to, reason, places,
+  } = requestData[0];
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
@@ -85,6 +88,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
   const classes = useStyles();
 
   const rows = requests.reduce((acc, dem) => {
+    console.log(acc, dem);
     acc.push(createData(dem));
     return acc;
   }, []);

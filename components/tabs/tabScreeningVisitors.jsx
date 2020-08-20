@@ -23,8 +23,6 @@ import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 import { ROLES } from '../../utils/constants/enums';
 import { useLogin } from '../../lib/loginContext';
 
-import { ACTIVE_STEP_STATUS } from '../../utils/mappers/checkStatusVisitor';
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
@@ -320,7 +318,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                   } ${classes.borderLeft} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
-                    //disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                     control={(
                       <Radio
                         value={ROLES[activeRole.role].workflow.positive}
@@ -346,7 +343,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                   } ${classes.borderRight} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
-                    //disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                     control={(
                       <Radio
                         value={ROLES[activeRole.role].workflow.negative}
