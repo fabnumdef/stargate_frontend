@@ -28,9 +28,9 @@ export const WORKFLOW_BEHAVIOR = {
 };
 
 export const VISITOR_STATUS = {
-  accepted: 'Accepté',
-  rejected: 'Refusé',
-  mixed: 'Partiellement accepté',
+  ACCEPTED: 'Accepté',
+  REJECTED: 'Refusé',
+  MIXED: 'Partiellement accepté',
 };
 
 export const ROLES = {

@@ -1,10 +1,12 @@
-const findValidationDate = (state) => {
-  let validationDate = new Date(state.records[0].date);
+const findValidationDate = (units) => {
+  let validationDate = new Date(units[0].steps[0].state.date);
 
-  state.records.forEach((step) => {
-    if (new Date(step.date) > validationDate) {
-      validationDate = new Date(step.date);
-    }
+  units.forEach((u) => {
+    u.steps.forEach((s) => {
+      if (new Date(s.state.date) > validationDate) {
+        validationDate = new Date(s.state.date);
+      }
+    });
   });
 
   return validationDate;

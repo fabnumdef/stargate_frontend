@@ -98,24 +98,6 @@ export const LIST_REQUESTS = gql`
                            unit
                        }
                    }
-                   visitors {
-                       id
-                       units {
-                           workflow {
-                               steps {
-                                   role
-                                   behavior
-                                   state {
-                                       value
-                                       isOK
-                                       date
-                                       tags
-                                   }
-                               }
-                           }
-                       }
-                   }
-
                }
                meta {
                  total

@@ -31,8 +31,7 @@ import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 
 import { useLogin } from '../lib/loginContext';
-import autoValidate from '../utils/autoValidateVisitor';
-
+import checkStatus from '../utils/mappers/checkStatusVisitor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -83,7 +82,7 @@ function createData({
   birthplace,
   firstname,
   birthLastname,
-  status,
+  units,
   identityDocuments,
   request,
 }, activeRole) {
@@ -95,7 +94,7 @@ function createData({
     firstname,
     birthLastname,
     report: null,
-    //screening: checkStatus(status, activeRole),
+    screening: checkStatus(units, activeRole),
     requestId: request.id,
     vAttachedFile: identityDocuments,
   };
@@ -122,15 +121,13 @@ export const LIST_VISITOR_REQUESTS = gql`
                  units {
                      id
                      label
-                     workflow {
-                         steps {
-                            role
-                             state {                             
-                                 isOK
-                                 value
-                             }
-                         }
-                     }
+                       steps {
+                          role
+                           state {                             
+                               isOK
+                               value
+                           }
+                       }
                  }
                  request {
                    id
@@ -152,7 +149,6 @@ export default function ScreeningManagement() {
 
   // submit values
   const [visitors, setVisitors] = useState([]);
-
   // tabMotor
   const [value, setValue] = useState(0);
 
@@ -180,12 +176,6 @@ export default function ScreeningManagement() {
         acc.push(createData(dem, activeRole));
         return acc;
       }, []),
-    );
-    autoValidate(
-      data.getCampus.listVisitors.list,
-      shiftVisitor,
-      refetch,
-      null,
     );
   }, [data]);
 

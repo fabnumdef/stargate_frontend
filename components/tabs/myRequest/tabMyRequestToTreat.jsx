@@ -88,7 +88,6 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
   const classes = useStyles();
 
   const rows = requests.reduce((acc, dem) => {
-    console.log(acc, dem);
     acc.push(createData(dem));
     return acc;
   }, []);

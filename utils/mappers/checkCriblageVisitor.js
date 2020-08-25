@@ -6,9 +6,9 @@ export const PROGRESS_STEP_STATUS = 'inProgress';
 
 export default function checkCriblageVisitor(units) {
   const isScreeningDone = units.find(
-    (s) => s.workflow.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role && step.done),
+    (u) => u.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role && step.done),
   );
   return isScreeningDone
-    ? isScreeningDone.workflow.steps.find((s) => s.role === ROLES.ROLE_SCREENING.role).status
+    ? isScreeningDone.steps.find((s) => s.role === ROLES.ROLE_SCREENING.role).status
     : PROGRESS_STEP_STATUS;
 }

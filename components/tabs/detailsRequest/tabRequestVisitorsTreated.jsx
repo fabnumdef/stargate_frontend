@@ -10,7 +10,6 @@ import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
 
-
 import {
   EMPLOYEE_TYPE,
   ROLES,
@@ -19,13 +18,15 @@ import {
 } from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
 
-function findRejectedRole(status) {
-  const sortRole = status.map((s) => `${ROLES[s.steps.find((step) => step.status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative).role].shortLabel} - ${s.label}`);
+function findRejectedRole(units) {
+  const sortRole = units.map((u) => `${ROLES[u.steps.find(
+    (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
+  ).role].shortLabel} - ${u.label}`);
   return sortRole.toString();
 }
 
 function createData({
-  id, firstname, birthLastname, state, rank, company, employeeType, status,
+  id, firstname, birthLastname, units, rank, company, employeeType, status,
 }) {
   return {
     id,
@@ -34,9 +35,9 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
-    date: format(findValidationDate(state), "dd/MM/yyyy à k'h'mm"),
-    status: VISITOR_STATUS[status] === VISITOR_STATUS.rejected
-      ? `${VISITOR_STATUS[status]} par ${findRejectedRole(status)}`
+    date: format(findValidationDate(units), "dd/MM/yyyy à k'h'mm"),
+    status: status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
+      ? `${VISITOR_STATUS[status]} par ${findRejectedRole(units)}`
       : VISITOR_STATUS[status],
   };
 }

@@ -23,7 +23,6 @@ import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
 
 import { ROLES, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
-import autoValidate from '../../utils/autoValidateVisitor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const READ_REQUEST = gql`
-         query readRequest($requestId: String!, $campusId: String!) {
+         query readRequest($requestId: String!, $campusId: String!, $isDone: RequestVisitorIsDone) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              getRequest(id: $requestId) {
@@ -63,7 +62,7 @@ export const READ_REQUEST = gql`
                  places {
                      label
                  }
-               listVisitors {
+               listVisitors(isDone: $isDone) {
                  list {
                    id
                    rank
@@ -74,19 +73,16 @@ export const READ_REQUEST = gql`
                    units {
                        id
                        label
-                       workflow {
-                           steps {
-                               role
-                               behavior
-                               state {
-                                   value
-                                   done
-                                   isOK
-                                   date
-                                   tags
-                               }
-                           }
-                       }
+                         steps {
+                             role
+                             behavior
+                             state {
+                                 value
+                                 isOK
+                                 date
+                                 tags
+                             }
+                         }
                    }
                  }
                }
@@ -135,7 +131,7 @@ export default function RequestDetails({ requestId }) {
     try {
       const { data } = await client.query({
         query: READ_REQUEST,
-        variables: { requestId },
+        variables: { requestId, isDone: { role: activeRole.role, value: false } },
         fetchPolicy: 'no-cache',
       });
       if (error) {
@@ -158,18 +154,9 @@ export default function RequestDetails({ requestId }) {
     }
   }, [activeRole]);
 
-  // TODO delete this useEffect when back will treat autoValidate Screening and Acces Office
   useEffect(() => {
     if (!result.getCampus && !result.error) {
       fetchData();
-    }
-    if (result.getCampus) {
-      autoValidate(
-        result.getCampus.getRequest.listVisitors.list,
-        validateVisitorStep,
-        fetchData,
-        requestId,
-      );
     }
   }, [result]);
 
@@ -180,7 +167,7 @@ export default function RequestDetails({ requestId }) {
         visitorId: sortVisitors[count].id,
         decision: sortVisitors[count].decision,
         tags: sortVisitors[count].vip ? [...sortVisitors[count].tags, 'VIP'] : sortVisitors[count].tags,
-        as: { role: activeRole.role },
+        as: { role: activeRole.role, unit: activeRole.unit ? activeRole.unit : null },
       },
     }).then(() => {
       if (count < sortVisitors.length - 1) {
@@ -208,7 +195,7 @@ export default function RequestDetails({ requestId }) {
               visitorId: visitor.id,
               decision: visitor.decision,
               tags: visitor.vip ? [...visitor.tags, 'VIP'] : visitor.tags,
-              as: { role: activeRole.role, unit: visitor.unitToShift },
+              as: { role: activeRole.role, unit: activeRole.unit },
             },
           });
         } catch (e) {

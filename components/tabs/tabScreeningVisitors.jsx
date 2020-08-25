@@ -22,6 +22,7 @@ import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 
 import { ROLES } from '../../utils/constants/enums';
 import { useLogin } from '../../lib/loginContext';
+import { ACTIVE_STEP_STATUS } from '../../utils/mappers/checkStatusVisitor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -156,7 +157,9 @@ export default function ScreeningTable({ visitors, onChange }) {
     const newArray = visitors.slice();
 
     visitors.forEach((row) => {
-      newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
+      if (row.screening.step === ACTIVE_STEP_STATUS) {
+        newArray[newArray.indexOf(row)].report = checkbox ? checkedValue : null;
+      }
     });
 
     onChange(newArray);
@@ -273,6 +276,9 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
+                          className={
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                           <IconButton aria-label="AttachFileIcon">
@@ -283,6 +289,9 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
+                          className={
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                         </TableCell>
@@ -292,11 +301,17 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
+                          className={
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         />
                       ) : (
                         <TableCell
                           key={column.id}
                           align={column.align}
+                          className={
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                         </TableCell>
@@ -306,6 +321,9 @@ export default function ScreeningTable({ visitors, onChange }) {
                         <TableCell
                           key={column.id}
                           align={column.align}
+                          className={
+                            row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                          }
                         >
                           {value}
                         </TableCell>
@@ -318,6 +336,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                   } ${classes.borderLeft} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
+                    disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                     control={(
                       <Radio
                         value={ROLES[activeRole.role].workflow.positive}
@@ -343,6 +362,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                   } ${classes.borderRight} ${classes.textCenter}`}
                 >
                   <StyledFormLabel
+                    disabled={row.screening.step !== ACTIVE_STEP_STATUS}
                     control={(
                       <Radio
                         value={ROLES[activeRole.role].workflow.negative}

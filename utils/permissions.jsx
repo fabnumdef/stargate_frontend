@@ -70,7 +70,7 @@ export const urlAuthorization = (path, role) => {
 export const checkRequestDetailAuth = (data, activeRole) => {
   const isInWorkflow = data.getCampus.getRequest.listVisitors.list.find(
     (visitor) => visitor.units.find(
-      (u) => (u.id === activeRole.unit || !activeRole.unit) && u.workflow.steps.find(
+      (u) => (u.id === activeRole.unit || !activeRole.unit) && u.steps.find(
         (step) => step.role === activeRole.role,
       ),
     ),

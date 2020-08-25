@@ -262,71 +262,72 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   }, [rows]);
 
   useEffect(() => {
-    if (rows.every((row) => row.step === HIDDEN_STEP_STATUS)) {
+    if (rows.every((row) => row.step === HIDDEN_STEP_STATUS || !rows.length)) {
       router.push('/');
     }
     onChange(rows);
   }, [onChange, rows]);
 
-  return (
-    <TableContainer>
-      <Table size="small" className={classes.table} data-testid="screeningTable">
-        <TableHead>
-          <TableRow>
-            {columns.map((headCell) => {
-              switch (headCell.id) {
-                case 'visitors':
-                  return (
-                    <CustomTableHeader rowSpan={2} key={headCell.id}>
-                      {/* @todo length etc ... */ `${headCell.label}`}
-                    </CustomTableHeader>
-                  );
-                case 'criblage':
-                  return (
-                    activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
-                    <CustomTableHeader rowSpan={2} key={headCell.id}>
-                      {/* @todo length etc ... */ `${headCell.label}`}
-                    </CustomTableHeader>
-                    )
-                  );
-                default:
-                  return (
-                    <CustomTableHeader rowSpan={2} key={headCell.id}>
-                      {headCell.label}
-                    </CustomTableHeader>
-                  );
-              }
-            })}
-            <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
-              Validation
-            </CustomTableHeader>
-          </TableRow>
-          <TableRow>
-
-            {selectAll.map((checkbox, index) => (
-              <CustomTableHeader className={`${classes.textCenter} ${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
-                <StyledFormLabel
-                  control={(
-                    <Checkbox
-                      color="primary"
-                      checked={checkbox.value}
-                      onChange={(event) => {
-                        handleSelectAll(event.target.checked, checkbox);
-                      }}
-                    />
-                      )}
-                  label={checkbox.label}
-                  disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
-                  labelPlacement="start"
-                />
+  return rows.length
+    ? (
+      <TableContainer>
+        <Table size="small" className={classes.table} data-testid="screeningTable">
+          <TableHead>
+            <TableRow>
+              {columns.map((headCell) => {
+                switch (headCell.id) {
+                  case 'visitors':
+                    return (
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        {/* @todo length etc ... */ `${headCell.label}`}
+                      </CustomTableHeader>
+                    );
+                  case 'criblage':
+                    return (
+                      activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        {/* @todo length etc ... */ `${headCell.label}`}
+                      </CustomTableHeader>
+                      )
+                    );
+                  default:
+                    return (
+                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        {headCell.label}
+                      </CustomTableHeader>
+                    );
+                }
+              })}
+              <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
+                Validation
               </CustomTableHeader>
-            ))}
+            </TableRow>
+            <TableRow>
 
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(
-            (row, index) => row.step !== HIDDEN_STEP_STATUS && (
+              {selectAll.map((checkbox, index) => (
+                <CustomTableHeader className={`${classes.textCenter} ${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
+                  <StyledFormLabel
+                    control={(
+                      <Checkbox
+                        color="primary"
+                        checked={checkbox.value}
+                        onChange={(event) => {
+                          handleSelectAll(event.target.checked, checkbox);
+                        }}
+                      />
+                      )}
+                    label={checkbox.label}
+                    disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
+                    labelPlacement="start"
+                  />
+                </CustomTableHeader>
+              ))}
+
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map(
+              (row, index) => row.step !== HIDDEN_STEP_STATUS && (
               <TableRow hover tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
@@ -391,12 +392,13 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     </TableCell>
                   ))}
               </TableRow>
-            ),
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+              ),
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+    : <div />;
 }
 
 TabRequestVisitors.propTypes = {
