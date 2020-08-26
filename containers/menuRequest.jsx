@@ -17,7 +17,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 
 
 import {
-  TabPanel, TabMesDemandesToTreat, TabDemandesProgress,
+  TabPanel, TabMesDemandesToTreat, TabDemandesProgress, TabMesDemandesTreated,
 } from '../components';
 import Template from './template';
 
@@ -452,7 +452,7 @@ export default function MenuRequest() {
             </TabPanel>
           )}
           <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
-            <TabMesDemandesToTreat
+            <TabMesDemandesTreated
               requests={treated ? selectResultTreated(treated).list : []}
               detailLink="traitees"
             />
