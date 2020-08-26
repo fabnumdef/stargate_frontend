@@ -31,6 +31,7 @@ export const VISITOR_STATUS = {
   ACCEPTED: 'Accepté',
   REJECTED: 'Refusé',
   MIXED: 'Partiellement accepté',
+  CREATED: 'En cours',
 };
 
 export const ROLES = {

@@ -23,8 +23,6 @@ export default function DetailsInfosRequest({ request }) {
           {' '}
         </Typography>
         <Typography variant="body2" color="primary">
-          {request.owner.rank || 'rank'}
-          {' '}
           {request.owner.lastname.toUpperCase()}
           {' '}
           {request.owner.firstname}

@@ -22,7 +22,7 @@ function findRejectedRole(units) {
   const sortRole = units.map((u) => `${ROLES[u.steps.find(
     (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
   ).role].shortLabel} - ${u.label}`);
-  return sortRole.toString();
+  return sortRole.join(', ').toString();
 }
 
 function createData({
