@@ -82,26 +82,26 @@ export const LIST_REQUESTS = gql`
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
                listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
-               list {
-                   id
-                   requestData {
-                       from
-                       to
-                       reason
-                       status
-                       places {
-                           label
-                       }
-                       owner {
-                           firstname
-                           lastname
-                           unit
-                       }
-                   }
-               }
-               meta {
-                 total
-               }
+                 list {
+                     id
+                     requestData {
+                         from
+                         to
+                         reason
+                         status
+                         places {
+                             label
+                         }
+                         owner {
+                             firstname
+                             lastname
+                             unit
+                         }
+                     }
+                 }
+                 meta {
+                   total
+                 }
              }
            }
          }
@@ -160,7 +160,7 @@ export default function MenuRequest() {
         },
         as: {
           role: activeRole.role,
-          unit: activeRole.unitLabel,
+          unit: activeRole.unit,
         },
         isDone: { value: false },
       },
@@ -197,7 +197,7 @@ export default function MenuRequest() {
         offset: page * rowsPerPage,
       },
       as: activeRole.role !== ROLES.ROLE_HOST.label
-        ? { role: activeRole.role, unit: activeRole.unitLabel }
+        ? { role: activeRole.role, unit: activeRole.unit }
         : null,
       isDone: { value: true },
     },
@@ -216,7 +216,7 @@ export default function MenuRequest() {
             },
             as: {
               role: activeRole.role,
-              unit: activeRole.unitLabel,
+              unit: activeRole.unit,
             },
             isDone: { value: false },
           },
@@ -249,7 +249,7 @@ export default function MenuRequest() {
               first: rowsPerPage,
               offset: page * rowsPerPage,
             },
-            as: { role: activeRole.role, unit: activeRole.unitLabel },
+            as: { role: activeRole.role, unit: activeRole.unit },
             isDone: { value: true },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
@@ -290,7 +290,7 @@ export default function MenuRequest() {
       query: LIST_REQUESTS,
       variables: {
         isDone: { value: true },
-        as: { role: activeRole.role, unit: activeRole.unitLabel },
+        as: { role: activeRole.role, unit: activeRole.unit },
       },
       fetchPolicy: 'cache-and-network',
     }];
