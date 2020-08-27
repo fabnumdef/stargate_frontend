@@ -201,7 +201,6 @@ export default function FormInfosClaimant({
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
-      console.log(data.mutateCampus.createRequest);
       setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
       handleNext();
     },
