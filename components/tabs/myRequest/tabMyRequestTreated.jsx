@@ -17,13 +17,11 @@ import DoneIcon from '@material-ui/icons/Done';
 import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
-
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
-
 
 import EmptyArray from '../../styled/emptyArray';
 import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
@@ -74,6 +72,7 @@ function createData({
     }),
     reason,
     isActive,
+    isChecked: false,
   };
 }
 
@@ -98,8 +97,14 @@ const useStyles = makeStyles((theme) => ({
   borderRight: {
     borderRight: 'solid 1px',
   },
+  borderBottom: {
+    borderBottom: 'solid 1px',
+  },
   borderLeft: {
     borderLeft: 'solid 1px',
+  },
+  textCenter: {
+    textAlign: 'center',
   },
   rowForm: {
     backgroundColor: fade(theme.palette.primary.main, 0.05),
@@ -145,7 +150,6 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
 
   const [hover, setHover] = useState({});
 
-
   // sort Date
   const [order, setOrder] = useState('asc');
 
@@ -183,7 +187,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
               Export
             </CustomTableCellHeader>
           </TableRow>
-          <TableRow>
+          <TableRow className={classes.textCenter}>
             <CustomTableCellHeader className={`${classes.textCenter} ${classes.borderLeft}`}>
               <StyledFormLabel
                 control={(
@@ -238,6 +242,23 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
                   </Link>
                 </div>
                 )}
+              </TableCell>
+              <TableCell
+                className={`${
+                  index === requests.length - 1 ? classes.borderBottom : ''
+                } ${classes.borderLeft} ${classes.textCenter}`}
+              >
+
+                <Checkbox
+                  color="primary"
+                  checked={row.isChecked}
+                />
+              </TableCell>
+              <TableCell className={`${
+                index === requests.length - 1 ? classes.borderBottom : ''
+              } ${classes.borderRight} ${classes.textCenter}`}
+              >
+                26/08/2020
               </TableCell>
             </TableRow>
           ))}
