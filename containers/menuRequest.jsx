@@ -449,10 +449,18 @@ export default function MenuRequest() {
             </TabPanel>
           )}
           <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
-            <TabMesDemandesTreated
-              requests={treated ? selectResultTreated(treated).list : []}
-              detailLink="traitees"
-            />
+
+            {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
+              <TabMesDemandesTreated
+                requests={treated ? selectResultTreated(treated).list : []}
+                detailLink="traitees"
+              />
+            ) : (
+              <TabMesDemandesToTreat
+                requests={treated ? selectResultTreated(treated).list : []}
+                detailLink="traitees"
+              />
+            )}
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
@@ -468,7 +476,7 @@ export default function MenuRequest() {
             />
           )}
         </Grid>
-
+        { (value === 2 && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
           <Button
             size="small"
@@ -478,6 +486,8 @@ export default function MenuRequest() {
             Exporter
           </Button>
         </Grid>
+        )}
+
       </Grid>
     </Template>
   );
