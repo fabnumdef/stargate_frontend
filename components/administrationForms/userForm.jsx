@@ -102,11 +102,11 @@ const UserForm = ({
   const { data: dataCampuses } = useQuery(GET_CAMPUSES);
   const [reqUnitsList, { data: dataUnits }] = useLazyQuery(GET_UNITS);
 
+  const noUnitRoles = [ROLES.ROLE_OBSERVER.role, ROLES.ROLE_ADMIN.role, ROLES.ROLE_SUPERADMIN.role];
+
   const onSubmit = (data) => {
     const formData = { ...data };
-    if (formData.role === ROLES.ROLE_OBSERVER.role
-    || formData.role === ROLES.ROLE_ADMIN.role
-    || formData.role === ROLES.ROLE_SUPERADMIN.role) { delete formData.unit; }
+    if (noUnitRoles.includes(formData.role)) { delete formData.unit; }
 
     const mappedUser = mapUserData(formData, dataCampuses, dataUnits);
     submitForm(mappedUser);
@@ -242,11 +242,7 @@ const UserForm = ({
                 )}
               </FormControl>
 
-              {(
-                watch('role') !== ROLES.ROLE_ADMIN.role
-                && watch('role') !== ROLES.ROLE_SUPERADMIN.role
-                && watch('role') !== ROLES.ROLE_OBSERVER.role
-              ) && (
+              {!noUnitRoles.includes(watch('role')) && (
               <FormControl
                 variant="outlined"
                 error={Object.prototype.hasOwnProperty.call(errors, 'unit')}
