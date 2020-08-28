@@ -22,7 +22,6 @@ import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 
 import { ROLES } from '../../utils/constants/enums';
 import { useLogin } from '../../lib/loginContext';
-
 import { ACTIVE_STEP_STATUS } from '../../utils/mappers/checkStatusVisitor';
 
 const useStyles = makeStyles((theme) => ({
