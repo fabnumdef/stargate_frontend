@@ -19,7 +19,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import { useLogin } from '../../../lib/loginContext';
 import CustomTableHeader from '../../styled/customTableCellHeader';
 
-
 import { EMPLOYEE_TYPE, ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
@@ -173,12 +172,14 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       return [
         {
           label: 'VA',
+          fullLabel: 'Visiteur Accompagné',
           value: false,
           validation: ROLES[activeRole.role].workflow.positive,
           tags: ['VA'],
         },
         {
           label: 'VL',
+          fullLabel: 'Visiteur Libre',
           value: false,
           validation: ROLES[activeRole.role].workflow.positive,
           tags: ['VL'],
@@ -234,7 +235,6 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     setSelectAll(newChecked);
   }, [rows, selectAll]);
 
-
   const handleChange = useCallback((event, row, checkbox) => {
     if (event.target.checked) {
       const newArray = rows.slice();
@@ -268,8 +268,15 @@ export default function TabRequestVisitors({ visitors, onChange }) {
     onChange(rows);
   }, [onChange, rows]);
 
-  return rows.length
-    ? (
+  return (
+    <div>
+      <div style={{ float: 'right' }}>
+        <ul className={classes.list}>
+          { selectAll.map((checkbox) => (
+            checkbox.fullLabel && <li>{ `${checkbox.label} : ${checkbox.fullLabel}` }</li>
+          )) }
+        </ul>
+      </div>
       <TableContainer>
         <Table size="small" className={classes.table} data-testid="screeningTable">
           <TableHead>
@@ -279,14 +286,14 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   case 'visitors':
                     return (
                       <CustomTableHeader rowSpan={2} key={headCell.id}>
-                        {/* @todo length etc ... */ `${headCell.label}`}
+                        {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
                   case 'criblage':
                     return (
                       activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
                       <CustomTableHeader rowSpan={2} key={headCell.id}>
-                        {/* @todo length etc ... */ `${headCell.label}`}
+                        {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                       )
                     );
@@ -397,8 +404,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
           </TableBody>
         </Table>
       </TableContainer>
-    )
-    : <div />;
+    </div>
+  );
 }
 
 TabRequestVisitors.propTypes = {

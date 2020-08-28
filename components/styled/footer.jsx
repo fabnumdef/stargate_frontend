@@ -4,17 +4,23 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   footer: {
+    position: 'absolute',
     width: '100vw',
-    height: '80px',
-    backgroundColor: theme.palette.primary.main,
   },
   footerImg: {
     width: 'auto',
     height: '151px',
     position: 'relative',
-    top: '-90%',
+    bottom: '0',
     left: '50%',
     transform: 'translateX(-50%)',
+  },
+  backgroundImg: {
+    height: '83px',
+    width: '100vw',
+    position: 'absolute',
+    bottom: '0',
+    background: theme.palette.primary.main,
   },
 }));
 
@@ -23,11 +29,13 @@ export default function Footer() {
 
   return (
     <div className={classes.footer}>
+      <div className={classes.backgroundImg} />
       <img
         className={classes.footerImg}
         src="/img/footermarnat.png"
         alt="Footer Marine Nationale"
       />
+
     </div>
   );
 }

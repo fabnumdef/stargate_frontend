@@ -18,7 +18,6 @@ import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
-
 import EmptyArray from '../../styled/emptyArray';
 
 const columns = [
@@ -160,7 +159,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="" />
+    <EmptyArray type="traitée" />
   );
 }
 

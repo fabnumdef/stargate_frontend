@@ -56,6 +56,7 @@ export const READ_REQUEST = gql`
                  from
                  to
                  owner {
+                    id
                      lastname
                      firstname
                  }
@@ -70,6 +71,8 @@ export const READ_REQUEST = gql`
                    birthLastname
                    employeeType
                    company
+                   vip
+                   vipReason
                    units {
                        id
                        label

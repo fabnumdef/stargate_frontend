@@ -18,6 +18,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
 import WarningIcon from '@material-ui/icons/Warning';
+import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
 import TableContainer from '@material-ui/core/TableContainer';
 
 import CustomTableHeader from '../../styled/customTableCellHeader';
@@ -183,7 +184,6 @@ function decisionReturn({ date, value, tags }) {
   }
 }
 
-
 const columns = [
   { id: 'visitor', label: 'Visiteur(s)' },
   { id: 'company', label: 'Unité/Société' },
@@ -277,7 +277,6 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
     },
     [rows, selectAll],
   );
-
 
   const handleChange = useCallback(
     (event, row, checkbox) => {
@@ -406,6 +405,20 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                             {decisionReturn(step.value)}
                           </TableCell>
                         ));
+                      case 'visitor':
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            className={
+                              row.visitor === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                            }
+                          >
+                            { value }
+                            {' '}
+                            {row.vip && (<StarBorderRoundedIcon color="secondary" />)}
+                          </TableCell>
+                        );
                       default:
                         return (
                           <TableCell
@@ -421,14 +434,13 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                     }
                   })}
 
-
-                  {selectAll.map((checkbox, indexCheck) => (
-                    (checkbox.label === 'VIP')
-                      ? (
-                        <TableCell
-                          className={`${
-                            index === rows.length - 1 ? classes.reportLastChild : ''
-                          }
+                {selectAll.map((checkbox, indexCheck) => (
+                  (checkbox.label === 'VIP')
+                    ? (
+                      <TableCell
+                        className={`${
+                          index === rows.length - 1 ? classes.reportLastChild : ''
+                        }
                     `}
                           style={{ textAlign: 'center' }}
                         >

@@ -134,7 +134,7 @@ export default () => {
     <>
       <ElevationScroll>
         <AppBar>
-          <Toolbar variant="regular">
+          <Toolbar variant="regular" style={{ height: '90px' }}>
             <Logo />
             <div className={classes.grow} />
             <MenuIcon />
