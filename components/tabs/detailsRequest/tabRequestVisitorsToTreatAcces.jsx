@@ -434,13 +434,13 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                     }
                   })}
 
-                {selectAll.map((checkbox, indexCheck) => (
-                  (checkbox.label === 'VIP')
-                    ? (
-                      <TableCell
-                        className={`${
-                          index === rows.length - 1 ? classes.reportLastChild : ''
-                        }
+                  {selectAll.map((checkbox, indexCheck) => (
+                    (checkbox.label === 'VIP')
+                      ? (
+                        <TableCell
+                          className={`${
+                            index === rows.length - 1 ? classes.reportLastChild : ''
+                          }
                     `}
                           style={{ textAlign: 'center' }}
                         >
