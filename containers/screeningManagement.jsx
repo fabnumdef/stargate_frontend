@@ -11,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import TablePagination from '@material-ui/core/TablePagination';
-// import TextField from '@material-ui/core/TextField';
-// import InputAdornment from '@material-ui/core/InputAdornment';
-// import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 
 import { format } from 'date-fns';
@@ -159,11 +159,14 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  const [filters, setFilters] = React.useState('');
+
   const initMount = React.useRef(true);
 
   const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+      search: filters,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'no-cache',
@@ -235,6 +238,12 @@ export default function ScreeningManagement() {
     }
     handleFetchMore();
   }, [page, rowsPerPage]);
+
+  React.useEffect(() => {
+    refetch();
+  }, [filters]);
+
+
   const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
     vBirthName: visitor.birthLastname.toUpperCase(),
     vBirthDate: visitor.birthday,
@@ -323,10 +332,12 @@ export default function ScreeningManagement() {
                 />
               </Grid>
               <Grid item sm={3} xs={12} md={2} lg={2}>
-                {/* <TextField
+                <TextField
                   style={{ float: 'right' }}
                   margin="dense"
                   variant="outlined"
+                  value={filters}
+                  onChange={(event) => setFilters(event.target.value)}
                   placeholder="Rechercher..."
                   InputProps={{
                     endAdornment: (
@@ -336,7 +347,7 @@ export default function ScreeningManagement() {
                     ),
                     inputProps: { 'data-testid': 'searchField' },
                   }}
-                /> */}
+                />
               </Grid>
             </Grid>
             <TabScreeningVisitors

@@ -57,6 +57,7 @@ export const READ_REQUEST = gql`
                  from
                  to
                  owner {
+                    id
                      lastname
                      firstname
                  }

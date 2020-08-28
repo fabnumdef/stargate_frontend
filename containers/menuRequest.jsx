@@ -91,6 +91,7 @@ export const LIST_REQUESTS = gql`
                    label
                  }
                  owner {
+                   id
                    firstname
                    lastname
                    unit
@@ -177,7 +178,7 @@ export default function MenuRequest() {
         },
       },
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'network-only',
     },
   );
 
@@ -190,7 +191,7 @@ export default function MenuRequest() {
       },
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
   });
 
   const selectRequestTreated = () => (
