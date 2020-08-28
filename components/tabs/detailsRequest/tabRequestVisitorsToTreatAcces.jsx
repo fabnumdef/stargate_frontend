@@ -18,6 +18,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
 import WarningIcon from '@material-ui/icons/Warning';
+import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
 import TableContainer from '@material-ui/core/TableContainer';
 
 import CustomTableHeader from '../../styled/customTableCellHeader';
@@ -118,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, status,
+  id, firstname, birthLastname, rank, company, employeeType, status, vip,
 }, activeRole) {
   const findStep = ckeckStatusVisitor(status, activeRole);
   return {
@@ -129,7 +130,7 @@ function createData({
     company,
     type: EMPLOYEE_TYPE[employeeType],
     validation: null,
-    vip: false,
+    vip,
     steps: getDecisions(status),
     step: findStep.step,
     unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
@@ -407,6 +408,20 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                           {decisionReturn(step.value)}
                         </TableCell>
                       ));
+                    case 'visitor':
+                      return (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          className={
+                                row.visitor === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                              }
+                        >
+                          { value }
+                          {' '}
+                          {row.vip && (<StarBorderRoundedIcon color="secondary" />)}
+                        </TableCell>
+                      );
                     default:
                       return (
                         <TableCell
