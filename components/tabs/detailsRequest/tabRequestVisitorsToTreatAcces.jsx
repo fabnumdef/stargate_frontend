@@ -184,7 +184,6 @@ function decisionReturn(value) {
   }
 }
 
-
 const columns = [
   { id: 'visitor', label: 'Visiteur(s)' },
   { id: 'company', label: 'Unité/Société' },
@@ -279,7 +278,6 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
     [rows, selectAll],
   );
 
-
   const handleChange = useCallback(
     (event, row, checkbox) => {
       if (event.target.checked) {
@@ -347,13 +345,13 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                   case 'visitors':
                     return (
                       <CustomTableHeader rowSpan={2} key={headCell.id}>
-                        {/* @todo length etc ... */ `${headCell.label}`}
+                        {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                     );
                   case 'steps':
                     return rows[0].steps.map((column) => (
                       <CustomTableHeader rowSpan={2} key={column.label}>
-                        {/* @todo length etc ... */ `${column.label}`}
+                        {/* @todo length etc ... */ `${column.label}`}
                       </CustomTableHeader>
                     ));
                   default:
@@ -423,7 +421,6 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                       );
                   }
                 })}
-
 
                 {selectAll.map((checkbox, indexCheck) => (
                   (checkbox.label === 'VIP')
