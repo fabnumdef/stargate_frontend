@@ -10,6 +10,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
+import { fade } from '@material-ui/core/styles/colorManipulator';
+
 import TablePagination from '@material-ui/core/TablePagination';
 // import TextField from '@material-ui/core/TextField';
 // import InputAdornment from '@material-ui/core/InputAdornment';
@@ -25,7 +27,7 @@ import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
@@ -37,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
   },
   pageTitleHolder: {
     borderBottom: '1px solid #e5e5e5',
@@ -50,19 +51,18 @@ const useStyles = makeStyles((theme) => ({
 export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
-    color: '#0d40a0',
+    color: theme.palette.primary.main,
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
     marginRight: theme.spacing(5),
     '&:hover': {
       opacity: 1,
     },
     '&$selected': {
-      color: '#0d40a0',
+      color: theme.palette.primary.main,
       fontWeight: theme.typography.fontWeightBold,
-      backgroundColor: 'rgba(219, 227, 239, 0)',
+      backgroundColor: fade(theme.palette.primary.main, 0),
     },
-    backgroundColor: 'rgba(219, 227, 239, .6)',
+    backgroundColor: fade(theme.palette.primary.main, 0.1),
     borderRadius: '5%',
   },
   selected: {},

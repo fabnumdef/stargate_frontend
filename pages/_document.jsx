@@ -9,7 +9,7 @@ import 'typeface-roboto';
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="fr">
+      <Html lang="fr" style={{ overflowX: 'hidden' }}>
         <Head>
           <meta
             name="viewport"
@@ -20,17 +20,6 @@ export default class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
-        <style jsx>
-          {`
-            html {
-              overflow-x: hidden;
-            }
-            body {
-              height: auto;
-              overflow-x: hidden;
-            }
-          `}
-        </style>
       </Html>
     );
   }
