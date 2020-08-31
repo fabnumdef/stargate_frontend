@@ -145,7 +145,8 @@ export default function MenuRequest() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [exportEvent, setExportEvent] = React.useState(false);
+
+  const childRef = React.useRef();
 
   const initMount = React.useRef(true);
 
@@ -427,7 +428,7 @@ export default function MenuRequest() {
               <TabMesDemandesTreated
                 requests={treated ? selectResultTreated(treated).list : []}
                 detailLink="traitees"
-                exportEvent={exportEvent}
+                ref={childRef}
               />
             ) : (
               <TabMesDemandesToTreat
@@ -450,13 +451,15 @@ export default function MenuRequest() {
             />
           )}
         </Grid>
-        { (value === 2 && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role) && (
+        { (value === 2
+        && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
+        && selectResultTreated(treated).list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
           <Button
             size="small"
             variant="contained"
             color="primary"
-            onClick={() => setExportEvent(true)}
+            onClick={() => { childRef.current.execExport(); }}
           >
             Exporter
           </Button>

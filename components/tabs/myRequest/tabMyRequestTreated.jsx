@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
@@ -196,7 +196,7 @@ export const LIST_MY_VISITORS = gql`
          }
        `;
 
-export default function TabMyRequestUntreated({ requests, detailLink, exportEvent }) {
+const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
@@ -210,7 +210,7 @@ export default function TabMyRequestUntreated({ requests, detailLink, exportEven
   const [order, setOrder] = useState('asc');
 
   // getLink for the CSV
-  const [exportCsv, { data }] = useQuery(LIST_MY_VISITORS);
+  const [exportCsv, { data }] = useLazyQuery(LIST_MY_VISITORS);
 
   const createSortHandler = () => () => {
     const isAsc = order === 'asc';
@@ -228,19 +228,38 @@ export default function TabMyRequestUntreated({ requests, detailLink, exportEven
 
   const checkedRequest = () => rows.filter((row) => row.isChecked).map((request) => request.id);
 
-  // triggerEvent from Parent Component
-  React.useEffect(() => {
-    if (exportEvent) {
-      exportCsv({
-        variable: {
-          isDone: { role: activeRole.role, value: true },
-          requestsId: checkedRequest(),
-        },
-      });
-    }
-  }, [exportEvent]);
 
-  if (data) console.log(data.getCampus.listVisitors.generateCSVExportLink);
+  useImperativeHandle(
+    ref,
+    () => ({
+      async execExport() {
+        await exportCsv({
+          variables: {
+            isDone: { role: activeRole.role, value: true },
+            requestsId: checkedRequest(),
+          },
+        });
+
+        fetch(data.getCampus.listVisitors.generateCSVExportLink.link, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${data.getCampus.listVisitors.generateCSVExportLink.token}`,
+          },
+        })
+          .then((response) => response.blob)
+          .then((blob) => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'test.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+          });
+      },
+    }),
+  );
+  // triggerEvent from Parent Component
 
   return requests.length > 0 ? (
     <TableContainer>
@@ -343,7 +362,9 @@ export default function TabMyRequestUntreated({ requests, detailLink, exportEven
   ) : (
     <EmptyArray type="traitée" />
   );
-}
+});
+
+export default TabMyRequestUntreated;
 
 TabMyRequestUntreated.propTypes = {
   request: PropTypes.arrayOf(
