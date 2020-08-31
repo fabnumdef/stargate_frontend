@@ -144,42 +144,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const LIST_REQUESTS = gql`
-         query listRequestByVisitorStatus(
-           $campusId: String!
-           $as: ValidationPersonas!
-           $filters: RequestVisitorFilters
-           $cursor: OffsetCursor!
-           $isDone: RequestVisitorIsDone!
-         ) {
-           campusId @client @export(as: "campusId")
-           getCampus(id: $campusId) {
-               listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
-                 list {
-                     id
-                     requestData {
-                         from
-                         to
-                         reason
-                         status
-                         places {
-                             label
-                         }
-                         owner {
-                             firstname
-                             lastname
-                             unit
-                         }
-                     }
-                 }
-                 meta {
-                   total
-                 }
-             }
-           }
-         }
-       `;
-
 export const LIST_MY_VISITORS = gql`
          query listMyVisitors(
            $campusId: String!
