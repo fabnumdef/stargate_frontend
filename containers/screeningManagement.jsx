@@ -123,7 +123,7 @@ export const LIST_VISITOR_REQUESTS = gql`
                      label
                        steps {
                           role
-                           state {                             
+                           state {
                                isOK
                                value
                            }

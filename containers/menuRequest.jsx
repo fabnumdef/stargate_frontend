@@ -145,6 +145,7 @@ export default function MenuRequest() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [exportEvent, setExportEvent] = React.useState(false);
 
   const initMount = React.useRef(true);
 
@@ -426,6 +427,7 @@ export default function MenuRequest() {
               <TabMesDemandesTreated
                 requests={treated ? selectResultTreated(treated).list : []}
                 detailLink="traitees"
+                exportEvent={exportEvent}
               />
             ) : (
               <TabMesDemandesToTreat
@@ -454,6 +456,7 @@ export default function MenuRequest() {
             size="small"
             variant="contained"
             color="primary"
+            onClick={() => setExportEvent(true)}
           >
             Exporter
           </Button>

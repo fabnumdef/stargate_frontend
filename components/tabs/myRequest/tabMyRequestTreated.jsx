@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
 
@@ -38,6 +40,7 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
+
 function checkAllVisitors(visitors, activeRole) {
   const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
   return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
@@ -56,7 +59,7 @@ function createData({
     ? checkAllVisitors(listVisitors.list, activeRole)
     : true;
   return {
-    id: isActive ? id : `Traitement terminé - ${id}`,
+    id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
@@ -139,7 +142,61 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TabMyRequestUntreated({ requests, detailLink }) {
+export const LIST_REQUESTS = gql`
+         query listRequestByVisitorStatus(
+           $campusId: String!
+           $as: ValidationPersonas!
+           $filters: RequestVisitorFilters
+           $cursor: OffsetCursor!
+           $isDone: RequestVisitorIsDone!
+         ) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+               listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
+                 list {
+                     id
+                     requestData {
+                         from
+                         to
+                         reason
+                         status
+                         places {
+                             label
+                         }
+                         owner {
+                             firstname
+                             lastname
+                             unit
+                         }
+                     }
+                 }
+                 meta {
+                   total
+                 }
+             }
+           }
+         }
+       `;
+
+export const LIST_MY_VISITORS = gql`
+         query listMyVisitors(
+           $campusId: String!
+           $isDone: RequestVisitorIsDone!
+           $requestsId: [String]
+         ) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             listVisitors(isDone: $isDone, requestsId: $requestsId) {
+               generateCSVExportLink{
+                token
+                link
+               }
+            }
+          }
+         }
+       `;
+
+export default function TabMyRequestUntreated({ requests, detailLink, exportEvent }) {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
@@ -149,9 +206,11 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
   }, []);
 
   const [hover, setHover] = useState({});
-
   // sort Date
   const [order, setOrder] = useState('asc');
+
+  // getLink for the CSV
+  const [exportCsv, { data }] = useQuery(LIST_MY_VISITORS);
 
   const createSortHandler = () => () => {
     const isAsc = order === 'asc';
@@ -166,6 +225,22 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
     setTimeout(() => {}, 2000);
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
+
+  const checkedRequest = () => rows.filter((row) => row.isChecked).map((request) => request.id);
+
+  // triggerEvent from Parent Component
+  React.useEffect(() => {
+    if (exportEvent) {
+      exportCsv({
+        variable: {
+          isDone: { role: activeRole.role, value: true },
+          requestsId: checkedRequest(),
+        },
+      });
+    }
+  }, [exportEvent]);
+
+  if (data) console.log(data.getCampus.listVisitors.generateCSVExportLink);
 
   return requests.length > 0 ? (
     <TableContainer>
@@ -266,7 +341,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="" />
+    <EmptyArray type="traitée" />
   );
 }
 
