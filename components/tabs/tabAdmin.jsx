@@ -63,7 +63,7 @@ export default function TabAdmin({
   const editAuth = (userData) => {
     switch (activeRole.role) {
       case ROLES.ROLE_UNIT_CORRESPONDENT.role:
-        return activeRole.unitLabel === userData.unit;
+        return activeRole.unitLabel === userData.unit && userData.userRole === ROLES.ROLE_HOST.role;
       case ROLES.ROLE_ADMIN.role:
         return userData.role !== ROLES.ROLE_SUPERADMIN.role;
       default:
@@ -170,15 +170,13 @@ export default function TabAdmin({
                 );
               })}
               <TableCell key="modif" align="right">
-                {hover[index] && (
+                {(hover[index] && editAuth(row)) && (
                   <>
-                    {editAuth(row) && (
-                      <Link href={`${router.pathname}/${row.id}`}>
-                        <IconButton aria-label="modifier" color="primary" className={classes.icon}>
-                          <EditIcon />
-                        </IconButton>
-                      </Link>
-                    )}
+                    <Link href={`${router.pathname}/${row.id}`}>
+                      <IconButton aria-label="modifier" color="primary" className={classes.icon}>
+                        <EditIcon />
+                      </IconButton>
+                    </Link>
                     <IconButton
                       aria-label="supprimer"
                       className={classes.icon}

@@ -74,6 +74,7 @@ export const mapUsersList = (usersList) => usersList.map((user) => ({
   campus: user.roles[0].campuses[0] ? user.roles[0].campuses[0].label : '',
   unit: user.roles[0].units[0] ? user.roles[0].units[0].label : '',
   role: ROLES[user.roles[0].role].label,
+  userRole: user.roles[0].role,
   deleteLabel: user.email.original,
 }));
 

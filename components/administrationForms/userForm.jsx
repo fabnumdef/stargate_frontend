@@ -84,19 +84,19 @@ const radioDisplay = (userRole) => {
     return [
       ROLES.ROLE_OBSERVER,
       ROLES.ROLE_HOST,
-      ROLES.ROLE_ADMIN,
-      ROLES.ROLE_ACCESS_OFFICE,
       ROLES.ROLE_SCREENING,
+      ROLES.ROLE_ACCESS_OFFICE,
+      ROLES.ROLE_ADMIN,
     ];
   }
   if (isSuperAdmin(userRole.role)) {
     return [
       ROLES.ROLE_OBSERVER,
       ROLES.ROLE_HOST,
+      ROLES.ROLE_SCREENING,
+      ROLES.ROLE_ACCESS_OFFICE,
       ROLES.ROLE_ADMIN,
       ROLES.ROLE_SUPERADMIN,
-      ROLES.ROLE_ACCESS_OFFICE,
-      ROLES.ROLE_SCREENING,
     ];
   }
   return [];

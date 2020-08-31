@@ -11,6 +11,7 @@ import Template from '../../containers/template';
 import PageTitle from '../styled/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useLogin } from '../../lib/loginContext';
 
 const useStyles = makeStyles({
   root: {
@@ -35,6 +36,7 @@ function IndexAdministration({
 }) {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
+  const { activeRole } = useLogin();
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -52,7 +54,7 @@ function IndexAdministration({
 
   React.useEffect(() => {
     getList(rowsPerPage, page);
-  }, [page, rowsPerPage, searchInput]);
+  }, [page, rowsPerPage, searchInput, activeRole]);
 
   const handleChangeFilter = (e) => setSearchInput(e.target.value);
 
