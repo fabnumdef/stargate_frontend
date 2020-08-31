@@ -159,7 +159,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="traitée" />
+    <EmptyArray type="à traiter" />
   );
 }
 

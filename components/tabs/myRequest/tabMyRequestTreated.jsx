@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
 
+
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -23,6 +24,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
+import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
@@ -198,6 +200,8 @@ export const LIST_MY_VISITORS = gql`
 
 const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
   const classes = useStyles();
+
+  const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
 
   const rows = requests.reduce((acc, dem) => {
@@ -210,7 +214,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
   const [order, setOrder] = useState('asc');
 
   // getLink for the CSV
-  const [exportCsv, { data }] = useLazyQuery(LIST_MY_VISITORS);
+  const [exportCsv, { data, loading, error }] = useLazyQuery(LIST_MY_VISITORS);
 
   const createSortHandler = () => () => {
     const isAsc = order === 'asc';
@@ -228,6 +232,43 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
 
   const checkedRequest = () => rows.filter((row) => row.isChecked).map((request) => request.id);
 
+  React.useEffect(() => {
+    const onCompleted = (d) => {
+      fetch(d.getCampus.listVisitors.generateCSVExportLink.link, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+          Authorization: `Bearer ${d.getCampus.listVisitors.generateCSVExportLink.token}`,
+        },
+      })
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'test.csv');
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+        });
+    };
+
+    const onError = (e) => {
+      addAlert({
+        message:
+              e.message,
+        severity: 'error',
+      });
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !loading && !error && data) {
+        onCompleted(data);
+      } else if (onError && !loading && error) {
+        onError(error);
+      }
+    }
+  }, [loading, error, data]);
 
   useImperativeHandle(
     ref,
@@ -239,23 +280,6 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
             requestsId: checkedRequest(),
           },
         });
-
-        fetch(data.getCampus.listVisitors.generateCSVExportLink.link, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${data.getCampus.listVisitors.generateCSVExportLink.token}`,
-          },
-        })
-          .then((response) => response.blob)
-          .then((blob) => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'test.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-          });
       },
     }),
   );
