@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Link from 'next/link';
@@ -24,6 +24,8 @@ import FormControl from '@material-ui/core/FormControl';
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
 } from 'date-fns';
+import { mapRequestEdit } from '../../utils/mappers/requestAcces';
+
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 // Date Validators
 
@@ -126,6 +128,7 @@ const REQUEST_ATTRIBUTES = gql`
       from
       to
       places {
+        id
         label
       }
     }
@@ -166,7 +169,7 @@ export const EDIT_REQUEST = gql`
          mutation editRequest($id: String!, $request: RequestInput!, $campusId: String!) {
             campusId @client @export(as: "campusId")
             mutateCampus(id: $campusId){
-              editRequest(id: $id, request: $request, unit: $unit) {
+              editRequest(id: $id, request: $request) {
                 ...RequestResult
               }
           }
@@ -212,7 +215,7 @@ export default function FormInfosClaimant({
 
   const [updateRequest] = useMutation(EDIT_REQUEST, {
     onCompleted: (data) => {
-      setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
+      setForm({ ...data.mutateCampus.editRequest, visitors: formData.visitors });
       handleNext();
     },
     onError: (error) => {
@@ -225,8 +228,21 @@ export default function FormInfosClaimant({
   });
 
   const {
-    register, control, handleSubmit, watch, errors,
+    register, control, handleSubmit, watch, errors, setValue,
   } = useForm();
+
+  useEffect(() => {
+    if (formData.id) {
+      // eslint-disable-next-line no-restricted-syntax
+      const requestData = mapRequestEdit(formData);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const [key, value] of Object.entries(
+        requestData,
+      )) {
+        setValue(key, value);
+      }
+    }
+  }, []);
 
   // states of expanded composant for area to choose
   const [expanded, setExpanded] = useState(false);
@@ -239,7 +255,7 @@ export default function FormInfosClaimant({
       updateRequest({
         variables: {
           id: formData.id,
-          request: data,
+          request: { ...data, places },
         },
       });
     }
@@ -428,6 +444,7 @@ export default function FormInfosClaimant({
                       options={placesList ? placesList.getCampus.listPlaces.list : []}
                       expanded={expanded}
                       setExpanded={setExpanded}
+                      defaultChecked={formData.places}
                       onChange={(checked) => checked}
                       label="Lieux"
                     />
@@ -440,7 +457,7 @@ export default function FormInfosClaimant({
                   }}
                   control={control}
                   name="places"
-                  defaultValue={[]}
+                  defaultValue={formData.places}
                 />
                 {errors.places && (
                   <FormHelperText className={classes.error}>{errors.places.message}</FormHelperText>
@@ -472,6 +489,7 @@ FormInfosClaimant.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
     visitors: PropTypes.array,
+    request: PropTypes.objectOf(PropTypes.object),
   }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,

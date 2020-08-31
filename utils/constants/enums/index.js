@@ -5,22 +5,22 @@ export const REQUEST_OBJECT = {
 
 export const WORKFLOW_BEHAVIOR = {
   VALIDATION: {
-    value: 'Validation',
+    value: 'VALIDATION',
     RESPONSE: {
-      positive: 'accept',
-      negative: 'reject',
+      positive: 'ACCEPTED',
+      negative: 'REJECTED',
     },
   },
   ADVISEMENT: {
-    value: 'Advisement',
+    value: 'ADVISEMENT',
     RESPONSE: {
-      positive: 'positive',
-      negative: 'negative',
-      externally: 'externally',
+      positive: 'POSITIVE',
+      negative: 'NEGATIVE',
+      externally: 'EXTERNALLY',
     },
   },
   INFORMATION: {
-    value: 'Information',
+    value: 'INFORMATION',
     RESPONSE: {
       positive: 'validated',
     },
@@ -28,9 +28,10 @@ export const WORKFLOW_BEHAVIOR = {
 };
 
 export const VISITOR_STATUS = {
-  accepted: 'Accepté',
-  rejected: 'Refusé',
-  mixed: 'Partiellement accepté',
+  ACCEPTED: 'Accepté',
+  REJECTED: 'Refusé',
+  MIXED: 'Partiellement accepté',
+  CREATED: 'En cours',
 };
 
 export const ROLES = {
@@ -73,13 +74,13 @@ export const ROLES = {
 };
 
 export const STATE_REQUEST = {
-  STATE_DRAFTED: { state: 'drafted' },
-  STATE_CREATED: { state: 'created' },
-  STATE_CANCELED: { state: 'canceled' },
-  STATE_REMOVED: { state: 'removed' },
-  STATE_ACCEPTED: { state: 'accepted' },
-  STATE_REJECTED: { state: 'rejected' },
-  STATE_MIXED: { state: 'mixed' },
+  STATE_DRAFTED: { state: 'DRAFTED' },
+  STATE_CREATED: { state: 'CREATED' },
+  STATE_CANCELED: { state: 'CANCELED' },
+  STATE_REMOVED: { state: 'REMOVED' },
+  STATE_ACCEPTED: { state: 'ACCEPTED' },
+  STATE_REJECTED: { state: 'REJECTED' },
+  STATE_MIXED: { state: 'MIXED' },
 };
 
 export const ID_DOCUMENT = {

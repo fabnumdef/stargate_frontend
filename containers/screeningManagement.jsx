@@ -11,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import TablePagination from '@material-ui/core/TablePagination';
-// import TextField from '@material-ui/core/TextField';
-// import InputAdornment from '@material-ui/core/InputAdornment';
-// import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 
 import { format } from 'date-fns';
@@ -28,13 +28,10 @@ import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
-import checkStatus from '../utils/mappers/checkStatusVisitor';
-
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 
 import { useLogin } from '../lib/loginContext';
-import autoValidate from '../utils/autoValidateVisitor';
-
+import checkStatus from '../utils/mappers/checkStatusVisitor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,7 +82,7 @@ function createData({
   birthplace,
   firstname,
   birthLastname,
-  status,
+  units,
   identityDocuments,
   request,
 }, activeRole) {
@@ -97,7 +94,7 @@ function createData({
     firstname,
     birthLastname,
     report: null,
-    screening: checkStatus(status, activeRole),
+    screening: checkStatus(units, activeRole),
     requestId: request.id,
     vAttachedFile: identityDocuments,
   };
@@ -109,10 +106,11 @@ export const LIST_VISITOR_REQUESTS = gql`
            $campusId: String!
            $search: String
            $cursor: OffsetCursor!
+           $isDone: RequestVisitorIsDone
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listVisitors(search: $search, cursor: $cursor) {
+             listVisitors(search: $search, cursor: $cursor, isDone: $isDone) {
                list {
                  id
                  firstname
@@ -120,16 +118,16 @@ export const LIST_VISITOR_REQUESTS = gql`
                  birthday
                  birthplace
                  birthLastname
-                 status {
-                   unitId
-                   label
-                   steps {
-                     role
-                     step
-                     behavior
-                     status
-                     done
-                   }
+                 units {
+                     id
+                     label
+                       steps {
+                          role
+                           state {                             
+                               isOK
+                               value
+                           }
+                       }
                  }
                  request {
                    id
@@ -151,7 +149,6 @@ export default function ScreeningManagement() {
 
   // submit values
   const [visitors, setVisitors] = useState([]);
-
   // tabMotor
   const [value, setValue] = useState(0);
 
@@ -159,11 +156,15 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  const [filters, setFilters] = React.useState('');
+
   const initMount = React.useRef(true);
 
   const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
+      isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+      search: filters,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'no-cache',
@@ -178,12 +179,6 @@ export default function ScreeningManagement() {
         acc.push(createData(dem, activeRole));
         return acc;
       }, []),
-    );
-    autoValidate(
-      data.getCampus.listVisitors.list,
-      shiftVisitor,
-      refetch,
-      null,
     );
   }, [data]);
 
@@ -201,6 +196,7 @@ export default function ScreeningManagement() {
   const handleFetchMore = () => {
     fetchMore({
       variables: {
+        isDone: { role: activeRole.role, value: false },
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -235,6 +231,12 @@ export default function ScreeningManagement() {
     }
     handleFetchMore();
   }, [page, rowsPerPage]);
+
+  React.useEffect(() => {
+    refetch();
+  }, [filters]);
+
+
   const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
     vBirthName: visitor.birthLastname.toUpperCase(),
     vBirthDate: visitor.birthday,
@@ -252,8 +254,8 @@ export default function ScreeningManagement() {
               variables: {
                 requestId: visitor.requestId,
                 visitorId: visitor.id,
-                transition: visitor.report,
-                as: { role: activeRole.role, unit: visitor.screening.unit },
+                decision: visitor.report,
+                as: { role: activeRole.role },
               },
             });
           } catch (e) {
@@ -323,10 +325,12 @@ export default function ScreeningManagement() {
                 />
               </Grid>
               <Grid item sm={3} xs={12} md={2} lg={2}>
-                {/* <TextField
+                <TextField
                   style={{ float: 'right' }}
                   margin="dense"
                   variant="outlined"
+                  value={filters}
+                  onChange={(event) => setFilters(event.target.value)}
                   placeholder="Rechercher..."
                   InputProps={{
                     endAdornment: (
@@ -336,7 +340,7 @@ export default function ScreeningManagement() {
                     ),
                     inputProps: { 'data-testid': 'searchField' },
                   }}
-                /> */}
+                />
               </Grid>
             </Grid>
             <TabScreeningVisitors

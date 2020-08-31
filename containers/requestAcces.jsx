@@ -17,12 +17,11 @@ import { FormInfosRequest, FormInfosVisitor, FormInfosRecapDemande } from '../co
 
 const AntTab = withStyles((theme) => ({
   root: {
-    color: fade(theme.palette.primary.main, 0.6),
+    color: fade(theme.palette.primary.main, 0.8),
     textTransform: 'none',
-    width: '25%',
+    width: '20%',
     fontSize: '1.05rem',
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
     marginRight: theme.spacing(4),
     '&$selected': {
       color: theme.palette.primary.main,
@@ -34,7 +33,7 @@ const AntTab = withStyles((theme) => ({
   // eslint-disable-next-line react/jsx-props-no-spreading
 }))((props) => <Tab disableRipple {...props} />);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
@@ -46,10 +45,6 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
-  },
-  pageTitleHolder: {
-    borderBottom: '1px solid #e5e5e5',
   },
   pageTitleControl: {
     marginLeft: 'auto',

@@ -10,6 +10,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
+import { fade } from '@material-ui/core/styles/colorManipulator';
+
 import TablePagination from '@material-ui/core/TablePagination';
 // import TextField from '@material-ui/core/TextField';
 // import InputAdornment from '@material-ui/core/InputAdornment';
@@ -25,7 +27,7 @@ import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
@@ -37,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
   },
   pageTitleHolder: {
     borderBottom: '1px solid #e5e5e5',
@@ -50,19 +51,18 @@ const useStyles = makeStyles((theme) => ({
 export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
-    color: '#0d40a0',
+    color: theme.palette.primary.main,
     minWidth: 72,
-    fontWeight: theme.typography.fontWeightRegular,
     marginRight: theme.spacing(5),
     '&:hover': {
       opacity: 1,
     },
     '&$selected': {
-      color: '#0d40a0',
+      color: theme.palette.primary.main,
       fontWeight: theme.typography.fontWeightBold,
-      backgroundColor: 'rgba(219, 227, 239, 0)',
+      backgroundColor: fade(theme.palette.primary.main, 0),
     },
-    backgroundColor: 'rgba(219, 227, 239, .6)',
+    backgroundColor: fade(theme.palette.primary.main, 0.1),
     borderRadius: '5%',
   },
   selected: {},
@@ -72,46 +72,36 @@ export const AntTab = withStyles((theme) => ({
 
 
 export const LIST_REQUESTS = gql`
-         query listRequests(
+         query listRequestByVisitorStatus(
            $campusId: String!
            $as: ValidationPersonas!
-           $filters: RequestFilters!
+           $filters: RequestVisitorFilters
            $cursor: OffsetCursor!
+           $isDone: RequestVisitorIsDone!
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             listRequests(as: $as, filters: $filters, cursor: $cursor) {
-               list {
-                 id
-                 from
-                 to
-                 reason
-                 status
-                 places {
-                   label
-                 }
-                 owner {
-                   firstname
-                   lastname
-                   unit
-                 }
-                 listVisitors {
-                     list {
-                       id
-                       status {
-                         unitId
-                         label
-                         steps {
-                            role
-                            done
+               listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
+                 list {
+                     id
+                     requestData {
+                         from
+                         to
+                         reason
+                         status
+                         places {
+                             label
                          }
-                       }
+                         owner {
+                             firstname
+                             lastname
+                             unit
+                         }
                      }
                  }
-               }
-               meta {
-                 total
-               }
+                 meta {
+                   total
+                 }
              }
            }
          }
@@ -168,16 +158,14 @@ export default function MenuRequest() {
           first: rowsPerPage,
           offset: page * rowsPerPage,
         },
-        filters: {
-          status: STATE_REQUEST.STATE_CREATED.state,
-        },
         as: {
           role: activeRole.role,
-          unit: activeRole.unitLabel,
+          unit: activeRole.unit,
         },
+        isDone: { value: false },
       },
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'network-only',
     },
   );
 
@@ -190,7 +178,7 @@ export default function MenuRequest() {
       },
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
   });
 
   const selectRequestTreated = () => (
@@ -199,26 +187,19 @@ export default function MenuRequest() {
   const selectResultTreated = (treated) => (
     activeRole.role === ROLES.ROLE_HOST.role
       ? treated.getCampus.listMyRequests
-      : treated.getCampus.listRequests
+      : treated.getCampus.listRequestByVisitorStatus
   );
 
   const { data: treated, fetchMore: fetchTreated } = useQuery(selectRequestTreated(), {
     variables: {
-      filters: {
-        status: [
-          STATE_REQUEST.STATE_CANCELED.state,
-          STATE_REQUEST.STATE_ACCEPTED.state,
-          STATE_REQUEST.STATE_REJECTED.state,
-          STATE_REQUEST.STATE_MIXED.state,
-        ],
-      },
       cursor: {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
       as: activeRole.role !== ROLES.ROLE_HOST.label
-        ? { role: activeRole.role, unit: activeRole.unitLabel }
+        ? { role: activeRole.role, unit: activeRole.unit }
         : null,
+      isDone: { value: true },
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
@@ -233,13 +214,11 @@ export default function MenuRequest() {
               first: rowsPerPage,
               offset: page * rowsPerPage,
             },
-            filters: {
-              status: STATE_REQUEST.STATE_CREATED.state,
-            },
             as: {
               role: activeRole.role,
-              unit: activeRole.unitLabel,
+              unit: activeRole.unit,
             },
+            isDone: { value: false },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
@@ -266,19 +245,12 @@ export default function MenuRequest() {
       case 2:
         fetchTreated({
           variables: {
-            filters: {
-              status: [
-                STATE_REQUEST.STATE_CANCELED.state,
-                STATE_REQUEST.STATE_ACCEPTED.state,
-                STATE_REQUEST.STATE_REJECTED.state,
-                STATE_REQUEST.STATE_MIXED.state,
-              ],
-            },
             cursor: {
               first: rowsPerPage,
               offset: page * rowsPerPage,
             },
-            as: { role: activeRole.role, unit: activeRole.unitLabel },
+            as: { role: activeRole.role, unit: activeRole.unit },
+            isDone: { value: true },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
@@ -317,8 +289,8 @@ export default function MenuRequest() {
     {
       query: LIST_REQUESTS,
       variables: {
-        filters: { status: STATE_REQUEST.STATE_CREATED.state },
-        as: { role: activeRole.role, unit: activeRole.unitLabel },
+        isDone: { value: true },
+        as: { role: activeRole.role, unit: activeRole.unit },
       },
       fetchPolicy: 'cache-and-network',
     }];
@@ -328,8 +300,8 @@ export default function MenuRequest() {
     {
       index: 0,
       label: `A traiter ${
-        toTreat && toTreat.getCampus.listRequests.meta.total > 0
-          ? `(${toTreat.getCampus.listRequests.meta.total})`
+        toTreat && toTreat.getCampus.listRequestByVisitorStatus.meta.total > 0
+          ? `(${toTreat.getCampus.listRequestByVisitorStatus.meta.total})`
           : ''
       }`,
       access: urlAuthorization('/demandes/a-traiter', activeRole.role),
@@ -363,7 +335,7 @@ export default function MenuRequest() {
     switch (value) {
       case 0:
         if (!toTreat) return 0;
-        return toTreat.getCampus.listRequests.meta.total;
+        return toTreat.getCampus.listRequestByVisitorStatus.meta.total;
       case 1:
         if (!inProgress) return 0;
         return inProgress.getCampus.listMyRequests.meta.total;
@@ -438,7 +410,7 @@ export default function MenuRequest() {
           {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
           <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
             <TabMesDemandesToTreat
-              requests={toTreat ? toTreat.getCampus.listRequests.list : []}
+              requests={toTreat ? toTreat.getCampus.listRequestByVisitorStatus.list : []}
               detailLink="a-traiter"
             />
           </TabPanel>

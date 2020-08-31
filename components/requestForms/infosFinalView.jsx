@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
+import { STATE_REQUEST } from '../../utils/constants/enums';
 
 const DELETE_VISITOR = gql`
   mutation deleteVisitor($idRequest: String!, $idVisitor: String!, $campusId: String!) {
@@ -106,7 +107,7 @@ export default function InfosFinalView({
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
-      if (data.mutateCampus.shiftRequest.status === 'created') {
+      if (data.mutateCampus.shiftRequest.status === STATE_REQUEST.STATE_CREATED.state) {
         router.push('/');
         addAlert({
           message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créé`,

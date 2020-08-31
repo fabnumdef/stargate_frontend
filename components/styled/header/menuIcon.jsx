@@ -77,6 +77,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    textAlign: 'right',
   },
   iconButton: {
     margin: '0 0 0 10px',

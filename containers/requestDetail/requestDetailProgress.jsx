@@ -17,6 +17,7 @@ import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../component
 
 import Template from '../template';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { STATE_REQUEST } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,15 +70,16 @@ export const READ_REQUEST = gql`
                    birthLastname
                    employeeType
                    company
-                   status {
-                     unitId
+                   status 
+                   units {
+                     id
                      label
                      steps {
                        role
-                       step
                        behavior
-                       status
-                       done
+                       state {
+                           value
+                       }
                      }
                    }
                  }
@@ -169,7 +171,13 @@ export default function RequestDetails({ requestId }) {
             onDelete={async (idVisitor) => {
               try {
                 // @todo waiting back to delete
-                await deleteVisitor({ variables: { requestId, idVisitor, transition: 'cancel' } });
+                await deleteVisitor({
+                  variables: {
+                    requestId,
+                    idVisitor,
+                    transition: STATE_REQUEST.STATE_CANCELED.state,
+                  },
+                });
               } catch (e) {
                 addAlert({ message: e.message, severity: 'error' });
               }
