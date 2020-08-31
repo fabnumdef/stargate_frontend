@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useApolloClient } from '@apollo/react-hooks';
+import { useApolloClient } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import Link from 'next/link';
@@ -69,23 +69,20 @@ export const READ_REQUEST = gql`
                         birthLastname
                         employeeType
                         company
-                        state {
-                            value
-                            records {
-                                date
-                            }
-                        }
-                        status {
-                            unitId
+                        status
+                        units {
+                            id
                             label
-                            steps {
-                                role
-                                step
-                                behavior
-                                status
-                                date
-                                done
-                            }
+                              steps {
+                                  role
+                                  behavior
+                                  state {
+                                     isOK
+                                     date
+                                     tags
+                                     value
+                                  }
+                              }
                         }
                     }
                 }
@@ -110,22 +107,37 @@ export default function RequestDetailsTreated({ requestId }) {
     `,
   });
 
-  const {
-    data, loading,
-  } = useQuery(READ_REQUEST, {
-    variables: { requestId },
-  });
+  const [data, setData] = useState(null);
+  const [loadData, setLoadData] = useState(true);
 
-  if (loading) return <p>Loading ....</p>;
+  const getRequest = async () => {
+    const { data: requestData } = await client.query({
+      query: READ_REQUEST,
+      variables: { requestId },
+      fetchPolicy: 'no-cache',
+    });
+    return setData(requestData);
+  };
 
-  if (data && (
-    !checkRequestDetailAuth(data, activeRole)
-    && !data.getCampus.getRequest.owner.id === userData.me.id
-  )) {
-    router.push('/');
+  useEffect(() => {
+    if (!data) {
+      getRequest();
+    }
+
+    if (data && (
+      !checkRequestDetailAuth(data, activeRole)
+      && data.getCampus.getRequest.owner.id !== userData.me.id
+    )) {
+      router.push('/');
+    } else if (data) {
+      setLoadData(false);
+    }
+  }, [data]);
+
+
+  if (loadData) {
     return <div />;
   }
-
   // @todo a real 404 page
   // if (error) return <p>page 404</p>;
 

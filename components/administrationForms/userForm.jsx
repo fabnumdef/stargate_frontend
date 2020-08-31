@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 const GET_CAMPUSES = gql`
     query listCampuses {
-        listCampuses {  
+        listCampuses {
             list {
                 id
                 label
@@ -77,6 +77,16 @@ const GET_UNITS = gql`
     }
 `;
 
+
+const radioDisplay = (userRole) => {
+  if (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) { return [ROLES.ROLE_HOST]; }
+  if (isAdmin(userRole.role)) { return [ROLES.ROLE_OBSERVER, ROLES.ROLE_HOST, ROLES.ROLE_ADMIN]; }
+  if (isSuperAdmin(userRole.role)) {
+    return [ROLES.ROLE_OBSERVER, ROLES.ROLE_HOST, ROLES.ROLE_ADMIN, ROLES.ROLE_SUPERADMIN];
+  }
+  return [];
+};
+
 const UserForm = ({
   submitForm, defaultValues, userRole, type,
 }) => {
@@ -92,7 +102,12 @@ const UserForm = ({
   const { data: dataCampuses } = useQuery(GET_CAMPUSES);
   const [reqUnitsList, { data: dataUnits }] = useLazyQuery(GET_UNITS);
 
-  const onSubmit = (formData) => {
+  const noUnitRoles = [ROLES.ROLE_OBSERVER.role, ROLES.ROLE_ADMIN.role, ROLES.ROLE_SUPERADMIN.role];
+
+  const onSubmit = (data) => {
+    const formData = { ...data };
+    if (noUnitRoles.includes(formData.role)) { delete formData.unit; }
+
     const mappedUser = mapUserData(formData, dataCampuses, dataUnits);
     submitForm(mappedUser);
   };
@@ -104,6 +119,7 @@ const UserForm = ({
       addAlert({ message: 'Une erreur est survenue au chargement de la liste des unités', severity: 'error' });
     }
   };
+
 
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
@@ -226,7 +242,7 @@ const UserForm = ({
                 )}
               </FormControl>
 
-              {(watch('role') !== ROLES.ROLE_ADMIN.role || watch('role') !== ROLES.ROLE_SUPERADMIN.role) && (
+              {!noUnitRoles.includes(watch('role')) && (
               <FormControl
                 variant="outlined"
                 error={Object.prototype.hasOwnProperty.call(errors, 'unit')}
@@ -279,40 +295,24 @@ const UserForm = ({
                       )}
                       aria-label="vip"
                     >
-                      <FormControlLabel
-                        value={ROLES.ROLE_OBSERVER.role}
-                        control={<Radio color="primary" />}
-                        label={ROLES.ROLE_OBSERVER.label}
-                        labelPlacement="start"
-                      />
-                      <FormControlLabel
-                        value={ROLES.ROLE_HOST.role}
-                        control={<Radio color="primary" />}
-                        label={ROLES.ROLE_HOST.label}
-                        labelPlacement="start"
-                      />
-                      {(isAdmin(userRole.role) || isSuperAdmin(userRole.role)) && (
-                      <FormControlLabel
-                        value={ROLES.ROLE_ADMIN.role}
-                        control={<Radio color="primary" />}
-                        label={ROLES.ROLE_ADMIN.label}
-                        labelPlacement="start"
-                      />
-                      )}
-                      {isSuperAdmin(userRole.role) && (
+                      {radioDisplay(userRole).map((roleItem) => (
                         <FormControlLabel
-                          value={ROLES.ROLE_SUPERADMIN.role}
+                          value={roleItem.role}
                           control={<Radio color="primary" />}
-                          label={ROLES.ROLE_SUPERADMIN.label}
+                          label={roleItem.label}
                           labelPlacement="start"
+                          disabled={userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role}
                         />
-                      )}
+                      ))}
                     </RadioGroup>
                   )}
                   control={control}
                   rules={{ required: 'Le rôle est obligatoire' }}
                   name="role"
-                  defaultValue={defaultValues.role ? defaultValues.role : ''}
+                  defaultValue={() => {
+                    if (defaultValues.role) return defaultValues.role;
+                    return (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) ? ROLES.ROLE_HOST.role : '';
+                  }}
                 />
                 {errors.role && (
                   <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>

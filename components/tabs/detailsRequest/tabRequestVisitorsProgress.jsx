@@ -18,7 +18,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
 
 import { EMPLOYEE_TYPE } from '../../../utils/constants/enums';
-
+import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 const useStyles = makeStyles({
   container: {
@@ -31,7 +31,7 @@ const useStyles = makeStyles({
 });
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType,
+  id, firstname, birthLastname, rank, company, employeeType, units,
 }) {
   return {
     id,
@@ -40,6 +40,7 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
+    actualStep: findValidationStep(units),
   };
 }
 
@@ -155,8 +156,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                     case 'step':
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {/* TODO checkActualStep after rework checkStatus */}
-                          Unité
+                          {row.actualStep}
                         </TableCell>
                       );
                     default:

@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
 import { useLogin } from '../../lib/loginContext';
 
 export const CssTextField = withStyles({
@@ -24,6 +28,7 @@ export const CssTextField = withStyles({
     '& .MuiInputBase-input': {
       color: 'white',
     },
+    width: '60%',
   },
 })(TextField);
 
@@ -32,11 +37,18 @@ const useStyles = makeStyles(() => ({
     marginTop: '5%',
     width: '50%',
   },
+  fieldsPosition: {
+    marginTop: '25%',
+  },
+  showPasswordIcon: {
+    color: 'white',
+  },
 }));
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const ctx = useLogin();
 
   const classes = useStyles();
@@ -46,8 +58,16 @@ export default function LoginForm() {
     ctx.signIn(email, password);
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (evt) => {
+    evt.preventDefault();
+  };
+
   return (
-    <div>
+    <div className={classes.fieldsPosition}>
       <form onSubmit={handleSubmit} data-testid="login-form">
         <CssTextField
           type="email"
@@ -58,8 +78,22 @@ export default function LoginForm() {
           onChange={(evt) => setEmail(evt.target.value)}
         />
         <CssTextField
-          type="password"
-          inputProps={{ 'data-testid': 'login-form-password' }}
+          type={showPassword ? 'text' : 'password'}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  className={classes.showPasswordIcon}
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            ),
+            inputProps: { 'data-testid': 'login-form-password' },
+          }}
           label="Mot de passe"
           value={password}
           onChange={(evt) => setPassword(evt.target.value)}

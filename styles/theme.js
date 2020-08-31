@@ -3,6 +3,24 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { frFR } from '@material-ui/core/locale';
 import red from '@material-ui/core/colors/red';
 
+const palette = {
+  primary: {
+    main: '#0f4194',
+  },
+  secondary: {
+    main: '#a51c81',
+  },
+  success: {
+    main: '#28a745',
+  },
+  error: {
+    main: red.A400,
+  },
+  background: {
+    default: '#ffffff',
+  },
+};
+
 // Create a theme instance.
 const theme = createMuiTheme(
   {
@@ -20,23 +38,7 @@ const theme = createMuiTheme(
         '"Segoe UI Symbol"',
       ].join(','),
     },
-    palette: {
-      primary: {
-        main: '#0f4194',
-      },
-      secondary: {
-        main: '#a51c81',
-      },
-      success: {
-        main: '#28a745',
-      },
-      error: {
-        main: red.A400,
-      },
-      background: {
-        default: '#ffffff',
-      },
-    },
+    palette,
     overrides: {
       MuiInputBase: {
         input: {
@@ -78,6 +80,11 @@ const theme = createMuiTheme(
         colorPrimary: {
           color: '#000000',
           backgroundColor: '#ffffff',
+        },
+      },
+      MuiTablePagination: {
+        root: {
+          color: palette.primary.main,
         },
       },
       MuiFormControlLabel: {
