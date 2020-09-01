@@ -13,8 +13,8 @@ const columns = [
 ];
 
 const GET_USERS_LIST = gql`
-    query listUsers($cursor: OffsetCursor, $filters: UserFilters) {
-        listUsers(cursor: $cursor, filters: $filters) {
+    query listUsers($cursor: OffsetCursor, $filters: UserFilters, $search: String) {
+        listUsers(cursor: $cursor, filters: $filters, search: $search) {
           meta {
               offset
               first
@@ -59,13 +59,15 @@ function UserAdministration() {
   const client = useApolloClient();
 
   const [usersList, setUsersList] = useState(null);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(null);
 
   const getList = async (rowsPerPage, page) => {
-    const filters = searchInput.length ? { lastname: searchInput } : null;
     const { data } = await client.query({
       query: GET_USERS_LIST,
-      variables: { cursor: { first: rowsPerPage, offset: page * rowsPerPage }, filters },
+      variables: {
+        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+        search: searchInput,
+      },
       fetchPolicy: 'no-cache',
     });
     return setUsersList(data);
