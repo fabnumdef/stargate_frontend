@@ -198,23 +198,12 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
 
   React.useEffect(() => {
     const onCompleted = (d) => {
-      fetch(d.getCampus.listVisitors.generateCSVExportLink.link, {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: {
-          Authorization: `Bearer ${d.getCampus.listVisitors.generateCSVExportLink.token}`,
-        },
-      })
-        .then((response) => response.blob())
-        .then((blob) => {
-          const url = window.URL.createObjectURL(new Blob([blob]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'test.csv');
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode.removeChild(link);
-        });
+      const link = document.createElement('a');
+      link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
+      link.setAttribute('download', 'test.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
     };
 
     const onError = (e) => {
