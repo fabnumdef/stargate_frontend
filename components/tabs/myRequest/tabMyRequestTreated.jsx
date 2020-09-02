@@ -40,7 +40,6 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
-
 function checkAllVisitors(visitors, activeRole) {
   const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
   return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
@@ -196,7 +195,7 @@ export const LIST_MY_VISITORS = gql`
          }
        `;
 
-const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
+const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, ref) => {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
@@ -227,7 +226,6 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
   };
 
   const checkedRequest = () => rows.filter((row) => row.isChecked).map((request) => request.id);
-
 
   useImperativeHandle(
     ref,
@@ -360,7 +358,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="traitée" />
+    <EmptyArray type={emptyLabel} />
   );
 });
 
@@ -383,6 +381,7 @@ TabMyRequestUntreated.propTypes = {
     }),
   ),
   detailLink: PropTypes.string.isRequired,
+  emptyLabel: PropTypes.string.isRequired,
 };
 
 TabMyRequestUntreated.defaultProps = {
