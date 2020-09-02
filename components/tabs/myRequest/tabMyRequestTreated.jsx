@@ -6,7 +6,6 @@ import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
 
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -39,7 +38,6 @@ const columns = [
   { id: 'places', label: 'Lieu' },
   { id: 'reason', label: 'Motif' },
 ];
-
 
 const StyledFormLabel = withStyles({
   root: {
@@ -178,6 +176,14 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
     setOrder(isAsc ? 'desc' : 'asc');
   };
 
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      setChosen(rows.map((row) => row.id));
+    } else {
+      setChosen([]);
+    }
+  };
+
   const handleMouseEnter = (index) => {
     setHover((prevState) => ({ ...prevState, [index]: true }));
   };
@@ -252,7 +258,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
 
   return requests.length > 0 ? (
     <TableContainer>
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             {columns.map((column) => (
@@ -276,6 +282,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
                 control={(
                   <Checkbox
                     color="primary"
+                    onChange={(event) => handleSelectAll(event)}
                   />
                       )}
               />
