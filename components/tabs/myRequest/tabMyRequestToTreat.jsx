@@ -86,10 +86,10 @@ const useStyles = makeStyles({
 export default function TabMyRequestUntreated({ requests, detailLink }) {
   const classes = useStyles();
 
-  const rows = requests.reduce((acc, dem) => {
+  const rows = React.useMemo(() => requests.reduce((acc, dem) => {
     acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [requests]);
 
   const [hover, setHover] = useState({});
 

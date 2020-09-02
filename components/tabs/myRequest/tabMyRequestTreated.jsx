@@ -28,9 +28,7 @@ import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
-import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
 import { useLogin } from '../../../lib/loginContext';
-import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
@@ -43,11 +41,6 @@ const columns = [
 ];
 
 
-function checkAllVisitors(visitors, activeRole) {
-  const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
-  return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
-}
-
 const StyledFormLabel = withStyles({
   root: {
     margin: 'auto',
@@ -55,11 +48,11 @@ const StyledFormLabel = withStyles({
 })(FormControlLabel);
 
 function createData({
-  id, owner, from, to, reason, places, listVisitors, status,
-}, activeRole) {
-  const isActive = status === STATE_REQUEST.STATE_CREATED.state
-    ? checkAllVisitors(listVisitors.list, activeRole)
-    : true;
+  id, requestData,
+}) {
+  const {
+    owner, from, to, reason, places,
+  } = requestData[0];
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
@@ -76,8 +69,6 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
-    isActive,
-    isChecked: false,
   };
 }
 
@@ -168,14 +159,16 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
   const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
 
-  const rows = requests.reduce((acc, dem) => {
-    acc.push(createData(dem, activeRole));
+  const rows = React.useMemo(() => requests.reduce((acc, dem) => {
+    acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [requests]);
 
   const [hover, setHover] = useState({});
   // sort Date
   const [order, setOrder] = useState('asc');
+
+  const [chosen, setChosen] = useState([]);
 
   // getLink for the CSV
   const [exportCsv, { data, loading, error }] = useLazyQuery(LIST_MY_VISITORS);
@@ -194,7 +187,18 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
-  const checkedRequest = () => rows.filter((row) => row.isChecked).map((request) => request.id);
+  const handleChangeCheckbox = (event, id) => {
+    if (event.target.checked) {
+      setChosen((ids) => [...ids, id]);
+    } else {
+      const chosenTemp = [...chosen];
+      const indexId = chosenTemp.indexOf(id);
+      if (indexId > -1) {
+        chosenTemp.splice(indexId, 1);
+      }
+      setChosen(chosenTemp);
+    }
+  };
 
   React.useEffect(() => {
     const onCompleted = (d) => {
@@ -227,12 +231,20 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
     ref,
     () => ({
       async execExport() {
-        await exportCsv({
-          variables: {
-            isDone: { role: activeRole.role, value: true },
-            requestsId: checkedRequest(),
-          },
-        });
+        if (chosen.length > 0) {
+          await exportCsv({
+            variables: {
+              isDone: { role: activeRole.role, value: true },
+              requestsId: chosen,
+            },
+          });
+        } else {
+          addAlert({
+            message:
+              'Aucune visite selectionée',
+            severity: 'error',
+          });
+        }
       },
     }),
   );
@@ -289,7 +301,6 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
               role="checkbox"
               tabIndex={-1}
               key={row.code}
-              className={row.isActive ? '' : classes.inactive}
             >
               {columns.map((column) => {
                 const value = row[column.id];
@@ -304,7 +315,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
                 );
               })}
               <TableCell key="modif">
-                {row.isActive && hover[index] && (
+                {hover[index] && (
                 <div style={{ float: 'right' }}>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
@@ -322,7 +333,8 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
 
                 <Checkbox
                   color="primary"
-                  checked={row.isChecked}
+                  checked={chosen.includes(row.id)}
+                  onChange={(event) => handleChangeCheckbox(event, row.id)}
                 />
               </TableCell>
               <TableCell className={`${

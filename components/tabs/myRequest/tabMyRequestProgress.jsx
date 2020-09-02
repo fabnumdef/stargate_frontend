@@ -85,10 +85,10 @@ export default function TabMyRequestToTreat({ request, queries }) {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
 
-  const rows = request.reduce((acc, dem) => {
+  const rows = React.useMemo(() => request.reduce((acc, dem) => {
     acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [request]);
 
   const [hover, setHover] = useState({});
   const [del, setDel] = useState({});
