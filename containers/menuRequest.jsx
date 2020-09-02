@@ -181,16 +181,7 @@ export default function MenuRequest() {
     fetchPolicy: 'network-only',
   });
 
-  const selectRequestTreated = () => (
-    activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS
-  );
-  const selectResultTreated = (treated) => (
-    activeRole.role === ROLES.ROLE_HOST.role
-      ? treated.getCampus.listMyRequests
-      : treated.getCampus.listRequestByVisitorStatus
-  );
-
-  const { data: treated, fetchMore: fetchTreated } = useQuery(selectRequestTreated(), {
+  const { data: treated, fetchMore: fetchTreated } = useQuery(LIST_REQUESTS, {
     variables: {
       cursor: {
         first: rowsPerPage,
@@ -318,8 +309,8 @@ export default function MenuRequest() {
     {
       index: 2,
       label: `Traitées ${
-        treated && selectResultTreated(treated).meta.total > 0
-          ? `(${selectResultTreated(treated).meta.total})`
+        treated && treated.getCampus.listRequestByVisitorStatus.meta.total > 0
+          ? treated.getCampus.listRequestByVisitorStatus.meta.total
           : ''
       }`,
       access: true,
@@ -341,7 +332,7 @@ export default function MenuRequest() {
         return inProgress.getCampus.listMyRequests.meta.total;
       case 2:
         if (!treated) return 0;
-        return selectResultTreated(treated).meta.total;
+        return treated.getCampus.listRequestByVisitorStatus.meta.total;
       default:
         return 0;
     }
@@ -425,7 +416,7 @@ export default function MenuRequest() {
           )}
           <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
             <TabMesDemandesToTreat
-              requests={treated ? selectResultTreated(treated).list : []}
+              requests={treated ? treated.getCampus.listRequestByVisitorStatus.list : []}
               detailLink="traitees"
             />
           </TabPanel>
