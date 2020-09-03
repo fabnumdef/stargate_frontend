@@ -151,7 +151,7 @@ export const LIST_MY_VISITORS = gql`
          }
        `;
 
-const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
+const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, ref) => {
   const classes = useStyles();
 
   const { addAlert } = useSnackBar();
@@ -356,7 +356,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink }, ref) => {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="traitée" />
+    <EmptyArray type={emptyLabel} />
   );
 });
 
@@ -379,6 +379,7 @@ TabMyRequestUntreated.propTypes = {
     }),
   ),
   detailLink: PropTypes.string.isRequired,
+  emptyLabel: PropTypes.string.isRequired,
 };
 
 TabMyRequestUntreated.defaultProps = {

@@ -155,7 +155,6 @@ const EDIT_VISITOR = gql`
     }
 `;
 
-
 export default function FormInfoVisitor({
   formData, setForm, handleNext, handleBack, selectVisitor,
 }) {
@@ -249,7 +248,6 @@ export default function FormInfoVisitor({
       });
     },
   });
-
 
   const onSubmit = (data) => {
     const visitorData = mapVisitorData(data);
@@ -537,7 +535,7 @@ export default function FormInfoVisitor({
                   name="vip"
                   defaultValue="FALSE"
                 />
-                {watch('vip') === 'TRUE' && (
+                {(selectVisitor.vip || watch('vip') === 'TRUE') && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
@@ -696,6 +694,7 @@ export default function FormInfoVisitor({
                             && errors.birthplace.message
                           }
                         fullWidth
+                        inputProps={{ maxLength: 35 }}
                       />
                       )}
                     control={control}

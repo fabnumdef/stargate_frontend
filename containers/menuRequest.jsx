@@ -411,6 +411,7 @@ export default function MenuRequest() {
             <TabMesDemandesToTreat
               requests={toTreat ? toTreat.getCampus.listRequestByVisitorStatus.list : []}
               detailLink="a-traiter"
+              emptyLabel="à traiter"
             />
           </TabPanel>
           )}
@@ -419,6 +420,7 @@ export default function MenuRequest() {
               <TabDemandesProgress
                 request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
                 queries={refetchQueries}
+                emptyLabel="en cours"
               />
             </TabPanel>
           )}
@@ -428,12 +430,14 @@ export default function MenuRequest() {
               <TabMesDemandesTreated
                 requests={treated ? selectResultTreated(treated).list : []}
                 detailLink="traitees"
+                emptyLabel="traitée"
                 ref={childRef}
               />
             ) : (
               <TabMesDemandesToTreat
                 requests={treated ? selectResultTreated(treated).list : []}
                 detailLink="traitees"
+                emptyLabel="traitée"
               />
             )}
           </TabPanel>
