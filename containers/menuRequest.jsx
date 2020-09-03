@@ -309,7 +309,7 @@ export default function MenuRequest() {
       index: 2,
       label: `Traitées ${
         treated && treated.getCampus.listRequestByVisitorStatus.meta.total > 0
-          ? treated.getCampus.listRequestByVisitorStatus.meta.total
+          ? `(${treated.getCampus.listRequestByVisitorStatus.meta.total})`
           : ''
       }`,
       access: true,
