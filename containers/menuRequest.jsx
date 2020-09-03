@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
@@ -17,9 +18,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 // import InputAdornment from '@material-ui/core/InputAdornment';
 // import SearchIcon from '@material-ui/icons/Search';
 
-
 import {
-  TabPanel, TabMesDemandesToTreat, TabDemandesProgress,
+  TabPanel, TabMesDemandesToTreat, TabDemandesProgress, TabMesDemandesTreated,
 } from '../components';
 import Template from './template';
 
@@ -69,7 +69,6 @@ export const AntTab = withStyles((theme) => ({
 // Many props needed by Material-UI
 // eslint-disable-next-line react/jsx-props-no-spreading
 }))((props) => <Tab disableRipple {...props} />);
-
 
 export const LIST_REQUESTS = gql`
          query listRequestByVisitorStatus(
@@ -138,7 +137,6 @@ export default function MenuRequest() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
-
   const [value, setValue] = React.useState(activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
 
   /** @todo searchField filters
@@ -147,6 +145,8 @@ export default function MenuRequest() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const childRef = React.useRef();
 
   const initMount = React.useRef(true);
 
@@ -295,7 +295,6 @@ export default function MenuRequest() {
       fetchPolicy: 'cache-and-network',
     }];
 
-
   const tabList = [
     {
       index: 0,
@@ -412,6 +411,7 @@ export default function MenuRequest() {
             <TabMesDemandesToTreat
               requests={toTreat ? toTreat.getCampus.listRequestByVisitorStatus.list : []}
               detailLink="a-traiter"
+              emptyLabel="à traiter"
             />
           </TabPanel>
           )}
@@ -420,14 +420,26 @@ export default function MenuRequest() {
               <TabDemandesProgress
                 request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
                 queries={refetchQueries}
+                emptyLabel="en cours"
               />
             </TabPanel>
           )}
           <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
-            <TabMesDemandesToTreat
-              requests={treated ? selectResultTreated(treated).list : []}
-              detailLink="traitees"
-            />
+
+            {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
+              <TabMesDemandesTreated
+                requests={treated ? selectResultTreated(treated).list : []}
+                detailLink="traitees"
+                emptyLabel="traitée"
+                ref={childRef}
+              />
+            ) : (
+              <TabMesDemandesToTreat
+                requests={treated ? selectResultTreated(treated).list : []}
+                detailLink="traitees"
+                emptyLabel="traitée"
+              />
+            )}
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
@@ -443,6 +455,21 @@ export default function MenuRequest() {
             />
           )}
         </Grid>
+        { (value === 2
+        && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
+        && selectResultTreated(treated).list.length > 0) && (
+        <Grid item sm={2} xs={12} md={4} lg={4}>
+          <Button
+            size="small"
+            variant="contained"
+            color="primary"
+            onClick={() => { childRef.current.execExport(); }}
+          >
+            Exporter
+          </Button>
+        </Grid>
+        )}
+
       </Grid>
     </Template>
   );

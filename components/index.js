@@ -10,6 +10,7 @@ export { default as FormInfosVisitor } from './requestForms/infosVisitor';
 // Tabs
 export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestProgress';
 export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';
+export { default as TabMesDemandesTreated } from './tabs/myRequest/tabMyRequestTreated';
 export { default as TabRecapRequest } from './tabs/tabRecapRequest';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
 export { default as TabScreeningVisitors } from './tabs/tabScreeningVisitors';

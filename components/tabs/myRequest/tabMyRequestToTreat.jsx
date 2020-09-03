@@ -83,7 +83,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabMyRequestUntreated({ requests, detailLink }) {
+export default function TabMyRequestUntreated({ requests, detailLink, emptyLabel }) {
   const classes = useStyles();
 
   const rows = requests.reduce((acc, dem) => {
@@ -159,7 +159,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="traitée" />
+    <EmptyArray type={emptyLabel} />
   );
 }
 
@@ -180,6 +180,7 @@ TabMyRequestUntreated.propTypes = {
     }),
   ),
   detailLink: PropTypes.string.isRequired,
+  emptyLabel: PropTypes.string.isRequired,
 };
 
 TabMyRequestUntreated.defaultProps = {
