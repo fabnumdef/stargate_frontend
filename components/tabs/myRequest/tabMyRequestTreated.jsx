@@ -23,12 +23,11 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
+import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
-import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
 import { useLogin } from '../../../lib/loginContext';
-import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
@@ -40,11 +39,6 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
-function checkAllVisitors(visitors, activeRole) {
-  const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
-  return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
-}
-
 const StyledFormLabel = withStyles({
   root: {
     margin: 'auto',
@@ -52,11 +46,11 @@ const StyledFormLabel = withStyles({
 })(FormControlLabel);
 
 function createData({
-  id, owner, from, to, reason, places, listVisitors, status,
-}, activeRole) {
-  const isActive = status === STATE_REQUEST.STATE_CREATED.state
-    ? checkAllVisitors(listVisitors.list, activeRole)
-    : true;
+  id, requestData,
+}) {
+  const {
+    owner, from, to, reason, places,
+  } = requestData[0];
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
@@ -73,8 +67,6 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
-    isActive,
-    isChecked: false,
   };
 }
 
@@ -141,42 +133,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const LIST_REQUESTS = gql`
-         query listRequestByVisitorStatus(
-           $campusId: String!
-           $as: ValidationPersonas!
-           $filters: RequestVisitorFilters
-           $cursor: OffsetCursor!
-           $isDone: RequestVisitorIsDone!
-         ) {
-           campusId @client @export(as: "campusId")
-           getCampus(id: $campusId) {
-               listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
-                 list {
-                     id
-                     requestData {
-                         from
-                         to
-                         reason
-                         status
-                         places {
-                             label
-                         }
-                         owner {
-                             firstname
-                             lastname
-                             unit
-                         }
-                     }
-                 }
-                 meta {
-                   total
-                 }
-             }
-           }
-         }
-       `;
-
 export const LIST_MY_VISITORS = gql`
          query listMyVisitors(
            $campusId: String!
@@ -197,23 +153,35 @@ export const LIST_MY_VISITORS = gql`
 
 const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, ref) => {
   const classes = useStyles();
+
+  const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
 
-  const rows = requests.reduce((acc, dem) => {
-    acc.push(createData(dem, activeRole));
+  const rows = React.useMemo(() => requests.reduce((acc, dem) => {
+    acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [requests]);
 
   const [hover, setHover] = useState({});
   // sort Date
   const [order, setOrder] = useState('asc');
 
+  const [chosen, setChosen] = useState([]);
+
   // getLink for the CSV
-  const [exportCsv, { data }] = useLazyQuery(LIST_MY_VISITORS);
+  const [exportCsv, { data, loading, error }] = useLazyQuery(LIST_MY_VISITORS);
 
   const createSortHandler = () => () => {
     const isAsc = order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      setChosen(rows.map((row) => row.id));
+    } else {
+      setChosen([]);
+    }
   };
 
   const handleMouseEnter = (index) => {
@@ -225,35 +193,64 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
-  const checkedRequest = () => rows.filter((row) => row.isChecked).map((request) => request.id);
+  const handleChangeCheckbox = (event, id) => {
+    if (event.target.checked) {
+      setChosen((ids) => [...ids, id]);
+    } else {
+      const chosenTemp = [...chosen];
+      const indexId = chosenTemp.indexOf(id);
+      if (indexId > -1) {
+        chosenTemp.splice(indexId, 1);
+      }
+      setChosen(chosenTemp);
+    }
+  };
+
+  React.useEffect(() => {
+    const onCompleted = (d) => {
+      const link = document.createElement('a');
+      link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
+      link.setAttribute('download', 'test.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    };
+
+    const onError = (e) => {
+      addAlert({
+        message:
+              e.message,
+        severity: 'error',
+      });
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !loading && !error && data) {
+        onCompleted(data);
+      } else if (onError && !loading && error) {
+        onError(error);
+      }
+    }
+  }, [loading, error, data]);
 
   useImperativeHandle(
     ref,
     () => ({
       async execExport() {
-        await exportCsv({
-          variables: {
-            isDone: { role: activeRole.role, value: true },
-            requestsId: checkedRequest(),
-          },
-        });
-
-        fetch(data.getCampus.listVisitors.generateCSVExportLink.link, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${data.getCampus.listVisitors.generateCSVExportLink.token}`,
-          },
-        })
-          .then((response) => response.blob)
-          .then((blob) => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'test.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
+        if (chosen.length > 0) {
+          await exportCsv({
+            variables: {
+              isDone: { role: activeRole.role, value: true },
+              requestsId: chosen,
+            },
           });
+        } else {
+          addAlert({
+            message:
+              'Aucune visite selectionée',
+            severity: 'error',
+          });
+        }
       },
     }),
   );
@@ -261,7 +258,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
   return requests.length > 0 ? (
     <TableContainer>
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             {columns.map((column) => (
@@ -285,6 +282,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
                 control={(
                   <Checkbox
                     color="primary"
+                    onChange={(event) => handleSelectAll(event)}
                   />
                       )}
               />
@@ -310,7 +308,6 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
               role="checkbox"
               tabIndex={-1}
               key={row.code}
-              className={row.isActive ? '' : classes.inactive}
             >
               {columns.map((column) => {
                 const value = row[column.id];
@@ -325,7 +322,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
                 );
               })}
               <TableCell key="modif">
-                {row.isActive && hover[index] && (
+                {hover[index] && (
                 <div style={{ float: 'right' }}>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
@@ -343,7 +340,8 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
                 <Checkbox
                   color="primary"
-                  checked={row.isChecked}
+                  checked={chosen.includes(row.id)}
+                  onChange={(event) => handleChangeCheckbox(event, row.id)}
                 />
               </TableCell>
               <TableCell className={`${
