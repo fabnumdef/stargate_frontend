@@ -118,7 +118,7 @@ const Logo = () => {
           <div className={classes.lineLogo} />
           <div className={classes.lineLogoWhite} />
           <span className={classes.name}>
-            Système de Traitement des Accès Règlementés Généralisé À Toute les Entités
+            Système de Traitement des Accès Règlementés Généralisé À Toutes les Entités
           </span>
         </div>
       </div>
