@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 import { useApolloClient } from '@apollo/react-hooks';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
+import { isAdmin, isSuperAdmin } from '../../utils/permissions';
+import { useLogin } from '../../lib/loginContext';
 
 const columns = [
   { id: 'lastname', label: 'Nom' },
@@ -13,8 +15,8 @@ const columns = [
 ];
 
 const GET_USERS_LIST = gql`
-    query listUsers($cursor: OffsetCursor, $filters: UserFilters) {
-        listUsers(cursor: $cursor, filters: $filters) {
+    query listUsers($cursor: OffsetCursor, $filters: UserFilters, $hasRole: HasRoleInput) {
+        listUsers(cursor: $cursor, filters: $filters, hasRole: $hasRole) {
           meta {
               offset
               first
@@ -57,6 +59,7 @@ const createUserData = (data) => ({
 
 function UserAdministration() {
   const client = useApolloClient();
+  const { activeRole } = useLogin();
 
   const [usersList, setUsersList] = useState(null);
   const [searchInput, setSearchInput] = useState('');
@@ -65,7 +68,13 @@ function UserAdministration() {
     const filters = searchInput.length ? { lastname: searchInput } : null;
     const { data } = await client.query({
       query: GET_USERS_LIST,
-      variables: { cursor: { first: rowsPerPage, offset: page * rowsPerPage }, filters },
+      variables: {
+        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+        filters,
+        hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
+          ? {}
+          : { unit: activeRole.unit },
+      },
       fetchPolicy: 'no-cache',
     });
     return setUsersList(data);
