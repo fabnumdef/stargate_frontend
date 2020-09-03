@@ -448,7 +448,7 @@ export default function MenuRequest() {
         </Grid>
         { (value === 2
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
-        && selectResultTreated(treated).list.length > 0) && (
+        && treated.getCampus.listRequestByVisitorStatus.list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
           <Button
             size="small"
