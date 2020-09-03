@@ -535,7 +535,7 @@ export default function FormInfoVisitor({
                   name="vip"
                   defaultValue="FALSE"
                 />
-                {watch('vip') === 'TRUE' && (
+                {(selectVisitor.vip || watch('vip') === 'TRUE') && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
