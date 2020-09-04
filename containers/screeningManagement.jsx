@@ -156,7 +156,7 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = React.useState(null);
 
   const initMount = React.useRef(true);
 
