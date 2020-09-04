@@ -187,7 +187,7 @@ export default function MenuRequest() {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
-      as: activeRole.role !== ROLES.ROLE_HOST.label
+      as: activeRole.role !== ROLES.ROLE_HOST.role
         ? { role: activeRole.role, unit: activeRole.unit }
         : null,
       isDone: { value: true },
@@ -240,7 +240,9 @@ export default function MenuRequest() {
               first: rowsPerPage,
               offset: page * rowsPerPage,
             },
-            as: { role: activeRole.role, unit: activeRole.unit },
+            as: activeRole.role !== ROLES.ROLE_HOST.role
+              ? { role: activeRole.role, unit: activeRole.unit }
+              : null,
             isDone: { value: true },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
