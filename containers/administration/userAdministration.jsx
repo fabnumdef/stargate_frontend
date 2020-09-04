@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 import { useApolloClient } from '@apollo/react-hooks';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
+import { isAdmin, isSuperAdmin } from '../../utils/permissions';
+import { useLogin } from '../../lib/loginContext';
 
 const columns = [
   { id: 'lastname', label: 'Nom' },
@@ -13,8 +15,8 @@ const columns = [
 ];
 
 const GET_USERS_LIST = gql`
-    query listUsers($cursor: OffsetCursor, $filters: UserFilters, $search: String) {
-        listUsers(cursor: $cursor, filters: $filters, search: $search) {
+    query listUsers($cursor: OffsetCursor, $filters: UserFilters, $hasRole: HasRoleInput, $search: String) {
+        listUsers(cursor: $cursor, filters: $filters, hasRole: $hasRole, search: $search) {
           meta {
               offset
               first
@@ -57,6 +59,7 @@ const createUserData = (data) => ({
 
 function UserAdministration() {
   const client = useApolloClient();
+  const { activeRole } = useLogin();
 
   const [usersList, setUsersList] = useState(null);
   const [searchInput, setSearchInput] = useState(null);
@@ -67,6 +70,9 @@ function UserAdministration() {
       variables: {
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
         search: searchInput,
+        hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
+          ? {}
+          : { unit: activeRole.unit },
       },
       fetchPolicy: 'no-cache',
     });

@@ -80,9 +80,24 @@ const GET_UNITS = gql`
 
 const radioDisplay = (userRole) => {
   if (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) { return [ROLES.ROLE_HOST]; }
-  if (isAdmin(userRole.role)) { return [ROLES.ROLE_OBSERVER, ROLES.ROLE_HOST, ROLES.ROLE_ADMIN]; }
+  if (isAdmin(userRole.role)) {
+    return [
+      ROLES.ROLE_OBSERVER,
+      ROLES.ROLE_HOST,
+      ROLES.ROLE_SCREENING,
+      ROLES.ROLE_ACCESS_OFFICE,
+      ROLES.ROLE_ADMIN,
+    ];
+  }
   if (isSuperAdmin(userRole.role)) {
-    return [ROLES.ROLE_OBSERVER, ROLES.ROLE_HOST, ROLES.ROLE_ADMIN, ROLES.ROLE_SUPERADMIN];
+    return [
+      ROLES.ROLE_OBSERVER,
+      ROLES.ROLE_HOST,
+      ROLES.ROLE_SCREENING,
+      ROLES.ROLE_ACCESS_OFFICE,
+      ROLES.ROLE_ADMIN,
+      ROLES.ROLE_SUPERADMIN,
+    ];
   }
   return [];
 };
@@ -102,7 +117,13 @@ const UserForm = ({
   const { data: dataCampuses } = useQuery(GET_CAMPUSES);
   const [reqUnitsList, { data: dataUnits }] = useLazyQuery(GET_UNITS);
 
-  const noUnitRoles = [ROLES.ROLE_OBSERVER.role, ROLES.ROLE_ADMIN.role, ROLES.ROLE_SUPERADMIN.role];
+  const noUnitRoles = [
+    ROLES.ROLE_OBSERVER.role,
+    ROLES.ROLE_ADMIN.role,
+    ROLES.ROLE_SUPERADMIN.role,
+    ROLES.ROLE_ACCESS_OFFICE.role,
+    ROLES.ROLE_SCREENING.role,
+  ];
 
   const onSubmit = (data) => {
     const formData = { ...data };

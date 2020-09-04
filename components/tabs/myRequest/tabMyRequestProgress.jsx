@@ -24,7 +24,6 @@ import EmptyArray from '../../styled/emptyArray';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 
-
 const CANCEL_REQUEST = gql`
   mutation cancelRequest(
       $requestId: String!
@@ -39,7 +38,6 @@ const CANCEL_REQUEST = gql`
       }
   }
 `;
-
 
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
@@ -81,20 +79,19 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabMyRequestToTreat({ request, queries }) {
+export default function TabMyRequestToTreat({ request, queries, emptyLabel }) {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
 
-  const rows = request.reduce((acc, dem) => {
+  const rows = React.useMemo(() => request.reduce((acc, dem) => {
     acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [request]);
 
   const [hover, setHover] = useState({});
   const [del, setDel] = useState({});
 
   const [cancelRequest] = useMutation(CANCEL_REQUEST);
-
 
   const handleMouseEnter = (index) => {
     setHover((prevState) => ({ ...prevState, [index]: true }));
@@ -231,11 +228,12 @@ export default function TabMyRequestToTreat({ request, queries }) {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="en cours" />
+    <EmptyArray type={emptyLabel} />
   );
 }
 
 TabMyRequestToTreat.propTypes = {
   request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   queries: PropTypes.arrayOf(PropTypes.object).isRequired,
+  emptyLabel: PropTypes.string.isRequired,
 };

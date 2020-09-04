@@ -129,18 +129,23 @@ export default function MenuIcon() {
     <div className={classes.root}>
       <Box fontWeight="fontWeightLight" display="flex" flexDirection="column">
         <span>{me && `${me.firstname} ${me.lastname}`}</span>
-        <Select
-          labelId="select-role"
-          id="role"
-          value={activeRole.role}
-          onChange={(evt) => handleChangeRole(evt)}
-        >
-          {me && me.roles && me.roles.map((role) => (
-            <MenuItem key={role.role} value={role.role}>
-              {ROLES[role.role].label}
-            </MenuItem>
-          ))}
-        </Select>
+        { me && me.roles && me.roles.length > 1 ? (
+          <Select
+            labelId="select-role"
+            id="role"
+            value={activeRole.role}
+            onChange={(evt) => handleChangeRole(evt)}
+          >
+            {me.roles.map((role) => (
+              <MenuItem key={role.role} value={role.role}>
+                {ROLES[role.role].label}
+              </MenuItem>
+            ))}
+          </Select>
+        ) : (
+          ROLES[me.roles[0].role].label
+        ) }
+
         <span>{activeRole.unitLabel ? activeRole.unitLabel : ''}</span>
       </Box>
       <IconButton className={classes.iconButton} size="small" onClick={handleOpenMenu}>

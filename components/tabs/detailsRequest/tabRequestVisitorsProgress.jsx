@@ -17,7 +17,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 
 import CustomTableCell from '../../styled/customTableCellHeader';
 
-import { EMPLOYEE_TYPE } from '../../../utils/constants/enums';
+import { EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS } from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 const useStyles = makeStyles({
@@ -31,7 +31,7 @@ const useStyles = makeStyles({
 });
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units,
+  id, firstname, birthLastname, rank, company, employeeType, units, status,
 }) {
   return {
     id,
@@ -40,7 +40,9 @@ function createData({
       : `${birthLastname.toUpperCase()} ${firstname}`,
     company,
     type: EMPLOYEE_TYPE[employeeType],
-    actualStep: findValidationStep(units),
+    actualStep: status === STATE_REQUEST.STATE_CANCELED.state
+      ? VISITOR_STATUS.CANCELED
+      : findValidationStep(units),
   };
 }
 
@@ -107,7 +109,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          {`Êtes-vous sûr de vouloir supprimer ${row.visiteur}
+                          {`Êtes-vous sûr de vouloir supprimer ${row.visitor}
                          de la demande ?`}
                         </Typography>
                         {rows.length === 1 && (
