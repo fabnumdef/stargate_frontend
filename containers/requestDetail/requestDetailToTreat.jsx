@@ -22,7 +22,7 @@ import {
 import Template from '../template';
 import { useLogin } from '../../lib/loginContext';
 
-import { ROLES, STATE_REQUEST, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
+import { ROLES, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const READ_REQUEST = gql`
-         query readRequest($requestId: String!, $campusId: String!, $isDone: RequestVisitorIsDone, $visitorFilters: RequestVisitorFilters) {
+         query readRequest($requestId: String!, $campusId: String!, $isDone: RequestVisitorIsDone) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
              getRequest(id: $requestId) {
@@ -63,7 +63,7 @@ export const READ_REQUEST = gql`
                  places {
                      label
                  }
-               listVisitors(isDone: $isDone, filters: $visitorFilters) {
+               listVisitors(isDone: $isDone) {
                  list {
                    id
                    rank
@@ -137,7 +137,6 @@ export default function RequestDetails({ requestId }) {
         variables: {
           requestId,
           isDone: { role: activeRole.role, value: false },
-          visitorFilters: { status: STATE_REQUEST.STATE_CREATED.state },
         },
         fetchPolicy: 'no-cache',
       });
