@@ -125,7 +125,7 @@ export default function RequestDetails({ requestId }) {
   const { addAlert } = useSnackBar();
 
   const {
-    data, loading,
+    data, loading, refetch,
   } = useQuery(READ_REQUEST, {
     variables: { requestId },
   });
@@ -170,6 +170,7 @@ export default function RequestDetails({ requestId }) {
                     idVisitor,
                   },
                 });
+                refetch();
               } catch (e) {
                 addAlert({ message: e.message, severity: 'error' });
               }
