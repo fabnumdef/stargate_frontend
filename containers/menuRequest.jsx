@@ -181,20 +181,58 @@ export default function MenuRequest() {
     fetchPolicy: 'network-only',
   });
 
-  const { data: treated, fetchMore: fetchTreated } = useQuery(LIST_REQUESTS, {
-    variables: {
+  const selectTreatedOptions = () => {
+    if (activeRole.role === ROLES.ROLE_HOST.role) {
+      return {
+        cursor: {
+          first: rowsPerPage,
+          offset: page * rowsPerPage,
+        },
+        filters: {
+          status: [
+            STATE_REQUEST.STATE_CANCELED.state,
+            STATE_REQUEST.STATE_ACCEPTED.state,
+            STATE_REQUEST.STATE_MIXED.state,
+            STATE_REQUEST.STATE_REJECTED.state,
+          ],
+        },
+      };
+    }
+    return {
       cursor: {
         first: rowsPerPage,
         offset: page * rowsPerPage,
       },
-      as: activeRole.role !== ROLES.ROLE_HOST.role
-        ? { role: activeRole.role, unit: activeRole.unit }
-        : null,
+      as: { role: activeRole.role, unit: activeRole.unit },
       isDone: { value: true },
+    };
+  };
+
+  const selectTreatedPath = (treatedData) => {
+    if (activeRole.role === ROLES.ROLE_HOST.role) {
+      return treatedData.getCampus.listMyRequests;
+    }
+    return treatedData.getCampus.listRequestByVisitorStatus;
+  };
+
+  const { data: treated, fetchMore: fetchTreated } = useQuery(
+    activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
+    {
+      variables: selectTreatedOptions(),
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network',
-  });
+  );
+
+  const mapRequestData = (data) => {
+    if (activeRole.role === ROLES.ROLE_HOST.role) {
+      return data.getCampus.listMyRequests.list;
+    }
+    return data.getCampus.listRequestByVisitorStatus.list.map((r) => ({
+      id: r.id,
+      ...r.requestData[0],
+    }));
+  };
 
   const handleFetchMore = () => {
     switch (value) {
@@ -235,16 +273,7 @@ export default function MenuRequest() {
         break;
       case 2:
         fetchTreated({
-          variables: {
-            cursor: {
-              first: rowsPerPage,
-              offset: page * rowsPerPage,
-            },
-            as: activeRole.role !== ROLES.ROLE_HOST.role
-              ? { role: activeRole.role, unit: activeRole.unit }
-              : null,
-            isDone: { value: true },
-          },
+          variables: selectTreatedOptions(),
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
             return fetchMoreResult;
@@ -310,8 +339,8 @@ export default function MenuRequest() {
     {
       index: 2,
       label: `Traitées ${
-        treated && treated.getCampus.listRequestByVisitorStatus.meta.total > 0
-          ? `(${treated.getCampus.listRequestByVisitorStatus.meta.total})`
+        treated && selectTreatedPath(treated).meta.total > 0
+          ? `(${selectTreatedPath(treated).meta.total})`
           : ''
       }`,
       access: true,
@@ -333,7 +362,7 @@ export default function MenuRequest() {
         return inProgress.getCampus.listMyRequests.meta.total;
       case 2:
         if (!treated) return 0;
-        return treated.getCampus.listRequestByVisitorStatus.meta.total;
+        return selectTreatedPath(treated).meta.total;
       default:
         return 0;
     }
@@ -402,7 +431,7 @@ export default function MenuRequest() {
           {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
           <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
             <TabMesDemandesToTreat
-              requests={toTreat ? toTreat.getCampus.listRequestByVisitorStatus.list : []}
+              requests={toTreat ? mapRequestData(toTreat) : []}
               detailLink="a-traiter"
               emptyLabel="à traiter"
             />
@@ -428,7 +457,7 @@ export default function MenuRequest() {
               />
             ) : (
               <TabMesDemandesToTreat
-                requests={treated ? treated.getCampus.listRequestByVisitorStatus.list : []}
+                requests={treated ? mapRequestData(treated) : []}
                 detailLink="traitees"
                 emptyLabel="traitée"
               />
@@ -450,7 +479,7 @@ export default function MenuRequest() {
         </Grid>
         { (value === 2
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
-        && treated.getCampus.listRequestByVisitorStatus.list.length > 0) && (
+        && selectTreatedPath(treated).list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
           <Button
             size="small"
