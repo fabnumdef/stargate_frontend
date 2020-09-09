@@ -99,7 +99,7 @@ export const MUTATE_VISITOR = gql`
          mutation validateVisitorStep(
            $requestId: String!
            $campusId: String!
-           $visitorId: String!
+           $visitorId: ObjectID!
            $as: ValidationPersonas!
            $tags: [String]
            $decision: String!

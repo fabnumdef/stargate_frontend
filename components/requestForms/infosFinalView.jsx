@@ -18,7 +18,7 @@ import TabRecapRequest from '../tabs/tabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';
 
 const DELETE_VISITOR = gql`
-  mutation deleteVisitor($idRequest: String!, $idVisitor: String!, $campusId: String!) {
+  mutation deleteVisitor($idRequest: String!, $idVisitor: ObjectID!, $campusId: String!) {
     campusId @client @export(as: "campusId")
     mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {

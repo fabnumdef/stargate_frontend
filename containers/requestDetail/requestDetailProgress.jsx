@@ -90,7 +90,7 @@ export const READ_REQUEST = gql`
 
 export const DELETE_VISITOR = gql`
          mutation deleteVisitor(
-           $idVisitor: String!
+           $idVisitor: ObjectID!
            $requestId: String!
            $campusId: String!
          ) {

@@ -10,7 +10,7 @@ import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 
 const GET_USER = gql`
-    query getUser($id: String!) {
+    query getUser($id: ObjectID!) {
         getUser(id: $id) {
             id
             firstname
@@ -34,7 +34,7 @@ const GET_USER = gql`
 `;
 
 const EDIT_USER = gql`
-    mutation editUser($user: UserInput!, $id: String!) {
+    mutation editUser($user: UserInput!, $id: ObjectID!) {
         editUser(user: $user, id: $id) {
             id
         }

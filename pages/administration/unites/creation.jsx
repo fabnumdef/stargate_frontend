@@ -22,7 +22,7 @@ const CREATE_UNIT = gql`
 `;
 
 const EDIT_USER = gql`
-    mutation editUser($id: String!, $user: UserInput!) {
+    mutation editUser($id: ObjectID!, $user: UserInput!) {
         editUser(id: $id, user: $user) {
             id
         }
@@ -30,7 +30,7 @@ const EDIT_USER = gql`
 `;
 
 const EDIT_PLACE = gql`
-    mutation editPlace($campusId: String!, $id: String!, $place: PlaceInput!) {
+    mutation editPlace($campusId: String!, $id: ObjectID!, $place: PlaceInput!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             editPlace(id: $id, place: $place) {

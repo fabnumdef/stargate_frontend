@@ -124,7 +124,7 @@ const ADD_VISITOR = gql`
 `;
 
 const EDIT_VISITOR = gql`
-    mutation editVisitor( $campusId: String!, $idRequest: String!, $visitor: RequestVisitorInput!, $idVisitor: String!) {
+    mutation editVisitor( $campusId: String!, $idRequest: String!, $visitor: RequestVisitorInput!, $idVisitor: ObjectID!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             mutateRequest(id: $idRequest) {
