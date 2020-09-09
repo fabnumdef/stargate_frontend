@@ -29,6 +29,9 @@ import CustomTableCellHeader from '../../styled/customTableCellHeader';
 import EmptyArray from '../../styled/emptyArray';
 import { useLogin } from '../../../lib/loginContext';
 
+import { STATE_REQUEST } from '../../../utils/constants/enums';
+
+
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
   {
@@ -49,7 +52,7 @@ function createData({
   id, requestData,
 }) {
   const {
-    owner, from, to, reason, places,
+    owner, from, to, reason, places, status,
   } = requestData[0];
   return {
     id,
@@ -66,8 +69,15 @@ function createData({
       if (index === places.length - 1) return `${place.label}.`;
       return `${place.label}, `;
     }),
+    status,
     reason,
   };
+}
+
+function validRequest(status) {
+  if (status === STATE_REQUEST.STATE_CANCELED.state
+  || status === STATE_REQUEST.STATE_REJECTED.state) return false;
+  return true;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -178,7 +188,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      setChosen(rows.map((row) => row.id));
+      setChosen(rows.filter((row) => validRequest(row.status)).map((row) => row.id));
     } else {
       setChosen([]);
     }
@@ -210,7 +220,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
     const onCompleted = (d) => {
       const link = document.createElement('a');
       link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
-      link.setAttribute('download', 'test.csv');
+      link.setAttribute('download', `export-${new Date()}.csv`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -337,12 +347,13 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
                   index === requests.length - 1 ? classes.borderBottom : ''
                 } ${classes.borderLeft} ${classes.textCenter}`}
               >
-
+                { validRequest(row.status) && (
                 <Checkbox
                   color="primary"
                   checked={chosen.includes(row.id)}
                   onChange={(event) => handleChangeCheckbox(event, row.id)}
                 />
+                )}
               </TableCell>
               <TableCell className={`${
                 index === requests.length - 1 ? classes.borderBottom : ''
