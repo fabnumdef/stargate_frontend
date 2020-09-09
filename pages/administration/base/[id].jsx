@@ -240,7 +240,7 @@ function EditCampus() {
         return assistant;
       }));
 
-      addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
+      return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
     } catch (e) {
       return addAlert({
         message: 'Erreur serveur, merci de réessayer',
