@@ -17,7 +17,6 @@ import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../component
 
 import Template from '../template';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
-import { STATE_REQUEST } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -94,17 +93,11 @@ export const DELETE_VISITOR = gql`
            $idVisitor: String!
            $requestId: String!
            $campusId: String!
-           $transition: String!
-           $as: ValidationPersonas!
          ) {
            campusId @client @export(as: "campusId")
-           activeRoleCache @client @export(as: "as") {
-             role
-             unit
-           }
            mutateCampus(id: $campusId) {
              mutateRequest(id: $requestId) {
-               shiftVisitor(id: $idVisitor, as: $as, transition: $transition) {
+               cancelVisitor(id: $idVisitor) {
                  id
                }
              }
@@ -132,7 +125,7 @@ export default function RequestDetails({ requestId }) {
   const { addAlert } = useSnackBar();
 
   const {
-    data, loading,
+    data, loading, refetch,
   } = useQuery(READ_REQUEST, {
     variables: { requestId },
   });
@@ -175,9 +168,9 @@ export default function RequestDetails({ requestId }) {
                   variables: {
                     requestId,
                     idVisitor,
-                    transition: STATE_REQUEST.STATE_CANCELED.state,
                   },
                 });
+                refetch();
               } catch (e) {
                 addAlert({ message: e.message, severity: 'error' });
               }

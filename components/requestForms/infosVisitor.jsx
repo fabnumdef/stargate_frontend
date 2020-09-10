@@ -34,7 +34,6 @@ import { mapVisitorData, mapVisitorEdit } from '../../utils/mappers/requestAcces
 import DatePicker from '../styled/date';
 import Nationalite from '../../utils/constants/insee/pays2019.json';
 import CheckAnimation from '../styled/animations/checked';
-import InputFile from '../styled/inputFile';
 
 const useStyles = makeStyles((theme) => ({
   radioGroup: {
@@ -155,7 +154,6 @@ const EDIT_VISITOR = gql`
     }
 `;
 
-
 export default function FormInfoVisitor({
   formData, setForm, handleNext, handleBack, selectVisitor,
 }) {
@@ -249,7 +247,6 @@ export default function FormInfoVisitor({
       });
     },
   });
-
 
   const onSubmit = (data) => {
     const visitorData = mapVisitorData(data);
@@ -537,7 +534,7 @@ export default function FormInfoVisitor({
                   name="vip"
                   defaultValue="FALSE"
                 />
-                {watch('vip') === 'TRUE' && (
+                {(selectVisitor.vip || watch('vip') === 'TRUE') && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
@@ -696,6 +693,7 @@ export default function FormInfoVisitor({
                             && errors.birthplace.message
                           }
                         fullWidth
+                        inputProps={{ maxLength: 35 }}
                       />
                       )}
                     control={control}
@@ -708,29 +706,35 @@ export default function FormInfoVisitor({
                 </Grid>
               </Grid>
             </Grid>
-            {watch('nationality') !== 'Française' && (
-            <Grid container spacing={2} className={classes.subTitle} justify="space-between">
-              <Grid item xs={12} sm={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Scan papier identité: (obligatoire pour étranger)
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} className={classes.comps}>
-                <Controller
-                  as={InputFile}
-                  rules={{
-                    required: watch('nationality') !== 'Française',
-                  }}
-                  control={control}
-                  defaultValue=""
-                  name="file"
-                  onChange={(file) => file}
-                  label="Fichier"
-                  error={Object.prototype.hasOwnProperty.call(errors, 'file')}
-                />
-              </Grid>
-            </Grid>
-            )}
+            {/* TODO add with upload file feature */}
+            {/* {watch('nationality') !== 'Française' && ( */}
+            {/* <Grid
+            container
+            spacing={2}
+            className={classes.subTitle}
+            justify="space-between"
+            > */}
+            {/*  <Grid item xs={12} sm={12}> */}
+            {/*    <Typography variant="subtitle2" gutterBottom> */}
+            {/*      Scan papier identité: (obligatoire pour étranger) */}
+            {/*    </Typography> */}
+            {/*  </Grid> */}
+            {/*  <Grid item xs={12} sm={12} md={12} className={classes.comps}> */}
+            {/*    <Controller */}
+            {/*      as={InputFile} */}
+            {/*      rules={{ */}
+            {/*        required: watch('nationality') !== 'Française', */}
+            {/*      }} */}
+            {/*      control={control} */}
+            {/*      defaultValue="" */}
+            {/*      name="file" */}
+            {/*      onChange={(file) => file} */}
+            {/*      label="Fichier" */}
+            {/*      error={Object.prototype.hasOwnProperty.call(errors, 'file')} */}
+            {/*    /> */}
+            {/*  </Grid> */}
+            {/* </Grid> */}
+            {/* )} */}
           </Grid>
           <Grid item sm={12}>
             <Grid container justify="flex-end">

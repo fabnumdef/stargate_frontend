@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
+import { useLazyQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
 
@@ -17,18 +19,15 @@ import DoneIcon from '@material-ui/icons/Done';
 import ErrorIcon from '@material-ui/icons/Error';
 import DescriptionIcon from '@material-ui/icons/Description';
 
-
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
+import { useSnackBar } from '../../../lib/ui-providers/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
-
 import EmptyArray from '../../styled/emptyArray';
-import checkStatusVisitor, { HIDDEN_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
 import { useLogin } from '../../../lib/loginContext';
-import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
@@ -40,11 +39,6 @@ const columns = [
   { id: 'reason', label: 'Motif' },
 ];
 
-function checkAllVisitors(visitors, activeRole) {
-  const visitorsStatus = visitors.map((visitor) => checkStatusVisitor(visitor.status, activeRole));
-  return !visitorsStatus.every((visitor) => visitor.step === HIDDEN_STEP_STATUS);
-}
-
 const StyledFormLabel = withStyles({
   root: {
     margin: 'auto',
@@ -52,13 +46,13 @@ const StyledFormLabel = withStyles({
 })(FormControlLabel);
 
 function createData({
-  id, owner, from, to, reason, places, listVisitors, status,
-}, activeRole) {
-  const isActive = status === STATE_REQUEST.STATE_CREATED.state
-    ? checkAllVisitors(listVisitors.list, activeRole)
-    : true;
+  id, requestData,
+}) {
+  const {
+    owner, from, to, reason, places,
+  } = requestData[0];
   return {
-    id: isActive ? id : `Traitement terminé - ${id}`,
+    id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
@@ -73,7 +67,6 @@ function createData({
       return `${place.label}, `;
     }),
     reason,
-    isActive,
   };
 }
 
@@ -98,8 +91,14 @@ const useStyles = makeStyles((theme) => ({
   borderRight: {
     borderRight: 'solid 1px',
   },
+  borderBottom: {
+    borderBottom: 'solid 1px',
+  },
   borderLeft: {
     borderLeft: 'solid 1px',
+  },
+  textCenter: {
+    textAlign: 'center',
   },
   rowForm: {
     backgroundColor: fade(theme.palette.primary.main, 0.05),
@@ -134,24 +133,55 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TabMyRequestUntreated({ requests, detailLink }) {
+export const LIST_MY_VISITORS = gql`
+         query listMyVisitors(
+           $campusId: String!
+           $isDone: RequestVisitorIsDone!
+           $requestsId: [String]
+         ) {
+           campusId @client @export(as: "campusId")
+           getCampus(id: $campusId) {
+             listVisitors(isDone: $isDone, requestsId: $requestsId) {
+               generateCSVExportLink{
+                token
+                link
+               }
+            }
+          }
+         }
+       `;
+
+const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, ref) => {
   const classes = useStyles();
+
+  const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
 
-  const rows = requests.reduce((acc, dem) => {
-    acc.push(createData(dem, activeRole));
+  const rows = React.useMemo(() => requests.reduce((acc, dem) => {
+    acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [requests]);
 
   const [hover, setHover] = useState({});
-
-
   // sort Date
   const [order, setOrder] = useState('asc');
+
+  const [chosen, setChosen] = useState([]);
+
+  // getLink for the CSV
+  const [exportCsv, { data, loading, error }] = useLazyQuery(LIST_MY_VISITORS);
 
   const createSortHandler = () => () => {
     const isAsc = order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      setChosen(rows.map((row) => row.id));
+    } else {
+      setChosen([]);
+    }
   };
 
   const handleMouseEnter = (index) => {
@@ -163,9 +193,72 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
+  const handleChangeCheckbox = (event, id) => {
+    if (event.target.checked) {
+      setChosen((ids) => [...ids, id]);
+    } else {
+      const chosenTemp = [...chosen];
+      const indexId = chosenTemp.indexOf(id);
+      if (indexId > -1) {
+        chosenTemp.splice(indexId, 1);
+      }
+      setChosen(chosenTemp);
+    }
+  };
+
+  React.useEffect(() => {
+    const onCompleted = (d) => {
+      const link = document.createElement('a');
+      link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
+      link.setAttribute('download', 'test.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    };
+
+    const onError = (e) => {
+      addAlert({
+        message:
+              e.message,
+        severity: 'error',
+      });
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !loading && !error && data) {
+        onCompleted(data);
+      } else if (onError && !loading && error) {
+        onError(error);
+      }
+    }
+  }, [loading, error, data]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      async execExport() {
+        if (chosen.length > 0) {
+          await exportCsv({
+            variables: {
+              isDone: { role: activeRole.role, value: true },
+              requestsId: chosen,
+            },
+          });
+        } else {
+          addAlert({
+            message:
+              'Aucune visite selectionée',
+            severity: 'error',
+          });
+        }
+      },
+    }),
+  );
+  // triggerEvent from Parent Component
+
   return requests.length > 0 ? (
     <TableContainer>
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             {columns.map((column) => (
@@ -183,12 +276,13 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
               Export
             </CustomTableCellHeader>
           </TableRow>
-          <TableRow>
+          <TableRow className={classes.textCenter}>
             <CustomTableCellHeader className={`${classes.textCenter} ${classes.borderLeft}`}>
               <StyledFormLabel
                 control={(
                   <Checkbox
                     color="primary"
+                    onChange={(event) => handleSelectAll(event)}
                   />
                       )}
               />
@@ -214,7 +308,6 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
               role="checkbox"
               tabIndex={-1}
               key={row.code}
-              className={row.isActive ? '' : classes.inactive}
             >
               {columns.map((column) => {
                 const value = row[column.id];
@@ -229,7 +322,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
                 );
               })}
               <TableCell key="modif">
-                {row.isActive && hover[index] && (
+                {hover[index] && (
                 <div style={{ float: 'right' }}>
                   <Link href={`/demandes/${detailLink}/${row.id}`}>
                     <IconButton aria-label="modifier" className={classes.icon} color="primary">
@@ -239,15 +332,35 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
                 </div>
                 )}
               </TableCell>
+              <TableCell
+                className={`${
+                  index === requests.length - 1 ? classes.borderBottom : ''
+                } ${classes.borderLeft} ${classes.textCenter}`}
+              >
+
+                <Checkbox
+                  color="primary"
+                  checked={chosen.includes(row.id)}
+                  onChange={(event) => handleChangeCheckbox(event, row.id)}
+                />
+              </TableCell>
+              <TableCell className={`${
+                index === requests.length - 1 ? classes.borderBottom : ''
+              } ${classes.borderRight} ${classes.textCenter}`}
+              >
+                26/08/2020
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="" />
+    <EmptyArray type={emptyLabel} />
   );
-}
+});
+
+export default TabMyRequestUntreated;
 
 TabMyRequestUntreated.propTypes = {
   request: PropTypes.arrayOf(
@@ -266,6 +379,7 @@ TabMyRequestUntreated.propTypes = {
     }),
   ),
   detailLink: PropTypes.string.isRequired,
+  emptyLabel: PropTypes.string.isRequired,
 };
 
 TabMyRequestUntreated.defaultProps = {

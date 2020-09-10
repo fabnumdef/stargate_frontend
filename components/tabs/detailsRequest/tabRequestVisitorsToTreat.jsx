@@ -216,6 +216,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       if (row.step === ACTIVE_STEP_STATUS) {
         newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue.label : null;
         newArray[newArray.indexOf(row)].decision = checkbox ? checkedValue.validation : null;
+        newArray[newArray.indexOf(row)].tags = checkedValue.tags;
       }
     });
     setDataRows(newArray);
@@ -224,7 +225,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       if (checkbox) {
         return {
           ...check,
-          value: check.label === checkedValue,
+          value: check.label === checkedValue.label,
         };
       }
       return {
@@ -292,7 +293,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   case 'criblage':
                     return (
                       activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
-                      <CustomTableHeader rowSpan={2} key={headCell.id}>
+                      <CustomTableHeader rowSpan={2} key={headCell.id} style={{ 'text-align': 'center' }}>
                         {/* @todo length etc ... */ `${headCell.label}`}
                       </CustomTableHeader>
                       )

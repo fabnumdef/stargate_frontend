@@ -31,11 +31,8 @@ const columns = [
 ];
 
 function createData({
-  id, requestData,
+  id, owner, from, to, reason, places,
 }) {
-  const {
-    owner, from, to, reason, places,
-  } = requestData[0];
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
@@ -83,13 +80,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TabMyRequestUntreated({ requests, detailLink }) {
+export default function TabMyRequestUntreated({ requests, detailLink, emptyLabel }) {
   const classes = useStyles();
-
-  const rows = requests.reduce((acc, dem) => {
+  const rows = React.useMemo(() => requests.reduce((acc, dem) => {
     acc.push(createData(dem));
     return acc;
-  }, []);
+  }, []), [requests]);
 
   const [hover, setHover] = useState({});
 
@@ -159,7 +155,7 @@ export default function TabMyRequestUntreated({ requests, detailLink }) {
       </Table>
     </TableContainer>
   ) : (
-    <EmptyArray type="traitée" />
+    <EmptyArray type={emptyLabel} />
   );
 }
 
@@ -180,6 +176,7 @@ TabMyRequestUntreated.propTypes = {
     }),
   ),
   detailLink: PropTypes.string.isRequired,
+  emptyLabel: PropTypes.string.isRequired,
 };
 
 TabMyRequestUntreated.defaultProps = {

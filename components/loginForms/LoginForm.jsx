@@ -88,7 +88,7 @@ export default function LoginForm() {
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
                 >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                  { showPassword ? <VisibilityOff /> : <Visibility /> }
                 </IconButton>
               </InputAdornment>
             ),
