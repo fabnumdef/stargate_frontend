@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginBottom: '-16px',
     marginTop: '-16px',
+    padding: '1px 3px 1px 3px',
   },
   buttonsContainer: {
     display: 'flex',

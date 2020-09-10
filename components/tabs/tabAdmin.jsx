@@ -109,7 +109,13 @@ export default function TabAdmin({
               {column.label}
             </CustomTableCellHeader>
           ))}
-          <CustomTableCellHeader key="actions" align="right">
+          <CustomTableCellHeader
+            key="actions"
+            align="right"
+            style={{
+              minWidth: '130px',
+            }}
+          >
             <Link href={tabData().createPath}><Button type="button" variant="contained" color="primary">Ajouter</Button></Link>
           </CustomTableCellHeader>
         </TableRow>
