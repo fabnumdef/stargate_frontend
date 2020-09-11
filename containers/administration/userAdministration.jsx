@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
-import { useApolloClient } from '@apollo/react-hooks';
+import { useApolloClient } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';

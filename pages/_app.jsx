@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
+import { ApolloProvider } from '@apollo/client';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
 
 // Material-UI providers
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { useApollo } from '../lib/apollo';
+import { LoginContextProvider } from '../lib/loginContext';
 import theme from '../styles/theme';
 import { SnackBarProvider } from '../lib/ui-providers/snackbar';
 
@@ -18,22 +21,31 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
 
+  const client = useApollo(pageProps.initialApolloState);
+
   return (
-    <>
-      <Head>
-        <title>Stargate</title>
-      </Head>
-      <ThemeProvider theme={theme}>
-        <SnackBarProvider>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          {/* pageProps are never the same,
+    <SnackBarProvider>
+      <ApolloProvider client={client}>
+        <ThemeProvider theme={theme}>
+
+          <LoginContextProvider client={client}>
+            <Head>
+              <title>Stargate</title>
+            </Head>
+
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            {/* pageProps are never the same,
             and all needed by the component, but well extracted from App props */}
-          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-          <Component {...pageProps} />
-        </SnackBarProvider>
-      </ThemeProvider>
-    </>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <Component {...pageProps} />
+
+          </LoginContextProvider>
+
+        </ThemeProvider>
+      </ApolloProvider>
+    </SnackBarProvider>
+
   );
 }
 

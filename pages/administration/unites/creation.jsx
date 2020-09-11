@@ -2,7 +2,6 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UnitForm from '../../../components/administrationForms/unitForm';
@@ -162,4 +161,4 @@ function CreateUnit() {
   );
 }
 
-export default withApollo()(CreateUnit);
+export default CreateUnit;

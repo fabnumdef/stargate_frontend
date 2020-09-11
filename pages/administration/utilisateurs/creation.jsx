@@ -2,7 +2,6 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
@@ -97,4 +96,4 @@ function CreateUser() {
   );
 }
 
-export default withApollo()(CreateUser);
+export default CreateUser;

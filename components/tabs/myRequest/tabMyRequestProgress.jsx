@@ -17,7 +17,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import TableContainer from '@material-ui/core/TableContainer';
 import EmptyArray from '../../styled/emptyArray';

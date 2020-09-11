@@ -2,7 +2,6 @@ import React, {
   createContext, useEffect, useState, useContext,
 } from 'react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
@@ -102,7 +101,7 @@ export function LoginContextProvider(props) {
   const router = useRouter();
   const { addAlert } = useSnackBar();
 
-  const { data: init } = useQuery(GET_INITIALIZEDCACHE);
+  const init = client.readQuery({ query: GET_INITIALIZEDCACHE });
 
   const tokenDuration = () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : undefined;

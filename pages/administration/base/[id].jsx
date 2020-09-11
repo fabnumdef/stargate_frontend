@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
@@ -19,7 +18,7 @@ const GET_USERS = gql`
                 lastname
                 roles {
                     role
-                    userInCharge 
+                    userInCharge
                     campuses {
                         id
                         label
@@ -280,4 +279,4 @@ function EditCampus() {
   );
 }
 
-export default withApollo()(EditCampus);
+export default EditCampus;

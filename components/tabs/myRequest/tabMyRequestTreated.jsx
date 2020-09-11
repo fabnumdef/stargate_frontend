@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Link from 'next/link';

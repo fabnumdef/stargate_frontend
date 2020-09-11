@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import gql from 'graphql-tag';
 
 import Link from 'next/link';
@@ -69,7 +69,7 @@ export const READ_REQUEST = gql`
                    birthLastname
                    employeeType
                    company
-                   status 
+                   status
                    units {
                      id
                      label

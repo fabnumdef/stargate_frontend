@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 
 // Material Import
@@ -70,6 +70,10 @@ export const AntTab = withStyles((theme) => ({
 // eslint-disable-next-line react/jsx-props-no-spreading
 }))((props) => <Tab disableRipple {...props} />);
 
+const GET_MENU_VALUE = gql`
+    query GetMenuValue {
+      menuValue
+    }`;
 export const LIST_REQUESTS = gql`
          query listRequestByVisitorStatus(
            $campusId: String!
@@ -80,6 +84,7 @@ export const LIST_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+               id
                listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
                  list {
                      id
@@ -114,6 +119,7 @@ export const LIST_MY_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listMyRequests(filters: $filters, cursor: $cursor) {
                list {
                  id
@@ -133,11 +139,16 @@ export const LIST_MY_REQUESTS = gql`
          }
        `;
 
+
 export default function MenuRequest() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
-  const [value, setValue] = React.useState(activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+  // const client = useApolloClient();
+
+  const [value, setValue] = React.useState(
+    () => (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0),
+  );
 
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
@@ -149,6 +160,7 @@ export default function MenuRequest() {
   const childRef = React.useRef();
 
   const initMount = React.useRef(true);
+
 
   const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
@@ -165,7 +177,6 @@ export default function MenuRequest() {
         isDone: { value: false },
       },
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: 'network-only',
     },
   );
 
@@ -178,10 +189,9 @@ export default function MenuRequest() {
       },
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'network-only',
   });
 
-  const selectTreatedOptions = () => {
+  const selectTreatedOptions = React.useMemo(() => {
     if (activeRole.role === ROLES.ROLE_HOST.role) {
       return {
         cursor: {
@@ -206,7 +216,7 @@ export default function MenuRequest() {
       as: { role: activeRole.role, unit: activeRole.unit },
       isDone: { value: true },
     };
-  };
+  }, [activeRole.role, activeRole.unit, page, rowsPerPage]);
 
   const selectTreatedPath = (treatedData) => {
     if (activeRole.role === ROLES.ROLE_HOST.role) {
@@ -218,9 +228,8 @@ export default function MenuRequest() {
   const { data: treated, fetchMore: fetchTreated } = useQuery(
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
-      variables: selectTreatedOptions(),
+      variables: selectTreatedOptions,
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: 'cache-and-network',
     },
   );
 
@@ -297,6 +306,7 @@ export default function MenuRequest() {
     if (initMount.current) {
       initMount.current = false;
     }
+    console.log('ok');
     handleFetchMore();
   }, [page, rowsPerPage]);
 
@@ -306,7 +316,6 @@ export default function MenuRequest() {
       variables: {
         filters: { status: STATE_REQUEST.STATE_CREATED.state },
       },
-      fetchPolicy: 'cache-and-network',
     },
     {
       query: LIST_REQUESTS,
@@ -314,7 +323,6 @@ export default function MenuRequest() {
         isDone: { value: true },
         as: { role: activeRole.role, unit: activeRole.unit },
       },
-      fetchPolicy: 'cache-and-network',
     }];
 
   const tabList = [
@@ -347,7 +355,7 @@ export default function MenuRequest() {
     },
   ];
 
-  const handleChange = (event, newValue) => {
+  const handleChange = async (event, newValue) => {
     setValue(newValue);
     setPage(0);
   };

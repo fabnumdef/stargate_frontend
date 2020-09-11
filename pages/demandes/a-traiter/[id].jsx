@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import { RequestDetailToTreat } from '../../../containers';
 
 function RequestDetailPage() {
@@ -15,4 +14,4 @@ function RequestDetailPage() {
   );
 }
 
-export default withApollo()(RequestDetailPage);
+export default RequestDetailPage;

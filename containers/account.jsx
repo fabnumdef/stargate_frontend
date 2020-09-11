@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CHECK_ACTUAL_PASS = gql`  
+export const CHECK_ACTUAL_PASS = gql`
     mutation checkActualPass($email: EmailAddress!, $password: String) {
         me @client {
             email {
