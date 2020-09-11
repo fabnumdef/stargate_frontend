@@ -295,7 +295,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                   case 'criblage':
                     return (
                       activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
-                        <CustomTableHeader rowSpan={2} key={headCell.id}>
+                        <CustomTableHeader rowSpan={2} key={headCell.id} style={{ 'text-align': 'center' }}>
                           {/* @todo length etc ... */ `${headCell.label}` }
                         </CustomTableHeader>
                       )
