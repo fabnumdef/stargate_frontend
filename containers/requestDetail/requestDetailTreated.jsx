@@ -43,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export const READ_REQUEST = gql`
     query readRequest($requestId: String!, $campusId: String!) {
         campusId @client @export(as: "campusId")
@@ -65,6 +64,7 @@ export const READ_REQUEST = gql`
                     list {
                         id
                         rank
+                        vip
                         firstname
                         birthLastname
                         employeeType
@@ -133,7 +133,6 @@ export default function RequestDetailsTreated({ requestId }) {
       setLoadData(false);
     }
   }, [data]);
-
 
   if (loadData) {
     return <div />;
