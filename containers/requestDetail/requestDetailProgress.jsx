@@ -43,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!) {
            campusId @client @export(as: "campusId")
@@ -64,12 +63,13 @@ export const READ_REQUEST = gql`
                listVisitors {
                  list {
                    id
+                   vip
                    rank
                    firstname
                    birthLastname
                    employeeType
                    company
-                   status 
+                   status
                    units {
                      id
                      label
@@ -105,7 +105,6 @@ export const DELETE_VISITOR = gql`
          }
        `;
 
-
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
   const router = useRouter();
@@ -120,7 +119,6 @@ export default function RequestDetails({ requestId }) {
         }
     `,
   });
-
 
   const { addAlert } = useSnackBar();
 

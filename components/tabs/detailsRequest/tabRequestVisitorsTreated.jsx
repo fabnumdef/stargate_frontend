@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
+import VisitorGrid from '../../styled/visitor';
 
 import {
   EMPLOYEE_TYPE,
@@ -26,10 +27,11 @@ function findRejectedRole(units) {
 }
 
 function createData({
-  id, firstname, birthLastname, units, rank, company, employeeType, status,
+  id, firstname, birthLastname, units, rank, company, employeeType, status, vip,
 }) {
   return {
     id,
+    vip,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -61,30 +63,40 @@ export default function TabRequestVisitors({ visitors }) {
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
-            {columns.map((column) => (
+            { columns.map((column) => (
               <CustomTableCell key={column.id} align={column.align}>
-                {column.label}
+                { column.label }
               </CustomTableCell>
-            ))}
+            )) }
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          { rows.map((row) => (
             <TableRow
               role="checkbox"
               tabIndex={-1}
               key={row.id}
             >
-              {columns.map((column) => {
+              { columns.map((column) => {
                 const value = row[column.id];
                 return (
-                  <TableCell key={column.id} align={column.align}>
-                    {column.format && typeof value === 'number' ? column.format(value) : value}
-                  </TableCell>
+                  column.id === 'visitor' ? (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                    >
+                      <VisitorGrid name={value} vip={row.vip} />
+                    </TableCell>
+                  )
+                    : (
+                      <TableCell key={column.id} align={column.align}>
+                        { column.format && typeof value === 'number' ? column.format(value) : value }
+                      </TableCell>
+                    )
                 );
-              })}
+              }) }
             </TableRow>
-          ))}
+          )) }
         </TableBody>
       </Table>
     </TableContainer>

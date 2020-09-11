@@ -16,6 +16,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import TableContainer from '@material-ui/core/TableContainer';
 
 import CustomTableCell from '../../styled/customTableCellHeader';
+import VisitorGrid from '../../styled/visitor';
 
 import { EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS } from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
@@ -31,10 +32,11 @@ const useStyles = makeStyles({
 });
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units, status,
+  id, firstname, birthLastname, rank, company, employeeType, units, status, vip,
 }) {
   return {
     id,
+    vip,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -83,7 +85,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
   };
 
   const handleMouseLeave = (index) => {
-    setTimeout(() => {}, 2000);
+    setTimeout(() => { }, 2000);
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
@@ -92,16 +94,16 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
-            {columns.map((column) => (
+            { columns.map((column) => (
               <CustomTableCell key={column.id} align={column.align}>
-                {column.label}
+                { column.label }
               </CustomTableCell>
-            ))}
+            )) }
             <CustomTableCell key="actions" style={{ minWidth: '80px' }} />
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => {
+          { rows.map((row, index) => {
             if (del[index]) {
               return (
                 <TableRow tabIndex={-1} key={row.emailVisiteur}>
@@ -109,14 +111,14 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          {`Êtes-vous sûr de vouloir supprimer ${row.visitor}
+                          { `Êtes-vous sûr de vouloir supprimer ${row.visiteur}
                          de la demande ?`}
                         </Typography>
-                        {rows.length === 1 && (
-                        <Typography variant="body1" color="error">
-                          Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                        </Typography>
-                        )}
+                        { rows.length === 1 && (
+                          <Typography variant="body1" color="error">
+                            Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                          </Typography>
+                        ) }
                       </Grid>
                       <Grid item sm={2}>
                         <div style={{ float: 'right' }}>
@@ -152,40 +154,49 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                 tabIndex={-1}
                 key={row.id}
               >
-                {columns.map((column) => {
+                { columns.map((column) => {
                   const value = row[column.id];
                   switch (column.id) {
+                    case 'visitor':
+                      return (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                        >
+                          <VisitorGrid name={value} vip={row.vip} />
+                        </TableCell>
+                      );
                     case 'step':
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {row.actualStep}
+                          { row.actualStep }
                         </TableCell>
                       );
                     default:
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                          { column.format && typeof value === 'number' ? column.format(value) : value }
                         </TableCell>
                       );
                   }
-                })}
+                }) }
                 <TableCell key="actions">
-                  {hover[index] && (
-                  <div style={{ float: 'right' }}>
-                    <IconButton
-                      color="primary"
-                      aria-label="delete"
-                      className={classes.icon}
-                      onClick={() => handleDelete(index)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </div>
-                  )}
+                  { hover[index] && (
+                    <div style={{ float: 'right' }}>
+                      <IconButton
+                        color="primary"
+                        aria-label="delete"
+                        className={classes.icon}
+                        onClick={() => handleDelete(index)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
+                  ) }
                 </TableCell>
               </TableRow>
             );
-          })}
+          }) }
         </TableBody>
       </Table>
     </TableContainer>
