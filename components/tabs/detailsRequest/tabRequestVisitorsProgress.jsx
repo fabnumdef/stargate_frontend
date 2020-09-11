@@ -111,7 +111,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                     <Grid container>
                       <Grid item sm={10}>
                         <Typography variant="body1">
-                          { `Êtes-vous sûr de vouloir supprimer ${row.visiteur}
+                          { `Êtes-vous sûr de vouloir supprimer ${row.visitor}
                          de la demande ?`}
                         </Typography>
                         { rows.length === 1 && (
