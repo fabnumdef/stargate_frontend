@@ -58,9 +58,6 @@ const useStyles = makeStyles((theme) => ({
   comps: {
     marginLeft: '3vw',
   },
-  compsLow: {
-    marginLeft: '1.5vw',
-  },
   buttonNext: {
     marginTop: '4vh',
   },
@@ -86,8 +83,7 @@ const useStyles = makeStyles((theme) => ({
   },
   radioNature: {
     flexDirection: 'row',
-    marginLeft: '-6%',
-    marginRight: '0px',
+    marginLeft: '-7%',
   },
   buttonCancel: {
     marginRight: '5px',
@@ -451,7 +447,7 @@ export default function FormInfosClaimant({
                 </Typography>
               </Grid>
 
-              <Grid className={classes.compsLow} item md={12} xs={12} sm={12}>
+              <Grid className={classes.comps} item md={12} xs={12} sm={12}>
                 <Controller
                   as={(
                     <ListLieux
