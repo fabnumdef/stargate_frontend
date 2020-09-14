@@ -16,6 +16,7 @@ const GET_UNITS_LIST = gql`
     query listUnits($cursor: OffsetCursor, $filters: UnitFilters, $campusId: String!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listUnits(cursor: $cursor, filters: $filters) {
                 meta {
                     offset

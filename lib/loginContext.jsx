@@ -164,7 +164,7 @@ export function LoginContextProvider(props) {
         ? me.roles[activeRoleNumber].campuses[0].id
         : null;
 
-      await client.cache.writeQuery({
+      await client.writeQuery({
         query: INIT_CACHE,
         data: {
           initializedCache: true,
@@ -306,8 +306,6 @@ LoginContextProvider.propTypes = {
     resetStore: PropTypes.func.isRequired,
     mutate: PropTypes.func.isRequired,
     query: PropTypes.func.isRequired,
-    cache: PropTypes.shape({
-      writeData: PropTypes.func.isRequired,
-    }),
+    cache: PropTypes.object.isRequired,
   }).isRequired,
 };

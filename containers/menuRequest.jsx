@@ -70,10 +70,6 @@ export const AntTab = withStyles((theme) => ({
 // eslint-disable-next-line react/jsx-props-no-spreading
 }))((props) => <Tab disableRipple {...props} />);
 
-const GET_MENU_VALUE = gql`
-    query GetMenuValue {
-      menuValue
-    }`;
 export const LIST_REQUESTS = gql`
          query listRequestByVisitorStatus(
            $campusId: String!
@@ -147,7 +143,18 @@ export default function MenuRequest() {
   // const client = useApolloClient();
 
   const [value, setValue] = React.useState(
-    () => (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0),
+    () => {
+      try {
+      // Get from local storage by key
+        const item = JSON.parse(window.localStorage.getItem('menuValue'));
+
+        // Parse stored json or if none return initialValue
+        if (item) return item;
+        return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+      } catch (error) {
+        return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+      }
+    },
   );
 
   /** @todo searchField filters
@@ -247,6 +254,7 @@ export default function MenuRequest() {
     switch (value) {
       case 0:
         fetchToTreat({
+          query: LIST_REQUESTS,
           variables: {
             cursor: {
               first: rowsPerPage,
@@ -259,18 +267,22 @@ export default function MenuRequest() {
             isDone: { value: false },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
+            if (!fetchMoreResult) {
+              return prev;
+            }
             return fetchMoreResult;
           },
         });
         break;
       case 1:
         fetchInProgress({
+          query: LIST_MY_REQUESTS,
           variables: {
             cursor: {
               first: rowsPerPage,
               offset: page * rowsPerPage,
             },
+            filters: { status: STATE_REQUEST.STATE_CREATED.state },
           },
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) {
@@ -282,7 +294,8 @@ export default function MenuRequest() {
         break;
       case 2:
         fetchTreated({
-          variables: selectTreatedOptions(),
+          query: activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
+          variables: selectTreatedOptions,
           updateQuery: (prev, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
             return fetchMoreResult;
@@ -306,7 +319,6 @@ export default function MenuRequest() {
     if (initMount.current) {
       initMount.current = false;
     }
-    console.log('ok');
     handleFetchMore();
   }, [page, rowsPerPage]);
 
@@ -356,6 +368,7 @@ export default function MenuRequest() {
   ];
 
   const handleChange = async (event, newValue) => {
+    window.localStorage.setItem('menuValue', JSON.stringify(newValue));
     setValue(newValue);
     setPage(0);
   };

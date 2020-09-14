@@ -41,19 +41,20 @@ function createApolloClient() {
     resolvers,
   });
 
-  client.writeQuery(
-    {
-      query: gql`
+  if (typeof window !== 'undefined') {
+    client.writeQuery(
+      {
+        query: gql`
       query initCache {
         initializedCache
       }
       `,
-      data: {
-        initializedCache: false,
+        data: {
+          initializedCache: false,
+        },
       },
-    },
-  );
-
+    );
+  }
   return client;
 }
 

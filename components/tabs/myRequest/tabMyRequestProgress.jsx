@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -82,6 +82,7 @@ const useStyles = makeStyles({
 export default function TabMyRequestToTreat({ request, queries, emptyLabel }) {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
+  const router = useRouter();
 
   const rows = React.useMemo(() => request.reduce((acc, dem) => {
     acc.push(createData(dem));
@@ -205,11 +206,14 @@ export default function TabMyRequestToTreat({ request, queries, emptyLabel }) {
                 <TableCell key="actions">
                   {hover[index] && (
                   <div style={{ float: 'right' }}>
-                    <Link href={`/demandes/en-cours/${row.id}`}>
-                      <IconButton color="primary" aria-label="link" className={classes.icon}>
-                        <DescriptionIcon />
-                      </IconButton>
-                    </Link>
+                    <IconButton
+                      color="primary"
+                      aria-label="link"
+                      className={classes.icon}
+                      onClick={() => router.push(`/demandes/en-cours/${row.id}`)}
+                    >
+                      <DescriptionIcon />
+                    </IconButton>
                     <IconButton
                       color="primary"
                       aria-label="delete"
