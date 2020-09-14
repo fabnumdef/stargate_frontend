@@ -43,6 +43,7 @@ const theme = createMuiTheme(
       MuiInputBase: {
         input: {
           height: '0.9em',
+          fontSize: '0.875rem',
         },
       },
       MuiTypography: {
@@ -57,7 +58,7 @@ const theme = createMuiTheme(
           color: '#0f4194',
         },
         body1: {
-          fontSize: '0.85rem',
+          fontSize: '0.875rem',
         },
         body2: {
           fontSize: '0.75rem',
@@ -89,7 +90,7 @@ const theme = createMuiTheme(
       },
       MuiFormControlLabel: {
         label: {
-          fontSize: '0.90rem',
+          fontSize: '0.875rem',
         },
       },
       MuiExpansionPanelDetails: {
@@ -133,6 +134,11 @@ const theme = createMuiTheme(
           },
         },
       },
+      MuiTab: {
+        textColorInherit: {
+          opacity: 1,
+        },
+      },
       MuiOutlinedInput: {
         notchedOutline: {
           borderColor: '#0f4194',
@@ -140,7 +146,7 @@ const theme = createMuiTheme(
       },
     },
   },
-  frFR
+  frFR,
 );
 
 export default theme;

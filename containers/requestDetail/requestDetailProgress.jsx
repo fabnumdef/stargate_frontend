@@ -18,14 +18,14 @@ import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../component
 import Template from '../template';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   idRequest: {
     marginLeft: '10px',
@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '20px 0',
   },
 }));
-
 
 export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!) {
@@ -69,7 +68,7 @@ export const READ_REQUEST = gql`
                    birthLastname
                    employeeType
                    company
-                   status 
+                   status
                    units {
                      id
                      label
@@ -105,7 +104,6 @@ export const DELETE_VISITOR = gql`
          }
        `;
 
-
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
   const router = useRouter();
@@ -120,7 +118,6 @@ export default function RequestDetails({ requestId }) {
         }
     `,
   });
-
 
   const { addAlert } = useSnackBar();
 

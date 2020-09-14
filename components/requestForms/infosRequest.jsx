@@ -69,7 +69,6 @@ const useStyles = makeStyles((theme) => ({
   instruction: {
     marginBottom: '1%',
     fontStyle: 'italic',
-    fontSize: '0.85rem',
     fontWeight: 'bold',
     marginLeft: '2%',
   },
@@ -280,7 +279,7 @@ export default function FormInfosClaimant({
               {/* Item 1 */}
 
               <Grid item xs={12} sm={12}>
-                <Typography variant="subtitle2">Nature visite:</Typography>
+                <Typography variant="subtitle2">Nature visite :</Typography>
               </Grid>
               <Grid className={classes.comps} item xs={12} sm={12}>
                 <FormControl
@@ -316,7 +315,7 @@ export default function FormInfosClaimant({
               </Grid>
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Période d&apos;accès:
+                  Période d&apos;accès :
                 </Typography>
               </Grid>
 
@@ -387,7 +386,7 @@ export default function FormInfosClaimant({
                 <Grid container spacing={1} style={{ color: '#c78005' }}>
                   <Grid item xs={12} md={12}>
                     <Typography variant="body1">
-                      Délais de traitement avant la date de visite:
+                      Délais de traitement avant la date de visite :
                     </Typography>
                     <List>
                       <ListItem className={classes.infoTime}>
@@ -415,7 +414,7 @@ export default function FormInfosClaimant({
 
               {/* Item 6: Motif */}
               <Grid item xs={12} sm={12}>
-                <Typography variant="subtitle2">Motif de la visite:</Typography>
+                <Typography variant="subtitle2">Motif de la visite :</Typography>
               </Grid>
               <Grid className={classes.comps} item sm={12} xs={12}>
                 <TextField
@@ -444,7 +443,7 @@ export default function FormInfosClaimant({
 
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Accès lieux
+                  Accès lieux :
                 </Typography>
               </Grid>
 
