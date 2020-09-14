@@ -59,6 +59,13 @@ const useStyles = makeStyles((theme) => ({
   radioGroup: {
     flexDirection: 'row',
   },
+  instruction: {
+    marginBottom: '1%',
+    fontStyle: 'italic',
+    fontSize: '0.85rem',
+    fontWeight: 'bold',
+    marginLeft: '2%',
+  },
   textFieldBlock: {
     paddingLeft: '100px',
   },
@@ -178,7 +185,7 @@ const UnitForm = ({
 
   return placesList ? (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUnitForm}>
-      <Typography style={{ fontWeight: 'bold', fontStyle: 'italic' }}>Tous les champs sont obligatoires</Typography>
+      <Typography className={classes.instruction}>Tous les champs sont obligatoires</Typography>
       <Grid container item sm={12} xs={12}>
         <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>

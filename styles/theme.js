@@ -48,11 +48,11 @@ const theme = createMuiTheme(
       MuiTypography: {
         subtitle1: {
           fontWeight: 'bold',
-          fontSize: '1.1rem',
+          fontSize: '1.05rem',
         },
         subtitle2: {
           fontWeight: '300',
-          fontSize: '1.1rem',
+          fontSize: '1.05rem',
           lineHeight: '1.8',
           color: '#0f4194',
         },
@@ -63,7 +63,7 @@ const theme = createMuiTheme(
           fontSize: '0.75rem',
         },
         h5: {
-          fontSize: '1.35rem',
+          fontSize: '1.40rem',
           fontWeight: 600,
           fontStretch: 'normal',
           lineHeight: 1.32,
@@ -140,7 +140,7 @@ const theme = createMuiTheme(
       },
     },
   },
-  frFR,
+  frFR
 );
 
 export default theme;

@@ -60,8 +60,11 @@ const useStyles = makeStyles((theme) => ({
     right: '10vw',
   },
   instruction: {
+    marginBottom: '1%',
     fontStyle: 'italic',
-    fontSize: '0.65rem',
+    fontSize: '0.85rem',
+    fontWeight: 'bold',
+    marginLeft: '2%',
   },
   formVip: {
     width: '100%',

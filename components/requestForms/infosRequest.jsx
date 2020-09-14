@@ -69,8 +69,9 @@ const useStyles = makeStyles((theme) => ({
   instruction: {
     marginBottom: '1%',
     fontStyle: 'italic',
-    fontSize: '0.65rem',
-
+    fontSize: '0.85rem',
+    fontWeight: 'bold',
+    marginLeft: '2%',
   },
   infoTime: {
     paddingTop: '0px',
