@@ -20,6 +20,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
@@ -29,12 +32,10 @@ import { mapRequestEdit } from '../../utils/mappers/requestAcces';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 // Date Validators
 
-
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
 import { useLogin } from '../../lib/loginContext';
-
 
 const useStyles = makeStyles((theme) => ({
   radioGroup: {
@@ -72,12 +73,21 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '1%',
     fontStyle: 'italic',
     fontSize: '0.65rem',
+
+  },
+  infoTime: {
+    paddingTop: '0px',
+    paddingBottom: '0px',
+    marginTop: '0px',
+    marginBottom: '0px',
   },
   error: {
     color: theme.palette.error.main,
   },
   radioNature: {
     flexDirection: 'row',
+    marginLeft: '-6%',
+    marginRight: '0px',
   },
   buttonCancel: {
     marginRight: '5px',
@@ -151,7 +161,6 @@ export const GET_PLACES_LIST = gql`
     }
 `;
 
-
 export const CREATE_REQUEST = gql`
          mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
@@ -176,7 +185,6 @@ export const EDIT_REQUEST = gql`
          }
          ${REQUEST_ATTRIBUTES}
        `;
-
 
 export default function FormInfosClaimant({
   formData, setForm, handleNext,
@@ -317,7 +325,7 @@ export default function FormInfosClaimant({
 
               {/* Item 4: Selections des dates */}
               <Grid className={classes.comps} item xs={12} sm={12}>
-                <Grid container justify="space-evenly">
+                <Grid container justify="space-between">
                   <Grid item sm={5} xs={5}>
                     <Controller
                       as={(
@@ -339,7 +347,8 @@ export default function FormInfosClaimant({
                         required: 'La date de début est obligatoire.',
                         validate: {
                           format: (value) => isValid(value) || 'Format invalide',
-                          valide: (value) => isDeadlineRespected(value) || 'Le délai minimum avant visite est de 2 jours ouvrés',
+                          valide: (value) => isDeadlineRespected(value)
+                            || 'Le délai minimum avant visite est de 2 jours ouvrés',
                         },
                       }}
                       defaultValue={null}
@@ -379,25 +388,30 @@ export default function FormInfosClaimant({
               {/* Item 5: Période d'acces */}
               <Grid className={classes.comps} item xs={12} sm={12}>
                 <Grid container spacing={1} style={{ color: '#c78005' }}>
-                  <Grid item sm={12}>
-                    <Typography variant="body2" gutterBottom>
+                  <Grid item xs={12} md={12}>
+                    <Typography variant="body1">
                       Délais de traitement avant la date de visite:
                     </Typography>
-                  </Grid>
-                  <Grid item sm={12}>
-                    <Typography variant="body2" gutterBottom>
-                      - Français: 2 jours ouvrés
-                    </Typography>
-                  </Grid>
-                  <Grid item sm={12}>
-                    <Typography variant="body2" gutterBottom>
-                      - UE: 15 jours ouvrés
-                    </Typography>
-                  </Grid>
-                  <Grid item sm={12}>
-                    <Typography variant="body2" gutterBottom>
-                      - Hors UE: 30 jours ouvrés
-                    </Typography>
+                    <List>
+                      <ListItem className={classes.infoTime}>
+                        <ListItemText
+                          className={classes.infoTime}
+                          primary="• Français: 2 jours ouvrés"
+                        />
+                      </ListItem>
+                      <ListItem className={classes.infoTime}>
+                        <ListItemText primary="• UE: 15 jours ouvrés" />
+                      </ListItem>
+                      <ListItem className={classes.infoTime}>
+                        <ListItemText
+                          className={classes.infoTime}
+                          primary="• UE: 15 jours ouvrés"
+                        />
+                      </ListItem>
+                      <ListItem className={classes.infoTime}>
+                        <ListItemText primary="• Hors UE: 30 jours ouvrés" />
+                      </ListItem>
+                    </List>
                   </Grid>
                 </Grid>
               </Grid>
@@ -451,7 +465,7 @@ export default function FormInfosClaimant({
                   )}
                   rules={{
                     validate: {
-                      valide: (value) => (value && value.length > 0) || 'Le choix d\'un lieu est obligatoire',
+                      valide: (value) => (value && value.length > 0) || "Le choix d'un lieu est obligatoire",
                       acceptedSelection: (value) => checkSelection(value),
                     },
                   }}
