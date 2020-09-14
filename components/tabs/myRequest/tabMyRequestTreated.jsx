@@ -75,7 +75,8 @@ function createData({
 }
 
 function validRequest(status) {
-  return !(status === STATE_REQUEST.STATE_CANCELED.state || status === STATE_REQUEST.STATE_REJECTED.state);
+  return !(status === STATE_REQUEST.STATE_CANCELED.state
+  || status === STATE_REQUEST.STATE_REJECTED.state);
 }
 
 const useStyles = makeStyles((theme) => ({
