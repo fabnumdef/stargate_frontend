@@ -18,6 +18,7 @@ import { useRouter } from 'next/router';
 import TableContainer from '@material-ui/core/TableContainer';
 import { useLogin } from '../../../lib/loginContext';
 import CustomTableHeader from '../../styled/customTableCellHeader';
+import VisitorGrid from '../../styled/visitor';
 
 import { EMPLOYEE_TYPE, ROLES } from '../../../utils/constants/enums';
 
@@ -112,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units,
+  id, firstname, birthLastname, rank, company, employeeType, units, vip,
 }, activeRole) {
   const findStep = ckeckStatusVisitor(units, activeRole);
   return {
@@ -124,6 +125,7 @@ function createData({
     type: EMPLOYEE_TYPE[employeeType],
     criblage: checkCriblageVisitor(units),
     validation: null,
+    vip,
     step: findStep.step,
     unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
   };
@@ -282,37 +284,37 @@ export default function TabRequestVisitors({ visitors, onChange }) {
         <Table size="small" className={classes.table} data-testid="screeningTable">
           <TableHead>
             <TableRow>
-              {columns.map((headCell) => {
+              { columns.map((headCell) => {
                 switch (headCell.id) {
-                  case 'visitors':
+                  case 'visitor':
                     return (
                       <CustomTableHeader rowSpan={2} key={headCell.id}>
-                        {/* @todo length etc ... */ `${headCell.label}`}
+                        {/* @todo length etc ... */ `${headCell.label}` }
                       </CustomTableHeader>
                     );
                   case 'criblage':
                     return (
                       activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
-                      <CustomTableHeader rowSpan={2} key={headCell.id} style={{ 'text-align': 'center' }}>
-                        {/* @todo length etc ... */ `${headCell.label}`}
-                      </CustomTableHeader>
+                        <CustomTableHeader rowSpan={2} key={headCell.id} style={{ 'text-align': 'center' }}>
+                          {/* @todo length etc ... */ `${headCell.label}` }
+                        </CustomTableHeader>
                       )
                     );
                   default:
                     return (
                       <CustomTableHeader rowSpan={2} key={headCell.id}>
-                        {headCell.label}
+                        { headCell.label }
                       </CustomTableHeader>
                     );
                 }
-              })}
+              }) }
               <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
                 Validation
               </CustomTableHeader>
             </TableRow>
             <TableRow>
 
-              {selectAll.map((checkbox, index) => (
+              { selectAll.map((checkbox, index) => (
                 <CustomTableHeader className={`${classes.textCenter} ${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
                   <StyledFormLabel
                     control={(
@@ -323,52 +325,61 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           handleSelectAll(event.target.checked, checkbox);
                         }}
                       />
-                      )}
+                    )}
                     label={checkbox.label}
                     disabled={!rows.find((row) => row.step === ACTIVE_STEP_STATUS)}
                     labelPlacement="start"
                   />
                 </CustomTableHeader>
-              ))}
+              )) }
 
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(
+            { rows.map(
               (row, index) => row.step !== HIDDEN_STEP_STATUS && (
-              <TableRow hover tabIndex={-1} key={row.code}>
-                {columns.map((column) => {
-                  const value = row[column.id];
-                  switch (column.id) {
-                    case 'criblage':
-                      return (
-                        activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          className={
-                            `${row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}
+                <TableRow hover tabIndex={-1} key={row.code}>
+                  { columns.map((column) => {
+                    const value = row[column.id];
+                    switch (column.id) {
+                      case 'visitor':
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                          >
+                            <VisitorGrid name={value} vip={row.vip} />
+                          </TableCell>
+                        );
+                      case 'criblage':
+                        return (
+                          activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                              className={
+                                `${row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}
                             ${classes.textCenter}`
-                          }
-                        >
-                          {criblageReturn(value)}
-                        </TableCell>
-                        )
-                      );
-                    default:
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          className={`
+                              }
+                            >
+                              { criblageReturn(value) }
+                            </TableCell>
+                          )
+                        );
+                      default:
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            className={`
                                 ${row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}`}
-                        >
-                          {value}
-                        </TableCell>
-                      );
-                  }
-                })}
-                  {selectAll.map((checkbox, indexCheck) => (
+                          >
+                            { value }
+                          </TableCell>
+                        );
+                    }
+                  }) }
+                  { selectAll.map((checkbox, indexCheck) => (
                     <TableCell
                       className={`
                       ${classes.textCenter}
@@ -387,21 +398,21 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                             checked={
                               rows[index].decision === checkbox.validation
                               && rows[index].tags === checkbox.tags
-                              }
+                            }
                             onChange={(event) => {
                               handleChange(event, row, checkbox);
                             }}
                             onClick={() => handleDeselect(index)}
                             disabled={row.step === INACTIVE_STEP_STATUS}
                           />
-                            )}
+                        )}
                         style={{ marginLeft: '10px' }}
                       />
                     </TableCell>
-                  ))}
-              </TableRow>
+                  )) }
+                </TableRow>
               ),
-            )}
+            ) }
           </TableBody>
         </Table>
       </TableContainer>

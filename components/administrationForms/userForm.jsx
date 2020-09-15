@@ -216,6 +216,48 @@ const UserForm = ({
         <Grid item sm={7} xs={7}>
           <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
             <Typography variant="subtitle2" gutterBottom>
+              Rôle
+            </Typography>
+          </Grid>
+          <FormControl
+            variant="outlined"
+            error={Object.prototype.hasOwnProperty.call(errors, 'roles')}
+            className={classes.formRadio}
+          >
+            <Controller
+              as={(
+                <RadioGroup
+                  className={classNames(
+                    classes.radioGroup,
+                    { [classes.errorText]: errors.role },
+                  )}
+                  aria-label="vip"
+                >
+                  {radioDisplay(userRole).map((roleItem) => (
+                    <FormControlLabel
+                      value={roleItem.role}
+                      control={<Radio color="primary" />}
+                      label={roleItem.label}
+                      labelPlacement="start"
+                      disabled={userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role}
+                    />
+                  ))}
+                </RadioGroup>
+                  )}
+              control={control}
+              rules={{ required: 'Le rôle est obligatoire' }}
+              name="role"
+              defaultValue={() => {
+                if (defaultValues.role) return defaultValues.role;
+                return (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) ? ROLES.ROLE_HOST.role : '';
+              }}
+            />
+            {errors.role && (
+            <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>
+            )}
+          </FormControl>
+          <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
+            <Typography variant="subtitle2" gutterBottom>
               Affectation
             </Typography>
           </Grid>
@@ -259,7 +301,7 @@ const UserForm = ({
                 )}
 
                 {errors.campus && (
-                  <FormHelperText className={classes.errorText}>Base obligatoire</FormHelperText>
+                <FormHelperText className={classes.errorText}>Base obligatoire</FormHelperText>
                 )}
               </FormControl>
 
@@ -297,48 +339,6 @@ const UserForm = ({
                 )}
               </FormControl>
               )}
-              <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Rôle
-                </Typography>
-              </Grid>
-              <FormControl
-                variant="outlined"
-                error={Object.prototype.hasOwnProperty.call(errors, 'roles')}
-                className={classes.formRadio}
-              >
-                <Controller
-                  as={(
-                    <RadioGroup
-                      className={classNames(
-                        classes.radioGroup,
-                        { [classes.errorText]: errors.role },
-                      )}
-                      aria-label="vip"
-                    >
-                      {radioDisplay(userRole).map((roleItem) => (
-                        <FormControlLabel
-                          value={roleItem.role}
-                          control={<Radio color="primary" />}
-                          label={roleItem.label}
-                          labelPlacement="start"
-                          disabled={userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role}
-                        />
-                      ))}
-                    </RadioGroup>
-                  )}
-                  control={control}
-                  rules={{ required: 'Le rôle est obligatoire' }}
-                  name="role"
-                  defaultValue={() => {
-                    if (defaultValues.role) return defaultValues.role;
-                    return (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) ? ROLES.ROLE_HOST.role : '';
-                  }}
-                />
-                {errors.role && (
-                  <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>
-                )}
-              </FormControl>
             </Grid>
           </Grid>
         </Grid>

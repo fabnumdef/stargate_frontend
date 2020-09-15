@@ -452,7 +452,7 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
-                        label="Nom marital"
+                        label="Nom d'usage"
                         error={Object.prototype.hasOwnProperty.call(errors, 'usageLastname')}
                         fullWidth
                       />

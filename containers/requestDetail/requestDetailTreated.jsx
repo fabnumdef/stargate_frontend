@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export const READ_REQUEST = gql`
     query readRequest($requestId: String!, $campusId: String!) {
         campusId @client @export(as: "campusId")
@@ -66,6 +65,7 @@ export const READ_REQUEST = gql`
                     list {
                         id
                         rank
+                        vip
                         firstname
                         birthLastname
                         employeeType
