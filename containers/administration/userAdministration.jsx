@@ -15,8 +15,8 @@ const columns = [
 ];
 
 const GET_USERS_LIST = gql`
-    query listUsers($cursor: OffsetCursor, $filters: UserFilters, $hasRole: HasRoleInput) {
-        listUsers(cursor: $cursor, filters: $filters, hasRole: $hasRole) {
+    query listUsers($cursor: OffsetCursor, $filters: UserFilters, $hasRole: HasRoleInput, $search: String) {
+        listUsers(cursor: $cursor, filters: $filters, hasRole: $hasRole, search: $search) {
           meta {
               offset
               first
@@ -62,15 +62,14 @@ function UserAdministration() {
   const { activeRole } = useLogin();
 
   const [usersList, setUsersList] = useState(null);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(null);
 
   const getList = async (rowsPerPage, page) => {
-    const filters = searchInput.length ? { lastname: searchInput } : null;
     const { data } = await client.query({
       query: GET_USERS_LIST,
       variables: {
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-        filters,
+        search: searchInput,
         hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
           ? {}
           : { unit: activeRole.unit },

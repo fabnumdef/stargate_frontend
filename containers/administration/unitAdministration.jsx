@@ -13,11 +13,11 @@ const columns = [
 ];
 
 const GET_UNITS_LIST = gql`
-    query listUnits($cursor: OffsetCursor, $filters: UnitFilters, $campusId: String!) {
+    query listUnits($cursor: OffsetCursor, $filters: UnitFilters, $campusId: String!, $search: String) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
             id
-            listUnits(cursor: $cursor, filters: $filters) {
+            listUnits(cursor: $cursor, filters: $filters, search: $search) {
                 meta {
                     offset
                     first
@@ -73,15 +73,14 @@ function UnitAdministration() {
   const client = useApolloClient();
 
   const [unitsList, setUnitsList] = useState(null);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(null);
 
   const getList = async (rowsPerPage, page) => {
-    const filtersUnits = searchInput.length ? { label: searchInput } : null;
     const { data: listUnits } = await client.query({
       query: GET_UNITS_LIST,
       variables: {
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-        filters: filtersUnits,
+        search: searchInput,
       },
       fetchPolicy: 'no-cache',
     });

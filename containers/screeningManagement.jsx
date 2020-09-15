@@ -156,7 +156,7 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const [filters, setFilters] = React.useState('');
+  const [search, setSearch] = React.useState(null);
 
   const initMount = React.useRef(true);
 
@@ -164,7 +164,7 @@ export default function ScreeningManagement() {
     variables: {
       isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-      search: filters,
+      search,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: 'no-cache',
@@ -231,10 +231,6 @@ export default function ScreeningManagement() {
     }
     handleFetchMore();
   }, [page, rowsPerPage]);
-
-  React.useEffect(() => {
-    refetch();
-  }, [filters]);
 
 
   const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
@@ -329,8 +325,8 @@ export default function ScreeningManagement() {
                   style={{ float: 'right' }}
                   margin="dense"
                   variant="outlined"
-                  value={filters}
-                  onChange={(event) => setFilters(event.target.value)}
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
                   placeholder="Rechercher..."
                   InputProps={{
                     endAdornment: (
