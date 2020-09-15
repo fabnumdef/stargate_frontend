@@ -18,6 +18,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 
 import CustomTableCell from '../styled/customTableCellHeader';
+import VisitorGrid from '../styled/visitor';
 
 const columns = [
   { id: 'visiteur', label: 'Visiteur', minWidth: 150 },
@@ -35,6 +36,7 @@ const columns = [
 
 function createData({
   id,
+  vip,
   firstname,
   birthLastname,
   rank,
@@ -43,6 +45,7 @@ function createData({
 }) {
   return {
     id,
+    vip,
     visiteur: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -115,7 +118,7 @@ export default function TabRecapRequest({
   };
 
   const handleMouseLeave = (index) => {
-    setTimeout(() => {}, 2000);
+    setTimeout(() => { }, 2000);
     setHover((prevState) => ({ ...prevState, [index]: false }));
   };
 
@@ -123,11 +126,11 @@ export default function TabRecapRequest({
     <Table stickyHeader aria-label="sticky table">
       <TableHead>
         <TableRow>
-          {columns.map((column) => (
+          { columns.map((column) => (
             <CustomTableCell key={column.id} align={column.align}>
-              {column.label}
+              { column.label }
             </CustomTableCell>
-          ))}
+          )) }
           <CustomTableCell>
             <Button
               size="small"
@@ -143,8 +146,8 @@ export default function TabRecapRequest({
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows
-        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        { rows
+          // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
           .map((row, index) => {
             if (del[index]) {
               return (
@@ -154,16 +157,16 @@ export default function TabRecapRequest({
                       <Grid item sm={10}>
                         <Typography variant="body1">
                           Êtes-vous sûr de vouloir supprimer
-                          {' '}
-                          {row.visiteur}
-                          {' '}
+                          { ' ' }
+                          { row.visiteur }
+                          { ' ' }
                           de la demande ?
                         </Typography>
-                        {rows.length === 1 && (
+                        { rows.length === 1 && (
                           <Typography variant="body1" color="error">
                             Si il n&apos;y a plus de visiteur, la demande va être supprimée.
                           </Typography>
-                        )}
+                        ) }
                       </Grid>
                       <Grid item sm={2}>
                         <div style={{ float: 'right' }}>
@@ -199,16 +202,26 @@ export default function TabRecapRequest({
                 tabIndex={-1}
                 key={row.id}
               >
-                {columns.map((column) => {
+                { columns.map((column) => {
                   const value = row[column.id];
                   return (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.format && typeof value === 'number' ? column.format(value) : value}
-                    </TableCell>
+                    column.id === 'visiteur' ? (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                      >
+                        <VisitorGrid name={value} vip={row.vip} />
+                      </TableCell>
+                    )
+                      : (
+                        <TableCell key={column.id} align={column.align}>
+                          { column.format && typeof value === 'number' ? column.format(value) : value }
+                        </TableCell>
+                      )
                   );
-                })}
+                }) }
                 <TableCell key="actions">
-                  {hover[index] && (
+                  { hover[index] && (
                     <div style={{ float: 'right' }}>
                       <IconButton
                         aria-label="edit"
@@ -227,11 +240,11 @@ export default function TabRecapRequest({
                         <DeleteIcon />
                       </IconButton>
                     </div>
-                  )}
+                  ) }
                 </TableCell>
               </TableRow>
             );
-          })}
+          }) }
       </TableBody>
     </Table>
   );

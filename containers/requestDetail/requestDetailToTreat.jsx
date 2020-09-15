@@ -67,6 +67,7 @@ export const READ_REQUEST = gql`
                  list {
                    id
                    rank
+                   vip
                    firstname
                    birthLastname
                    employeeType
@@ -94,7 +95,6 @@ export const READ_REQUEST = gql`
          }
        `;
 
-
 export const MUTATE_VISITOR = gql`
          mutation validateVisitorStep(
            $requestId: String!
@@ -114,7 +114,6 @@ export const MUTATE_VISITOR = gql`
            }
          }
        `;
-
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
@@ -216,7 +215,6 @@ export default function RequestDetails({ requestId }) {
     }));
     return fetchData();
   };
-
 
   if (loading) return <p>Loading ....</p>;
 
