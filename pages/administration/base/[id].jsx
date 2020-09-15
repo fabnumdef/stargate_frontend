@@ -122,7 +122,8 @@ const DELETE_PLACE = gql`
 `;
 
 function EditCampus() {
-  const matches = useMediaQuery('(min-width:1000px)');
+  const widthBreak = 1030;
+  const matches = useMediaQuery(`(min-width:${widthBreak}px)`);
   const { addAlert } = useSnackBar();
   const classes = useStyles();
   const router = useRouter();

@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Footer() {
   const classes = useStyles();
-  const matches = useMediaQuery('(min-width:850px)');
+  const widthBreak = 850;
+  const matches = useMediaQuery(`(min-width:${widthBreak}px)`);
 
   return (
     <div className={classes.footer}>

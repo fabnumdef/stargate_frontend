@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
@@ -75,9 +75,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }
 ));
-
+// '(min-width:955px)';
 const PlaceForm = ({ list, submitForm }) => {
-  const matches = useMediaQuery('(min-width:955px)');
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
   const classes = useStyles();
   const {
     handleSubmit,
