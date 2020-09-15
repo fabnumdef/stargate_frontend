@@ -22,6 +22,7 @@ import { CSVLink } from 'react-csv';
 import {
   TabPanel, TabScreeningVisitors,
 } from '../components';
+
 import Template from './template';
 
 import { AntTab } from './menuRequest';
@@ -32,6 +33,7 @@ import { useSnackBar } from '../lib/ui-providers/snackbar';
 
 import { useLogin } from '../lib/loginContext';
 import checkStatus from '../utils/mappers/checkStatusVisitor';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -160,7 +162,9 @@ export default function ScreeningManagement() {
 
   const initMount = React.useRef(true);
 
-  const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
+  const {
+    data, loading, fetchMore, refetch,
+  } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
@@ -268,7 +272,7 @@ export default function ScreeningManagement() {
   };
 
   return (
-    <Template>
+    <Template loading={loading}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">

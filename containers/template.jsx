@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { Header, Footer } from '../components';
+import Loading from './loading';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -13,7 +14,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function Template({ children }) {
+export default function Template({ children, loading }) {
   const classes = useStyles();
 
   return (
@@ -24,7 +25,9 @@ export default function Template({ children }) {
         mr={{ xs: 4, sm: 12, md: 24 }}
         ml={{ xs: 4, sm: 12, md: 24 }}
       >
-        {children}
+        {loading ? (
+          <Loading />
+        ) : children}
       </Box>
       <Footer />
     </div>
@@ -33,4 +36,9 @@ export default function Template({ children }) {
 
 Template.propTypes = {
   children: PropTypes.node.isRequired,
+  loading: PropTypes.bool,
+};
+
+Template.defaultProps = {
+  loading: false,
 };

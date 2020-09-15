@@ -150,7 +150,7 @@ export default function MenuRequest() {
 
   const initMount = React.useRef(true);
 
-  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
+  const { data: toTreat, loading: loadingToTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -369,7 +369,7 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template>
+    <Template loading={loadingToTreat}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
