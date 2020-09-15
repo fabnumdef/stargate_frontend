@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import gql from 'graphql-tag';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { offsetLimitPagination } from '@apollo/client/utilities';
 import { createHttpLink } from 'apollo-link-http';
 import fetch from 'isomorphic-unfetch';
 import { setContext } from 'apollo-link-context';
