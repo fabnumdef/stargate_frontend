@@ -21,7 +21,7 @@ export default function CustomTableCell({ children, style, ...others }) {
       style={{
         ...style,
         fontWeight: '600',
-        fontSize: '0.9rem',
+        fontSize: '1rem',
       }}
     >
       {children}

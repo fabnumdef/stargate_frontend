@@ -18,14 +18,14 @@ import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../component
 import Template from '../template';
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   idRequest: {
     marginLeft: '10px',
