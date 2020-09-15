@@ -183,6 +183,7 @@ export default function MenuRequest() {
         },
         isDone: { value: false },
       },
+      fetchPolicy: 'cache-and-network',
       notifyOnNetworkStatusChange: true,
     },
   );
@@ -195,6 +196,7 @@ export default function MenuRequest() {
         offset: page * rowsPerPage,
       },
     },
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
 
@@ -236,6 +238,7 @@ export default function MenuRequest() {
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
+      fetchPolicy: 'cache-and-network',
       notifyOnNetworkStatusChange: true,
     },
   );
@@ -266,12 +269,6 @@ export default function MenuRequest() {
             },
             isDone: { value: false },
           },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) {
-              return prev;
-            }
-            return fetchMoreResult;
-          },
         });
         break;
       case 1:
@@ -284,22 +281,12 @@ export default function MenuRequest() {
             },
             filters: { status: STATE_REQUEST.STATE_CREATED.state },
           },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) {
-              return prev;
-            }
-            return fetchMoreResult;
-          },
         });
         break;
       case 2:
         fetchTreated({
           query: activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
           variables: selectTreatedOptions,
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
-            return fetchMoreResult;
-          },
         });
         break;
       default:

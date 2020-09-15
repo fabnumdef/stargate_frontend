@@ -7,8 +7,9 @@ import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 
 // Apollo
-import gql from 'graphql-tag';
-import { useApolloClient, useMutation, useQuery } from '@apollo/client';
+import {
+  gql, useApolloClient, useMutation, useQuery,
+} from '@apollo/client';
 // Material UI Imports
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';

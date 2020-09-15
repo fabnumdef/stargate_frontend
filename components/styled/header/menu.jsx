@@ -1,12 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import gql from 'graphql-tag';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
-import { useApolloClient } from '@apollo/client';
+import { gql, useApolloClient } from '@apollo/client';
 import Grid from '@material-ui/core/Grid';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';

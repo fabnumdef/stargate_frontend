@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 
 // Apollo
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 
 // Material UI components
 import { makeStyles } from '@material-ui/core/styles';

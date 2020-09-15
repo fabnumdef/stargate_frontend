@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import gql from 'graphql-tag';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { offsetLimitPagination } from '@apollo/client/utilities';
 import { createHttpLink } from 'apollo-link-http';
 import fetch from 'isomorphic-unfetch';
 import { setContext } from 'apollo-link-context';
@@ -31,7 +32,20 @@ const authLink = setContext((_, { headers }) => {
 
 
 function createApolloClient() {
-  const cache = new InMemoryCache();
+  const cache = new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          // Reusable helper function to generate a field
+          // policy for the Query.search field, keyed by
+          // search query:
+          getCampus: {
+            keyFields: ['listRequestByVisitorStatus', 'listMyRequests'],
+          },
+        },
+      },
+    },
+  });
 
   const client = new ApolloClient({
     ssrMode: typeof window === 'undefined',

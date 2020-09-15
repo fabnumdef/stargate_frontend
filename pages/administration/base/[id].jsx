@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';

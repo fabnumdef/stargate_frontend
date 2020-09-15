@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation, useApolloClient } from '@apollo/client';
-import gql from 'graphql-tag';
+import { gql, useMutation, useApolloClient } from '@apollo/client';
 
 import Link from 'next/link';
 

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
-import gql from 'graphql-tag';
-
+import { gql, useQuery, useMutation } from '@apollo/client';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
