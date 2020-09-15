@@ -33,6 +33,7 @@ import checkCriblageVisitor, {
   ACCEPTED_STATUS,
   PROGRESS_STEP_STATUS,
 } from '../../../utils/mappers/checkCriblageVisitor';
+import StatusLegend from '../../styled/statusLegend';
 
 const useStyles = makeStyles((theme) => ({
   currentTitle: {
@@ -174,14 +175,12 @@ export default function TabRequestVisitors({ visitors, onChange }) {
       return [
         {
           label: 'VA',
-          fullLabel: 'Visiteur Accompagné',
           value: false,
           validation: ROLES[activeRole.role].workflow.positive,
           tags: ['VA'],
         },
         {
           label: 'VL',
-          fullLabel: 'Visiteur Libre',
           value: false,
           validation: ROLES[activeRole.role].workflow.positive,
           tags: ['VL'],
@@ -273,13 +272,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
 
   return (
     <div>
-      <div style={{ float: 'right' }}>
-        <ul className={classes.list}>
-          { selectAll.map((checkbox) => (
-            checkbox.fullLabel && <li>{ `${checkbox.label} : ${checkbox.fullLabel}` }</li>
-          )) }
-        </ul>
-      </div>
+      {activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && <StatusLegend />}
       <TableContainer>
         <Table size="small" className={classes.table} data-testid="screeningTable">
           <TableHead>

@@ -19,11 +19,19 @@ import {
 } from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
 
+import StatusLegend from '../../styled/statusLegend';
+
 function findRejectedRole(units) {
   const sortRole = units.map((u) => `${ROLES[u.steps.find(
     (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
   ).role].shortLabel} - ${u.label}`);
   return sortRole.join(', ').toString();
+}
+
+function findVisitorStatus(units) {
+  const status = units.find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
+    .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
+  return status ? status.join(', ').toString() : '';
 }
 
 function createData({
@@ -40,7 +48,7 @@ function createData({
     date: format(findValidationDate(units), "dd/MM/yyyy à k'h'mm"),
     status: status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
       ? `${VISITOR_STATUS[status]} par ${findRejectedRole(units)}`
-      : VISITOR_STATUS[status],
+      : findVisitorStatus(units),
   };
 }
 
@@ -59,47 +67,50 @@ export default function TabRequestVisitors({ visitors }) {
   }, []);
 
   return (
-    <TableContainer>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            { columns.map((column) => (
-              <CustomTableCell key={column.id} align={column.align}>
-                { column.label }
-              </CustomTableCell>
-            )) }
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          { rows.map((row) => (
-            <TableRow
-              role="checkbox"
-              tabIndex={-1}
-              key={row.id}
-            >
-              { columns.map((column) => {
-                const value = row[column.id];
-                return (
-                  column.id === 'visitor' ? (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                    >
-                      <VisitorGrid name={value} vip={row.vip} />
-                    </TableCell>
-                  )
-                    : (
-                      <TableCell key={column.id} align={column.align}>
-                        { column.format && typeof value === 'number' ? column.format(value) : value }
+    <div>
+      <StatusLegend />
+      <TableContainer>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              { columns.map((column) => (
+                <CustomTableCell key={column.id} align={column.align}>
+                  { column.label }
+                </CustomTableCell>
+              )) }
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            { rows.map((row) => (
+              <TableRow
+                role="checkbox"
+                tabIndex={-1}
+                key={row.id}
+              >
+                { columns.map((column) => {
+                  const value = row[column.id];
+                  return (
+                    column.id === 'visitor' ? (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                      >
+                        <VisitorGrid name={value} vip={row.vip} />
                       </TableCell>
                     )
-                );
-              }) }
-            </TableRow>
-          )) }
-        </TableBody>
-      </Table>
-    </TableContainer>
+                      : (
+                        <TableCell key={column.id} align={column.align}>
+                          { column.format && typeof value === 'number' ? column.format(value) : value }
+                        </TableCell>
+                      )
+                  );
+                }) }
+              </TableRow>
+            )) }
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 }
 
