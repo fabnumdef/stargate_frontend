@@ -193,7 +193,7 @@ const PlaceForm = ({ list, submitForm }) => {
         </Grid>
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Button onClick={handleCancel} variant="outlined" color="primary">
+        <Button type="button" onClick={handleCancel} variant="outlined" color="primary">
           Annuler
         </Button>
         <Button type="submit" variant="contained" color="primary">
