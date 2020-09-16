@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../components';
 
 import Template from '../template';
+
 import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
 const useStyles = makeStyles(() => ({
@@ -130,8 +131,6 @@ export default function RequestDetails({ requestId }) {
 
   const [deleteVisitor] = useMutation(DELETE_VISITOR);
 
-  if (loading) return <p>Loading ....</p>;
-
   if (data && userData && data.getCampus.getRequest.owner.id !== userData.me.id) {
     router.push('/');
     return <div />;
@@ -141,7 +140,7 @@ export default function RequestDetails({ requestId }) {
   // if (error) return <p>page 404</p>;
 
   return (
-    <Template>
+    <Template loading={loading}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -149,16 +148,16 @@ export default function RequestDetails({ requestId }) {
               Demandes en cours :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
-              {data.getCampus.getRequest.id}
+              {data && data.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data.getCampus.getRequest} />
+          <DetailsInfosRequest request={data && data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsProgress
-            visitors={data.getCampus.getRequest.listVisitors.list}
+            visitors={data && data.getCampus.getRequest.listVisitors.list}
             onDelete={async (idVisitor) => {
               try {
                 // @todo waiting back to delete

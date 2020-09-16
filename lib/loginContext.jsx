@@ -149,6 +149,11 @@ export function LoginContextProvider(props) {
   const getUserData = async () => {
     try {
       const { data: { me } } = await client.query({ query: GET_ME });
+
+      if (!me.roles.length) {
+        return signOut({ message: 'Vous ne disposez d\'aucun rôle sur Stargate. Merci de contacter un administrateur', severity: 'error' });
+      }
+
       const activeRoleNumber = localStorage.getItem('activeRoleNumber') || 0;
 
       const newRole = me.roles[activeRoleNumber].units[0]

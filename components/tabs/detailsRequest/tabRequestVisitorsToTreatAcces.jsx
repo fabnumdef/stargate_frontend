@@ -33,6 +33,7 @@ import ckeckStatusVisitor, {
 } from '../../../utils/mappers/checkStatusVisitor';
 
 import VisitorGrid from '../../styled/visitor';
+import StatusLegend from '../../styled/statusLegend';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -69,12 +70,6 @@ const useStyles = makeStyles((theme) => ({
   searchField: {
     display: 'flex',
     justifyContent: 'space-between',
-  },
-  list: {
-    right: 0,
-    listStyle: 'none',
-    color: theme.palette.primary.main,
-    fontSize: '10px',
   },
   cellNoBorder: {
     border: 'none',
@@ -214,28 +209,24 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const [selectAll, setSelectAll] = useState([
     {
       label: 'VA',
-      fullLabel: 'Visiteur Accompagné',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VA'],
     },
     {
       label: 'VL',
-      fullLabel: 'Visiteur Libre',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VL'],
     },
     {
       label: 'L',
-      fullLabel: 'Libre',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['L'],
     },
     {
       label: 'VIP',
-      fullLabel: 'Autorité',
       value: false,
       tags: ['VIP'],
     },
@@ -331,13 +322,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   return rows.length
     ? (
       <div>
-        <div style={{ float: 'right' }}>
-          <ul className={classes.list}>
-            { selectAll.map((checkbox) => (
-              checkbox.fullLabel && <li>{ `${checkbox.label} : ${checkbox.fullLabel}` }</li>
-            )) }
-          </ul>
-        </div>
+        <StatusLegend />
         <TableContainer>
           <Table size="small" className={classes.table} data-testid="screeningTable">
             <TableHead>
