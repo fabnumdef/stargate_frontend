@@ -26,9 +26,10 @@ function MyApp({ Component, pageProps }) {
   return (
     <SnackBarProvider>
       <ApolloProvider client={client}>
-        <ThemeProvider theme={theme}>
+        <LoginContextProvider client={client}>
+          <ThemeProvider theme={theme}>
 
-          <LoginContextProvider client={client}>
+
             <Head>
               <title>Stargate</title>
             </Head>
@@ -40,9 +41,9 @@ function MyApp({ Component, pageProps }) {
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Component {...pageProps} />
 
-          </LoginContextProvider>
 
-        </ThemeProvider>
+          </ThemeProvider>
+        </LoginContextProvider>
       </ApolloProvider>
     </SnackBarProvider>
 

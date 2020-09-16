@@ -169,12 +169,15 @@ export function LoginContextProvider(props) {
         ? me.roles[activeRoleNumber].campuses[0].id
         : null;
 
+
+      console.log('Persist !');
+
       await client.writeQuery({
         query: INIT_CACHE,
         data: {
           initializedCache: true,
           me,
-          activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
+          activeRoleCache: { ...newRole },
           campusId,
         },
       });
@@ -239,7 +242,7 @@ export function LoginContextProvider(props) {
       setIsLoggedUser(true);
       localStorage.setItem('activeRoleNumber', 0);
       await authRenew(setToken, signOut, client);
-      return getUserData();
+      return await getUserData();
     } catch (e) {
       switch (e.message) {
         case `GraphQL error: Email "${email}" and password do not match.`:

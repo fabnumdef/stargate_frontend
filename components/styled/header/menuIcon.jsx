@@ -89,7 +89,7 @@ export default function MenuIcon() {
   const { signOut, setActiveRole, activeRole } = useLogin();
   const client = useApolloClient();
 
-  const { data: { me } } = useQuery(GET_ME);
+  const { data } = useQuery(GET_ME);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -106,34 +106,36 @@ export default function MenuIcon() {
   };
 
   const handleChangeRole = (evt) => {
-    const selectedRole = me.roles.find((role) => role.role === evt.target.value);
-    const newRole = {
-      role: selectedRole.role,
-      unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
-      unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : null,
-    };
+    if (data) {
+      const selectedRole = data.me.roles.find((role) => role.role === evt.target.value);
+      const newRole = {
+        role: selectedRole.role,
+        unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
+        unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : null,
+      };
 
-    client.writeQuery({
-      query: gql`
+      client.writeQuery({
+        query: gql`
         query setRoleUser {
           activeRoleCache
           campusId
         }`,
-      data: {
-        activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
-        campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
-      },
-    });
-    localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
-    setActiveRole(newRole);
-    handleCloseMenu();
+        data: {
+          activeRoleCache: { ...newRole },
+          campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
+        },
+      });
+      localStorage.setItem('activeRoleNumber', data.me.roles.findIndex((role) => role.role === evt.target.value));
+      setActiveRole(newRole);
+      handleCloseMenu();
+    }
   };
 
   return (
     <div className={classes.root}>
       <Box fontWeight="fontWeightLight" display="flex" flexDirection="column">
-        <span>{me && `${me.firstname} ${me.lastname}`}</span>
-        { me && me.roles && me.roles.length > 1 ? (
+        <span>{data && `${data.me.firstname} ${data.me.lastname}`}</span>
+        { data && data.me.roles && data.me.roles.length > 1 ? (
           <Select
             labelId="select-role"
             id="role"
@@ -146,8 +148,8 @@ export default function MenuIcon() {
               </MenuItem>
             ))}
           </Select>
-        ) : (
-          ROLES[me.roles[0].role].label
+        ) : (data
+          && ROLES[data.me.roles[0].role].label
         ) }
 
         <span>{activeRole.unitLabel ? activeRole.unitLabel : ''}</span>

@@ -85,7 +85,7 @@ export default function MenuItems() {
               <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
                 <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
-                  {getAdminMenu(router, campus.campusId).map((subMenu) => (
+                  {campus && getAdminMenu(router, campus.campusId).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
                     <ButtonMenu key={subMenu.label} size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
                       {subMenu.label}
