@@ -79,7 +79,6 @@ function getSteps() {
 export default function RequestAccesForm() {
   const classes = useStyles();
 
-
   // Stepper's functions
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();

@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsTreated } from '../../components';
 
 import Template from '../template';
+
 import { useLogin } from '../../lib/loginContext';
 import { checkRequestDetailAuth } from '../../utils/permissions';
 
@@ -133,14 +134,9 @@ export default function RequestDetailsTreated({ requestId }) {
     }
   }, [data]);
 
-  if (loadData) {
-    return <div />;
-  }
-  // @todo a real 404 page
-  // if (error) return <p>page 404</p>;
 
   return (
-    <Template>
+    <Template loading={loadData}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -148,16 +144,16 @@ export default function RequestDetailsTreated({ requestId }) {
               Demandes traitées :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
-              {data.getCampus.getRequest.id}
+              {data && data.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data.getCampus.getRequest} />
+          <DetailsInfosRequest request={data && data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsTreated
-            visitors={data.getCampus.getRequest.listVisitors.list}
+            visitors={data && data.getCampus.getRequest.listVisitors.list}
           />
         </Grid>
         <Grid item sm={12}>
