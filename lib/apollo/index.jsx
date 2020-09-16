@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import gql from 'graphql-tag';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { persistCache } from 'apollo-cache-persist';
 import { createHttpLink } from 'apollo-link-http';
 import fetch from 'isomorphic-unfetch';
 import { setContext } from 'apollo-link-context';
@@ -89,7 +90,14 @@ function createApolloClient() {
         },
       },
     );
+
+    persistCache({
+      cache,
+      storage: window.localStorage,
+    });
   }
+
+
   return client;
 }
 
