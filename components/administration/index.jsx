@@ -56,7 +56,10 @@ function IndexAdministration({
     getList(rowsPerPage, page);
   }, [page, rowsPerPage, searchInput, activeRole]);
 
-  const handleChangeFilter = (e) => setSearchInput(e.target.value);
+  const handleChangeFilter = (e) => {
+    setSearchInput(e.target.value);
+    setPage(0);
+  };
 
   const deleteItem = async (id, deleteLabel) => {
     try {

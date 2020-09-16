@@ -113,7 +113,12 @@ export default function MenuIcon() {
       unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : null,
     };
 
-    client.cache.writeData({
+    client.writeQuery({
+      query: gql`
+        query setRoleUser {
+          activeRoleCache
+          campusId
+        }`,
       data: {
         activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
         campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
