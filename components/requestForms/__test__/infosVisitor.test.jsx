@@ -44,6 +44,6 @@ describe('FormInfosVisiteurs', () => {
       </SnackBarContext.Provider>,
     );
 
-    expect(getByText('Origine visiteurs')).toBeVisible();
+    expect(getByText('Origine visiteurs :')).toBeVisible();
   });
 });

@@ -34,8 +34,7 @@ import { useSnackBar } from '../lib/ui-providers/snackbar';
 import { useLogin } from '../lib/loginContext';
 import checkStatus from '../utils/mappers/checkStatusVisitor';
 
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
@@ -47,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   pageTitleHolder: {
     borderBottom: '1px solid #e5e5e5',
@@ -56,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 'auto',
   },
 }));
-
 
 function csvName() {
   const date = new Date(Date.now());
@@ -101,7 +99,6 @@ function createData({
     vAttachedFile: identityDocuments,
   };
 }
-
 
 export const LIST_VISITOR_REQUESTS = gql`
          query ListVisitorsRequestQuery(
@@ -235,7 +232,6 @@ export default function ScreeningManagement() {
     }
     handleFetchMore();
   }, [page, rowsPerPage]);
-
 
   const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
     vBirthName: visitor.birthLastname.toUpperCase(),

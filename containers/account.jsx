@@ -15,7 +15,7 @@ import { useRouter } from 'next/router';
 import { useSnackBar } from '../lib/ui-providers/snackbar';
 import Template from './template';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   account: {
     width: '100%',
     height: '75vh',
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   pageTitleHolder: {
     borderBottom: '1px solid #e5e5e5',
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CHECK_ACTUAL_PASS = gql`  
+export const CHECK_ACTUAL_PASS = gql`
     mutation checkActualPass($email: EmailAddress!, $password: String) {
         me @client {
             email {

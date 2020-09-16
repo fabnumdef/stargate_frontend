@@ -52,6 +52,7 @@ export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
     color: theme.palette.primary.main,
+    fontSize: '1rem',
     minWidth: 72,
     marginRight: theme.spacing(5),
     '&:hover': {
@@ -59,7 +60,7 @@ export const AntTab = withStyles((theme) => ({
     },
     '&$selected': {
       color: theme.palette.primary.main,
-      fontWeight: theme.typography.fontWeightBold,
+      fontWeight: 'bold',
       backgroundColor: fade(theme.palette.primary.main, 0),
     },
     backgroundColor: fade(theme.palette.primary.main, 0.1),
