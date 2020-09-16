@@ -42,6 +42,9 @@ const useStyles = makeStyles(() => ({
       padding: 'Opx',
     },
   },
+  stepperTitles: {
+    fontSize: '1.2rem',
+  },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
@@ -50,7 +53,6 @@ const useStyles = makeStyles(() => ({
     marginLeft: 'auto',
   },
 }));
-
 
 function TabPanel({ children, value, index }) {
   return (
@@ -112,7 +114,7 @@ export default function RequestAccesForm() {
         <Grid item sm={12} xs={12}>
           <Tabs value={activeStep} aria-label="Etapes demande acces">
             {steps.map((label, index) => (
-              <AntTab label={`${index + 1}. ${label}`} key={`tab ${label}`} />
+              <AntTab className={classes.stepperTitles} label={`${index + 1}. ${label}`} key={`tab ${label}`} />
             ))}
           </Tabs>
         </Grid>

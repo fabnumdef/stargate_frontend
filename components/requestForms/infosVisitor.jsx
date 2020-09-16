@@ -59,8 +59,10 @@ const useStyles = makeStyles((theme) => ({
     right: '10vw',
   },
   instruction: {
+    marginBottom: '1%',
     fontStyle: 'italic',
-    fontSize: '0.65rem',
+    fontWeight: 'bold',
+    marginLeft: '2%',
   },
   formVip: {
     width: '100%',
@@ -280,7 +282,7 @@ export default function FormInfoVisitor({
             <Grid container justify="space-between" spacing={2}>
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Origine visiteurs
+                  Origine visiteurs :
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={12} className={classes.comps}>
@@ -359,7 +361,7 @@ export default function FormInfoVisitor({
             <Grid container spacing={1} alignItems="flex-end" className={classes.subTitle}>
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Civilité du visiteur
+                  Civilité du visiteur :
                 </Typography>
               </Grid>
 
@@ -503,7 +505,7 @@ export default function FormInfoVisitor({
             </Grid>
             <Grid item xs={12} sm={12} className={classes.subTitle}>
               <Typography variant="subtitle2" gutterBottom>
-                VIP:
+                VIP :
               </Typography>
             </Grid>
             <Grid className={classes.comps} item xs={12} sm={12}>
@@ -566,7 +568,7 @@ export default function FormInfoVisitor({
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Identité
+                  Identité :
                 </Typography>
               </Grid>
               <Grid container spacing={2} className={classes.comps}>
