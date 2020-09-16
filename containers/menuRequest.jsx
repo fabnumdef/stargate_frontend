@@ -52,6 +52,7 @@ export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
     color: theme.palette.primary.main,
+    fontSize: '1rem',
     minWidth: 72,
     marginRight: theme.spacing(5),
     '&:hover': {
@@ -59,7 +60,7 @@ export const AntTab = withStyles((theme) => ({
     },
     '&$selected': {
       color: theme.palette.primary.main,
-      fontWeight: theme.typography.fontWeightBold,
+      fontWeight: 'bold',
       backgroundColor: fade(theme.palette.primary.main, 0),
     },
     backgroundColor: fade(theme.palette.primary.main, 0.1),
@@ -150,7 +151,7 @@ export default function MenuRequest() {
 
   const initMount = React.useRef(true);
 
-  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
+  const { data: toTreat, loading: loadingToTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -369,7 +370,7 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template>
+    <Template loading={loadingToTreat}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">

@@ -10,8 +10,8 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontSize: '1.6rem',
-    fontWeight: theme.typography.fontWeightBold,
+    fontSize: '1.4rem',
+    fontWeight: 'bold',
   },
   subtitle: {
     fontWeight: theme.overrides.MuiTypography.subtitle2.fontWeight,

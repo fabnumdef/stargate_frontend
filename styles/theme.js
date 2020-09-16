@@ -43,27 +43,28 @@ const theme = createMuiTheme(
       MuiInputBase: {
         input: {
           height: '0.9em',
+          fontSize: '0.875rem',
         },
       },
       MuiTypography: {
         subtitle1: {
           fontWeight: 'bold',
-          fontSize: '1.1rem',
+          fontSize: '1.05rem',
         },
         subtitle2: {
           fontWeight: '300',
-          fontSize: '1.1rem',
+          fontSize: '1.05rem',
           lineHeight: '1.8',
           color: '#0f4194',
         },
         body1: {
-          fontSize: '0.85rem',
+          fontSize: '0.875rem',
         },
         body2: {
           fontSize: '0.75rem',
         },
         h5: {
-          fontSize: '1.35rem',
+          fontSize: '1.40rem',
           fontWeight: 600,
           fontStretch: 'normal',
           lineHeight: 1.32,
@@ -89,7 +90,7 @@ const theme = createMuiTheme(
       },
       MuiFormControlLabel: {
         label: {
-          fontSize: '0.90rem',
+          fontSize: '0.875rem',
         },
       },
       MuiExpansionPanelDetails: {
@@ -131,6 +132,11 @@ const theme = createMuiTheme(
           '&:before': {
             borderBottom: '1px solid #0f4194',
           },
+        },
+      },
+      MuiTab: {
+        textColorInherit: {
+          opacity: 1,
         },
       },
       MuiOutlinedInput: {
