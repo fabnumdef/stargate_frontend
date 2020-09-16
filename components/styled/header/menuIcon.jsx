@@ -142,7 +142,7 @@ export default function MenuIcon() {
             value={activeRole.role}
             onChange={(evt) => handleChangeRole(evt)}
           >
-            {me.roles.map((role) => (
+            {data.me.roles.map((role) => (
               <MenuItem key={role.role} value={role.role}>
                 {ROLES[role.role].label}
               </MenuItem>
