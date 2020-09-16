@@ -233,7 +233,6 @@ export default function ScreeningManagement() {
     handleFetchMore();
   }, [page, rowsPerPage]);
 
-
   const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
     vBirthName: visitor.birthLastname.toUpperCase(),
     vBirthDate: visitor.birthday,
