@@ -77,6 +77,13 @@ function createApolloClient() {
     resolvers,
   });
 
+  if (typeof window !== 'undefined') {
+    persistCache({
+      cache,
+      storage: window.localStorage,
+    });
+  }
+
   client.writeQuery(
     {
       query: gql`
@@ -89,14 +96,6 @@ function createApolloClient() {
       },
     },
   );
-
-  if (typeof window !== 'undefined') {
-    persistCache({
-      cache,
-      storage: window.localStorage,
-    });
-  }
-
 
   return client;
 }

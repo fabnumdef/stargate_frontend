@@ -1,8 +1,10 @@
 import React, {
-  createContext, useEffect, useState, useContext,
+  createContext, useEffect, useState, useContext, useCallback, useMemo,
 } from 'react';
 import { useRouter } from 'next/router';
-import gql from 'graphql-tag';
+import {
+  gql, useApolloClient, useLazyQuery, useMutation,
+} from '@apollo/client';
 import PropTypes from 'prop-types';
 import { useSnackBar } from './ui-providers/snackbar';
 import { urlAuthorization } from '../utils/permissions';
@@ -96,12 +98,20 @@ export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
 export function LoginContextProvider(props) {
-  const { children, client } = props;
+  const { children } = props;
+
+  const client = useApolloClient();
 
   const router = useRouter();
   const { addAlert } = useSnackBar();
 
-  const init = client.readQuery({ query: GET_INITIALIZEDCACHE });
+  const init = useMemo(() => {
+    try {
+      return client.readQuery({ query: GET_INITIALIZEDCACHE });
+    } catch {
+      return null;
+    }
+  }, [client]);
 
   const tokenDuration = () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : undefined;
@@ -129,6 +139,7 @@ export function LoginContextProvider(props) {
   const [isLoggedUser, setIsLoggedUser] = useState(
     !tokenDuration().expiredToken,
   );
+
   const [activeRole, setActiveRole] = useState(() => {
     if (isCacheInit) {
       const data = client.readQuery({ query: GET_ROLE });
@@ -137,63 +148,28 @@ export function LoginContextProvider(props) {
     return { role: '', unit: '', unitLabel: '' };
   });
 
-  const signOut = (alert = false) => {
+
+  const signOut = useCallback((alert = false) => {
     router.push('/login');
     setIsLoggedUser(false);
     localStorage.clear();
     client.resetStore();
     if (alert) addAlert(alert);
-  };
+  }, [addAlert, client, router]);
 
-  const getUserData = async () => {
-    try {
-      const { data: { me } } = await client.query({ query: GET_ME });
+  const [getUserData, { data: meData, loading: meLoading, error: meError }] = useLazyQuery(GET_ME);
 
-      if (!me.roles.length) {
-        return signOut({ message: 'Vous ne disposez d\'aucun rôle sur Stargate. Merci de contacter un administrateur', severity: 'error' });
-      }
+  const [authRenewMutation,
+    { data: jwtData, loading: jwtLoading, error: jwtError },
+  ] = useMutation(AUTH_RENEW);
 
-      const activeRoleNumber = localStorage.getItem('activeRoleNumber') || 0;
-
-      const newRole = me.roles[activeRoleNumber].units[0]
-        ? {
-          role: me.roles[activeRoleNumber].role,
-          unit: me.roles[activeRoleNumber].units[0].id,
-          unitLabel: me.roles[activeRoleNumber].units[0].label,
-        }
-        : { role: me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
-
-      setActiveRole(newRole);
-
-      const campusId = me.roles[activeRoleNumber].campuses[0]
-        ? me.roles[activeRoleNumber].campuses[0].id
-        : null;
-
-
-      console.log('Persist !');
-
-      await client.writeQuery({
-        query: INIT_CACHE,
-        data: {
-          initializedCache: true,
-          me,
-          activeRoleCache: { ...newRole },
-          campusId,
-        },
-      });
-      setIsCacheInit(true);
-      return me;
-    } catch (e) {
-      setIsCacheInit(true);
-      return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
-    }
-  };
+  const [login, { data: loginData, loading: loginLoading, error: loginError }] = useMutation(LOGIN);
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
   };
 
-  const authRenew = async () => {
+  const authRenew = useCallback(async () => {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
       clearTimeout(reloadAuth);
@@ -208,44 +184,48 @@ export function LoginContextProvider(props) {
       return false;
     }
     if (expIn <= renewTrigger) {
-      try {
-        const {
-          data: {
-            jwtRefresh: { jwt },
-          },
-        } = await client.mutate({ mutation: AUTH_RENEW });
-        setToken(jwt);
-        authRenew();
-        return true;
-      } catch (error) {
-        signOut({ message: 'Session expirée', severity: 'warning' });
-        clearTimeout(reloadAuth);
-        return false;
-      }
-    } else {
-      reloadAuth((expIn - renewTrigger) * 1000);
+      authRenewMutation();
       return true;
     }
+    reloadAuth((expIn - renewTrigger) * 1000);
+    return true;
+  }, [authRenewMutation, signOut]);
+
+  useEffect(() => {
+    const onCompleted = (d) => {
+      setToken(d.jwtRefresh.jwt);
+      authRenew();
+    };
+    const onError = () => {
+      signOut({ message: 'Session expirée', severity: 'warning' });
+      clearTimeout((duration) => setTimeout(authRenew, duration));
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !jwtLoading && !jwtError && jwtData) {
+        onCompleted(jwtData);
+      } else if (onError && !jwtLoading && jwtError) {
+        onError();
+      }
+    }
+  }, [authRenew, jwtData, jwtError, jwtLoading, signOut]);
+
+  const signIn = (email, password, resetToken = null) => {
+    login({ variables: { email, password, token: resetToken } });
   };
 
-  const signIn = async (email, password, resetToken = null) => {
-    try {
-      const {
-        data: {
-          login: { jwt },
-        },
-      } = await client.mutate({
-        mutation: LOGIN,
-        variables: { email, password, token: resetToken },
-      });
-      setToken(jwt);
+  useEffect(() => {
+    const onCompleted = (d) => {
+      setToken(d.login.jwt);
       setIsLoggedUser(true);
       localStorage.setItem('activeRoleNumber', 0);
-      await authRenew(setToken, signOut, client);
-      return await getUserData();
-    } catch (e) {
+      authRenew(setToken, signOut, client);
+      getUserData();
+    };
+
+    const onError = (e) => {
       switch (e.message) {
-        case `GraphQL error: Email "${email}" and password do not match.`:
+        case `GraphQL error: Email "${router.query.email}" and password do not match.`:
           return addAlert({
             message: 'Mauvais identifiant et/ou mot de passe',
             severity: 'warning',
@@ -260,8 +240,64 @@ export function LoginContextProvider(props) {
         default:
           return signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
       }
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !loginLoading && !loginError && loginData) {
+        onCompleted(loginData);
+      } else if (onError && !loginLoading && loginError) {
+        onError();
+      }
     }
-  };
+  }, [loginLoading, loginData, loginError]);
+
+  useEffect(() => {
+    const onCompleted = (d) => {
+      if (!d.me.roles.length) {
+        signOut({ message: 'Vous ne disposez d\'aucun rôle sur Stargate. Merci de contacter un administrateur', severity: 'error' });
+      }
+
+      const activeRoleNumber = localStorage.getItem('activeRoleNumber') || 0;
+
+      const newRole = d.me.roles[activeRoleNumber].units[0]
+        ? {
+          role: d.me.roles[activeRoleNumber].role,
+          unit: d.me.roles[activeRoleNumber].units[0].id,
+          unitLabel: d.me.roles[activeRoleNumber].units[0].label,
+        }
+        : { role: d.me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
+
+      setActiveRole(newRole);
+
+      const campusId = d.me.roles[activeRoleNumber].campuses[0]
+        ? d.me.roles[activeRoleNumber].campuses[0].id
+        : null;
+
+      client.writeQuery({
+        query: INIT_CACHE,
+        data: {
+          initializedCache: true,
+          me: d.me,
+          activeRoleCache: { ...newRole },
+          campusId,
+        },
+      });
+      setIsCacheInit(true);
+    };
+
+    const onError = () => {
+      setIsCacheInit(false);
+      signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !meLoading && !meError && meData) {
+        onCompleted(meData);
+      } else if (onError && !meLoading && meError) {
+        onError();
+      }
+    }
+  }, [meData, meLoading, meError, client]);
 
   useEffect(() => {
     if (router.query.token && !isLoggedUser) {
@@ -290,9 +326,6 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
-  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) {
-    return <div />;
-  }
 
   return (
     <LoginContext.Provider value={{
@@ -302,18 +335,13 @@ export function LoginContextProvider(props) {
       activeRole,
     }}
     >
-      {children}
+      {((isLoggedUser && !isCacheInit)
+      || (!isLoggedUser && router.pathname !== '/login')
+      || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) ? '' : children}
     </LoginContext.Provider>
   );
 }
 
 LoginContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
-  client: PropTypes.shape({
-    readQuery: PropTypes.func.isRequired,
-    resetStore: PropTypes.func.isRequired,
-    mutate: PropTypes.func.isRequired,
-    query: PropTypes.func.isRequired,
-    cache: PropTypes.object.isRequired,
-  }).isRequired,
 };

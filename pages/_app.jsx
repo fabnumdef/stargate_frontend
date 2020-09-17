@@ -28,8 +28,6 @@ function MyApp({ Component, pageProps }) {
       <ApolloProvider client={client}>
         <LoginContextProvider client={client}>
           <ThemeProvider theme={theme}>
-
-
             <Head>
               <title>Stargate</title>
             </Head>
@@ -40,8 +38,6 @@ function MyApp({ Component, pageProps }) {
             and all needed by the component, but well extracted from App props */}
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Component {...pageProps} />
-
-
           </ThemeProvider>
         </LoginContextProvider>
       </ApolloProvider>
