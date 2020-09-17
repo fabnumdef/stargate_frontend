@@ -35,7 +35,7 @@
     "apollo-cache-persist": "^0.1.1",
     "apollo-client": "^2.6.9",
     "apollo-link-context": "^1.0.19",
-    "apollo-link-error": "^1.1.12",
+    "apollo-link-error": "^1.1.13",
     "apollo-link-http": "^1.5.16",
     "classnames": "^2.2.6",
     "cookie": "^0.3.1",

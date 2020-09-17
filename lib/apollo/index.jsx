@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import gql from 'graphql-tag';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
-import { createHttpLink } from 'apollo-link-http';
 import fetch from 'isomorphic-unfetch';
-import { setContext } from 'apollo-link-context';
+import { setContext } from '@apollo/client/link/context';
 import getConfig from 'next/config';
 import { typeDefs, resolvers } from './resolvers';
 
@@ -14,7 +13,7 @@ const { publicRuntimeConfig } = getConfig();
 // This prevents the client from reinitializing between page transitions.
 let apolloClient = null;
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: publicRuntimeConfig.API_URL,
   fetch,
 });

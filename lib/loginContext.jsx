@@ -97,11 +97,8 @@ const GET_ROLE = gql`
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
-export function LoginContextProvider(props) {
-  const { children } = props;
-
+export function LoginContextProvider({ children }) {
   const client = useApolloClient();
-
   const router = useRouter();
   const { addAlert } = useSnackBar();
 
@@ -150,10 +147,11 @@ export function LoginContextProvider(props) {
 
 
   const signOut = useCallback((alert = false) => {
+    localStorage.clear();
+    client.clearStore();
     router.push('/login');
     setIsLoggedUser(false);
-    localStorage.clear();
-    client.resetStore();
+    setIsCacheInit(false);
     if (alert) addAlert(alert);
   }, [addAlert, client, router]);
 
@@ -211,20 +209,23 @@ export function LoginContextProvider(props) {
   }, [authRenew, jwtData, jwtError, jwtLoading, signOut]);
 
   const signIn = (email, password, resetToken = null) => {
-    login({ variables: { email, password, token: resetToken } });
+    try {
+      login({ variables: { email, password, token: resetToken } });
+    } catch (e) {
+      console.error('Erreur serveur, merci de réessayer', e);
+    }
   };
 
   useEffect(() => {
     const onCompleted = (d) => {
       setToken(d.login.jwt);
-      setIsLoggedUser(true);
       localStorage.setItem('activeRoleNumber', 0);
       authRenew(setToken, signOut, client);
       getUserData();
     };
 
     const onError = (e) => {
-      switch (e.message) {
+      switch (e) {
         case `GraphQL error: Email "${router.query.email}" and password do not match.`:
           return addAlert({
             message: 'Mauvais identifiant et/ou mot de passe',
@@ -246,7 +247,7 @@ export function LoginContextProvider(props) {
       if (onCompleted && !loginLoading && !loginError && loginData) {
         onCompleted(loginData);
       } else if (onError && !loginLoading && loginError) {
-        onError();
+        onError(loginError);
       }
     }
   }, [loginLoading, loginData, loginError]);
@@ -283,6 +284,7 @@ export function LoginContextProvider(props) {
         },
       });
       setIsCacheInit(true);
+      setIsLoggedUser(true);
     };
 
     const onError = () => {
