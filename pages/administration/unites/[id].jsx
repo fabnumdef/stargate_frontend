@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UnitForm from '../../../components/administrationForms/unitForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditUnit } from '../../../utils/mappers/adminMappers';

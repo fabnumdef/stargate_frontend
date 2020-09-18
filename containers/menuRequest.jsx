@@ -1,7 +1,5 @@
 import React from 'react';
-import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
-
+import { gql, useQuery } from '@apollo/client';
 // Material Import
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -125,6 +123,7 @@ export const LIST_MY_REQUESTS = gql`
                  reason
                  status
                  places {
+                   id
                    label
                  }
                }

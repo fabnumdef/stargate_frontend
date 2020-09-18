@@ -21,7 +21,7 @@ import ListLieux from '../lists/checkLieux';
 import { DndModule } from '../../containers/index';
 import { mapUnitData } from '../../utils/mappers/adminMappers';
 import DeletableList from '../lists/deletableList';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 
 const useStyles = makeStyles((theme) => ({
   createUnitForm: {

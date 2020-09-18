@@ -18,7 +18,7 @@ import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../component
 
 import Template from '../template';
 
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 
 const useStyles = makeStyles(() => ({
   root: {

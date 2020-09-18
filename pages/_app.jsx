@@ -9,7 +9,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { useApollo } from '../lib/apollo';
 import { LoginContextProvider } from '../lib/loginContext';
 import theme from '../styles/theme';
-import { SnackBarProvider } from '../lib/ui-providers/snackbar';
+import { SnackBarProvider } from '../lib/hooks/snackbar';
 
 
 function MyApp({ Component, pageProps }) {

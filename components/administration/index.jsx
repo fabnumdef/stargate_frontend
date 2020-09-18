@@ -10,7 +10,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Template from '../../containers/template';
 import PageTitle from '../styled/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import { useLogin } from '../../lib/loginContext';
 
 const useStyles = makeStyles({

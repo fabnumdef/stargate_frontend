@@ -6,7 +6,7 @@ import {
   gql, useApolloClient, useLazyQuery, useMutation,
 } from '@apollo/client';
 import PropTypes from 'prop-types';
-import { useSnackBar } from './ui-providers/snackbar';
+import { useSnackBar } from './hooks/snackbar';
 import { urlAuthorization } from '../utils/permissions';
 import { ROLES } from '../utils/constants/enums';
 

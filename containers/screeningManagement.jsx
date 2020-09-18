@@ -27,7 +27,7 @@ import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
-import { useSnackBar } from '../lib/ui-providers/snackbar';
+import { useSnackBar } from '../lib/hooks/snackbar';
 
 import { useLogin } from '../lib/loginContext';
 import checkStatus from '../utils/mappers/checkStatusVisitor';

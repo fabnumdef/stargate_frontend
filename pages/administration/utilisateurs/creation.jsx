@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 
 const GET_ME = gql`

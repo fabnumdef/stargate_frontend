@@ -8,7 +8,7 @@ import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
 import PlaceForm from '../../../components/administrationForms/placeForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
 

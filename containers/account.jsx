@@ -12,7 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import { useSnackBar } from '../lib/ui-providers/snackbar';
+import { useSnackBar } from '../lib/hooks/snackbar';
 import Template from './template';
 
 const useStyles = makeStyles(() => ({

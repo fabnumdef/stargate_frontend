@@ -11,7 +11,7 @@ import { gql, useMutation } from '@apollo/client';
 import { format } from 'date-fns';
 
 import Button from '@material-ui/core/Button';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';

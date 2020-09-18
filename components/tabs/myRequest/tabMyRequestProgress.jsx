@@ -22,7 +22,7 @@ import gql from 'graphql-tag';
 import TableContainer from '@material-ui/core/TableContainer';
 import EmptyArray from '../../styled/emptyArray';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 
 const CANCEL_REQUEST = gql`
   mutation cancelRequest(

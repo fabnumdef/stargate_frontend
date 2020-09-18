@@ -30,7 +30,7 @@ import {
 } from 'date-fns';
 import { mapRequestEdit } from '../../utils/mappers/requestAcces';
 
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 // Date Validators
 
 import { REQUEST_OBJECT } from '../../utils/constants/enums';

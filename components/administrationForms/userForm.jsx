@@ -19,7 +19,7 @@ import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import classNames from 'classnames';
 import { mapUserData } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import { ROLES } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
