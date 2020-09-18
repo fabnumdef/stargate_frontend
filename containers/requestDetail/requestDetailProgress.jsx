@@ -128,6 +128,7 @@ export default function RequestDetails({ requestId }) {
     data, loading, refetch,
   } = useQuery(READ_REQUEST, {
     variables: { requestId },
+    fetchPolicy: 'cache-and-network',
   });
 
   const [deleteVisitor] = useMutation(DELETE_VISITOR);

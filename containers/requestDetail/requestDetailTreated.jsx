@@ -114,7 +114,7 @@ export default function RequestDetailsTreated({ requestId }) {
     const { data: requestData } = await client.query({
       query: READ_REQUEST,
       variables: { requestId },
-      fetchPolicy: 'no-cache',
+      fetchPolicy: 'cache-and-network',
     });
     return setData(requestData);
   };
