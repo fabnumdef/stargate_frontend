@@ -138,7 +138,7 @@ export default function RequestDetails({ requestId }) {
           isDone: { role: activeRole.role, value: false },
           visitorFilters: { status: STATE_REQUEST.STATE_CREATED.state },
         },
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy: 'no-cache',
       });
       if (error) {
         setError(false);
