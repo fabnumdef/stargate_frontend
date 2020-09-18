@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { gql, useApolloClient } from '@apollo/client';
+import { gql, useApolloClient, useQuery } from '@apollo/client';
 
 import Link from 'next/link';
 // Material Import
@@ -97,46 +97,36 @@ export default function RequestDetailsTreated({ requestId }) {
   const { activeRole } = useLogin();
   const client = useApolloClient();
 
-  const userData = client.readQuery({
+  const userData = useMemo(() => client.readQuery({
     query: gql`
-        query getUserId {
-            me {
-                id
-            }
-        }
-    `,
-  });
+          query getUserId {
+              me {
+                  id
+              }
+          }
+      `,
+  }),
+  [client]);
 
-  const [data, setData] = useState(null);
-  const [loadData, setLoadData] = useState(true);
-
-  const getRequest = async () => {
-    const { data: requestData } = await client.query({
-      query: READ_REQUEST,
+  const { data, loading } = useQuery(READ_REQUEST,
+    {
       variables: { requestId },
-      fetchPolicy: 'cache-and-network',
     });
-    return setData(requestData);
-  };
+
 
   useEffect(() => {
-    if (!data) {
-      getRequest();
-    }
-
     if (data && (
       !checkRequestDetailAuth(data, activeRole)
       && data.getCampus.getRequest.owner.id !== userData.me.id
     )) {
       router.push('/');
-    } else if (data) {
-      setLoadData(false);
     }
   }, [data]);
 
+  // @todo error Page 404
 
   return (
-    <Template loading={loadData}>
+    <Template loading={loading}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
