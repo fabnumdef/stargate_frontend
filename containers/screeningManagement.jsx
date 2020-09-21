@@ -33,6 +33,7 @@ import { useSnackBar } from '../lib/ui-providers/snackbar';
 
 import { useLogin } from '../lib/loginContext';
 import checkStatus from '../utils/mappers/checkStatusVisitor';
+import Loading from './loading';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -160,7 +161,7 @@ export default function ScreeningManagement() {
   const initMount = React.useRef(true);
 
   const {
-    data, loading, fetchMore, refetch,
+    data, fetchMore, refetch,
   } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       isDone: { role: activeRole.role, value: false },
@@ -268,7 +269,7 @@ export default function ScreeningManagement() {
   };
 
   return (
-    <Template loading={loading}>
+    <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -339,6 +340,7 @@ export default function ScreeningManagement() {
                 />
               </Grid>
             </Grid>
+            {!data && <Loading />}
             <TabScreeningVisitors
               visitors={visitors}
               onChange={(visitorsChange) => setVisitors(visitorsChange)}
