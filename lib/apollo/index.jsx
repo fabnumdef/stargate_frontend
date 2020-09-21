@@ -5,7 +5,6 @@ import { persistCache } from 'apollo-cache-persist';
 import fetch from 'isomorphic-unfetch';
 import { setContext } from '@apollo/client/link/context';
 import getConfig from 'next/config';
-import { onError } from '@apollo/client/link/error';
 import { typeDefs, resolvers } from './resolvers';
 
 

@@ -140,8 +140,6 @@ export default function MenuRequest() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
-  // const client = useApolloClient();
-
   const [value, setValue] = React.useState(
     () => {
       try {
@@ -156,7 +154,6 @@ export default function MenuRequest() {
       }
     },
   );
-
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
    */
