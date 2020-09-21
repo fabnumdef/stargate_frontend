@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import Table from '@material-ui/core/Table';
@@ -13,26 +13,15 @@ import VisitorGrid from '../../styled/visitor';
 
 import {
   EMPLOYEE_TYPE,
-  ROLES,
   VISITOR_STATUS,
   WORKFLOW_BEHAVIOR,
 } from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
+import findRejectedRole from '../../../utils/mappers/findRejectedRole';
+import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';
 
 import StatusLegend from '../../styled/statusLegend';
 
-function findRejectedRole(units) {
-  const sortRole = units.map((u) => `${ROLES[u.steps.find(
-    (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
-  ).role].shortLabel} - ${u.label}`);
-  return sortRole.join(', ').toString();
-}
-
-function findVisitorStatus(units) {
-  const status = units.find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
-    .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
-  return status ? status.join(', ').toString() : '';
-}
 
 function createData({
   id, firstname, birthLastname, units, rank, company, employeeType, status, vip,
@@ -61,10 +50,10 @@ const columns = [
 ];
 
 export default function TabRequestVisitors({ visitors }) {
-  const rows = visitors.reduce((acc, vis) => {
+  const rows = useMemo(() => visitors.reduce((acc, vis) => {
     acc.push(createData(vis));
     return acc;
-  }, []);
+  }, []), [visitors]);
 
   return (
     <div>
