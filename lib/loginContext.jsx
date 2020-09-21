@@ -157,17 +157,25 @@ export function LoginContextProvider({ children }) {
 
   const [getUserData, { data: meData, loading: meLoading, error: meError }] = useLazyQuery(GET_ME);
 
-  const [authRenewMutation,
-    { data: jwtData, loading: jwtLoading, error: jwtError },
-  ] = useMutation(AUTH_RENEW);
-
-  const [login, { data: loginData, loading: loginLoading, error: loginError }] = useMutation(LOGIN);
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
   };
 
-  const authRenew = useCallback(async () => {
+  /* eslint-disable no-use-before-define */
+  const [authRenewMutation] = useMutation(AUTH_RENEW, {
+    onCompleted: (d) => {
+      setToken(d.jwtRefresh.jwt);
+      authRenew();
+    },
+
+    onError: () => {
+      signOut({ message: 'Session expirée', severity: 'warning' });
+      clearTimeout((duration) => setTimeout(authRenew, duration));
+    },
+  });
+
+  const authRenew = useCallback(() => {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
       clearTimeout(reloadAuth);
@@ -189,68 +197,42 @@ export function LoginContextProvider({ children }) {
     return true;
   }, [authRenewMutation, signOut]);
 
-  useEffect(() => {
-    const onCompleted = (d) => {
-      setToken(d.jwtRefresh.jwt);
-      authRenew();
-    };
-    const onError = () => {
-      signOut({ message: 'Session expirée', severity: 'warning' });
-      clearTimeout((duration) => setTimeout(authRenew, duration));
-    };
 
-    if (onCompleted || onError) {
-      if (onCompleted && !jwtLoading && !jwtError && jwtData) {
-        onCompleted(jwtData);
-      } else if (onError && !jwtLoading && jwtError) {
-        onError();
-      }
-    }
-  }, [authRenew, jwtData, jwtError, jwtLoading, signOut]);
-
-  const signIn = (email, password, resetToken = null) => {
-    try {
-      login({ variables: { email, password, token: resetToken } });
-    } catch (e) {
-      console.error('Erreur serveur, merci de réessayer', e);
-    }
-  };
-
-  useEffect(() => {
-    const onCompleted = (d) => {
+  const [login] = useMutation(LOGIN, {
+    onCompleted: (d) => {
       setToken(d.login.jwt);
       localStorage.setItem('activeRoleNumber', 0);
       authRenew(setToken, signOut, client);
       getUserData();
-    };
-
-    const onError = (e) => {
-      switch (e) {
+    },
+    onError: (e) => {
+      switch (e.message) {
         case `GraphQL error: Email "${router.query.email}" and password do not match.`:
-          return addAlert({
+          addAlert({
             message: 'Mauvais identifiant et/ou mot de passe',
             severity: 'warning',
           });
+          break;
         case 'GraphQL error: Password expired':
-          return addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
+          addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
+          break;
         case 'GraphQL error: Expired link':
-          return signOut({
+          signOut({
             message: 'Lien expiré, merci de refaire une demande de mot de passe',
             severity: 'warning',
           });
+          break;
         default:
-          return signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
+          signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
+          break;
       }
-    };
+    },
+  });
 
-    if (onCompleted || onError) {
-      if (onCompleted && !loginLoading && !loginError && loginData) {
-        onCompleted(loginData);
-      } else if (onError && !loginLoading && loginError) {
-        onError(loginError);
-      }
-    }
-  }, [loginLoading, loginData, loginError]);
+
+  const signIn = (email, password, resetToken = null) => {
+    login({ variables: { email, password, token: resetToken } });
+  };
 
   useEffect(() => {
     const onCompleted = (d) => {
@@ -299,7 +281,7 @@ export function LoginContextProvider({ children }) {
         onError();
       }
     }
-  }, [meData, meLoading, meError, client]);
+  }, [meData, meLoading, meError, client, signOut]);
 
   useEffect(() => {
     if (router.query.token && !isLoggedUser) {
