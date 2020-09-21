@@ -182,7 +182,7 @@ export default function MenuRequest() {
         },
         isDone: { value: false },
       },
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'network-only',
       notifyOnNetworkStatusChange: true,
     },
   );
@@ -195,7 +195,7 @@ export default function MenuRequest() {
         offset: page * rowsPerPage,
       },
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true,
   });
 
@@ -237,7 +237,7 @@ export default function MenuRequest() {
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'network-only',
       notifyOnNetworkStatusChange: true,
     },
   );
