@@ -63,7 +63,7 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_HOST.role,
       ].includes(role);
     default:
-      return false;
+      return true;
   }
 };
 
