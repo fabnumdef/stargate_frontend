@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import { RequestDetailProgress } from '../../../containers';
 
 function RequestDetailPageProgress() {
@@ -14,4 +13,4 @@ function RequestDetailPageProgress() {
   );
 }
 
-export default withApollo()(RequestDetailPageProgress);
+export default RequestDetailPageProgress;

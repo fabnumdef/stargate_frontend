@@ -6,13 +6,13 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import { useSnackBar } from '../lib/ui-providers/snackbar';
+import { useSnackBar } from '../lib/hooks/snackbar';
 import Template from './template';
 
 const useStyles = makeStyles(() => ({

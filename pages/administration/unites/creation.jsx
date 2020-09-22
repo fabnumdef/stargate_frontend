@@ -1,12 +1,10 @@
 import React from 'react';
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UnitForm from '../../../components/administrationForms/unitForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 
@@ -162,4 +160,4 @@ function CreateUnit() {
   );
 }
 
-export default withApollo()(CreateUnit);
+export default CreateUnit;

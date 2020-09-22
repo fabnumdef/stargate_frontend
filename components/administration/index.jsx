@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import TablePagination from '@material-ui/core/TablePagination';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,7 +10,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Template from '../../containers/template';
 import PageTitle from '../styled/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import { useLogin } from '../../lib/loginContext';
 
 const useStyles = makeStyles({
@@ -56,7 +56,10 @@ function IndexAdministration({
     getList(rowsPerPage, page);
   }, [page, rowsPerPage, searchInput, activeRole]);
 
-  const handleChangeFilter = (e) => setSearchInput(e.target.value);
+  const handleChangeFilter = (e) => {
+    setSearchInput(e.target.value);
+    setPage(0);
+  };
 
   const deleteItem = async (id, deleteLabel) => {
     try {
