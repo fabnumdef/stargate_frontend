@@ -1,6 +1,4 @@
 import React, { useMemo } from 'react';
-
-import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -22,7 +20,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
   [requestVisitor.status, requestVisitor.units]);
 
   return (
-    <ListItem>
+    <>
       <ListItemText
         primary={(
           <>
@@ -36,14 +34,14 @@ export default function RequestVisitorItem({ requestVisitor }) {
             )}
 
         secondary={(
-          <Grid container spacing={2}>
+          <Grid container>
             <Grid item sm={6}>
-              <Typography variant="body1" color="primary">
+              <Typography variant="subtitle1" color="primary">
                 Nom de naissance, Prenom :
                 {' '}
               </Typography>
               <Typography variant="body2" color="primary">
-                {`${requestVisitor.lastname.toUpperCase()} ,${requestVisitor.firstname}`}
+                {`${requestVisitor.birthLastname.toUpperCase()} ,${requestVisitor.firstname}`}
               </Typography>
             </Grid>
             <Grid item sm={6}>
@@ -67,7 +65,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
                 À :
               </Typography>
               <Typography variant="body2" color="primary">
-                {format(new Date(requestVisitor.birthplace), 'dd/MM/yyyy')}
+                {requestVisitor.birthplace}
               </Typography>
             </Grid>
             <Grid item sm={6}>
@@ -101,6 +99,6 @@ export default function RequestVisitorItem({ requestVisitor }) {
           </Grid>
           )}
       />
-    </ListItem>
+    </>
   );
 }
