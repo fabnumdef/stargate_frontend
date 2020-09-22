@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units, vip,
+  id, firstname, birthLastname, rank, company, employeeType, units, vip, vipReason,
 }, activeRole) {
   const findStep = ckeckStatusVisitor(units, activeRole);
   return {
@@ -127,6 +127,7 @@ function createData({
     criblage: checkCriblageVisitor(units),
     validation: null,
     vip,
+    vipReason,
     step: findStep.step,
     unitToShift: findStep.step === ACTIVE_STEP_STATUS ? findStep.unit : null,
   };
@@ -337,11 +338,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     switch (column.id) {
                       case 'visitor':
                         return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                          >
-                            <VisitorGrid name={value} vip={row.vip} />
+                          <TableCell key={column.id} align={column.align}>
+                            <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
                           </TableCell>
                         );
                       case 'criblage':
