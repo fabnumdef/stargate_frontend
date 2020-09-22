@@ -1,6 +1,5 @@
 import React from 'react';
 import { Home } from '../containers';
-import { withApollo } from '../lib/apollo';
 
 function MyRequestsPage() {
   // TODO check profile and load the good container
@@ -12,4 +11,4 @@ function MyRequestsPage() {
   );
 }
 
-export default withApollo()(MyRequestsPage);
+export default MyRequestsPage;

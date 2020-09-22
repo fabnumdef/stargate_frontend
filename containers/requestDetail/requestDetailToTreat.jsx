@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation, useApolloClient } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useMutation, useApolloClient } from '@apollo/client';
 
 import Link from 'next/link';
 
@@ -12,7 +11,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import {
   DetailsInfosRequest,
   TabRequestVisitorsToTreat,

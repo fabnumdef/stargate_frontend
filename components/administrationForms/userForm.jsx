@@ -15,12 +15,11 @@ import Radio from '@material-ui/core/Radio';
 import Link from 'next/link';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import classNames from 'classnames';
 import { mapUserData } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import { ROLES } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({

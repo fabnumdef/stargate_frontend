@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
 import PlaceForm from '../../../components/administrationForms/placeForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
 
@@ -328,4 +326,4 @@ function EditCampus() {
   );
 }
 
-export default withApollo()(EditCampus);
+export default EditCampus;

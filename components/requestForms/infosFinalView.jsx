@@ -6,13 +6,12 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 // Apollo
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 
 import { format } from 'date-fns';
 
 import Button from '@material-ui/core/Button';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';

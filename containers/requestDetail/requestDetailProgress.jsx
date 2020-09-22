@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import {
+  gql, useQuery, useMutation, useApolloClient,
+} from '@apollo/client';
 
 import Link from 'next/link';
 
@@ -17,7 +18,7 @@ import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../component
 
 import Template from '../template';
 
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 
 const useStyles = makeStyles(() => ({
   root: {

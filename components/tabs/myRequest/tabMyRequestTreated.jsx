@@ -1,10 +1,10 @@
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,7 +23,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
@@ -165,6 +165,8 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
   const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
+
+  const router = useRouter();
 
   const rows = React.useMemo(() => requests.reduce((acc, dem) => {
     acc.push(createData(dem));
@@ -333,11 +335,14 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
               <TableCell key="modif">
                 {hover[index] && (
                 <div style={{ float: 'right' }}>
-                  <Link href={`/demandes/${detailLink}/${row.id}`}>
-                    <IconButton aria-label="modifier" className={classes.icon} color="primary">
-                      <DescriptionIcon />
-                    </IconButton>
-                  </Link>
+                  <IconButton
+                    aria-label="modifier"
+                    className={classes.icon}
+                    color="primary"
+                    onClick={() => router.push(`/demandes/${detailLink}/${row.id}`)}
+                  >
+                    <DescriptionIcon />
+                  </IconButton>
                 </div>
                 )}
               </TableCell>

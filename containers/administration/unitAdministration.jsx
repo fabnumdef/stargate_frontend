@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import gql from 'graphql-tag';
-import { useApolloClient } from '@apollo/react-hooks';
+import { gql, useApolloClient } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUnitsList } from '../../utils/mappers/adminMappers';
 import { ROLES } from '../../utils/constants/enums';
@@ -16,6 +15,7 @@ const GET_UNITS_LIST = gql`
     query listUnits($cursor: OffsetCursor, $filters: UnitFilters, $campusId: String!, $search: String) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listUnits(cursor: $cursor, filters: $filters, search: $search) {
                 meta {
                     offset

@@ -1,12 +1,10 @@
 import React from 'react';
-import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 
 const GET_USER = gql`
@@ -102,4 +100,4 @@ function EditUser() {
   );
 }
 
-export default withApollo()(EditUser);
+export default EditUser;

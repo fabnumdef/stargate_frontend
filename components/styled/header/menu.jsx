@@ -1,12 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import gql from 'graphql-tag';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
-import { useApolloClient } from '@apollo/react-hooks';
+import { gql, useApolloClient } from '@apollo/client';
 import Grid from '@material-ui/core/Grid';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
@@ -86,7 +85,7 @@ export default function MenuItems() {
               <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
                 <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
-                  {getAdminMenu(router, campus.campusId).map((subMenu) => (
+                  {campus && getAdminMenu(router, campus.campusId).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
                     <ButtonMenu key={subMenu.label} size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
                       {subMenu.label}

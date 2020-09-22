@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 
 // Apollo
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 
 // Material UI components
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,7 +25,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import validator from 'validator';
 import { isValid } from 'date-fns';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import { REQUEST_OBJECT, ID_DOCUMENT, EMPLOYEE_TYPE } from '../../utils/constants/enums';
 import { mapVisitorData, mapVisitorEdit } from '../../utils/mappers/requestAcces';
