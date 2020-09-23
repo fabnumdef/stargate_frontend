@@ -14,7 +14,6 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
-
 import Template from './template';
 
 const useStyles = makeStyles(() => ({
