@@ -2,25 +2,24 @@ import React, { useMemo } from 'react';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import ListItem from '@material-ui/core/ListItem';
 
 import { format } from 'date-fns';
 import {
   VISITOR_STATUS,
-  WORKFLOW_BEHAVIOR,
+  STATE_REQUEST,
 } from '../../../utils/constants/enums';
-import findRejectedRole from '../../../utils/mappers/findRejectedRole';
-import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';
+import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 
 export default function RequestVisitorItem({ requestVisitor }) {
-  const status = useMemo(() => (requestVisitor.status === WORKFLOW_BEHAVIOR
-    .VALIDATION.RESPONSE.negative
-    ? `${VISITOR_STATUS[requestVisitor.status]} par ${findRejectedRole(requestVisitor.units)}`
-    : findVisitorStatus(requestVisitor.units)),
+  const status = useMemo(() => (requestVisitor.status === STATE_REQUEST.STATE_CANCELED.state
+    ? VISITOR_STATUS.CANCELED
+    : findValidationStep(requestVisitor.units)),
   [requestVisitor.status, requestVisitor.units]);
 
   return (
-    <>
+    <ListItem divider>
       <ListItemText
         primary={(
           <>
@@ -36,12 +35,12 @@ export default function RequestVisitorItem({ requestVisitor }) {
         secondary={(
           <Grid container>
             <Grid item sm={6}>
-              <Typography variant="subtitle1" color="primary">
+              <Typography variant="body1" color="primary">
                 Nom de naissance, Prenom :
                 {' '}
               </Typography>
               <Typography variant="body2" color="primary">
-                {`${requestVisitor.birthLastname.toUpperCase()} ,${requestVisitor.firstname}`}
+                {`${requestVisitor.birthLastname.toUpperCase()}, ${requestVisitor.firstname}`}
               </Typography>
             </Grid>
             <Grid item sm={6}>
@@ -99,6 +98,6 @@ export default function RequestVisitorItem({ requestVisitor }) {
           </Grid>
           )}
       />
-    </>
+    </ListItem>
   );
 }

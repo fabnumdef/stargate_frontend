@@ -11,7 +11,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import ListItem from '@material-ui/core/ListItem';
 
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
@@ -140,9 +139,7 @@ export default function GatekeeperManagement() {
           <List>
             { data && data.getCampus.listVisitors.list
               .map((visitorRequest) => (
-                <ListItem divider>
-                  <ListItemVisitors requestVisitor={visitorRequest} />
-                </ListItem>
+                <ListItemVisitors requestVisitor={visitorRequest} />
               ))}
           </List>
         </Grid>

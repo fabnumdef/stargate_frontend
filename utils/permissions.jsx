@@ -63,6 +63,7 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_HOST.role,
       ].includes(role);
     default:
+      // @todo change to false when its over
       return true;
   }
 };
