@@ -66,6 +66,7 @@ export const ROLES = {
     behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
   },
   ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte' },
+  ROLE_GATEKEEPER: { role: 'ROLE_GATEKEEPER', label: 'Gardien' },
   ROLE_OBSERVER: {
     role: 'ROLE_OBSERVER',
     label: 'Observateur',
