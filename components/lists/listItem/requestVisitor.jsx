@@ -31,17 +31,20 @@ export default function RequestVisitorItem({ requestVisitor }) {
               {requestVisitor.request.id}
             </Typography>
           </>
-            )}
-
+        )}
         secondary={(
           <Grid container>
-            <Grid item sm={6}>
+            <Grid item sm={3}>
               <Typography variant="subtitle1" color="primary">
-                Nom de naissance, Prenom :
+                Nom de naissance(usage), Prénom :
                 {' '}
               </Typography>
+            </Grid>
+            <Grid item sm={3}>
               <Typography variant="body2" color="primary">
-                {`${requestVisitor.birthLastname.toUpperCase()} ,${requestVisitor.firstname}`}
+                {`${requestVisitor.birthLastname.toUpperCase()} (${
+                  requestVisitor.usageLastname
+                }) ,${requestVisitor.firstname}`}
               </Typography>
             </Grid>
             <Grid item sm={6}>
@@ -93,11 +96,12 @@ export default function RequestVisitorItem({ requestVisitor }) {
                   `${requestVisitor.request.owner.rank || ''}
                   ${requestVisitor.request.owner.lastname.toUpperCase()}
                   ${requestVisitor.request.owner.firstname}`
-                /* @todo tel */}
+                  /* @todo tel */
+                }
               </Typography>
             </Grid>
           </Grid>
-          )}
+        )}
       />
     </>
   );

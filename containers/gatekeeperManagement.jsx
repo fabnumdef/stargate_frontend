@@ -25,54 +25,51 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const LIST_VISITOR_REQUESTS = gql`
-         query ListVisitorsRequestQuery(
-           $campusId: String!
-           $search: String
-           $cursor: OffsetCursor!
-         ) {
-           campusId @client @export(as: "campusId")
-           getCampus(id: $campusId) {
-             listVisitors(search: $search, cursor: $cursor) {
-               list {
-                 id
-                 firstname
-                 nationality
-                 birthday
-                 birthplace
-                 birthLastname
-                 units {
-                     id
-                     label
-                       steps {
-                          role
-                           state {
-                               isOK
-                               value
-                           }
-                       }
-                 }
-                 request {
-                   id
-                   reason
-                   from
-                   to
-                   places {
-                     label
-                  }
-                    owner {
-                      id
-                      lastname
-                      firstname
-                    }
-                  }
-                }
-               meta {
-                 total
-               }
-             }
-           }
-         }
-       `;
+  query ListVisitorsRequestQuery($campusId: String!, $search: String, $cursor: OffsetCursor!) {
+    campusId @client @export(as: "campusId")
+    getCampus(id: $campusId) {
+      listVisitors(search: $search, cursor: $cursor) {
+        list {
+          id
+          firstname
+          nationality
+          birthday
+          birthplace
+          birthLastname
+          usageLastname
+          units {
+            id
+            label
+            steps {
+              role
+              state {
+                isOK
+                value
+              }
+            }
+          }
+          request {
+            id
+            reason
+            from
+            to
+            places {
+              label
+            }
+            owner {
+              id
+              lastname
+              firstname
+            }
+          }
+        }
+        meta {
+          total
+        }
+      }
+    }
+  }
+`;
 
 export default function GatekeeperManagement() {
   const classes = useStyles();
