@@ -146,10 +146,11 @@ export function LoginContextProvider({ children }) {
   });
 
 
-  const signOut = useCallback((alert = false) => {
+  const signOut = useCallback(async (alert = false) => {
     localStorage.clear();
-    client.clearStore();
-    router.push('/login');
+    await client.cache.reset();
+    await client.clearStore();
+    await router.push('/login');
     setIsLoggedUser(false);
     setIsCacheInit(false);
     if (alert) addAlert(alert);
