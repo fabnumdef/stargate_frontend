@@ -95,7 +95,6 @@ export default function GatekeeperManagement() {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       search,
     },
-    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'no-cache',
   });
 
@@ -145,9 +144,9 @@ export default function GatekeeperManagement() {
         <Grid item sm={12}>
           <List>
             {data
-              ? (data.getCampus.listVisitors.list.map((visitorRequest) => (
-                <ListItemVisitors requestVisitor={visitorRequest} />
-              ))) : (<Loading />)}
+             && data.getCampus.listVisitors.list.map((visitorRequest) => (
+               <ListItemVisitors requestVisitor={visitorRequest} />
+             ))}
           </List>
         </Grid>
         <Grid item sm={12}>
