@@ -12,8 +12,6 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 
-import Loading from './loading';
-
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
 import Template from './template';
