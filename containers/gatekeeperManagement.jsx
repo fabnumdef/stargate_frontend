@@ -12,6 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 
+import Loading from './loading';
+
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
 
@@ -88,7 +90,7 @@ export default function GatekeeperManagement() {
   const [search, setSearch] = useState(null);
 
   const {
-    data, loading,
+    data,
   } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
@@ -113,7 +115,7 @@ export default function GatekeeperManagement() {
   };
 
   return (
-    <Template loading={loading}>
+    <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -144,10 +146,9 @@ export default function GatekeeperManagement() {
         <Grid item sm={12}>
           <List>
             {data
-              && data.getCampus.listVisitors
-              && data.getCampus.listVisitors.list.map((visitorRequest) => (
+              ? (data.getCampus.listVisitors.list.map((visitorRequest) => (
                 <ListItemVisitors requestVisitor={visitorRequest} />
-              ))}
+              ))) : (<Loading />)}
           </List>
         </Grid>
         <Grid item sm={12}>
