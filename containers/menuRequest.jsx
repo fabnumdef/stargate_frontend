@@ -163,7 +163,7 @@ export default function MenuRequest() {
 
   const childRef = React.useRef();
 
-  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
+  const { data: toTreat, fetchMore: fetchToTreat, loading: loadingToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -181,7 +181,7 @@ export default function MenuRequest() {
     },
   );
 
-  const { data: inProgress, fetchMore: fetchInProgress } = useQuery(LIST_MY_REQUESTS, {
+  const { data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress } = useQuery(LIST_MY_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
       cursor: {
@@ -226,7 +226,7 @@ export default function MenuRequest() {
     return treatedData.getCampus.listRequestByVisitorStatus;
   };
 
-  const { data: treated, fetchMore: fetchTreated } = useQuery(
+  const { data: treated, fetchMore: fetchTreated, loading: loadingTreated } = useQuery(
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
@@ -363,7 +363,7 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template>
+    <Template loading={loadingToTreat && loadingTreated && loadingProgress}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">

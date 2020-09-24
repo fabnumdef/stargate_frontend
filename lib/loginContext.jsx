@@ -313,7 +313,7 @@ export function LoginContextProvider({ children }) {
           : '/',
       );
     }
-  }, [isLoggedUser, activeRole, isCacheInit, router, signIn, authRenew, getUserData]);
+  }, [isLoggedUser, activeRole, isCacheInit]);
 
 
   return (
