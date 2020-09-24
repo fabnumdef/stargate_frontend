@@ -12,6 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 
+import Loading from './loading';
+
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
 import Template from './template';
@@ -20,57 +22,63 @@ const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
+  pageTitle: {
+    margin: '16px 0',
+    color: '#0d40a0',
+    fontWeight: 'bold',
+  },
+  searchField: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
 }));
 
 export const LIST_VISITOR_REQUESTS = gql`
-         query ListVisitorsRequestQuery(
-           $campusId: String!
-           $search: String
-           $cursor: OffsetCursor!
-         ) {
-           campusId @client @export(as: "campusId")
-           getCampus(id: $campusId) {
-             listVisitors(search: $search, cursor: $cursor) {
-               list {
-                 id
-                 firstname
-                 nationality
-                 birthday
-                 birthplace
-                 birthLastname
-                 units {
-                     id
-                     label
-                       steps {
-                          role
-                           state {
-                               isOK
-                               value
-                           }
-                       }
-                 }
-                 request {
-                   id
-                   reason
-                   from
-                   to
-                   places {
-                     label
-                  }
-                    owner {
-                      id
-                      lastname
-                      firstname
-                    }
-                  }
-                }
-               meta {
-                 total
-               }
-             }
-           }
-         }
-       `;
+  query ListVisitorsRequestQuery($campusId: String!, $search: String, $cursor: OffsetCursor!) {
+    campusId @client @export(as: "campusId")
+    getCampus(id: $campusId) {
+      listVisitors(search: $search, cursor: $cursor) {
+        list {
+          id
+          firstname
+          nationality
+          birthday
+          birthplace
+          birthLastname
+          usageLastname
+          units {
+            id
+            label
+            steps {
+              role
+              state {
+                isOK
+                value
+              }
+            }
+          }
+          request {
+            id
+            reason
+            from
+            to
+            places {
+              label
+            }
+            owner {
+              id
+              lastname
+              firstname
+            }
+          }
+        }
+        meta {
+          total
+        }
+      }
+    }
+  }
+`;
 
 export default function GatekeeperManagement() {
   const classes = useStyles();
@@ -81,7 +89,7 @@ export default function GatekeeperManagement() {
   const [search, setSearch] = useState(null);
 
   const {
-    data, loading,
+    data,
   } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
@@ -106,7 +114,7 @@ export default function GatekeeperManagement() {
   };
 
   return (
-    <Template loading={loading}>
+    <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -115,9 +123,9 @@ export default function GatekeeperManagement() {
             </Typography>
           </Box>
         </Grid>
-        <Grid item sm={12} xs={12}>
+        <Grid item sm={12} xs={12} className={classes.searchField}>
           <TextField
-            style={{ float: 'right' }}
+            style={{ float: 'right', width: '300px' }}
             margin="dense"
             variant="outlined"
             value={search}
@@ -136,10 +144,10 @@ export default function GatekeeperManagement() {
 
         <Grid item sm={12}>
           <List>
-            { data && data.getCampus.listVisitors.list
-              .map((visitorRequest) => (
+            {data
+              ? (data.getCampus.listVisitors.list.map((visitorRequest) => (
                 <ListItemVisitors requestVisitor={visitorRequest} />
-              ))}
+              ))) : (<Loading />)}
           </List>
         </Grid>
         <Grid item sm={12}>

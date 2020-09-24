@@ -24,11 +24,12 @@ import StatusLegend from '../../styled/statusLegend';
 
 
 function createData({
-  id, firstname, birthLastname, units, rank, company, employeeType, status, vip,
+  id, firstname, birthLastname, units, rank, company, employeeType, status, vip, vipReason,
 }) {
   return {
     id,
     vip,
+    vipReason,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -78,20 +79,14 @@ export default function TabRequestVisitors({ visitors }) {
               >
                 { columns.map((column) => {
                   const value = row[column.id];
-                  return (
-                    column.id === 'visitor' ? (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                      >
-                        <VisitorGrid name={value} vip={row.vip} />
-                      </TableCell>
-                    )
-                      : (
-                        <TableCell key={column.id} align={column.align}>
-                          { column.format && typeof value === 'number' ? column.format(value) : value }
-                        </TableCell>
-                      )
+                  return column.id === 'visitor' ? (
+                    <TableCell key={column.id} align={column.align}>
+                      <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
+                    </TableCell>
+                  ) : (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                    </TableCell>
                   );
                 }) }
               </TableRow>
