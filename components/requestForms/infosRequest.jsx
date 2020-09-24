@@ -400,12 +400,6 @@ export default function FormInfosClaimant({
                         <ListItemText primary="• UE: 15 jours ouvrés" />
                       </ListItem>
                       <ListItem className={classes.infoTime}>
-                        <ListItemText
-                          className={classes.infoTime}
-                          primary="• UE: 15 jours ouvrés"
-                        />
-                      </ListItem>
-                      <ListItem className={classes.infoTime}>
                         <ListItemText primary="• Hors UE: 30 jours ouvrés" />
                       </ListItem>
                     </List>

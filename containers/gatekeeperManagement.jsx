@@ -11,7 +11,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import ListItem from '@material-ui/core/ListItem';
 
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
@@ -21,6 +20,15 @@ import Template from './template';
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
+  },
+  pageTitle: {
+    margin: '16px 0',
+    color: '#0d40a0',
+    fontWeight: 'bold',
+  },
+  searchField: {
+    display: 'flex',
+    justifyContent: 'center',
   },
 }));
 
@@ -114,9 +122,9 @@ export default function GatekeeperManagement() {
             </Typography>
           </Box>
         </Grid>
-        <Grid item sm={12} xs={12}>
+        <Grid item sm={12} xs={12} className={classes.searchField}>
           <TextField
-            style={{ float: 'right' }}
+            style={{ float: 'right', width: '300px' }}
             margin="dense"
             variant="outlined"
             value={search}
@@ -135,11 +143,10 @@ export default function GatekeeperManagement() {
 
         <Grid item sm={12}>
           <List>
-            { data && data.getCampus.listVisitors.list
-              .map((visitorRequest) => (
-                <ListItem divider>
-                  <ListItemVisitors requestVisitor={visitorRequest} />
-                </ListItem>
+            {data
+              && data.getCampus.listVisitors
+              && data.getCampus.listVisitors.list.map((visitorRequest) => (
+                <ListItemVisitors requestVisitor={visitorRequest} />
               ))}
           </List>
         </Grid>
