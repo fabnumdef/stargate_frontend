@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   subtitles: {
     fontWeight: 'bold',
   },
-  test: {
+  gridFlex: {
     display: 'flex',
   },
   information: {
@@ -38,7 +38,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
       <ListItemText
         primary={
           <Grid container>
-            <Grid item sm={12} className={classes.test}>
+            <Grid item sm={12} className={classes.gridFlex}>
               <Typography variant="h5" color="primary">
                 # Demandes :
               </Typography>
@@ -51,7 +51,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
         secondary={
           <Grid container>
             <Grid item sm={6}>
-              <Grid item sm={12} className={classes.test}>
+              <Grid item sm={12} className={classes.gridFlex}>
                 <Typography variant="body1" color="primary" className={classes.subtitles}>
                   Nom de naissance(usage), Prénom :
                 </Typography>
@@ -61,8 +61,8 @@ export default function RequestVisitorItem({ requestVisitor }) {
                   }) ,${requestVisitor.firstname}`}
                 </Typography>
               </Grid>
-              <Grid item sm={12} className={classes.test}>
-                <Grid item sm={12} className={classes.test}>
+              <Grid item sm={12} className={classes.gridFlex}>
+                <Grid item sm={12} className={classes.gridFlex}>
                   <Typography variant="body1" color="primary" className={classes.subtitles}>
                     Née le :
                   </Typography>
@@ -70,7 +70,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
                     {format(new Date(requestVisitor.birthday), 'dd/MM/yyyy')}
                   </Typography>
                 </Grid>
-                <Grid item sm={12} className={classes.test}>
+                <Grid item sm={12} className={classes.gridFlex}>
                   <Typography variant="body1" color="primary" className={classes.subtitles}>
                     à :
                   </Typography>
@@ -80,7 +80,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
                 </Grid>
               </Grid>
 
-              <Grid item sm={12} className={classes.test}>
+              <Grid item sm={12} className={classes.gridFlex}>
                 <Typography variant="body1" color="primary" className={classes.subtitles}>
                   Nationalité :
                 </Typography>
@@ -90,7 +90,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
               </Grid>
             </Grid>
             <Grid item sm={6}>
-              <Grid item sm={12} className={classes.test}>
+              <Grid item sm={12} className={classes.gridFlex}>
                 <Typography variant="body1" color="primary" className={classes.subtitles}>
                   Date venue :
                 </Typography>
@@ -100,7 +100,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
                 ${format(new Date(requestVisitor.request.to), 'dd/MM/yyyy')} inclus`}
                 </Typography>
               </Grid>
-              <Grid item sm={12} className={classes.test}>
+              <Grid item sm={12} className={classes.gridFlex}>
                 <Typography variant="body1" color="primary" className={classes.subtitles}>
                   Status de la demande :
                 </Typography>
@@ -108,7 +108,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
                   {status}
                 </Typography>
               </Grid>
-              <Grid item sm={12} className={classes.test}>
+              <Grid item sm={12} className={classes.gridFlex}>
                 <Typography variant="body1" color="primary" className={classes.subtitles}>
                   Demandeur :
                 </Typography>
