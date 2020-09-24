@@ -163,9 +163,7 @@ export default function MenuRequest() {
 
   const childRef = React.useRef();
 
-  const initMount = React.useRef(true);
-
-  const { data: toTreat, loading: loadingToTreat, fetchMore: fetchToTreat } = useQuery(
+  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -179,8 +177,7 @@ export default function MenuRequest() {
         },
         isDone: { value: false },
       },
-      fetchPolicy: 'network-only',
-      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
   );
 
@@ -192,8 +189,7 @@ export default function MenuRequest() {
         offset: page * rowsPerPage,
       },
     },
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
   });
 
   const selectTreatedOptions = React.useMemo(() => {
@@ -234,8 +230,7 @@ export default function MenuRequest() {
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
-      fetchPolicy: 'network-only',
-      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
   );
 
@@ -290,20 +285,15 @@ export default function MenuRequest() {
   };
 
   const handleChangePage = (event, newPage) => {
+    handleFetchMore();
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
+    handleFetchMore();
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  React.useEffect(() => {
-    if (initMount.current) {
-      initMount.current = false;
-    }
-    handleFetchMore();
-  }, [page, rowsPerPage]);
 
   const refetchQueries = [
     {
@@ -373,7 +363,7 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template loading={loadingToTreat}>
+    <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
