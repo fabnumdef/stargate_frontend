@@ -181,7 +181,9 @@ export default function MenuRequest() {
     },
   );
 
-  const { data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress } = useQuery(LIST_MY_REQUESTS, {
+  const {
+    data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress,
+  } = useQuery(LIST_MY_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
       cursor: {
