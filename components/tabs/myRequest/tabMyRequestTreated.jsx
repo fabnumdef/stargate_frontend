@@ -62,7 +62,7 @@ function createData({
     owner: owner
       ? `
           ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
-          ${owner.unit}`
+          ${owner.unit.label}`
       : '',
 
     places: places.map((place, index) => {
