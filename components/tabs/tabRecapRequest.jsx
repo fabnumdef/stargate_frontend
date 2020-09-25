@@ -37,6 +37,7 @@ const columns = [
 function createData({
   id,
   vip,
+  vipReason,
   firstname,
   birthLastname,
   rank,
@@ -46,6 +47,7 @@ function createData({
   return {
     id,
     vip,
+    vipReason,
     visiteur: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -204,20 +206,14 @@ export default function TabRecapRequest({
               >
                 { columns.map((column) => {
                   const value = row[column.id];
-                  return (
-                    column.id === 'visiteur' ? (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                      >
-                        <VisitorGrid name={value} vip={row.vip} />
-                      </TableCell>
-                    )
-                      : (
-                        <TableCell key={column.id} align={column.align}>
-                          { column.format && typeof value === 'number' ? column.format(value) : value }
-                        </TableCell>
-                      )
+                  return column.id === 'visiteur' ? (
+                    <TableCell key={column.id} align={column.align}>
+                      <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
+                    </TableCell>
+                  ) : (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                    </TableCell>
                   );
                 }) }
                 <TableCell key="actions">
