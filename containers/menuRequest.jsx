@@ -163,9 +163,7 @@ export default function MenuRequest() {
 
   const childRef = React.useRef();
 
-  const initMount = React.useRef(true);
-
-  const { data: toTreat, loading: loadingToTreat, fetchMore: fetchToTreat } = useQuery(
+  const { data: toTreat, fetchMore: fetchToTreat, loading: loadingToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -179,12 +177,13 @@ export default function MenuRequest() {
         },
         isDone: { value: false },
       },
-      fetchPolicy: 'network-only',
-      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
   );
 
-  const { data: inProgress, fetchMore: fetchInProgress } = useQuery(LIST_MY_REQUESTS, {
+  const {
+    data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress,
+  } = useQuery(LIST_MY_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
       cursor: {
@@ -192,8 +191,7 @@ export default function MenuRequest() {
         offset: page * rowsPerPage,
       },
     },
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
   });
 
   const selectTreatedOptions = React.useMemo(() => {
@@ -230,12 +228,11 @@ export default function MenuRequest() {
     return treatedData.getCampus.listRequestByVisitorStatus;
   };
 
-  const { data: treated, fetchMore: fetchTreated } = useQuery(
+  const { data: treated, fetchMore: fetchTreated, loading: loadingTreated } = useQuery(
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
-      fetchPolicy: 'network-only',
-      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
   );
 
@@ -290,20 +287,15 @@ export default function MenuRequest() {
   };
 
   const handleChangePage = (event, newPage) => {
+    handleFetchMore();
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
+    handleFetchMore();
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  React.useEffect(() => {
-    if (initMount.current) {
-      initMount.current = false;
-    }
-    handleFetchMore();
-  }, [page, rowsPerPage]);
 
   const refetchQueries = [
     {
@@ -373,7 +365,7 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template loading={loadingToTreat}>
+    <Template loading={loadingToTreat && loadingTreated && loadingProgress}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">

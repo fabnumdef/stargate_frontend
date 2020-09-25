@@ -125,6 +125,10 @@ export function LoginContextProvider({ children }) {
     const expIn = exp - cur;
     const expiredToken = expIn <= 0;
 
+    if (expiredToken) {
+      localStorage.clear();
+    }
+
     return {
       renewTrigger,
       expIn,
@@ -146,17 +150,17 @@ export function LoginContextProvider({ children }) {
   });
 
 
-  const signOut = useCallback((alert = false) => {
+  const signOut = useCallback(async (alert = false) => {
     localStorage.clear();
-    client.clearStore();
-    router.push('/login');
+    await client.cache.reset();
+    await client.clearStore();
+    await router.push('/login');
     setIsLoggedUser(false);
     setIsCacheInit(false);
     if (alert) addAlert(alert);
   }, [addAlert, client, router]);
 
   const [getUserData, { data: meData, loading: meLoading, error: meError }] = useLazyQuery(GET_ME);
-
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
@@ -230,9 +234,9 @@ export function LoginContextProvider({ children }) {
   });
 
 
-  const signIn = (email, password, resetToken = null) => {
+  const signIn = useCallback((email, password, resetToken = null) => {
     login({ variables: { email, password, token: resetToken } });
-  };
+  });
 
   useEffect(() => {
     const onCompleted = (d) => {
@@ -281,7 +285,8 @@ export function LoginContextProvider({ children }) {
         onError();
       }
     }
-  }, [meData, meLoading, meError, client, signOut]);
+  }, [meData, meLoading, meError]);
+
 
   useEffect(() => {
     if (router.query.token && !isLoggedUser) {

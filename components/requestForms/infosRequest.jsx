@@ -391,10 +391,7 @@ export default function FormInfosClaimant({
                     </Typography>
                     <List>
                       <ListItem className={classes.infoTime}>
-                        <ListItemText
-                          className={classes.infoTime}
-                          primary="• Français: 2 jours ouvrés"
-                        />
+                        <ListItemText primary="• Français: 2 jours ouvrés" />
                       </ListItem>
                       <ListItem className={classes.infoTime}>
                         <ListItemText primary="• UE: 15 jours ouvrés" />
