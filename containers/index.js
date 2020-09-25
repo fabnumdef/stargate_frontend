@@ -9,6 +9,6 @@ export { default as RequestDetailProgress } from './requestDetail/requestDetailP
 export { default as RequestDetailTreated } from './requestDetail/requestDetailTreated';
 
 export { default as MenuRequest } from './menuRequest';
-export { default as RequestAcces } from './requestAcces';
+export { default as RequestAcces } from './myAccesRequest';
 
 export { default as DndModule } from './dndContainer';
