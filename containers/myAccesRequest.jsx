@@ -201,8 +201,6 @@ export default function MyRequestAcces() {
     }));
   };
 
-  const [open, setOpen] = useState(false);
-
   const handleFetchMore = () => {
     switch (value) {
       case 0:
