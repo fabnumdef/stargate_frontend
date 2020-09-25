@@ -29,15 +29,21 @@ export const urlAuthorization = (path, role) => {
       ].includes(role);
     case path.includes('/administration/base'):
     case path.includes('/administration/unites'):
-      return [
-        ROLES.ROLE_ADMIN.role,
-      ].includes(role);
+      return [ROLES.ROLE_ADMIN.role].includes(role);
     case path === '/administration':
     case path.includes('/administration/utilisateurs'):
       return [
         ROLES.ROLE_ADMIN.role,
         ROLES.ROLE_SUPERADMIN.role,
         ROLES.ROLE_UNIT_CORRESPONDENT.role,
+      ].includes(role);
+    case path === '/mes-demandes':
+    case path.includes('/demandes/en-cours'):
+      return [
+        ROLES.ROLE_UNIT_CORRESPONDENT.role,
+        ROLES.ROLE_SECURITY_OFFICER.role,
+        ROLES.ROLE_ACCESS_OFFICE.role,
+        ROLES.ROLE_HOST.role,
       ].includes(role);
     case path === '/nouvelle-demande':
     case path.includes('/demandes/en-cours'):

@@ -10,18 +10,19 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+
 export default function GroupRequestButton({ open }) {
   const classes = useStyles;
 
   return (
-    <div style={classes.divBorder}>
-      <Button variant='contained' color='primary' className={classes.button}>
+    <div className={classes.divBorder}>
+      <Button variant="contained" color="primary" className={classes.button}>
         Nouvelle demande groupe
       </Button>
       {open && (
         <>
-          <Typography variant='h6'>Nouvelle Demande groupe</Typography>
-          <Typography variant='body2'>
+          <Typography variant="h6">Nouvelle Demande groupe</Typography>
+          <Typography variant="body2">
             Nouvelle Demande groupeNouvelle Demande groupeNouvelle Demande groupe Nouvelle Demande
             groupeNouvelle Demande groupe
           </Typography>

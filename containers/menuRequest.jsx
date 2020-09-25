@@ -337,7 +337,7 @@ export default function MenuRequest() {
           ? `(${inProgress.getCampus.listMyRequests.meta.total})`
           : ''
       }`,
-      access: urlAuthorization('/nouvelle-demande', activeRole.role),
+      access: urlAuthorization('/mes-demandes', activeRole.role),
     },
     {
       index: 2,
@@ -441,7 +441,7 @@ export default function MenuRequest() {
             />
           </TabPanel>
           )}
-          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
+          {urlAuthorization('/mes-demandes', activeRole.role) && (
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
               <TabDemandesProgress
                 request={inProgress ? inProgress.getCampus.listMyRequests.list : []}

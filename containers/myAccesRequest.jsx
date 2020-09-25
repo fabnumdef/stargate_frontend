@@ -260,7 +260,7 @@ export default function MyRequestAcces() {
           ? `(${inProgress.getCampus.listMyRequests.meta.total})`
           : ''
       }`,
-      access: urlAuthorization('/nouvelle-demande', activeRole.role),
+      access: urlAuthorization('/mes-demandes', activeRole.role),
     },
     {
       index: 1,
@@ -344,7 +344,7 @@ export default function MyRequestAcces() {
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
-          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
+          {urlAuthorization('/mes-demandes', activeRole.role) && (
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
               <TabDemandesProgress
                 request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
