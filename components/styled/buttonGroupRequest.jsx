@@ -1,33 +1,79 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
-const useStyles = makeStyles(() => ({
-  divBorder: {
-    border: '1px solid yellow',
-    transition: '2s',
+const useStyles = makeStyles((theme) => ({
+  popUp: {
+    width: '300px',
+    height: '66px',
+    transition: 'width 1500ms, height 1500ms',
+    position: 'absolute',
+  },
+  popUpOpen: {
+    width: '500px',
+    height: '180px',
+    border: `2px solid ${theme.palette.secondary.main}`,
+    borderRadius: '10px',
+  },
+  message: {
+    width: '350px',
+  },
+  pageTitle: {
+    margin: '16px 8px',
+  },
+  text: {
+    margin: 0,
+    visibility: 'hidden',
+    opacity: 0,
+    transitionProperty: 'opacity',
+    transitionDuration: '1s',
+    transitionDelay: '1500ms',
+  },
+  textOpen: {
+    margin: '16px 8px',
+    visibility: 'visible',
+    opacity: 1,
   },
 }));
 
 
-export default function GroupRequestButton({ open }) {
-  const classes = useStyles;
+export default function GroupRequestButton() {
+  const classes = useStyles();
+
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className={classes.divBorder}>
-      <Button variant="contained" color="primary" className={classes.button}>
-        Nouvelle demande groupe
-      </Button>
-      {open && (
-        <>
-          <Typography variant="h6">Nouvelle Demande groupe</Typography>
-          <Typography variant="body2">
-            Nouvelle Demande groupeNouvelle Demande groupeNouvelle Demande groupe Nouvelle Demande
-            groupeNouvelle Demande groupe
+    <div>
+      <div className={`${classes.popUp} ${open ? classes.popUpOpen : ''}`}>
+        <Button
+          variant="contained"
+          color={open ? 'secondary' : 'primary'}
+          onClick={() => setOpen(!open)}
+          className={classes.button}
+        >
+          Nouvelle demande de groupe
+        </Button>
+        <Typography variant="body2" color="primary" className={`${classes.message} ${classes.pageTitle}`}>
+          Conseillée pour les groupes importants avec référent.
+        </Typography>
+        <div className={`${classes.text} ${open ? classes.textOpen : ''}`}>
+          <Typography
+            variant="body2"
+            color="primary"
+            className={classes.pageTitle}
+          >
+            1. Recuperer la fiche information
           </Typography>
-        </>
-      )}
+          <Typography
+            variant="body2"
+            color="primary"
+            className={classes.pageTitle}
+          >
+            2. Créér la demande et importer le document rempli
+          </Typography>
+        </div>
+      </div>
     </div>
   );
 }

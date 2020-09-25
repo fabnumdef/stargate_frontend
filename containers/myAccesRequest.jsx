@@ -306,10 +306,7 @@ export default function MyRequestAcces() {
             </Typography>
           </Grid>
           <Grid item sm={6} className={classes.buttonInfos}>
-            <GroupButton open onClick={() => setOpen(open)} />
-            <Typography variant="body2" className={classes.pageTitle}>
-              Conseillée pour les groupes importants avec référent.
-            </Typography>
+            <GroupButton />
           </Grid>
         </Grid>
       </Grid>
