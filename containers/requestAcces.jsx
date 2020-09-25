@@ -13,7 +13,13 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import NoSsr from '../lib/nossr';
 
 import Template from './template';
-import { FormInfosRequest, FormInfosVisitor, FormInfosRecapDemande } from '../components';
+import {
+  FormInfosRequest,
+  FormInfosVisitor,
+  FormInfosRecapDemande,
+  FormInfosReferent,
+} from '../components';
+
 
 const AntTab = withStyles((theme) => ({
   root: {
@@ -52,6 +58,12 @@ const useStyles = makeStyles(() => ({
   pageTitleControl: {
     marginLeft: 'auto',
   },
+  instruction: {
+    marginBottom: '1%',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    marginLeft: '2%',
+  },
 }));
 
 function TabPanel({ children, value, index }) {
@@ -78,7 +90,7 @@ function getSteps() {
   return ['Demande', 'Visiteur', 'Recapitulatif'];
 }
 
-export default function RequestAccesForm() {
+export default function RequestAccesForm(group) {
   const classes = useStyles();
 
   // Stepper's functions
@@ -106,21 +118,35 @@ export default function RequestAccesForm() {
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
-            <Typography variant="h5" className={classes.pageTitle}>
-              Nouvelle Demande
-            </Typography>
+            {group ? (
+              <Typography variant="h5" className={classes.pageTitle}>
+                Nouvelle Demande Groupe
+              </Typography>
+            ) : (
+              <Typography variant="h5" className={classes.pageTitle}>
+                Nouvelle Demande
+              </Typography>
+            )}
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
           <Tabs value={activeStep} aria-label="Etapes demande acces">
             {steps.map((label, index) => (
-              <AntTab className={classes.stepperTitles} label={`${index + 1}. ${label}`} key={`tab ${label}`} />
+              <AntTab
+                className={classes.stepperTitles}
+                label={`${index + 1}. ${label}`}
+                key={`tab ${label}`}
+              />
             ))}
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
             <NoSsr>
+              <Typography className={classes.instruction} variant="body1">
+                Tous les champs sont obligatoires
+              </Typography>
+              {group && <FormInfosReferent />}
               <FormInfosRequest formData={formData} setForm={setForm} handleNext={handleNext} />
             </NoSsr>
           </TabPanel>

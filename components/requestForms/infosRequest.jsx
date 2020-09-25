@@ -268,9 +268,6 @@ export default function FormInfosClaimant({
 
   return (
     <div>
-      <Typography className={classes.instruction} variant="body1">
-        Tous les champs sont obligatoires
-      </Typography>
       <form data-testid="form-demandeur" onSubmit={handleSubmit(onSubmit)}>
         {/* Debut Main principal Layout */}
         <Grid container spacing={6}>
