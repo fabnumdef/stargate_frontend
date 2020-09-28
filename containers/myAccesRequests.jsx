@@ -9,6 +9,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
+
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import TablePagination from '@material-ui/core/TablePagination';
@@ -20,11 +21,10 @@ import {
   TabPanel,
   TabMesDemandesToTreat,
   TabDemandesProgress,
-  TabMesDemandesTreated,
 } from '../components';
 import Template from './template';
 
-import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
+import { STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 import GroupButton from '../components/styled/buttonGroupRequest';
@@ -112,30 +112,19 @@ export default function MyRequestAcces() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
-  const [value, setValue] = React.useState(() => {
-    try {
-      // Get from local storage by key
-      const item = JSON.parse(window.localStorage.getItem('menuValue'));
 
-      // Parse stored json or if none return initialValue
-      if (item) return item;
-      return activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0;
-    } catch (error) {
-      return activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0;
-    }
-  });
+  const [value, setValue] = useState(0);
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
    */
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const childRef = React.useRef();
 
-  const initMount = React.useRef(true);
-
-  const { data: inProgress, fetchMore: fetchInProgress } = useQuery(LIST_MY_REQUESTS, {
+  const {
+    data: inProgress, loading: loadingInProgress, fetchMore: fetchInProgress,
+  } = useQuery(LIST_MY_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
       cursor: {
@@ -143,13 +132,15 @@ export default function MyRequestAcces() {
         offset: page * rowsPerPage,
       },
     },
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network',
   });
 
-  const selectTreatedOptions = React.useMemo(() => {
-    if (activeRole.role === ROLES.ROLE_HOST.role) {
-      return {
+
+  const { data: treated, loading: loadingTreated, fetchMore: fetchTreated } = useQuery(
+    // activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
+    LIST_MY_REQUESTS,
+    {
+      variables: {
         cursor: {
           first: rowsPerPage,
           offset: page * rowsPerPage,
@@ -162,44 +153,12 @@ export default function MyRequestAcces() {
             STATE_REQUEST.STATE_REJECTED.state,
           ],
         },
-      };
-    }
-    return {
-      cursor: {
-        first: rowsPerPage,
-        offset: page * rowsPerPage,
       },
-      as: { role: activeRole.role, unit: activeRole.unit },
-      isDone: { value: true },
-    };
-  }, [activeRole.role, activeRole.unit, page, rowsPerPage]);
-
-  const selectTreatedPath = (treatedData) => {
-    if (activeRole.role === ROLES.ROLE_HOST.role) {
-      return treatedData.getCampus.listMyRequests;
-    }
-    return treatedData.getCampus.listRequestByVisitorStatus;
-  };
-
-  const { data: treated, fetchMore: fetchTreated } = useQuery(
-    // activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
-    LIST_MY_REQUESTS,
-    {
-      variables: selectTreatedOptions,
-      fetchPolicy: 'network-only',
-      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     },
   );
 
-  const mapRequestData = (data) => {
-    if (activeRole.role === ROLES.ROLE_HOST.role) {
-      return data.getCampus.listMyRequests.list;
-    }
-    return data.getCampus.listRequestByVisitorStatus.list.map((r) => ({
-      id: r.id,
-      ...r.requestData[0],
-    }));
-  };
+  const mapRequestData = (data) => data.getCampus.listMyRequests.list;
 
   const handleFetchMore = () => {
     switch (value) {
@@ -218,7 +177,20 @@ export default function MyRequestAcces() {
       case 1:
         fetchTreated({
           query: LIST_MY_REQUESTS,
-          variables: selectTreatedOptions,
+          variables: {
+            cursor: {
+              first: rowsPerPage,
+              offset: page * rowsPerPage,
+            },
+            filters: {
+              status: [
+                STATE_REQUEST.STATE_CANCELED.state,
+                STATE_REQUEST.STATE_ACCEPTED.state,
+                STATE_REQUEST.STATE_MIXED.state,
+                STATE_REQUEST.STATE_REJECTED.state,
+              ],
+            },
+          },
         });
         break;
       default:
@@ -226,20 +198,15 @@ export default function MyRequestAcces() {
   };
 
   const handleChangePage = (event, newPage) => {
+    handleFetchMore();
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
+    handleFetchMore();
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  React.useEffect(() => {
-    if (initMount.current) {
-      initMount.current = false;
-    }
-    handleFetchMore();
-  }, [page, rowsPerPage]);
 
   const refetchQueries = [
     {
@@ -263,8 +230,8 @@ export default function MyRequestAcces() {
     {
       index: 1,
       label: `Traitées ${
-        treated && selectTreatedPath(treated).meta.total > 0
-          ? `(${selectTreatedPath(treated).meta.total})`
+        treated && treated.getCampus.listMyRequests.meta.total > 0
+          ? `(${treated.getCampus.listMyRequests.meta.total})`
           : ''
       }`,
       access: true,
@@ -284,28 +251,25 @@ export default function MyRequestAcces() {
         return inProgress.getCampus.listMyRequests.meta.total;
       case 1:
         if (!treated) return 0;
-        return selectTreatedPath(treated).meta.total;
+        return treated.getCampus.listMyRequests.meta.total;
       default:
         return 0;
     }
   };
 
   return (
-    //   loading={loadingToTreat}
-    <Template>
+    <Template loading={loadingTreated && loadingInProgress}>
       <Grid container spacing={2}>
-        <Grid item sm={8} className={classes.requestButtons}>
-          <Grid item sm={6} className={classes.buttonInfos}>
-            <Button variant="contained" color="primary" className={classes.button}>
-              Nouvelle demande
-            </Button>
-            <Typography variant="body2" className={classes.pageTitle}>
-              Conseillée pour les demandes simples, les petits groupes sans référent.
-            </Typography>
-          </Grid>
-          <Grid item sm={6} className={classes.buttonInfos}>
-            <GroupButton />
-          </Grid>
+        <Grid item sm={12} md={4} className={classes.buttonInfos}>
+          <Button variant="contained" color="primary" className={classes.button}>
+            Nouvelle demande
+          </Button>
+          <Typography variant="body2" className={classes.pageTitle}>
+            Conseillée pour les demandes simples, les petits groupes sans référent.
+          </Typography>
+        </Grid>
+        <Grid item sm={12} md={4}>
+          <GroupButton />
         </Grid>
       </Grid>
       <Grid container spacing={2} className={classes.root}>
@@ -349,20 +313,11 @@ export default function MyRequestAcces() {
             </TabPanel>
           )}
           <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-            {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
-              <TabMesDemandesTreated
-                requests={treated ? treated.getCampus.listRequestByVisitorStatus.list : []}
-                detailLink="traitees"
-                emptyLabel="traitée"
-                ref={childRef}
-              />
-            ) : (
-              <TabMesDemandesToTreat
-                requests={treated ? mapRequestData(treated) : []}
-                detailLink="traitees"
-                emptyLabel="traitée"
-              />
-            )}
+            <TabMesDemandesToTreat
+              requests={treated ? mapRequestData(treated) : []}
+              detailLink="traitees"
+              emptyLabel="traitée"
+            />
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
@@ -378,22 +333,6 @@ export default function MyRequestAcces() {
             />
           )}
         </Grid>
-        {value === 2
-          && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
-          && selectTreatedPath(treated).list.length > 0 && (
-            <Grid item sm={2} xs={12} md={4} lg={4}>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  childRef.current.execExport();
-                }}
-              >
-                Exporter
-              </Button>
-            </Grid>
-        )}
       </Grid>
     </Template>
   );

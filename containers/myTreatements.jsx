@@ -17,7 +17,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 // import SearchIcon from '@material-ui/icons/Search';
 
 import {
-  TabPanel, TabMesDemandesToTreat, TabDemandesProgress, TabMesDemandesTreated,
+  TabPanel, TabMesDemandesToTreat, TabMesDemandesTreated,
 } from '../components';
 import Template from './template';
 
@@ -275,20 +275,6 @@ export default function MyTreatements() {
     setPage(0);
   };
 
-  const refetchQueries = [
-    {
-      query: LIST_MY_REQUESTS,
-      variables: {
-        filters: { status: STATE_REQUEST.STATE_CREATED.state },
-      },
-    },
-    {
-      query: LIST_REQUESTS,
-      variables: {
-        isDone: { value: true },
-        as: { role: activeRole.role, unit: activeRole.unit },
-      },
-    }];
 
   const tabList = [
     {
@@ -399,7 +385,7 @@ export default function MyTreatements() {
             />
           </TabPanel>
           )}
-          <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
+          <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
 
             {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
               <TabMesDemandesTreated
@@ -430,7 +416,7 @@ export default function MyTreatements() {
             />
           )}
         </Grid>
-        { (value === 2
+        { (value === 1
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
         && selectTreatedPath(treated).list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>

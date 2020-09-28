@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const useStyles = makeStyles((theme) => ({
   popUp: {
     width: '300px',
     height: '66px',
     transition: 'width 1500ms, height 1500ms',
-    position: 'absolute',
   },
   popUpOpen: {
     width: '500px',
     height: '180px',
     border: `2px solid ${theme.palette.secondary.main}`,
     borderRadius: '10px',
+  },
+  popUpAbsolute: {
+    position: 'absolute',
+  },
+  button: {
+    width: '300px',
   },
   message: {
     width: '350px',
@@ -40,12 +46,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function GroupRequestButton() {
   const classes = useStyles();
-
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
 
   return (
     <div>
-      <div className={`${classes.popUp} ${open ? classes.popUpOpen : ''}`}>
+      <div className={`${classes.popUp} ${open ? classes.popUpOpen : ''} ${matches ? classes.popUpAbsolute : ''} `}>
         <Button
           variant="contained"
           color={open ? 'secondary' : 'primary'}
