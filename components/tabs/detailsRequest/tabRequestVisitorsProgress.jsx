@@ -32,11 +32,12 @@ const useStyles = makeStyles({
 });
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units, status, vip,
+  id, firstname, birthLastname, rank, company, employeeType, units, status, vip, vipReason,
 }) {
   return {
     id,
     vip,
+    vipReason,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -159,11 +160,8 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                   switch (column.id) {
                     case 'visitor':
                       return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                        >
-                          <VisitorGrid name={value} vip={row.vip} />
+                        <TableCell key={column.id} align={column.align}>
+                          <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
                         </TableCell>
                       );
                     case 'step':

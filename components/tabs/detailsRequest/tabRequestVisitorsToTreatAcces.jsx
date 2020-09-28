@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units, vip,
+  id, firstname, birthLastname, rank, company, employeeType, units, vip, vipReason,
 }, activeRole) {
   const findStep = ckeckStatusVisitor(units, activeRole);
   return {
@@ -127,6 +127,7 @@ function createData({
     type: EMPLOYEE_TYPE[employeeType],
     validation: null,
     vip,
+    vipReason,
     steps: getDecisions(units),
     step: findStep.step,
   };
@@ -400,7 +401,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                                 row.visitor === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                               }
                             >
-                              <VisitorGrid name={value} vip={row.vip} />
+                              <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
                             </TableCell>
                           );
                         default:

@@ -150,6 +150,7 @@ export const GET_PLACES_LIST = gql`
                     id
                     label
                     unitInCharge {
+                      id
                       label
                     }
                 }
@@ -161,7 +162,7 @@ export const GET_PLACES_LIST = gql`
 export const CREATE_REQUEST = gql`
          mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
-            activeRoleCache @client @export (as: "unit") {label: unitLabel}
+            activeRoleCache @client @export (as: "unit") {id: unit, label: unitLabel}
             mutateCampus(id: $campusId){
               createRequest(request: $request, unit: $unit) {
               ...RequestResult
@@ -198,10 +199,11 @@ export default function FormInfosClaimant({
     const { data } = await client.query({ query: GET_PLACES_LIST });
     const filter = data.getCampus.listPlaces.list.filter(
       (place) => value.find(
-        (p) => p.id === place.id && place.unitInCharge.label === activeRole.unitLabel,
+        (p) => p.id === place.id
+          && (place.unitInCharge.id === activeRole.unit || !place.unitInCharge.id),
       ),
     );
-    return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité';
+    return filter.length > 0 || 'Vous devez choisir au moins un lieu correspondant à votre unité ou le Port Militaire';
   };
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
@@ -388,19 +390,10 @@ export default function FormInfosClaimant({
                     </Typography>
                     <List>
                       <ListItem className={classes.infoTime}>
-                        <ListItemText
-                          className={classes.infoTime}
-                          primary="• Français: 2 jours ouvrés"
-                        />
+                        <ListItemText primary="• Français: 2 jours ouvrés" />
                       </ListItem>
                       <ListItem className={classes.infoTime}>
                         <ListItemText primary="• UE: 15 jours ouvrés" />
-                      </ListItem>
-                      <ListItem className={classes.infoTime}>
-                        <ListItemText
-                          className={classes.infoTime}
-                          primary="• UE: 15 jours ouvrés"
-                        />
                       </ListItem>
                       <ListItem className={classes.infoTime}>
                         <ListItemText primary="• Hors UE: 30 jours ouvrés" />

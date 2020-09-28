@@ -350,7 +350,7 @@ export default function FormInfoVisitor({
                     defaultValue=""
                   />
                   {errors.typevisitors && (
-                  <FormHelperText>{errors.typevisitors.message}</FormHelperText>
+                    <FormHelperText>{errors.typevisitors.message}</FormHelperText>
                   )}
                 </FormControl>
               </Grid>
@@ -396,43 +396,44 @@ export default function FormInfoVisitor({
                   />
                 </Grid>
 
-                {watch('isInternal') !== 'HORS MINARM' && formData.object === REQUEST_OBJECT.PROFESSIONAL && (
-                  <>
-                    <Grid item md={6} sm={6} xs={12}>
-                      <Controller
-                        as={(
-                          <TextField
-                            label="NID"
-                            inputProps={{ 'data-testid': 'visiteur-nid' }}
-                            error={Object.prototype.hasOwnProperty.call(errors, 'nid')}
-                            helperText={errors.nid && errors.nid.message}
-                            fullWidth
-                          />
-                        )}
-                        control={control}
-                        name="nid"
-                        defaultValue=""
-                      />
-                      <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
-                    </Grid>
-                    <Grid item md={6} sm={6} xs={12}>
-                      <Controller
-                        as={(
-                          <TextField
-                            label="Grade"
-                            inputProps={{ 'data-testid': 'visiteur-grade' }}
-                            error={Object.prototype.hasOwnProperty.call(errors, 'rank')}
-                            helperText={errors.rank && errors.rank.message}
-                            fullWidth
-                          />
-                        )}
-                        control={control}
-                        name="rank"
-                        defaultValue=""
-                      />
-                      <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
-                    </Grid>
-                  </>
+                {watch('isInternal') !== 'HORS MINARM'
+                  && formData.object === REQUEST_OBJECT.PROFESSIONAL && (
+                    <>
+                      <Grid item md={6} sm={6} xs={12}>
+                        <Controller
+                          as={(
+                            <TextField
+                              label="NID"
+                              inputProps={{ 'data-testid': 'visiteur-nid' }}
+                              error={Object.prototype.hasOwnProperty.call(errors, 'nid')}
+                              helperText={errors.nid && errors.nid.message}
+                              fullWidth
+                            />
+                          )}
+                          control={control}
+                          name="nid"
+                          defaultValue=""
+                        />
+                        <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
+                      </Grid>
+                      <Grid item md={6} sm={6} xs={12}>
+                        <Controller
+                          as={(
+                            <TextField
+                              label="Grade"
+                              inputProps={{ 'data-testid': 'visiteur-grade' }}
+                              error={Object.prototype.hasOwnProperty.call(errors, 'rank')}
+                              helperText={errors.rank && errors.rank.message}
+                              fullWidth
+                            />
+                          )}
+                          control={control}
+                          name="rank"
+                          defaultValue=""
+                        />
+                        <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
+                      </Grid>
+                    </>
                 )}
 
                 <Grid item md={12} sm={12} xs={12}>
@@ -442,7 +443,9 @@ export default function FormInfoVisitor({
                     name="birthLastname"
                     error={Object.prototype.hasOwnProperty.call(errors, 'birthLastname')}
                     helperText={errors.birthLastname && errors.birthLastname.message}
-                    inputRef={register({ validate: (value) => value.trim() !== '' || 'Le nom est obligatoire' })}
+                    inputRef={register({
+                      validate: (value) => value.trim() !== '' || 'Le nom est obligatoire',
+                    })}
                     inputProps={{ 'data-testid': 'visiteur-nomNaissance' }}
                   />
                 </Grid>
@@ -475,7 +478,9 @@ export default function FormInfoVisitor({
                       />
                     )}
                     control={control}
-                    rules={{ validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire' }}
+                    rules={{
+                      validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire',
+                    }}
                     name="firstname"
                     defaultValue=""
                   />
@@ -548,6 +553,7 @@ export default function FormInfoVisitor({
                             && 'La justification est obligatoire.'
                           }
                           fullWidth
+                          inputProps={{ maxLength: 50 }}
                         />
                       )}
                       control={control}
@@ -577,21 +583,16 @@ export default function FormInfoVisitor({
                     options={getNationality()}
                     getOptionLabel={(option) => option}
                     onChange={handleNationalityChange}
-                    defaultValue={
-                        getNationality().find((n) => n === getValues().nationality)
-                        }
+                    defaultValue={getNationality().find((n) => n === getValues().nationality)}
                     renderInput={(params) => (
                       <TextField
                         variant="outlined"
-                            // TODO to delete with AutoComplete
-                            // eslint-disable-next-line react/jsx-props-no-spreading
+                        // TODO to delete with AutoComplete
+                        // eslint-disable-next-line react/jsx-props-no-spreading
                         {...params}
                         label="Nationalité"
                         error={Object.prototype.hasOwnProperty.call(errors, 'nationality')}
-                        helperText={
-                              errors.nationality
-                              && errors.nationality.message
-                            }
+                        helperText={errors.nationality && errors.nationality.message}
                         fullWidth
                       />
                     )}
@@ -608,19 +609,14 @@ export default function FormInfoVisitor({
                     </InputLabel>
                     <Controller
                       as={(
-                        <Select
-                          fullWidth
-                          labelId="kind"
-                          id="typeDocument"
-                          labelWidth={labelWidth}
-                        >
+                        <Select fullWidth labelId="kind" id="typeDocument" labelWidth={labelWidth}>
                           {getTypeDocument(watch('isInternal')).map((doc) => (
                             <MenuItem key={doc.value} value={doc.value}>
                               {doc.label}
                             </MenuItem>
                           ))}
                         </Select>
-                        )}
+                      )}
                       control={control}
                       name="kind"
                       defaultValue=""
@@ -629,7 +625,7 @@ export default function FormInfoVisitor({
                       }}
                     />
                     {errors.kind && errors.kind.type === 'required' && (
-                    <FormHelperText>{errors.kind.message}</FormHelperText>
+                      <FormHelperText>{errors.kind.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -640,13 +636,10 @@ export default function FormInfoVisitor({
                       <TextField
                         label="Numéro"
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
-                        helperText={
-                            errors.reference
-                            && errors.reference.message
-                          }
+                        helperText={errors.reference && errors.reference.message}
                         fullWidth
                       />
-                      )}
+                    )}
                     control={control}
                     name="reference"
                     defaultValue=""
@@ -663,14 +656,14 @@ export default function FormInfoVisitor({
                         label="Date de naissance"
                         error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
                         helperText={
-                            errors.birthday
-                            && errors.birthday.type === 'required'
-                            && errors.birthday.message
-                          }
+                          errors.birthday
+                          && errors.birthday.type === 'required'
+                          && errors.birthday.message
+                        }
                         disableFuture
                         fullWidth
                       />
-                      )}
+                    )}
                     control={control}
                     name="birthday"
                     rules={{
@@ -687,14 +680,11 @@ export default function FormInfoVisitor({
                       <TextField
                         label="Lieu de naissance"
                         error={Object.prototype.hasOwnProperty.call(errors, 'birthplace')}
-                        helperText={
-                            errors.birthplace
-                            && errors.birthplace.message
-                          }
+                        helperText={errors.birthplace && errors.birthplace.message}
                         fullWidth
                         inputProps={{ maxLength: 35 }}
                       />
-                      )}
+                    )}
                     control={control}
                     name="birthplace"
                     defaultValue=""
