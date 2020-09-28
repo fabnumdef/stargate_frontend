@@ -139,7 +139,7 @@ export const LIST_MY_REQUESTS = gql`
        `;
 
 
-export default function MenuRequest() {
+export default function MyTreatements() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
@@ -183,19 +183,6 @@ export default function MenuRequest() {
       fetchPolicy: 'cache-and-network',
     },
   );
-
-  const {
-    data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress,
-  } = useQuery(LIST_MY_REQUESTS, {
-    variables: {
-      filters: { status: STATE_REQUEST.STATE_CREATED.state },
-      cursor: {
-        first: rowsPerPage,
-        offset: page * rowsPerPage,
-      },
-    },
-    fetchPolicy: 'cache-and-network',
-  });
 
   const selectTreatedOptions = React.useMemo(() => {
     if (activeRole.role === ROLES.ROLE_HOST.role) {
@@ -268,18 +255,6 @@ export default function MenuRequest() {
         });
         break;
       case 1:
-        fetchInProgress({
-          query: LIST_MY_REQUESTS,
-          variables: {
-            cursor: {
-              first: rowsPerPage,
-              offset: page * rowsPerPage,
-            },
-            filters: { status: STATE_REQUEST.STATE_CREATED.state },
-          },
-        });
-        break;
-      case 2:
         fetchTreated({
           query: activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
           variables: selectTreatedOptions,
@@ -327,15 +302,6 @@ export default function MenuRequest() {
     },
     {
       index: 1,
-      label: `En cours ${
-        inProgress && inProgress.getCampus.listMyRequests.meta.total > 0
-          ? `(${inProgress.getCampus.listMyRequests.meta.total})`
-          : ''
-      }`,
-      access: urlAuthorization('/mes-demandes', activeRole.role),
-    },
-    {
-      index: 2,
       label: `Traitées ${
         treated && selectTreatedPath(treated).meta.total > 0
           ? `(${selectTreatedPath(treated).meta.total})`
@@ -357,9 +323,6 @@ export default function MenuRequest() {
         if (!toTreat) return 0;
         return toTreat.getCampus.listRequestByVisitorStatus.meta.total;
       case 1:
-        if (!inProgress) return 0;
-        return inProgress.getCampus.listMyRequests.meta.total;
-      case 2:
         if (!treated) return 0;
         return selectTreatedPath(treated).meta.total;
       default:
@@ -368,12 +331,12 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template loading={loadingToTreat && loadingTreated && loadingProgress}>
+    <Template loading={loadingToTreat && loadingTreated}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
-              Mes Demandes
+              Mes Traitements
             </Typography>
           </Box>
         </Grid>
@@ -435,15 +398,6 @@ export default function MenuRequest() {
               emptyLabel="à traiter"
             />
           </TabPanel>
-          )}
-          {urlAuthorization('/mes-demandes', activeRole.role) && (
-            <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-              <TabDemandesProgress
-                request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
-                queries={refetchQueries}
-                emptyLabel="en cours"
-              />
-            </TabPanel>
           )}
           <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
 

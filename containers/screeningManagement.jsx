@@ -23,7 +23,7 @@ import {
 
 import Template from './template';
 
-import { AntTab } from './menuRequest';
+import { AntTab } from './myTreatements';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
