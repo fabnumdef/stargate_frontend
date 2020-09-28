@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
+import App from 'next/app';
 
 // Material-UI providers
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -46,6 +47,10 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
+MyApp.getInitialProps = async (appContext) => {
+  const appProps = await App.getInitialProps(appContext);
+  return { ...appProps };
+};
 
 MyApp.propTypes = {
   Component: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
