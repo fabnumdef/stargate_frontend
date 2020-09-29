@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
     transition: 'width 1500ms, height 1500ms',
   },
   popUpOpen: {
-    width: '500px',
-    height: '200px',
+    width: '495px',
+    height: '210px',
     border: `2px solid ${theme.palette.secondary.main}`,
     borderRadius: '8px',
   },
@@ -68,7 +68,16 @@ export default function GroupRequestButton() {
   const matches = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
 
-  const [getTemplate] = useLazyQuery(VISITOR_TEMPLATE);
+  const [getTemplate] = useLazyQuery(VISITOR_TEMPLATE, {
+    onCompleted: (d) => {
+      const link = document.createElement('a');
+      link.href = d.getCampus.getVisitorsTemplate.link;
+      link.setAttribute('download', 'template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    },
+  });
 
   return (
     <div>
@@ -123,7 +132,7 @@ export default function GroupRequestButton() {
                 color="primary"
                 className={classes.buttonPop}
               >
-                Créer demande
+                Créer la demande
               </Button>
             </Grid>
           </Grid>

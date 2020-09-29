@@ -25,7 +25,7 @@ import {
 } from '../components';
 import Template from './template';
 
-import { STATE_REQUEST } from '../utils/constants/enums';
+import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 import GroupButton from '../components/styled/buttonGroupRequest';
@@ -114,7 +114,18 @@ export default function MyRequestAcces() {
   const { activeRole } = useLogin();
 
 
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(() => {
+    try {
+      // Get from local storage by key
+      const item = JSON.parse(window.localStorage.getItem('menuValue'));
+
+      // Parse stored json or if none return initialValue
+      if (item) return item;
+      return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+    } catch (error) {
+      return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+    }
+  });
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
    */
