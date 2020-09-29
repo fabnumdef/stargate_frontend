@@ -8,6 +8,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Link from 'next/link';
 
 
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -261,9 +262,11 @@ export default function MyRequestAcces() {
     <Template loading={loadingTreated && loadingInProgress}>
       <Grid container spacing={2}>
         <Grid item sm={12} md={4} className={classes.buttonInfos}>
-          <Button variant="contained" color="primary" className={classes.button}>
-            Nouvelle demande
-          </Button>
+          <Link href="/nouvelle-demande">
+            <Button variant="contained" color="primary" className={classes.button}>
+              Nouvelle demande
+            </Button>
+          </Link>
           <Typography variant="body2" className={classes.pageTitle}>
             Conseillée pour les demandes simples, les petits groupes sans référent.
           </Typography>
