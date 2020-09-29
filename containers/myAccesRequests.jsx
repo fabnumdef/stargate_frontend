@@ -55,9 +55,15 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     width: '300px',
+    textTransform: 'none',
+    fontSize: '1.1rem',
   },
   buttonInfos: {
     display: 'block',
+  },
+  instruction: {
+    fontStyle: 'italic',
+    maxWidth: '300px',
   },
 }));
 
@@ -278,7 +284,7 @@ export default function MyRequestAcces() {
               Nouvelle demande
             </Button>
           </Link>
-          <Typography variant="body2" className={classes.pageTitle}>
+          <Typography variant="body2" className={`${classes.instruction} ${classes.pageTitle}`}>
             Conseillée pour les demandes simples, les petits groupes sans référent.
           </Typography>
         </Grid>
