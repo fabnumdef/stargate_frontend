@@ -15,8 +15,9 @@ const useStyles = makeStyles((theme) => ({
     transition: 'width 1500ms, height 1500ms',
   },
   popUpOpen: {
-    width: '495px',
-    height: '235px',
+    zIndex: 2,
+    width: '465px',
+    height: '220px',
     border: `2px solid ${fade(theme.palette.primary.main, 0.1)}`,
     borderRadius: '8px',
   },
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     width: '300px',
     textTransform: 'none',
-    fontSize: '1.1rem',
+    fontSize: '1.04 rem',
   },
   buttonOpen: {
     color: theme.palette.primary.main,
@@ -37,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonPop: {
     width: '150px',
+    height: '30px',
+    margin: '4px 0',
     textTransform: 'none',
   },
   message: {
@@ -46,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '300px',
   },
   pageTitle: {
-    margin: '8px 8px',
+    margin: '8px 22px',
   },
   text: {
     margin: 0,
@@ -57,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     transitionDelay: '1500ms',
   },
   textOpen: {
-    margin: '6px 8px',
+    margin: '6px 38px',
     visibility: 'visible',
     opacity: 1,
   },
@@ -121,39 +124,38 @@ export default function GroupRequestButton() {
 
         <div className={`${classes.text} ${open ? classes.textOpen : ''}`}>
           <Grid container spacing={0}>
-            <Grid item sm={12}>
+            <Grid item sm={6}>
               <Typography variant="body2" color="primary" className={classes.pageTitle}>
-                1. Saisir la fiche visiteurs
+                Je n&apos;ai pas encore le fichier Excel
+              </Typography>
+            </Grid>
+            <Grid item sm={2}>
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                className={classes.buttonPop}
+                onClick={() => getTemplate()}
+              >
+                Fichier Excel
+              </Button>
+            </Grid>
+
+            <Grid item sm={6}>
+              <Typography variant="body2" color="primary" className={classes.pageTitle}>
+                J&apos;ai déja mon fichier Excel
               </Typography>
             </Grid>
 
-            <Grid item sm={12}>
-              <Typography variant="body2" color="primary" className={classes.pageTitle}>
-                2. Créer la demande et importer le document rempli
-              </Typography>
-            </Grid>
-            <Grid container justify="space-around" spacing={0}>
-              <Grid item sm={4} className={classes.marginTop}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  className={classes.buttonPop}
-                  onClick={() => getTemplate()}
-                >
-                  Fiche visiteurs
-                </Button>
-              </Grid>
-              <Grid item sm={4} className={classes.marginTop}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  className={classes.buttonPop}
-                >
-                  Créer la demande
-                </Button>
-              </Grid>
+            <Grid item sm={2}>
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                className={classes.buttonPop}
+              >
+                Créer demande
+              </Button>
             </Grid>
           </Grid>
         </div>

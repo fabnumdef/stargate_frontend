@@ -6,8 +6,6 @@ export { default as DetailsInfosRequest } from './styled/detailsInfosRequest';
 export { default as FormInfosRequest } from './requestForms/infosRequest';
 export { default as FormInfosRecapDemande } from './requestForms/infosFinalView';
 export { default as FormInfosVisitor } from './requestForms/infosVisitor';
-export { default as FormInfosReferent } from './requestFormsGroup/infosReferent';
-
 // Tabs
 export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestProgress';
 export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';

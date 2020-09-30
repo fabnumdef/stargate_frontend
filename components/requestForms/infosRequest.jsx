@@ -28,10 +28,15 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
 } from 'date-fns';
+import validator from 'validator';
+
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { mapRequestEdit } from '../../utils/mappers/requestAcces';
 
 import { useSnackBar } from '../../lib/hooks/snackbar';
+
 // Date Validators
+import CheckAnimation from '../styled/animations/checked';
 
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
@@ -115,7 +120,6 @@ function isDeadlineRespected(value) {
   }
   return days >= 2;
 }
-
 const fromMinDate = () => {
   const date = new Date();
   if (isThursday(date)) {
@@ -140,7 +144,6 @@ const REQUEST_ATTRIBUTES = gql`
       }
     }
   `;
-
 export const GET_PLACES_LIST = gql`
     query getPlacesList($campusId: String!) {
         campusId @client @export(as: "campusId")
@@ -156,13 +159,11 @@ export const GET_PLACES_LIST = gql`
                 }
             }
         }
-    }
-`;
-
+    }`;
 export const CREATE_REQUEST = gql`
          mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
-            activeRoleCache @client @export (as: "unit") {id: unit, label: unitLabel}
+            activeRoleCache @client @export (as: "unit") {label: unitLabel}
             mutateCampus(id: $campusId){
               createRequest(request: $request, unit: $unit) {
               ...RequestResult
@@ -185,7 +186,7 @@ export const EDIT_REQUEST = gql`
        `;
 
 export default function FormInfosClaimant({
-  formData, setForm, handleNext,
+  formData, setForm, handleNext, group,
 }) {
   const classes = useStyles();
 
@@ -273,7 +274,77 @@ export default function FormInfosClaimant({
       <form data-testid="form-demandeur" onSubmit={handleSubmit(onSubmit)}>
         {/* Debut Main principal Layout */}
         <Grid container spacing={6}>
-          {/* Column 1 */}
+          { group && (
+            <Grid item sm={12} xs={12} md={6}>
+              <Grid container>
+                {/* Item 1 */}
+
+                <Grid item md={5} sm={5}>
+                  <Typography variant="subtitle2">Référent groupe :</Typography>
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Email"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'email')}
+                        InputProps={
+                          watch('email') && validator.isEmail(watch('email'))
+                            ? {
+                              endAdornment: (
+                                <InputAdornment position="end" className={classes.checkPos}>
+                                  <CheckAnimation />
+                                </InputAdornment>
+                              ),
+                              inputProps: { 'data-testid': 'visiteur-email' },
+                            }
+                            : { inputProps: { 'data-testid': 'visiteur-email' } }
+                        }
+                        helperText={errors.email && errors.email.message}
+                        fullWidth
+                      />
+                    )}
+                    control={control}
+                    name="email"
+                    defaultValue=""
+                    rules={{
+                      required: "L'email du référent est obligatoire",
+                      validate: (value) => validator.isEmail(value) || 'Format invalide',
+                    }}
+                  />
+
+                </Grid>
+
+                <Grid item sm={12} xs={12}>
+                  <TextField
+                    label="Nom"
+                    fullWidth
+                    name="lastName"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'lastName')}
+                    helperText={errors.lastName && errors.lastName.message}
+                    inputRef={register({
+                      validate: (value) => value.trim() !== '' || 'Le nom est obligatoire',
+                    })}
+                    inputProps={{ 'data-testid': 'referent-lastName' }}
+                  />
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                  <TextField
+                    label="Prénom"
+                    fullWidth
+                    name="firstName"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'firstName')}
+                    helperText={errors.firstName && errors.firstName.message}
+                    inputRef={register({
+                      validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire',
+                    })}
+                    inputProps={{ 'data-testid': 'referent-firstName' }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
+
           <Grid item sm={12} xs={12} md={6}>
             <Grid container direction="row" spacing={2}>
               {/* Item 1 */}
@@ -494,4 +565,5 @@ FormInfosClaimant.propTypes = {
   }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
+  group: PropTypes.bool.isRequired,
 };

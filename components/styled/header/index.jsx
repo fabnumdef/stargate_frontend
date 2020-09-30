@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffffff',
     top: '55%',
     left: '110%',
-    width: '38vw',
+    width: '45vw',
     height: '22px',
   },
   grow: {

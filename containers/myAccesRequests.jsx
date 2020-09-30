@@ -56,7 +56,7 @@ const useStyles = makeStyles(() => ({
   button: {
     width: '300px',
     textTransform: 'none',
-    fontSize: '1.1rem',
+    fontSize: '1.04 rem',
   },
   buttonInfos: {
     display: 'block',

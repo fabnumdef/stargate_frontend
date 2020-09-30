@@ -17,7 +17,6 @@ import {
   FormInfosRequest,
   FormInfosVisitor,
   FormInfosRecapDemande,
-  FormInfosReferent,
 } from '../components';
 
 
@@ -90,7 +89,7 @@ function getSteps() {
   return ['Demande', 'Visiteur', 'Recapitulatif'];
 }
 
-export default function RequestAccesForm(group) {
+export default function RequestAccesForm({ group }) {
   const classes = useStyles();
 
   // Stepper's functions
@@ -146,8 +145,12 @@ export default function RequestAccesForm(group) {
               <Typography className={classes.instruction} variant="body1">
                 Tous les champs sont obligatoires
               </Typography>
-              {group && <FormInfosReferent />}
-              <FormInfosRequest formData={formData} setForm={setForm} handleNext={handleNext} />
+              <FormInfosRequest
+                formData={formData}
+                setForm={setForm}
+                handleNext={handleNext}
+                group={group}
+              />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
