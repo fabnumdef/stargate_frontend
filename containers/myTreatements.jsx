@@ -94,10 +94,7 @@ export const LIST_REQUESTS = gql`
                          owner {
                              firstname
                              lastname
-                             unit {
-                                 id
-                                 label
-                             }
+                             unit
                          }
                      }
                  }
@@ -166,7 +163,7 @@ export default function MyTreatements() {
 
   const childRef = React.useRef();
 
-  const { data: toTreat, fetchMore: fetchToTreat, loading: loadingToTreat } = useQuery(
+  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -218,7 +215,7 @@ export default function MyTreatements() {
     return treatedData.getCampus.listRequestByVisitorStatus;
   };
 
-  const { data: treated, fetchMore: fetchTreated, loading: loadingTreated } = useQuery(
+  const { data: treated, fetchMore: fetchTreated } = useQuery(
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
@@ -317,7 +314,7 @@ export default function MyTreatements() {
   };
 
   return (
-    <Template loading={loadingToTreat && loadingTreated}>
+    <Template loading={!toTreat && treated}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">

@@ -46,13 +46,7 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_HOST.role,
       ].includes(role);
     case path === '/nouvelle-demande':
-    case path.includes('/demandes/en-cours'):
-      return [
-        ROLES.ROLE_UNIT_CORRESPONDENT.role,
-        ROLES.ROLE_SECURITY_OFFICER.role,
-        ROLES.ROLE_ACCESS_OFFICE.role,
-        ROLES.ROLE_HOST.role,
-      ].includes(role);
+    case path === '/nouvelle-demande-groupe':
     case path.includes('/demandes/a-traiter'):
       return [
         ROLES.ROLE_UNIT_CORRESPONDENT.role,

@@ -141,7 +141,7 @@ export default function MyRequestAcces() {
 
 
   const {
-    data: inProgress, loading: loadingInProgress, fetchMore: fetchInProgress,
+    data: inProgress, fetchMore: fetchInProgress,
   } = useQuery(LIST_MY_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
@@ -154,7 +154,7 @@ export default function MyRequestAcces() {
   });
 
 
-  const { data: treated, loading: loadingTreated, fetchMore: fetchTreated } = useQuery(
+  const { data: treated, fetchMore: fetchTreated } = useQuery(
     // activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     LIST_MY_REQUESTS,
     {
@@ -276,7 +276,7 @@ export default function MyRequestAcces() {
   };
 
   return (
-    <Template loading={loadingTreated && loadingInProgress}>
+    <Template loading={!inProgress && !treated}>
       <Grid container spacing={2}>
         <Grid item sm={12} md={4} className={classes.buttonInfos}>
           <Link href="/nouvelle-demande">

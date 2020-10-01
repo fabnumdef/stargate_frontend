@@ -94,6 +94,9 @@ const useStyles = makeStyles((theme) => ({
   buttonCancel: {
     marginRight: '5px',
   },
+  checkPos: {
+    marginBottom: '5px',
+  },
 }));
 
 // eslint-disable-next-line no-unused-vars
@@ -275,14 +278,13 @@ export default function FormInfosClaimant({
         {/* Debut Main principal Layout */}
         <Grid container spacing={6}>
           { group && (
-            <Grid item sm={12} xs={12} md={6}>
-              <Grid container>
+            <Grid item sm={12} xs={12} md={12}>
+              <Grid container direction="column">
                 {/* Item 1 */}
-
-                <Grid item md={5} sm={5}>
+                <Grid item md={12} sm={12}>
                   <Typography variant="subtitle2">Référent groupe :</Typography>
                 </Grid>
-                <Grid item sm={12} xs={12}>
+                <Grid item sm={6} xs={6}>
                   <Controller
                     as={(
                       <TextField
@@ -315,7 +317,7 @@ export default function FormInfosClaimant({
 
                 </Grid>
 
-                <Grid item sm={12} xs={12}>
+                <Grid item sm={6} xs={6}>
                   <TextField
                     label="Nom"
                     fullWidth
@@ -328,7 +330,7 @@ export default function FormInfosClaimant({
                     inputProps={{ 'data-testid': 'referent-lastName' }}
                   />
                 </Grid>
-                <Grid item sm={12} xs={12}>
+                <Grid item sm={6} xs={6}>
                   <TextField
                     label="Prénom"
                     fullWidth

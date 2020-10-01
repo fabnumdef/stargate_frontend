@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -84,6 +85,9 @@ query getTemplate($campusId: String!){
 
 export default function GroupRequestButton() {
   const classes = useStyles();
+
+  const router = useRouter();
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('md'));
   const [open, setOpen] = useState(false);
@@ -153,6 +157,7 @@ export default function GroupRequestButton() {
                 variant="contained"
                 color="primary"
                 className={classes.buttonPop}
+                onClick={() => router.push('/nouvelle-demande-groupe')}
               >
                 Créer demande
               </Button>

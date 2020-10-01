@@ -180,3 +180,11 @@ export default function RequestAccesForm({ group }) {
     </Template>
   );
 }
+
+RequestAccesForm.propTypes = {
+  group: PropTypes.bool,
+};
+
+RequestAccesForm.defaultProps = {
+  group: false,
+};
