@@ -49,7 +49,7 @@ const useStyles = makeStyles(() => ({
   },
   subButtons: {
     position: 'absolute',
-    top: '42px',
+    top: '33px',
     width: '100%',
     '& button': {
       width: '100%',
@@ -82,12 +82,12 @@ export default function MenuItems() {
         {menu.map(({ permission, action, label }) => (
           urlAuthorization(permission, activeRole.role) && (
             <Grid key={label}>
-              <ButtonMenu size="small" variant={checkActiveButton(permission) ? 'contained' : 'outlined'} color="primary" onClick={action}>
+              <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
                 {label}
                 <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
                   {campus && getAdminMenu(router, campus.campusId).map((subMenu) => (
                     urlAuthorization(subMenu.permission, activeRole.role) && (
-                    <ButtonMenu key={subMenu.label} size="small" variant="outlined" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
+                    <ButtonMenu key={subMenu.label} size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
                       {subMenu.label}
                     </ButtonMenu>
                     )
