@@ -46,8 +46,6 @@ export default function InfosFinalView({
 }) {
   const { addAlert } = useSnackBar();
 
-  const [file, setFile] = useState(null);
-
   const [importFile, { loading }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (data) => {
       setForm({
@@ -67,35 +65,14 @@ export default function InfosFinalView({
   });
 
   // maybe in utils methods
-  const fileToDataUri = (pFile) => new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      resolve(event.target.result);
-    };
-    reader.readAsDataURL(pFile);
-  });
-
-  const handleChange = (pFile) => {
-    if (!pFile) {
-      setFile(null);
-      return;
-    }
-    fileToDataUri(pFile)
-      .then((dataUri) => {
-        setFile(dataUri);
-      });
+  const handleChange = ({ target: { validity, files: [file] } }) => {
+    if (validity.valid) { importFile({ variable: { idRequest: formData.id, file } }); }
   };
 
   const handleClickCancel = () => {
     if (formData.visitors.length > 0) handleNext();
     else handleBack();
   };
-
-  useEffect(() => {
-    if (file) {
-      importFile({ variable: { idRequest: formData.id, file } });
-    }
-  }, [file]);
 
   return (
     <Grid container spacing={4}>
@@ -109,9 +86,8 @@ export default function InfosFinalView({
           Import
           <input
             type="file"
-            value={file}
             onChange={(event) => {
-              handleChange(event.target.files[0] || null);
+              handleChange(event || null);
             }}
             style={{ display: 'none' }}
           />
