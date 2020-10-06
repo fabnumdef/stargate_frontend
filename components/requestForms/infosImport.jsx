@@ -52,7 +52,6 @@ export default function InfosFinalView({
         ...formData,
         visitors: [...formData.visitors, ...data.mutateCampus.mutateRequest.createGroupVisitors],
       });
-      // minArmOrNot();
       handleNext();
     },
     onError: () => {
@@ -64,7 +63,6 @@ export default function InfosFinalView({
     },
   });
 
-  // maybe in utils methods
   const handleChange = ({ target: { validity, files: [file] } }) => {
     if (validity.valid) { importFile({ variable: { idRequest: formData.id, file } }); }
   };
