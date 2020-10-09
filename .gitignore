@@ -1,6 +1,7 @@
 #Dependences
 node_modules/
 flow-typed/
+public/
 
 #Conf
 .env
