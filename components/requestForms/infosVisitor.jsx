@@ -672,7 +672,7 @@ export default function FormInfoVisitor({
                       validate: {
                         valide: (value) => isValid(value) || 'Format invalide',
                         older: (value) => Math.abs(differenceInYears(new Date(), value)) <= 100
-                        || "Veuillez vérifier la date de naissance, l'age du visiteur est supérieur 100 ans",
+                        || "Veuillez vérifier la date de naissance, l'age du visiteur est supérieur à 100 ans",
                         younger: (value) => Math.abs(differenceInYears(new Date(), value)) >= 13
                         || "Il n'est pas nécessaire de faire une demande de visite,la personne doit venir accompagné d'une personne majeur ayant le droit d'accès à la base.",
                         family: (value) => (Math.abs(differenceInYears(new Date(), value)) >= 16
