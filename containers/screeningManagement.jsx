@@ -166,8 +166,7 @@ export default function ScreeningManagement() {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       search,
     },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
   });
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
@@ -338,11 +337,12 @@ export default function ScreeningManagement() {
                 />
               </Grid>
             </Grid>
-            {!data && <Loading />}
-            <TabScreeningVisitors
-              visitors={visitors}
-              onChange={(visitorsChange) => setVisitors(visitorsChange)}
-            />
+            {!data ? <Loading /> : (
+              <TabScreeningVisitors
+                visitors={visitors}
+                onChange={(visitorsChange) => setVisitors(visitorsChange)}
+              />
+            ) }
           </TabPanel>
           <TabPanel value={value} index={1} />
         </Grid>

@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
     width: '150px',
     position: 'relative',
     overflow: 'hidden',
+    margin: '0 auto',
   },
   loading1: {
     content: '',
@@ -121,7 +122,7 @@ export default function LoadingAnimation() {
   React.useEffect(() => {
     setTimeout(() => {
       setHidden(false);
-    }, 2000);
+    }, 1500);
   }, []);
 
   if (!hidden) {
