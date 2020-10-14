@@ -29,7 +29,9 @@ export const urlAuthorization = (path, role) => {
       ].includes(role);
     case path.includes('/administration/base'):
     case path.includes('/administration/unites'):
-      return [ROLES.ROLE_ADMIN.role].includes(role);
+      return [
+        ROLES.ROLE_ADMIN.role,
+      ].includes(role);
     case path === '/administration':
     case path.includes('/administration/utilisateurs'):
       return [
@@ -38,6 +40,8 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_UNIT_CORRESPONDENT.role,
       ].includes(role);
     case path === '/mes-demandes':
+    case path === '/nouvelle-demande':
+    case path === '/nouvelle-demande-groupe':
     case path.includes('/demandes/en-cours'):
       return [
         ROLES.ROLE_UNIT_CORRESPONDENT.role,
@@ -45,8 +49,6 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_ACCESS_OFFICE.role,
         ROLES.ROLE_HOST.role,
       ].includes(role);
-    case path === '/nouvelle-demande':
-    case path === '/nouvelle-demande-groupe':
     case path.includes('/demandes/a-traiter'):
       return [
         ROLES.ROLE_UNIT_CORRESPONDENT.role,

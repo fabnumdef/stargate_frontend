@@ -101,6 +101,7 @@ export default function GroupRequestButton() {
       link.click();
       link.parentNode.removeChild(link);
     },
+    fetchPolicy: 'no-cache',
   });
 
   return (

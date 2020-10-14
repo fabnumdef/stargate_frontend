@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ErrorIcon from '@material-ui/icons/Error';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 // Apollo
 import { gql, useMutation } from '@apollo/client';
@@ -15,25 +17,28 @@ const IMPORT_VISITOR = gql`
     mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
         createGroupVisitors(file: $file){
-          id
-          isInternal
-          employeeType
-          nid
-          firstname
-          birthLastname
-          usageLastname
-          rank
-          company
-          email
-          vip
-          vipReason
-          nationality
-          birthday
-          birthplace
-          identityDocuments {
-              kind
-              reference
+          visitor {
+            id
+            isInternal
+            employeeType
+            nid
+            firstname
+            birthLastname
+            usageLastname
+            rank
+            company
+            email
+            vip
+            vipReason
+            nationality
+            birthday
+            birthplace
+            identityDocuments {
+                kind
+                reference
+            }
           }
+          error
         }
       }
     }
@@ -46,11 +51,14 @@ export default function InfosFinalView({
 }) {
   const { addAlert } = useSnackBar();
 
-  const [importFile, { loading }] = useMutation(IMPORT_VISITOR, {
-    onCompleted: (data) => {
+  const [importFile, { data, loading }] = useMutation(IMPORT_VISITOR, {
+    onCompleted: (dataCallback) => {
       setForm({
         ...formData,
-        visitors: [...formData.visitors, ...data.mutateCampus.mutateRequest.createGroupVisitors],
+        visitors: [
+          ...formData.visitors,
+          ...dataCallback.mutateCampus.mutateRequest.createGroupVisitors,
+        ],
       });
       handleNext();
     },
@@ -84,6 +92,7 @@ export default function InfosFinalView({
           Import
           <input
             type="file"
+            accept=".csv"
             onChange={(event) => {
               handleChange(event || null);
             }}
@@ -93,18 +102,38 @@ export default function InfosFinalView({
       </Grid>
       <Grid item sm={12}>
         <div>
-          {loading && (
-            <Grid container>
-              <Grid item sm={4}>
-                <CircularProgress />
-              </Grid>
-              <Grid item sm={8}>
-                <Typography variant="body1">
-                  Importation du fichier en cours
-                </Typography>
-              </Grid>
+          <Grid container>
+            <Grid item sm={4}>
+              {() => {
+                // Import Icon rendering
+                if (loading) return <CircularProgress />;
+                if (data && data.error) {
+                  return <ErrorIcon style={{ color: 'red' }} />;
+                }
+                if (data && data.visitor.length > 0) { return <CheckCircleIcon style={{ color: 'green' }} />; }
+                return '';
+              }}
             </Grid>
-          )}
+            <Grid item sm={8}>
+              {() => {
+                // Import message rendering
+                if (loading) {
+                  return (
+                    <Typography variant="body1">
+                      Importation du fichier en cours
+                    </Typography>
+                  );
+                }
+                if (data && data.error) {
+                  return <p>{data.error}</p>;
+                }
+                if (data && data.visitor.length > 0) {
+                  return <p>Import réussi</p>;
+                }
+                return '';
+              }}
+            </Grid>
+          </Grid>
         </div>
       </Grid>
       <Grid item sm={12}>
@@ -120,7 +149,7 @@ export default function InfosFinalView({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained" color="primary" disable={!data || data.error}>
               Envoyer
             </Button>
           </div>
