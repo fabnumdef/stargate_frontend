@@ -70,18 +70,25 @@ const useStyles = makeStyles((theme) => ({
   subTitle: {
     marginTop: '20px',
   },
+  referenceSpinner: {
+    '& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+      display: 'none',
+    },
+  },
 }));
 
-function getKindDoc(kind) {
-  switch (kind) {
-    case ID_DOCUMENT.IDCARD:
-      return 12;
-    case ID_DOCUMENT.PASSPORT:
-      return 9;
-    case ID_DOCUMENT.CIMSCARD:
-      return 10;
-    default:
-      return null;
+function getKindDoc(nationality, kind) {
+  if (nationality === 'Française') {
+    switch (kind) {
+      case ID_DOCUMENT.IDCARD:
+        return /^\d{12}$/;
+      case ID_DOCUMENT.PASSPORT:
+        return /^\d{2}[A-Za-z]{2}\d{5}$/;
+      case ID_DOCUMENT.CIMSCARD:
+        return /^\d{10}$/;
+      default:
+        return null;
+    }
   }
 }
 
@@ -650,12 +657,11 @@ export default function FormInfoVisitor({
                     as={(
                       <TextField
                         label="Numéro"
-                        // type={watch('kind') !== ID_DOCUMENT.PASSPORT ? 'number' : 'text'}
+                        className={classes.referenceSpinner}
+                        type={watch('kind') !== ID_DOCUMENT.PASSPORT ? 'number' : 'text'}
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                         helperText={errors.reference && errors.reference.message}
                         fullWidth
-
-                        // {{ maxLength: getKindDoc(watch('kind')) }}
                       />
                     )}
 
@@ -664,10 +670,9 @@ export default function FormInfoVisitor({
                     defaultValue=""
                     rules={{
                       required: 'Le numéro de document est obligatoire',
-                      validate: (value) => validator.isIdentityCard(value, 'any') || 'Format invalidezz',
 
-                      // validate: (value) => validator.isPassportNumber(value, 'fr-FR') || 'Format invalide',
-                      // passport: (value) => validator.isPassportNumber(value, 'fr-FR') || 'Format invalide',
+                      validate: (value) => validator.matches(value, getKindDoc(watch('nationality'), watch('kind'))) || 'format invalide',
+
                     }}
                   />
                 </Grid>
