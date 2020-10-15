@@ -631,7 +631,13 @@ export default function FormInfoVisitor({
                     </InputLabel>
                     <Controller
                       as={(
-                        <Select fullWidth labelId="kind" id="typeDocument" labelWidth={labelWidth}>
+                        <Select
+                          disabled={watch('nationality') === ''}
+                          fullWidth
+                          labelId="kind"
+                          id="typeDocument"
+                          labelWidth={labelWidth}
+                        >
                           {getTypeDocument(watch('isInternal')).map((doc) => (
                             <MenuItem key={doc.value} value={doc.value}>
                               {doc.label}
@@ -656,6 +662,7 @@ export default function FormInfoVisitor({
                   <Controller
                     as={(
                       <TextField
+                        disabled={watch('kind') === ''}
                         label="Numéro"
                         className={classes.referenceSpinner}
                         type={watch('kind') !== ID_DOCUMENT.PASSPORT ? 'number' : 'text'}
