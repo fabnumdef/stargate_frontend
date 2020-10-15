@@ -72,8 +72,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function getKindDoc(kind) {
+  switch (kind) {
+    case ID_DOCUMENT.IDCARD:
+      return 12;
+    case ID_DOCUMENT.PASSPORT:
+      return 9;
+    case ID_DOCUMENT.CIMSCARD:
+      return 10;
+    default:
+      return null;
+  }
+}
+
 function getTypeDocument(isInternal) {
-  // TODO Check if MIINARM or not
+  // TODO Check if MINARM or not
   if (isInternal === 'MINARM') {
     return [
       { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
@@ -631,22 +644,30 @@ export default function FormInfoVisitor({
                     )}
                   </FormControl>
                 </Grid>
-
+                {watch('kind') !== 'HORS MINARM'}
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
                       <TextField
                         label="Numéro"
+                        // type={watch('kind') !== ID_DOCUMENT.PASSPORT ? 'number' : 'text'}
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                         helperText={errors.reference && errors.reference.message}
                         fullWidth
+
+                        // {{ maxLength: getKindDoc(watch('kind')) }}
                       />
                     )}
+
                     control={control}
                     name="reference"
                     defaultValue=""
                     rules={{
-                      validate: (value) => value.trim() !== '' || 'Le numéro de document est obligatoire',
+                      required: 'Le numéro de document est obligatoire',
+                      validate: (value) => validator.isIdentityCard(value, 'any') || 'Format invalidezz',
+
+                      // validate: (value) => validator.isPassportNumber(value, 'fr-FR') || 'Format invalide',
+                      // passport: (value) => validator.isPassportNumber(value, 'fr-FR') || 'Format invalide',
                     }}
                   />
                 </Grid>
