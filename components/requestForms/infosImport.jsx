@@ -38,7 +38,11 @@ const IMPORT_VISITOR = gql`
                 reference
             }
           }
-          error
+          errors {
+            lineNumber
+            kind
+            field
+          }
         }
       }
     }
@@ -72,7 +76,7 @@ export default function InfosFinalView({
   });
 
   const handleChange = ({ target: { validity, files: [file] } }) => {
-    if (validity.valid) { importFile({ variable: { idRequest: formData.id, file } }); }
+    if (validity.valid) importFile({ variables: { idRequest: formData.id, file } });
   };
 
   const handleClickCancel = () => {
@@ -81,13 +85,13 @@ export default function InfosFinalView({
   };
 
   return (
-    <Grid container spacing={4}>
-      <Grid item sm={8}>
-        <Typography variant="body1">
-          Import du fichier de visiteurs
+    <Grid container spacing={2} justify="center">
+      <Grid item sm={3}>
+        <Typography variant="subtitle2">
+          Importer le fichier visiteurs
         </Typography>
       </Grid>
-      <Grid item sm={4}>
+      <Grid item sm={3}>
         <Button variant="contained" color="primary" component="label">
           Import
           <input
@@ -107,7 +111,7 @@ export default function InfosFinalView({
               {() => {
                 // Import Icon rendering
                 if (loading) return <CircularProgress />;
-                if (data && data.error) {
+                if (data && data.errors) {
                   return <ErrorIcon style={{ color: 'red' }} />;
                 }
                 if (data && data.visitor.length > 0) { return <CheckCircleIcon style={{ color: 'green' }} />; }
@@ -124,8 +128,20 @@ export default function InfosFinalView({
                     </Typography>
                   );
                 }
-                if (data && data.error) {
-                  return <p>{data.error}</p>;
+                if (data && data.errors) {
+                  return () => {
+                    data.errors.map((error) => (
+                      <Typography variant="body1">
+                        {error.lineNumber}
+                        .
+                        {' '}
+                        {error.kind}
+                        :
+                        {' '}
+                        {error.field}
+                      </Typography>
+                    ));
+                  };
                 }
                 if (data && data.visitor.length > 0) {
                   return <p>Import réussi</p>;
@@ -149,7 +165,7 @@ export default function InfosFinalView({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary" disable={!data || data.error}>
+            <Button type="submit" variant="contained" color="primary" disabled={!data || data.error}>
               Envoyer
             </Button>
           </div>

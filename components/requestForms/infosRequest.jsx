@@ -259,14 +259,32 @@ export default function FormInfosClaimant({
   const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
-    const places = data.places.map((p) => p.id);
+    const request = { ...data };
+
+    const places = request.places.map((p) => p.id);
+    const referent = {
+      email: request.refEmail,
+      firstname: request.refFirstName,
+      lastname: request.refName,
+      phone: request.refPhone,
+    };
+
+    delete request.refEmail;
+    delete request.refFirstName;
+    delete request.refName;
+    delete request.refPhone;
+
     if (!formData.id) {
-      createRequest({ variables: { request: { ...data, places } } });
+      createRequest({
+        variables: {
+          request: { ...request, places, referent: group ? referent : null },
+        },
+      });
     } else {
       updateRequest({
         variables: {
           id: formData.id,
-          request: { ...data, places },
+          request: { ...request, places, referent: group ? referent : null },
         },
       });
     }
@@ -289,9 +307,9 @@ export default function FormInfosClaimant({
                     as={(
                       <TextField
                         label="Email"
-                        error={Object.prototype.hasOwnProperty.call(errors, 'email')}
+                        error={Object.prototype.hasOwnProperty.call(errors, 'refEmail')}
                         InputProps={
-                          watch('email') && validator.isEmail(watch('email'))
+                          watch('refEmail') && validator.isEmail(watch('refEmail'))
                             ? {
                               endAdornment: (
                                 <InputAdornment position="end" className={classes.checkPos}>
@@ -302,12 +320,12 @@ export default function FormInfosClaimant({
                             }
                             : { inputProps: { 'data-testid': 'visiteur-email' } }
                         }
-                        helperText={errors.email && errors.email.message}
+                        helperText={errors.refEmail && errors.refEmail.message}
                         fullWidth
                       />
                     )}
                     control={control}
-                    name="email"
+                    name="refEmail"
                     defaultValue=""
                     rules={{
                       required: "L'email du référent est obligatoire",
@@ -321,26 +339,34 @@ export default function FormInfosClaimant({
                   <TextField
                     label="Nom"
                     fullWidth
-                    name="lastName"
-                    error={Object.prototype.hasOwnProperty.call(errors, 'lastName')}
-                    helperText={errors.lastName && errors.lastName.message}
+                    name="refName"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'refName')}
+                    helperText={errors.refName && errors.refName.message}
                     inputRef={register({
                       validate: (value) => value.trim() !== '' || 'Le nom est obligatoire',
                     })}
-                    inputProps={{ 'data-testid': 'referent-lastName' }}
                   />
                 </Grid>
                 <Grid item sm={6} xs={6}>
                   <TextField
                     label="Prénom"
                     fullWidth
-                    name="firstName"
-                    error={Object.prototype.hasOwnProperty.call(errors, 'firstName')}
-                    helperText={errors.firstName && errors.firstName.message}
+                    name="refFirstName"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'refFirstName')}
+                    helperText={errors.refFirstName && errors.refFirstName.message}
                     inputRef={register({
                       validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire',
                     })}
-                    inputProps={{ 'data-testid': 'referent-firstName' }}
+                  />
+                </Grid>
+                <Grid item sm={6} xs={6}>
+                  <TextField
+                    label="Téléphone"
+                    fullWidth
+                    name="refPhone"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'refPhone')}
+                    helperText={errors.refPhone && errors.refPhone.message}
+                    inputRef={register()}
                   />
                 </Grid>
               </Grid>

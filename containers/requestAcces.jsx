@@ -17,6 +17,7 @@ import {
   FormInfosRequest,
   FormInfosVisitor,
   FormInfosRecapDemande,
+  FormInfosImport,
 } from '../components';
 
 
@@ -155,13 +156,22 @@ export default function RequestAccesForm({ group }) {
           </TabPanel>
           <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
             <NoSsr>
-              <FormInfosVisitor
-                formData={formData}
-                setForm={setForm}
-                selectVisitor={selectVisitor}
-                handleNext={handleNext}
-                handleBack={handleBack}
-              />
+              {group ? (
+                <FormInfosImport
+                  formData={formData}
+                  setForm={setForm}
+                  handleNext={handleNext}
+                  handleBack={handleBack}
+                />
+              ) : (
+                <FormInfosVisitor
+                  formData={formData}
+                  setForm={setForm}
+                  selectVisitor={selectVisitor}
+                  handleNext={handleNext}
+                  handleBack={handleBack}
+                />
+              )}
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>
