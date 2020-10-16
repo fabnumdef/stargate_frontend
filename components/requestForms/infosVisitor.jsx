@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getKindDoc(nationality, kind) {
+function getKindControl(nationality, kind) {
   if (nationality === 'Française') {
     switch (kind) {
       case ID_DOCUMENT.IDCARD:
@@ -87,9 +87,9 @@ function getKindDoc(nationality, kind) {
       case ID_DOCUMENT.CIMSCARD:
         return /^\d{10}$/;
       default:
-        return null;
+        return '';
     }
-  }
+  } else return '';
 }
 
 function getTypeDocument(isInternal) {
@@ -664,6 +664,7 @@ export default function FormInfoVisitor({
                       <TextField
                         disabled={watch('kind') === ''}
                         label="Numéro"
+
                         className={classes.referenceSpinner}
                         type={watch('kind') !== ID_DOCUMENT.PASSPORT ? 'number' : 'text'}
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
@@ -678,7 +679,7 @@ export default function FormInfoVisitor({
                     rules={{
                       required: 'Le numéro de document est obligatoire',
 
-                      validate: (value) => validator.matches(value, getKindDoc(watch('nationality'), watch('kind'))) || 'format invalide',
+                      validate: (value) => validator.matches(value, getKindControl(watch('nationality'), watch('kind'))) || 'format invalide',
 
                     }}
                   />
