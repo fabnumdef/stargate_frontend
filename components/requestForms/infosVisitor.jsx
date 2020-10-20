@@ -24,7 +24,7 @@ import Button from '@material-ui/core/Button';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import validator from 'validator';
-import { isValid } from 'date-fns';
+import { isValid, differenceInYears } from 'date-fns';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import { REQUEST_OBJECT, ID_DOCUMENT, EMPLOYEE_TYPE } from '../../utils/constants/enums';
@@ -659,7 +659,6 @@ export default function FormInfoVisitor({
                         error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
                         helperText={
                           errors.birthday
-                          && errors.birthday.type === 'required'
                           && errors.birthday.message
                         }
                         disableFuture
@@ -670,7 +669,16 @@ export default function FormInfoVisitor({
                     name="birthday"
                     rules={{
                       required: 'La date de naissance est obligatoire',
-                      validate: { valide: (value) => isValid(value) || 'Format invalide' },
+                      validate: {
+                        valide: (value) => isValid(value) || 'Format invalide',
+                        older: (value) => Math.abs(differenceInYears(new Date(), value)) <= 100
+                        || "Veuillez vérifier la date de naissance, l'âge du visiteur est supérieur à 100 ans",
+                        younger: (value) => Math.abs(differenceInYears(new Date(), value)) >= 13
+                        || "Il n'est pas nécessaire de faire une demande de visite, la personne doit venir accompagnée d'une personne majeure ayant le droit d'accès à la base.",
+                        family: (value) => (Math.abs(differenceInYears(new Date(), value)) >= 16
+                        && formData.object !== REQUEST_OBJECT.PRIVATE)
+                        || "Les mineurs de moins de 16 ans ne sont autorisés à venir que dans le cadre d'une visite de type famille",
+                      },
                     }}
                     defaultValue={null}
                   />
