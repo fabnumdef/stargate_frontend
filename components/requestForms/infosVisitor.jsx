@@ -72,7 +72,10 @@ const useStyles = makeStyles((theme) => ({
   },
   referenceSpinner: {
     '& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-      display: 'none',
+      webkitAppearance: 'none',
+    },
+    'input[type="number"]': {
+      mozAppearance: 'textfield',
     },
   },
 }));
