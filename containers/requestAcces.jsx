@@ -182,6 +182,7 @@ export default function RequestAccesForm({ group }) {
                 handleNext={handleNext}
                 handleBack={handleBack}
                 setSelectVisitor={setSelectVisitor}
+                group={group}
               />
             </NoSsr>
           </TabPanel>

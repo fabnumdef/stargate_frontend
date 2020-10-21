@@ -122,20 +122,14 @@ export const VISITOR_INFOS = {
   nationality: 'Nationalitée',
   birthday: 'Date de Naissance',
   birthplace: 'Lieux de Naissance',
+  kind: 'Type Document',
+  reference: 'Numero Document',
 };
 
 
 export const ERROR_TYPE = {
-  requires: 'Ce champ est obligatoire',
-  employeeType: 'Type employé',
-  birthLastname: 'Nom de naissance',
-  usageLastname: 'Nom d\'usage',
-  rank: 'Grade',
-  company: 'Unité/Entreprise',
-  email: 'Mail',
-  vip: 'VIP',
-  vipReason: 'Motif VIP',
-  nationality: 'Nationalitée',
-  birthday: 'Date de Naissance',
-  birthplace: 'Lieux de Naissance',
+  required: 'Ce champ est obligatoire',
+  enum: 'Pas la valeur attendu',
+  regexp: 'Mail non conforme',
+  date: 'Format de date invalide',
 };

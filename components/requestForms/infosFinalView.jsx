@@ -53,7 +53,7 @@ const CREATE_REQUEST = gql`
 `;
 
 export default function InfosFinalView({
-  formData, setForm, handleBack, setSelectVisitor,
+  formData, setForm, handleBack, setSelectVisitor, group,
 }) {
   const router = useRouter();
 
@@ -163,6 +163,11 @@ export default function InfosFinalView({
       </Grid>
       <Grid item xs={12} sm={12}>
         <Grid container justify="flex-end">
+          {group && (
+            <Button variant="outlined" color="primary" style={{ marginRight: '5px' }} onClick={handleBack}>
+              Retour
+            </Button>
+          ) }
           <Button
             variant="contained"
             color="primary"
@@ -189,8 +194,10 @@ InfosFinalView.propTypes = {
   setForm: PropTypes.func.isRequired,
   setSelectVisitor: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
+  group: PropTypes.bool,
 };
 
 InfosFinalView.defaultProps = {
   formData: {},
+  group: false,
 };
