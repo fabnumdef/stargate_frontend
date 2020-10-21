@@ -189,17 +189,6 @@ export default function FormInfoVisitor({
     },
   });
 
-  const [fieldValue, setFieldValue] = useState('');
-
-  const handleChange = (e) => {
-    const reg = /^[0-9\b]+$/;
-    console.log(reg.test(e.target.value));
-    if (e.target.value === '' || reg.test(e.target.value)) {
-      setFieldValue(e.target.value);
-      console.log(reg.test(e.target.value));
-    }
-  };
-
   useEffect(() => {
     if (selectVisitor.id) {
       const visitorData = mapVisitorEdit(selectVisitor);
