@@ -160,7 +160,7 @@ export default function InfosImport({
                             {`${visitor.visitor.birthLastname} `}
                           </Typography>
                           <Typography display="inline" variant="body2" style={{ color: '#28a745' }}>
-                            {`${visitor.visitor.firstname} à bien été importé(e).`}
+                            {`${visitor.visitor.firstname} a bien été importé(e).`}
                           </Typography>
                           <br />
                         </>
