@@ -48,7 +48,6 @@ const IMPORT_VISITOR = gql`
   }
 `;
 
-
 export default function InfosFinalView({
   formData, setForm, handleNext, handleBack,
 }) {
@@ -56,24 +55,28 @@ export default function InfosFinalView({
 
   const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (dataCallback) => {
-      if (dataCallback.visitor) {
-        setForm({
-          ...formData,
-          visitors: [
-            ...formData.visitors,
-            ...dataCallback.mutateCampus.mutateRequest.createGroupVisitors,
-          ],
-        });
-      }
-      // handleNext();
+      addAlert({ message: 'Import réussi', severity: 'success' });
+      setForm({ ...formData, visitors: [] });
+
+      dataCallback.mutateCampus.mutateRequest.createGroupVisitors.forEach((visitor) => {
+        if (visitor.visitor !== null) {
+          setForm({
+            ...formData,
+            visitors: [
+              ...formData.visitors,
+              visitor.visitor,
+            ],
+          });
+        }
+      });
     },
+    // handleNext();,
     onError: (e) => {
       // Display good message
       addAlert({
         message: 'erreur graphQL',
         severity: 'error',
       });
-      console.log(e);
     },
   });
 
@@ -153,7 +156,7 @@ export default function InfosFinalView({
                         ) : (
                           <>
                             <Typography display="inline" variant="body2" color="success" style={{ fontWeight: 'bold' }}>
-                              {visitor.visitor.firstname}
+                              {visitor.visitor.birthLastname}
                             </Typography>
                             <Typography display="inline" variant="body2" color="success">
                               {`${visitor.visitor.firstname} à bien été importé(e).`}
@@ -181,7 +184,7 @@ export default function InfosFinalView({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary" disabled={!data || data.error}>
+            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0}>
               Envoyer
             </Button>
           </div>
