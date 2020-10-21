@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
@@ -55,23 +54,26 @@ export default function InfosFinalView({
 }) {
   const { addAlert } = useSnackBar();
 
-  const [importFile, { data, loading }] = useMutation(IMPORT_VISITOR, {
+  const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (dataCallback) => {
-      setForm({
-        ...formData,
-        visitors: [
-          ...formData.visitors,
-          ...dataCallback.mutateCampus.mutateRequest.createGroupVisitors,
-        ],
-      });
-      handleNext();
+      if (dataCallback.visitor) {
+        setForm({
+          ...formData,
+          visitors: [
+            ...formData.visitors,
+            ...dataCallback.mutateCampus.mutateRequest.createGroupVisitors,
+          ],
+        });
+      }
+      // handleNext();
     },
-    onError: () => {
+    onError: (e) => {
       // Display good message
       addAlert({
         message: 'erreur graphQL',
         severity: 'error',
       });
+      console.log(e);
     },
   });
 
@@ -82,6 +84,20 @@ export default function InfosFinalView({
   const handleClickCancel = () => {
     if (formData.visitors.length > 0) handleNext();
     else handleBack();
+  };
+
+  const displayIcon = () => {
+    if (!data) return '';
+    const visitors = data.mutateCampus.mutateRequest.createGroupVisitors;
+
+    let render = <CheckCircleIcon style={{ color: 'green' }} />;
+
+    visitors.forEach((visitor) => {
+      if (visitor.visitor === null) {
+        render = <ErrorIcon style={{ color: 'red' }} />;
+      }
+    });
+    return render;
   };
 
   return (
@@ -106,49 +122,44 @@ export default function InfosFinalView({
       </Grid>
       <Grid item sm={12}>
         <div>
-          <Grid container>
-            <Grid item sm={4}>
-              {() => {
-                // Import Icon rendering
-                if (loading) return <CircularProgress />;
-                if (data && data.errors) {
-                  return <ErrorIcon style={{ color: 'red' }} />;
-                }
-                if (data && data.visitor.length > 0) { return <CheckCircleIcon style={{ color: 'green' }} />; }
-                return '';
-              }}
-            </Grid>
-            <Grid item sm={8}>
-              {() => {
-                // Import message rendering
-                if (loading) {
-                  return (
-                    <Typography variant="body1">
-                      Importation du fichier en cours
-                    </Typography>
-                  );
-                }
-                if (data && data.errors) {
-                  return () => {
-                    data.errors.map((error) => (
-                      <Typography variant="body1">
-                        {error.lineNumber}
-                        .
-                        {' '}
-                        {error.kind}
-                        :
-                        {' '}
-                        {error.field}
-                      </Typography>
-                    ));
-                  };
-                }
-                if (data && data.visitor.length > 0) {
-                  return <p>Import réussi</p>;
-                }
-                return '';
-              }}
-            </Grid>
+          <Grid container spacing={0}>
+            { data
+              && (data.mutateCampus.mutateRequest.createGroupVisitors
+                .map((visitor) => (visitor.visitor === null)
+                    && (
+                    <>
+                      <Grid item sm={1} style={{ textAlign: 'center' }}>
+                        {/* display if first visitor */}
+                        { displayIcon() }
+                      </Grid>
+                      <Grid item sm={1}>
+                        <Typography variant="body1" color="error" style={{ fontWeight: 'bold' }}>
+                          {visitor.errors.length > 0 && `Ligne ${visitor.errors[0].lineNumber}:`}
+                        </Typography>
+                      </Grid>
+                      <Grid item sm={10}>
+                        {visitor.errors.length > 0 ? (
+                          visitor.errors.map((error) => (
+                            <>
+                              <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
+                                {`${error.field}:   `}
+                              </Typography>
+                              <Typography display="inline" variant="body2" color="error">
+                                {error.kind}
+                              </Typography>
+                              <br />
+                            </>
+                          ))
+
+                        ) : (
+                          <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
+                            {`${visitor.visitor.firstname} ${visitor.visitor.firstname} à bien été importé(e).`}
+                          </Typography>
+                        ) }
+                      </Grid>
+                    </>
+                    ))
+              )}
           </Grid>
         </div>
       </Grid>
