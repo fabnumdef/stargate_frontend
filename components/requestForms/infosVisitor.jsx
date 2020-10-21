@@ -70,14 +70,6 @@ const useStyles = makeStyles((theme) => ({
   subTitle: {
     marginTop: '20px',
   },
-  referenceSpinner: {
-    '& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-      webkitAppearance: 'none',
-    },
-    'input[type="number"]': {
-      mozAppearance: 'textfield',
-    },
-  },
 }));
 
 function getKindControl(nationality, kind) {
@@ -196,6 +188,17 @@ export default function FormInfoVisitor({
       nationality: selectVisitor.nationality ? selectVisitor.nationality : '',
     },
   });
+
+  const [fieldValue, setFieldValue] = useState('');
+
+  const handleChange = (e) => {
+    const reg = /^[0-9\b]+$/;
+    console.log(reg.test(e.target.value));
+    if (e.target.value === '' || reg.test(e.target.value)) {
+      setFieldValue(e.target.value);
+      console.log(reg.test(e.target.value));
+    }
+  };
 
   useEffect(() => {
     if (selectVisitor.id) {
@@ -667,9 +670,6 @@ export default function FormInfoVisitor({
                       <TextField
                         disabled={watch('kind') === ''}
                         label="Numéro"
-
-                        className={classes.referenceSpinner}
-                        type={watch('kind') !== ID_DOCUMENT.PASSPORT ? 'number' : 'text'}
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                         helperText={errors.reference && errors.reference.message}
                         fullWidth
