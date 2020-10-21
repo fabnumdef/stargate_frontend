@@ -167,7 +167,7 @@ export default function ScreeningManagement() {
       search,
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
   });
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);

@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
+import red from '@material-ui/core/colors/red';
+
 // Apollo
 import { gql, useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import { useSnackBar } from '../../lib/hooks/snackbar';
+
+import { VISITOR_INFOS, ERROR_TYPE } from '../../utils/constants/enums';
 
 const IMPORT_VISITOR = gql`
   mutation importFile($file: Upload!, $idRequest:String!, $campusId: String!) {
@@ -48,30 +52,25 @@ const IMPORT_VISITOR = gql`
   }
 `;
 
-export default function InfosFinalView({
+export default function InfosImport({
   formData, setForm, handleNext, handleBack,
 }) {
   const { addAlert } = useSnackBar();
 
+  const [errorStatement, setErrorStatement] = useState(false);
+
   const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (dataCallback) => {
       addAlert({ message: 'Import réussi', severity: 'success' });
-      setForm({ ...formData, visitors: [] });
-
+      const visitors = [];
       dataCallback.mutateCampus.mutateRequest.createGroupVisitors.forEach((visitor) => {
         if (visitor.visitor !== null) {
-          setForm({
-            ...formData,
-            visitors: [
-              ...formData.visitors,
-              visitor.visitor,
-            ],
-          });
+          visitors.push(visitor.visitor);
         }
       });
+      setForm({ ...formData, visitors });
     },
-    // handleNext();,
-    onError: (e) => {
+    onError: () => {
       // Display good message
       addAlert({
         message: 'erreur graphQL',
@@ -79,6 +78,11 @@ export default function InfosFinalView({
       });
     },
   });
+
+  useEffect(() => {
+    // On Component creation, init visitors to empty array.
+    setForm({ ...formData, visitors: [] });
+  }, []);
 
   const handleChange = ({ target: { validity, files: [file] } }) => {
     if (validity.valid) importFile({ variables: { idRequest: formData.id, file } });
@@ -89,17 +93,16 @@ export default function InfosFinalView({
     else handleBack();
   };
 
-  const displayIcon = () => {
+  const displayIcon = (visitor) => {
     if (!data) return '';
-    const visitors = data.mutateCampus.mutateRequest.createGroupVisitors;
+    let render = <CheckCircleIcon style={{ color: '#28a745' }} />;
 
-    let render = <CheckCircleIcon style={{ color: 'green' }} />;
-
-    visitors.forEach((visitor) => {
-      if (visitor.visitor === null) {
-        render = <ErrorIcon style={{ color: 'red' }} />;
+    if (visitor.errors) {
+      if (errorStatement) {
+        setErrorStatement(true);
       }
-    });
+      render = <ErrorIcon style={{ color: red.A400 }} />;
+    }
     return render;
   };
 
@@ -128,45 +131,44 @@ export default function InfosFinalView({
           <Grid container spacing={0}>
             { data
               && (data.mutateCampus.mutateRequest.createGroupVisitors
-                .map((visitor) => (visitor.visitor === null)
-                    && (
-                    <>
-                      <Grid item sm={1} style={{ textAlign: 'center' }}>
-                        {/* display if first visitor */}
-                        { displayIcon() }
-                      </Grid>
-                      <Grid item sm={1}>
-                        <Typography variant="body1" color="error" style={{ fontWeight: 'bold' }}>
-                          {visitor.errors.length > 0 && `Ligne ${visitor.errors[0].lineNumber}:`}
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={10}>
-                        {visitor.errors.length > 0 ? (
-                          visitor.errors.map((error) => (
-                            <>
-                              <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
-                                {`${error.field}:   `}
-                              </Typography>
-                              <Typography display="inline" variant="body2" color="error">
-                                {error.kind}
-                              </Typography>
-                              <br />
-                            </>
-                          ))
-                        ) : (
+                .map((visitor) => (
+                  <>
+                    <Grid item sm={1} style={{ textAlign: 'center' }}>
+                      {/* display if first visitor */}
+                      { displayIcon(visitor) }
+                    </Grid>
+                    <Grid item sm={1}>
+                      <Typography variant="body1" color="error" style={{ fontWeight: 'bold' }}>
+                        {visitor.errors && visitor.errors.length > 0 && `Ligne ${visitor.errors[0].lineNumber}:`}
+                      </Typography>
+                    </Grid>
+                    <Grid item sm={10}>
+                      { (visitor.errors && visitor.errors.length > 0) ? (
+                        visitor.errors.map((error) => (
                           <>
-                            <Typography display="inline" variant="body2" color="success" style={{ fontWeight: 'bold' }}>
-                              {visitor.visitor.birthLastname}
+                            <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
+                              {`${VISITOR_INFOS[error.field]}:   `}
                             </Typography>
-                            <Typography display="inline" variant="body2" color="success">
-                              {`${visitor.visitor.firstname} à bien été importé(e).`}
+                            <Typography display="inline" variant="body2" color="error">
+                              {ERROR_TYPE[error.kind]}
                             </Typography>
                             <br />
                           </>
-                        ) }
-                      </Grid>
-                    </>
-                    ))
+                        ))
+                      ) : (
+                        <>
+                          <Typography display="inline" variant="body2" style={{ fontWeight: 'bold', color: '#28a745' }}>
+                            {`${visitor.visitor.birthLastname} `}
+                          </Typography>
+                          <Typography display="inline" variant="body2" style={{ color: '#28a745' }}>
+                            {`${visitor.visitor.firstname} à bien été importé(e).`}
+                          </Typography>
+                          <br />
+                        </>
+                      ) }
+                    </Grid>
+                  </>
+                ))
               )}
           </Grid>
         </div>
@@ -184,7 +186,7 @@ export default function InfosFinalView({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0}>
+            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 && !errorStatement} onClick={handleNext}>
               Envoyer
             </Button>
           </div>
@@ -194,7 +196,7 @@ export default function InfosFinalView({
   );
 }
 
-InfosFinalView.propTypes = {
+InfosImport.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
     object: PropTypes.string,
@@ -208,6 +210,6 @@ InfosFinalView.propTypes = {
   handleBack: PropTypes.func.isRequired,
 };
 
-InfosFinalView.defaultProps = {
+InfosImport.defaultProps = {
   formData: {},
 };

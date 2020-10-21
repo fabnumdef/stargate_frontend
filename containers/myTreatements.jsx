@@ -94,7 +94,10 @@ export const LIST_REQUESTS = gql`
                          owner {
                              firstname
                              lastname
-                             unit
+                             unit{
+                               id
+                               label
+                             }
                          }
                      }
                  }
