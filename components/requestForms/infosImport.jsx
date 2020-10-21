@@ -5,6 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
+import red from '@material-ui/core/colors/red';
+
 // Apollo
 import { gql, useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
@@ -90,11 +92,11 @@ export default function InfosFinalView({
     if (!data) return '';
     const visitors = data.mutateCampus.mutateRequest.createGroupVisitors;
 
-    let render = <CheckCircleIcon style={{ color: 'green' }} />;
+    let render = <CheckCircleIcon style={{ color: '#28a745' }} />;
 
     visitors.forEach((visitor) => {
       if (visitor.visitor === null) {
-        render = <ErrorIcon style={{ color: 'red' }} />;
+        render = <ErrorIcon style={{ color: red.A400 }} />;
       }
     });
     return render;
@@ -125,40 +127,44 @@ export default function InfosFinalView({
           <Grid container spacing={0}>
             { data
               && (data.mutateCampus.mutateRequest.createGroupVisitors
-                .map((visitor) => (visitor.visitor === null)
-                    && (
-                    <>
-                      <Grid item sm={1} style={{ textAlign: 'center' }}>
-                        {/* display if first visitor */}
-                        { displayIcon() }
-                      </Grid>
-                      <Grid item sm={1}>
-                        <Typography variant="body1" color="error" style={{ fontWeight: 'bold' }}>
-                          {visitor.errors.length > 0 && `Ligne ${visitor.errors[0].lineNumber}:`}
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={10}>
-                        {visitor.errors.length > 0 ? (
-                          visitor.errors.map((error) => (
-                            <>
-                              <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
-                                {`${error.field}:   `}
-                              </Typography>
-                              <Typography display="inline" variant="body2" color="error">
-                                {error.kind}
-                              </Typography>
-                              <br />
-                            </>
-                          ))
-
-                        ) : (
-                          <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
-                            {`${visitor.visitor.firstname} ${visitor.visitor.firstname} à bien été importé(e).`}
+                .map((visitor) => (
+                  <>
+                    <Grid item sm={1} style={{ textAlign: 'center' }}>
+                      {/* display if first visitor */}
+                      { displayIcon() }
+                    </Grid>
+                    <Grid item sm={1}>
+                      <Typography variant="body1" color="error" style={{ fontWeight: 'bold' }}>
+                        {visitor.errors && visitor.errors.length > 0 && `Ligne ${visitor.errors[0].lineNumber}:`}
+                      </Typography>
+                    </Grid>
+                    <Grid item sm={10}>
+                      { (visitor.errors && visitor.errors.length > 0) ? (
+                        visitor.errors.map((error) => (
+                          <>
+                            <Typography display="inline" variant="body2" color="error" style={{ fontWeight: 'bold' }}>
+                              {`${error.field}:   `}
+                            </Typography>
+                            <Typography display="inline" variant="body2" color="error">
+                              {error.kind}
+                            </Typography>
+                            <br />
+                          </>
+                        ))
+                      ) : (
+                        <>
+                          <Typography display="inline" variant="body2" color="success" style={{ fontWeight: 'bold' }}>
+                            {`${visitor.visitor.birthLastname} `}
                           </Typography>
-                        ) }
-                      </Grid>
-                    </>
-                    ))
+                          <Typography display="inline" variant="body2" color="success">
+                            {`${visitor.visitor.firstname} à bien été importé(e).`}
+                          </Typography>
+                          <br />
+                        </>
+                      ) }
+                    </Grid>
+                  </>
+                ))
               )}
           </Grid>
         </div>
