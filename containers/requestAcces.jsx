@@ -106,7 +106,7 @@ export default function RequestAccesForm({ group }) {
   };
 
   // functionality to update a Visitor.
-  const [selectVisitor, setSelectVisitor] = useState({});
+  const [selectVisitor, setSelectVisitor] = useState(null);
 
   // FormState
   const [formData, setForm] = useState({
@@ -156,22 +156,40 @@ export default function RequestAccesForm({ group }) {
           </TabPanel>
           <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
             <NoSsr>
-              {group ? (
-                <FormInfosImport
-                  formData={formData}
-                  setForm={setForm}
-                  handleNext={handleNext}
-                  handleBack={handleBack}
-                />
-              ) : (
-                <FormInfosVisitor
-                  formData={formData}
-                  setForm={setForm}
-                  selectVisitor={selectVisitor}
-                  handleNext={handleNext}
-                  handleBack={handleBack}
-                />
-              )}
+              {(() => {
+                if (selectVisitor) {
+                  return (
+                    <FormInfosVisitor
+                      formData={formData}
+                      setForm={setForm}
+                      selectVisitor={selectVisitor}
+                      handleNext={handleNext}
+                      handleBack={handleBack}
+                    />
+                  );
+                }
+
+                if (group) {
+                  return (
+                    <FormInfosImport
+                      formData={formData}
+                      setForm={setForm}
+                      handleNext={handleNext}
+                      handleBack={handleBack}
+                    />
+                  );
+                }
+
+                return (
+                  <FormInfosVisitor
+                    formData={formData}
+                    setForm={setForm}
+                    selectVisitor={selectVisitor}
+                    handleNext={handleNext}
+                    handleBack={handleBack}
+                  />
+                );
+              })()}
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>

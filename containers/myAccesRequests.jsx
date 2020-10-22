@@ -247,7 +247,7 @@ export default function MyRequestAcces() {
     },
     {
       index: 1,
-      label: `Traitées ${
+      label: `Finalisées ${
         treated && treated.getCampus.listMyRequests.meta.total > 0
           ? `(${treated.getCampus.listMyRequests.meta.total})`
           : ''

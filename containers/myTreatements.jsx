@@ -279,7 +279,7 @@ export default function MyTreatements() {
   const tabList = [
     {
       index: 0,
-      label: `A traiter ${
+      label: `À traiter ${
         toTreat && toTreat.getCampus.listRequestByVisitorStatus.meta.total > 0
           ? `(${toTreat.getCampus.listRequestByVisitorStatus.meta.total})`
           : ''
