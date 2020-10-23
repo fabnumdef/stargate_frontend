@@ -6,6 +6,7 @@ const Prometheus = require('prom-client');
 const metricsMiddleware = require('./middlewares/metrics');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
+const host = process.env.HOST || '0.0.0.0';
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -31,7 +32,7 @@ app.prepare().then(() => {
   });
   server.use(metricsMiddleware);
   server.use(router.routes());
-  server.listen(port, () => {
+  server.listen(port, host, () => {
     // eslint-disable-next-line no-console
     console.log(`> Ready on http://localhost:${port}`);
   });
@@ -41,10 +42,10 @@ app.prepare().then(() => {
       res.writeHead(200, { 'Content-Type': Prometheus.register.contentType });
       res.end(Prometheus.register.metrics());
     })
-    .listen(process.env.PROMETHEUS_PORT || 9091, '0.0.0.0', () => {
+    .listen(process.env.PROMETHEUS_PORT || 9091, process.env.PROMETHEUS_HOST || '0.0.0.0', () => {
       // eslint-disable-next-line no-console
       console.log(
-        `Prometheus exporter running athttp://localhost:${process.env.PROMETHEUS_PORT || 9091}`,
+        `Prometheus exporter running at http://${process.env.PROMETHEUS_HOST || '0.0.0.0'}:${process.env.PROMETHEUS_PORT || 9091}`,
       );
     });
 });
