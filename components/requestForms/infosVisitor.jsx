@@ -273,9 +273,7 @@ export default function FormInfoVisitor({
 
   return (
     <div>
-      <Typography className={classes.instruction} variant="body1">
-        Tous les champs sont obligatoires
-      </Typography>
+
       <form data-testid="form-visiteur" onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={6}>
           <Grid item sm={12} xs={12} md={6}>

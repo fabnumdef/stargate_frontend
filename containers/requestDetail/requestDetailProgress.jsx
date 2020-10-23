@@ -4,8 +4,6 @@ import {
   gql, useQuery, useMutation, useApolloClient,
 } from '@apollo/client';
 
-import Link from 'next/link';
-
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -178,11 +176,9 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12}>
           <Grid container justify="flex-end">
             <div>
-              <Link href="/">
-                <Button variant="contained" color="primary">
-                  Retour
-                </Button>
-              </Link>
+              <Button variant="outlined" color="primary" onClick={() => router.back()}>
+                Retour
+              </Button>
             </div>
           </Grid>
         </Grid>

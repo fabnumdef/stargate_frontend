@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { gql, useMutation, useApolloClient } from '@apollo/client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -117,6 +117,8 @@ export const MUTATE_VISITOR = gql`
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
+  const router = useRouter();
+
   const client = useApolloClient();
   const { activeRole } = useLogin();
 
@@ -263,11 +265,9 @@ export default function RequestDetails({ requestId }) {
         <Grid item sm={12}>
           <Grid container justify="flex-end">
             <div>
-              <Link href="/">
-                <Button variant="outlined" color="primary" style={{ marginRight: '5px' }}>
-                  Annuler
-                </Button>
-              </Link>
+              <Button variant="outlined" color="primary" style={{ marginRight: '5px' }} onClick={() => router.back()}>
+                Annuler
+              </Button>
             </div>
             <div>
               <Button variant="contained" color="primary" onClick={submitForm} disabled={!visitors.find((visitor) => visitor.validation !== null)}>

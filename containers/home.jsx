@@ -3,7 +3,7 @@ import React from 'react';
 import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 
-import MenuRequest from './menuRequest';
+import MyTreatements from './myTreatements';
 import ScreeningRequest from './screeningManagement';
 
 function selectLandingComponent(role) {
@@ -11,7 +11,7 @@ function selectLandingComponent(role) {
     case ROLES.ROLE_SCREENING.role:
       return <ScreeningRequest />;
     default:
-      return <MenuRequest />;
+      return <MyTreatements />;
   }
 }
 

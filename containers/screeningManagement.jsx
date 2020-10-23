@@ -23,7 +23,7 @@ import {
 
 import Template from './template';
 
-import { AntTab } from './menuRequest';
+import { AntTab } from './myTreatements';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
@@ -166,6 +166,7 @@ export default function ScreeningManagement() {
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       search,
     },
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'cache-and-network',
   });
 

@@ -12,8 +12,8 @@ import { useLogin } from '../../../lib/loginContext';
 
 function getMenus(router, setSubMenuAdmin, subMenuAdmin) {
   return [
-    { label: 'Mes Demandes', permission: '/', action: () => router.push('/') },
-    { label: 'Nouvelle Demande', permission: '/nouvelle-demande', action: () => router.push('/nouvelle-demande') },
+    { label: 'Mes Traitements', permission: '/', action: () => router.push('/') },
+    { label: 'Mes Demandes', permission: '/mes-demandes', action: () => router.push('/mes-demandes') },
     { label: 'Administration', permission: '/administration', action: () => setSubMenuAdmin(!subMenuAdmin) },
     { label: 'A propos', permission: '/no-route', action: () => router.push('/no-route') },
     { label: 'Contactez Nous', permission: '/no-route', action: () => router.push('/no-route') },
@@ -49,7 +49,7 @@ const useStyles = makeStyles(() => ({
   },
   subButtons: {
     position: 'absolute',
-    top: '42px',
+    top: '33px',
     width: '100%',
     '& button': {
       width: '100%',

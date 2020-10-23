@@ -17,7 +17,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 // import SearchIcon from '@material-ui/icons/Search';
 
 import {
-  TabPanel, TabMesDemandesToTreat, TabDemandesProgress, TabMesDemandesTreated,
+  TabPanel, TabMesDemandesToTreat, TabMesDemandesTreated,
 } from '../components';
 import Template from './template';
 
@@ -94,9 +94,9 @@ export const LIST_REQUESTS = gql`
                          owner {
                              firstname
                              lastname
-                             unit {
-                                 id
-                                 label
+                             unit{
+                               id
+                               label
                              }
                          }
                      }
@@ -139,7 +139,7 @@ export const LIST_MY_REQUESTS = gql`
        `;
 
 
-export default function MenuRequest() {
+export default function MyTreatements() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
@@ -166,7 +166,7 @@ export default function MenuRequest() {
 
   const childRef = React.useRef();
 
-  const { data: toTreat, fetchMore: fetchToTreat, loading: loadingToTreat } = useQuery(
+  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -183,19 +183,6 @@ export default function MenuRequest() {
       fetchPolicy: 'cache-and-network',
     },
   );
-
-  const {
-    data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress,
-  } = useQuery(LIST_MY_REQUESTS, {
-    variables: {
-      filters: { status: STATE_REQUEST.STATE_CREATED.state },
-      cursor: {
-        first: rowsPerPage,
-        offset: page * rowsPerPage,
-      },
-    },
-    fetchPolicy: 'cache-and-network',
-  });
 
   const selectTreatedOptions = React.useMemo(() => {
     if (activeRole.role === ROLES.ROLE_HOST.role) {
@@ -231,7 +218,7 @@ export default function MenuRequest() {
     return treatedData.getCampus.listRequestByVisitorStatus;
   };
 
-  const { data: treated, fetchMore: fetchTreated, loading: loadingTreated } = useQuery(
+  const { data: treated, fetchMore: fetchTreated } = useQuery(
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
       variables: selectTreatedOptions,
@@ -268,18 +255,6 @@ export default function MenuRequest() {
         });
         break;
       case 1:
-        fetchInProgress({
-          query: LIST_MY_REQUESTS,
-          variables: {
-            cursor: {
-              first: rowsPerPage,
-              offset: page * rowsPerPage,
-            },
-            filters: { status: STATE_REQUEST.STATE_CREATED.state },
-          },
-        });
-        break;
-      case 2:
         fetchTreated({
           query: activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
           variables: selectTreatedOptions,
@@ -300,25 +275,11 @@ export default function MenuRequest() {
     setPage(0);
   };
 
-  const refetchQueries = [
-    {
-      query: LIST_MY_REQUESTS,
-      variables: {
-        filters: { status: STATE_REQUEST.STATE_CREATED.state },
-      },
-    },
-    {
-      query: LIST_REQUESTS,
-      variables: {
-        isDone: { value: true },
-        as: { role: activeRole.role, unit: activeRole.unit },
-      },
-    }];
 
   const tabList = [
     {
       index: 0,
-      label: `A traiter ${
+      label: `À traiter ${
         toTreat && toTreat.getCampus.listRequestByVisitorStatus.meta.total > 0
           ? `(${toTreat.getCampus.listRequestByVisitorStatus.meta.total})`
           : ''
@@ -327,15 +288,6 @@ export default function MenuRequest() {
     },
     {
       index: 1,
-      label: `En cours ${
-        inProgress && inProgress.getCampus.listMyRequests.meta.total > 0
-          ? `(${inProgress.getCampus.listMyRequests.meta.total})`
-          : ''
-      }`,
-      access: urlAuthorization('/nouvelle-demande', activeRole.role),
-    },
-    {
-      index: 2,
       label: `Traitées ${
         treated && selectTreatedPath(treated).meta.total > 0
           ? `(${selectTreatedPath(treated).meta.total})`
@@ -357,9 +309,6 @@ export default function MenuRequest() {
         if (!toTreat) return 0;
         return toTreat.getCampus.listRequestByVisitorStatus.meta.total;
       case 1:
-        if (!inProgress) return 0;
-        return inProgress.getCampus.listMyRequests.meta.total;
-      case 2:
         if (!treated) return 0;
         return selectTreatedPath(treated).meta.total;
       default:
@@ -368,12 +317,12 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template loading={loadingToTreat && loadingTreated && loadingProgress}>
+    <Template loading={!toTreat && treated}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
-              Mes Demandes
+              Mes Traitements
             </Typography>
           </Box>
         </Grid>
@@ -436,16 +385,7 @@ export default function MenuRequest() {
             />
           </TabPanel>
           )}
-          {urlAuthorization('/nouvelle-demande', activeRole.role) && (
-            <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-              <TabDemandesProgress
-                request={inProgress ? inProgress.getCampus.listMyRequests.list : []}
-                queries={refetchQueries}
-                emptyLabel="en cours"
-              />
-            </TabPanel>
-          )}
-          <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
+          <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
 
             {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
               <TabMesDemandesTreated
@@ -476,7 +416,7 @@ export default function MenuRequest() {
             />
           )}
         </Grid>
-        { (value === 2
+        { (value === 1
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
         && selectTreatedPath(treated).list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
