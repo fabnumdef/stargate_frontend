@@ -170,12 +170,12 @@ export default function FormInfoVisitor({
     clearError,
   } = useForm({
     defaultValues: {
-      nationality: selectVisitor.nationality ? selectVisitor.nationality : '',
+      nationality: (selectVisitor && selectVisitor.nationality) ? selectVisitor.nationality : '',
     },
   });
 
   useEffect(() => {
-    if (selectVisitor.id) {
+    if (selectVisitor && selectVisitor.id) {
       const visitorData = mapVisitorEdit(selectVisitor);
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(
@@ -251,7 +251,7 @@ export default function FormInfoVisitor({
 
   const onSubmit = (data) => {
     const visitorData = mapVisitorData(data);
-    if (selectVisitor.id) {
+    if (selectVisitor && selectVisitor.id) {
       return editVisitor({
         variables: {
           idRequest: formData.id,
@@ -538,7 +538,7 @@ export default function FormInfoVisitor({
                   name="vip"
                   defaultValue="FALSE"
                 />
-                {(selectVisitor.vip || watch('vip') === 'TRUE') && (
+                {((selectVisitor && selectVisitor.vip) || watch('vip') === 'TRUE') && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
