@@ -86,6 +86,7 @@ function createData({
   units,
   identityDocuments,
   request,
+  generateIdentityFileExportLink,
 }, activeRole) {
   return {
     id,
@@ -97,7 +98,8 @@ function createData({
     report: null,
     screening: checkStatus(units, activeRole),
     requestId: request.id,
-    vAttachedFile: identityDocuments,
+    vAttachedFile: identityDocuments[0] ? identityDocuments[0].file.id : null,
+    link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null,
   };
 }
 
@@ -132,6 +134,14 @@ export const LIST_VISITOR_REQUESTS = gql`
                  request {
                    id
                  }
+                 identityDocuments {
+                   file {
+                     id
+                   }
+                 }
+                   generateIdentityFileExportLink {
+                       link
+                   }
                }
                meta {
                  total
