@@ -131,6 +131,7 @@ export default function RequestAccesForm() {
                 setForm={setForm}
                 selectVisitor={selectVisitor}
                 handleNext={handleNext}
+                setSelectVisitor={setSelectVisitor}
                 handleBack={handleBack}
               />
             </NoSsr>
