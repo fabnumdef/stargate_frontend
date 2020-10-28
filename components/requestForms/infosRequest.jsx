@@ -166,7 +166,7 @@ export const GET_PLACES_LIST = gql`
 export const CREATE_REQUEST = gql`
          mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
-            activeRoleCache @client @export (as: "unit") {id: unit, label: unitLabel}
+            activeRoleCache @client @export (as: "unit") {label: unitLabel}
             mutateCampus(id: $campusId){
               createRequest(request: $request, unit: $unit) {
               ...RequestResult

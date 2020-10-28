@@ -24,7 +24,7 @@ import Button from '@material-ui/core/Button';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import validator from 'validator';
-import { isValid } from 'date-fns';
+import { isValid, differenceInYears } from 'date-fns';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import { REQUEST_OBJECT, ID_DOCUMENT, EMPLOYEE_TYPE } from '../../utils/constants/enums';
@@ -72,8 +72,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function getKindControl(nationality, kind) {
+  if (nationality === 'Française') {
+    switch (kind) {
+      case ID_DOCUMENT.IDCARD:
+        return /^\d{12}$/;
+      case ID_DOCUMENT.PASSPORT:
+        return /^\d{2}[A-Za-z]{2}\d{5}$/;
+      case ID_DOCUMENT.CIMSCARD:
+        return /^\d{10}$/;
+      default:
+        return '';
+    }
+  } else return '';
+}
+
 function getTypeDocument(isInternal) {
-  // TODO Check if MIINARM or not
+  // TODO Check if MINARM or not
   if (isInternal === 'MINARM') {
     return [
       { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
@@ -609,7 +624,13 @@ export default function FormInfoVisitor({
                     </InputLabel>
                     <Controller
                       as={(
-                        <Select fullWidth labelId="kind" id="typeDocument" labelWidth={labelWidth}>
+                        <Select
+                          disabled={watch('nationality') === ''}
+                          fullWidth
+                          labelId="kind"
+                          id="typeDocument"
+                          labelWidth={labelWidth}
+                        >
                           {getTypeDocument(watch('isInternal')).map((doc) => (
                             <MenuItem key={doc.value} value={doc.value}>
                               {doc.label}
@@ -629,22 +650,27 @@ export default function FormInfoVisitor({
                     )}
                   </FormControl>
                 </Grid>
-
+                {watch('kind') !== 'HORS MINARM'}
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
                       <TextField
+                        disabled={watch('kind') === ''}
                         label="Numéro"
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                         helperText={errors.reference && errors.reference.message}
                         fullWidth
                       />
                     )}
+
                     control={control}
                     name="reference"
                     defaultValue=""
                     rules={{
-                      validate: (value) => value.trim() !== '' || 'Le numéro de document est obligatoire',
+                      required: 'Le numéro de document est obligatoire',
+
+                      validate: (value) => validator.matches(value, getKindControl(watch('nationality'), watch('kind'))) || 'format invalide',
+
                     }}
                   />
                 </Grid>
@@ -657,7 +683,6 @@ export default function FormInfoVisitor({
                         error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
                         helperText={
                           errors.birthday
-                          && errors.birthday.type === 'required'
                           && errors.birthday.message
                         }
                         disableFuture
@@ -668,7 +693,16 @@ export default function FormInfoVisitor({
                     name="birthday"
                     rules={{
                       required: 'La date de naissance est obligatoire',
-                      validate: { valide: (value) => isValid(value) || 'Format invalide' },
+                      validate: {
+                        valide: (value) => isValid(value) || 'Format invalide',
+                        older: (value) => Math.abs(differenceInYears(new Date(), value)) <= 100
+                        || "Veuillez vérifier la date de naissance, l'âge du visiteur est supérieur à 100 ans",
+                        younger: (value) => Math.abs(differenceInYears(new Date(), value)) >= 13
+                        || "Il n'est pas nécessaire de faire une demande de visite, la personne doit venir accompagnée d'une personne majeure ayant le droit d'accès à la base.",
+                        family: (value) => (Math.abs(differenceInYears(new Date(), value)) >= 16
+                        && formData.object !== REQUEST_OBJECT.PRIVATE)
+                        || "Les mineurs de moins de 16 ans ne sont autorisés à venir que dans le cadre d'une visite de type famille",
+                      },
                     }}
                     defaultValue={null}
                   />
