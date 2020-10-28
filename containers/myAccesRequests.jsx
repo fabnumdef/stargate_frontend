@@ -106,6 +106,13 @@ export const LIST_MY_REQUESTS = gql`
             id
             label
           }
+          owner {
+            firstname
+            lastname
+             unit{
+               label
+             }
+          }
         }
         meta {
           total
@@ -336,7 +343,7 @@ export default function MyRequestAcces() {
             <TabMesDemandesToTreat
               requests={treated ? mapRequestData(treated) : []}
               detailLink="traitees"
-              emptyLabel="traitée"
+              emptyLabel="finalisée"
             />
           </TabPanel>
         </Grid>

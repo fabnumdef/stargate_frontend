@@ -192,14 +192,14 @@ export default function FormInfoVisitor({
     clearError,
   } = useForm({
     defaultValues: {
-      nationality: selectVisitor.nationality ? selectVisitor.nationality : '',
+      nationality: (selectVisitor && selectVisitor.nationality) ? selectVisitor.nationality : '',
     },
   });
 
-  const [inputFile, setInputFile] = useState(selectVisitor.nationality && selectVisitor.nationality !== 'Française');
+  const [inputFile, setInputFile] = useState(selectVisitor && selectVisitor.nationality && selectVisitor.nationality !== 'Française');
 
   useEffect(() => {
-    if (selectVisitor.id) {
+    if (selectVisitor && selectVisitor.id) {
       const visitorData = mapVisitorEdit(selectVisitor);
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(
@@ -225,7 +225,7 @@ export default function FormInfoVisitor({
     setValue('kind', '');
     setValue('reference', '');
     setInputFile(value !== 'Française');
-    if (selectVisitor.fileDefaultValue) {
+    if (selectVisitor && selectVisitor.fileDefaultValue) {
       setSelectVisitor({ ...selectVisitor, fileDefaultValue: '' });
     }
   };
@@ -310,7 +310,7 @@ export default function FormInfoVisitor({
 
   const onSubmit = (data) => {
     const visitorData = mapVisitorData(data);
-    if (selectVisitor.id) {
+    if (selectVisitor && selectVisitor.id) {
       return editVisitor(visitorData);
     }
     return createVisitor(visitorData);
@@ -591,7 +591,7 @@ export default function FormInfoVisitor({
                   name="vip"
                   defaultValue="FALSE"
                 />
-                {(selectVisitor.vip || watch('vip') === 'TRUE') && (
+                {((selectVisitor && selectVisitor.vip) || watch('vip') === 'TRUE') && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
@@ -783,7 +783,7 @@ export default function FormInfoVisitor({
                   control={control}
                   defaultValue=""
                   name="file"
-                  editValue={selectVisitor.fileDefaultValue ? selectVisitor.fileDefaultValue : ''}
+                  editValue={(selectVisitor && selectVisitor.fileDefaultValue) ? selectVisitor.fileDefaultValue : ''}
                   onChange={(file) => file}
                   label="Fichier"
                   error={Object.prototype.hasOwnProperty.call(errors, 'file')}

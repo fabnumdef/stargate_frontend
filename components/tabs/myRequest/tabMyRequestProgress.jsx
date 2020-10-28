@@ -44,20 +44,29 @@ const columns = [
   {
     id: 'periode', label: 'Période', width: '100px', style: { textAlign: 'center' },
   },
+  { id: 'owner', label: 'Demandeur' },
+  { id: 'places', label: 'Lieu' },
   { id: 'reason', label: 'Motif' },
-  { id: 'type', label: 'Type de demande' },
 ];
 
 function createData({
-  id, from, to, reason,
+  id, from, to, owner, places, reason,
 }) {
   return {
     id,
     periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
+    owner: owner
+      ? `
+          ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
+          ${owner.unit.label}`
+      : '',
+    places: places.map((place, index) => {
+      if (index === places.length - 1) return `${place.label}.`;
+      return `${place.label}, `;
+    }),
     reason,
-    type: 'Simple',
   };
 }
 
