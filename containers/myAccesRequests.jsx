@@ -14,9 +14,6 @@ import Link from 'next/link';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import TablePagination from '@material-ui/core/TablePagination';
-// import TextField from '@material-ui/core/TextField';
-// import InputAdornment from '@material-ui/core/InputAdornment';
-// import SearchIcon from '@material-ui/icons/Search';
 
 import {
   TabPanel,
@@ -162,7 +159,6 @@ export default function MyRequestAcces() {
 
 
   const { data: treated, fetchMore: fetchTreated } = useQuery(
-    // activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     LIST_MY_REQUESTS,
     {
       variables: {

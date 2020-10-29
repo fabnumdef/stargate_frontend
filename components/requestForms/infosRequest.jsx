@@ -31,7 +31,7 @@ import {
 import validator from 'validator';
 
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { mapRequestEdit } from '../../utils/mappers/requestAcces';
+import { mapRequestEdit, mapCreateRequest } from '../../utils/mappers/requestAcces';
 
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
@@ -259,31 +259,19 @@ export default function FormInfosClaimant({
   const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
-    const request = { ...data };
-    const places = request.places.map((p) => p.id);
-    const referent = {
-      email: request.refEmail,
-      firstname: request.refFirstName,
-      lastname: request.refName,
-      phone: request.refPhone,
-    };
-
-    delete request.refEmail;
-    delete request.refFirstName;
-    delete request.refName;
-    delete request.refPhone;
+    const request = mapCreateRequest(data, group);
 
     if (!formData.id) {
       createRequest({
         variables: {
-          request: { ...request, places, referent: group ? referent : null },
+          request,
         },
       });
     } else {
       updateRequest({
         variables: {
           id: formData.id,
-          request: { ...request, places, referent: group ? referent : null },
+          request,
         },
       });
     }

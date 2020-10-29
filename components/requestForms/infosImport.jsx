@@ -152,7 +152,7 @@ export default function InfosImport({
                             <Typography display="inline" variant="body2" color="error">
                               {ERROR_TYPE[error.kind]}
                             </Typography>
-                            <br />
+                            {'\n'}
                           </>
                         ))
                       ) : (
