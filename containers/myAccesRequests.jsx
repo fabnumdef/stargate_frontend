@@ -265,7 +265,7 @@ export default function MyRequestAcces() {
     setPage(0);
   };
 
-  const handlePageSize = () => {
+  const handlePageSize = React.useMemo(() => {
     switch (value) {
       case 0:
         if (!inProgress) return 0;
@@ -276,7 +276,7 @@ export default function MyRequestAcces() {
       default:
         return 0;
     }
-  };
+  }, [inProgress, treated, value]);
 
   return (
     <Template loading={!inProgress && !treated}>
@@ -344,11 +344,11 @@ export default function MyRequestAcces() {
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
-          {handlePageSize() > 0 && (
+          {handlePageSize > 0 && (
             <TablePagination
               rowsPerPageOptions={[10, 20, 30, 40, 50]}
               component="div"
-              count={handlePageSize()}
+              count={handlePageSize}
               rowsPerPage={rowsPerPage}
               page={page}
               onChangePage={handleChangePage}

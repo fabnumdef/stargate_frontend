@@ -1,5 +1,8 @@
 import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useRouter } from 'next/router';
+import {
+  gql, useQuery, useLazyQuery,
+} from '@apollo/client';
 // Material Import
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -12,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import TablePagination from '@material-ui/core/TablePagination';
+import { useSnackBar } from '../lib/hooks/snackbar';
 // import TextField from '@material-ui/core/TextField';
 // import InputAdornment from '@material-ui/core/InputAdornment';
 // import SearchIcon from '@material-ui/icons/Search';
@@ -21,7 +25,7 @@ import {
 } from '../components';
 import Template from './template';
 
-import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
+import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 import { urlAuthorization } from '../utils/permissions';
 
@@ -109,38 +113,28 @@ export const LIST_REQUESTS = gql`
          }
        `;
 
-export const LIST_MY_REQUESTS = gql`
-         query listMyRequests(
+export const LIST_MY_VISITORS = gql`
+         query listMyVisitors(
            $campusId: String!
-           $cursor: OffsetCursor!
-           $filters: RequestFilters!
+           $isDone: RequestVisitorIsDone!
+           $requestsId: [String]
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
-             id
-             listMyRequests(filters: $filters, cursor: $cursor) {
-               list {
-                 id
-                 from
-                 to
-                 reason
-                 status
-                 places {
-                   id
-                   label
-                 }
+             listVisitors(isDone: $isDone, requestsId: $requestsId) {
+               generateCSVExportLink{
+                token
+                link
                }
-               meta {
-                 total
-               }
-             }
-           }
+            }
+          }
          }
        `;
 
-
 export default function MyTreatements() {
   const classes = useStyles();
+
+  const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
 
   const [value, setValue] = React.useState(
@@ -148,12 +142,11 @@ export default function MyTreatements() {
       try {
       // Get from local storage by key
         const item = JSON.parse(window.localStorage.getItem('menuValue'));
-
         // Parse stored json or if none return initialValue
         if (item) return item;
-        return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+        return 0;
       } catch (error) {
-        return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+        return 0;
       }
     },
   );
@@ -184,57 +177,50 @@ export default function MyTreatements() {
     },
   );
 
-  const selectTreatedOptions = React.useMemo(() => {
-    if (activeRole.role === ROLES.ROLE_HOST.role) {
-      return {
+  const { data: treated, fetchMore: fetchTreated } = useQuery(
+    LIST_REQUESTS,
+    {
+      variables: {
         cursor: {
           first: rowsPerPage,
           offset: page * rowsPerPage,
         },
-        filters: {
-          status: [
-            STATE_REQUEST.STATE_CANCELED.state,
-            STATE_REQUEST.STATE_ACCEPTED.state,
-            STATE_REQUEST.STATE_MIXED.state,
-            STATE_REQUEST.STATE_REJECTED.state,
-          ],
-        },
-      };
-    }
-    return {
-      cursor: {
-        first: rowsPerPage,
-        offset: page * rowsPerPage,
+        as: { role: activeRole.role, unit: activeRole.unit },
+        isDone: { value: true },
       },
-      as: { role: activeRole.role, unit: activeRole.unit },
-      isDone: { value: true },
-    };
-  }, [activeRole.role, activeRole.unit, page, rowsPerPage]);
-
-  const selectTreatedPath = (treatedData) => {
-    if (activeRole.role === ROLES.ROLE_HOST.role) {
-      return treatedData.getCampus.listMyRequests;
-    }
-    return treatedData.getCampus.listRequestByVisitorStatus;
-  };
-
-  const { data: treated, fetchMore: fetchTreated } = useQuery(
-    activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
-    {
-      variables: selectTreatedOptions,
       fetchPolicy: 'cache-and-network',
+      onError: React.useCallback((e) => {
+        addAlert({
+          message:
+              e,
+          severity: 'error',
+        });
+      }, []),
     },
   );
+  // get link of export csv if BA role
+  const [exportCsv, { data: exportLink }] = useLazyQuery(LIST_MY_VISITORS, {
+    onCompleted: React.useCallback(() => {
+      const link = document.createElement('a');
+      link.href = exportLink.getCampus.listVisitors.generateCSVExportLink.link;
+      link.setAttribute('download', `export-${new Date()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    }),
+    onError: React.useCallback((e) => {
+      addAlert({
+        message:
+              e.message,
+        severity: 'error',
+      });
+    }, []),
+  });
 
-  const mapRequestData = (data) => {
-    if (activeRole.role === ROLES.ROLE_HOST.role) {
-      return data.getCampus.listMyRequests.list;
-    }
-    return data.getCampus.listRequestByVisitorStatus.list.map((r) => ({
-      id: r.id,
-      ...r.requestData[0],
-    }));
-  };
+  const mapRequestData = (data) => data.getCampus.listRequestByVisitorStatus.list.map((r) => ({
+    id: r.id,
+    ...r.requestData[0],
+  }));
 
   const handleFetchMore = () => {
     switch (value) {
@@ -256,8 +242,15 @@ export default function MyTreatements() {
         break;
       case 1:
         fetchTreated({
-          query: activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
-          variables: selectTreatedOptions,
+          query: LIST_REQUESTS,
+          variables: {
+            cursor: {
+              first: rowsPerPage,
+              offset: page * rowsPerPage,
+            },
+            as: { role: activeRole.role, unit: activeRole.unit },
+            isDone: { value: true },
+          },
         });
         break;
       default:
@@ -275,7 +268,6 @@ export default function MyTreatements() {
     setPage(0);
   };
 
-
   const tabList = [
     {
       index: 0,
@@ -289,8 +281,8 @@ export default function MyTreatements() {
     {
       index: 1,
       label: `Traitées ${
-        treated && selectTreatedPath(treated).meta.total > 0
-          ? `(${selectTreatedPath(treated).meta.total})`
+        treated && treated.getCampus.listRequestByVisitorStatus.meta.total > 0
+          ? `(${treated.getCampus.listRequestByVisitorStatus.meta.total})`
           : ''
       }`,
       access: true,
@@ -303,21 +295,21 @@ export default function MyTreatements() {
     setPage(0);
   };
 
-  const handlePageSize = () => {
+  const handlePageSize = React.useMemo(() => {
     switch (value) {
       case 0:
         if (!toTreat) return 0;
         return toTreat.getCampus.listRequestByVisitorStatus.meta.total;
       case 1:
         if (!treated) return 0;
-        return selectTreatedPath(treated).meta.total;
+        return treated.getCampus.listRequestByVisitorStatus.meta.total;
       default:
         return 0;
     }
-  };
+  }, [toTreat, treated, value]);
 
   return (
-    <Template loading={!toTreat && !treated}>
+    <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -348,33 +340,6 @@ export default function MyTreatements() {
             )}
           </Tabs>
         </Grid>
-        <Grid container className={classes.searchField}>
-          <Grid item sm={12} xs={12} md={12} lg={12}>
-            {/* handlePageSize() > 0 && (
-              <TextField
-                style={{ float: 'right' }}
-                margin="dense"
-                variant="outlined"
-                onChange={() => {
-                  setPage(0);
-                  // @todo
-                  // setSearch(event.target.value);
-                }}
-                placeholder="Rechercher..."
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                  inputProps: {
-                    'data-testid': 'searchField',
-                  },
-                }}
-              />
-            ) */}
-          </Grid>
-        </Grid>
         <Grid item sm={12} xs={12}>
           {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
           <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
@@ -404,11 +369,11 @@ export default function MyTreatements() {
           </TabPanel>
         </Grid>
         <Grid item sm={6} xs={12} md={8} lg={8}>
-          {handlePageSize() > 0 && (
+          {handlePageSize > 0 && (
             <TablePagination
               rowsPerPageOptions={[10, 20, 30, 40, 50]}
               component="div"
-              count={handlePageSize()}
+              count={handlePageSize}
               rowsPerPage={rowsPerPage}
               page={page}
               onChangePage={handleChangePage}
@@ -417,22 +382,37 @@ export default function MyTreatements() {
           )}
         </Grid>
         { (value === 1
-        && treated
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
         && treated
-        && selectTreatedPath(treated).list.length > 0) && (
+        )
+        && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
           <Button
             size="small"
             variant="contained"
             color="primary"
-            onClick={() => { childRef.current.execExport(); }}
+            onClick={() => {
+              const chosen = childRef.current.chosen.splice(0);
+              if (chosen.length > 0) {
+                exportCsv({
+                  variables: {
+                    isDone: { role: activeRole.role, value: true },
+                    requestsId: chosen,
+                  },
+                });
+              } else {
+                addAlert({
+                  message:
+              'Aucune visite selectionée',
+                  severity: 'error',
+                });
+              }
+            }}
           >
             Exporter
           </Button>
         </Grid>
         )}
-
       </Grid>
     </Template>
   );

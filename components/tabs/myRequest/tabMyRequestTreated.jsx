@@ -1,8 +1,5 @@
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
-
-import { useLazyQuery } from '@apollo/client';
-import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useRouter } from 'next/router';
 
@@ -23,11 +20,9 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
-import { useSnackBar } from '../../../lib/hooks/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
-import { useLogin } from '../../../lib/loginContext';
 
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 
@@ -142,29 +137,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const LIST_MY_VISITORS = gql`
-         query listMyVisitors(
-           $campusId: String!
-           $isDone: RequestVisitorIsDone!
-           $requestsId: [String]
-         ) {
-           campusId @client @export(as: "campusId")
-           getCampus(id: $campusId) {
-             listVisitors(isDone: $isDone, requestsId: $requestsId) {
-               generateCSVExportLink{
-                token
-                link
-               }
-            }
-          }
-         }
-       `;
-
 const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, ref) => {
   const classes = useStyles();
-
-  const { addAlert } = useSnackBar();
-  const { activeRole } = useLogin();
 
   const router = useRouter();
 
@@ -179,10 +153,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
   const [chosen, setChosen] = useState([]);
 
-  // getLink for the CSV
-  const [exportCsv, { data, loading, error }] = useLazyQuery(LIST_MY_VISITORS);
-
-  const createSortHandler = () => () => {
+  const createSortHandler = () => {
     const isAsc = order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
   };
@@ -217,52 +188,10 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
     }
   };
 
-  React.useEffect(() => {
-    const onCompleted = (d) => {
-      const link = document.createElement('a');
-      link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
-      link.setAttribute('download', `export-${new Date()}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    };
-
-    const onError = (e) => {
-      addAlert({
-        message:
-              e.message,
-        severity: 'error',
-      });
-    };
-
-    if (onCompleted || onError) {
-      if (onCompleted && !loading && !error && data) {
-        onCompleted(data);
-      } else if (onError && !loading && error) {
-        onError(error);
-      }
-    }
-  }, [loading, error, data]);
-
   useImperativeHandle(
     ref,
     () => ({
-      async execExport() {
-        if (chosen.length > 0) {
-          await exportCsv({
-            variables: {
-              isDone: { role: activeRole.role, value: true },
-              requestsId: chosen,
-            },
-          });
-        } else {
-          addAlert({
-            message:
-              'Aucune visite selectionée',
-            severity: 'error',
-          });
-        }
-      },
+      chosen,
     }),
   );
   // triggerEvent from Parent Component
@@ -302,7 +231,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
               <TableSortLabel
                 className={classes.sortedHeader}
                 direction={order}
-                onClick={createSortHandler()}
+                onClick={createSortHandler}
               >
                 Date
               </TableSortLabel>
