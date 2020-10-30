@@ -241,10 +241,12 @@ export function LoginContextProvider({ children }) {
   useEffect(() => {
     const onCompleted = (d) => {
       if (!d.me.roles.length) {
-        signOut({ message: 'Vous ne disposez d\'aucun rôle sur Stargate. Merci de contacter un administrateur', severity: 'error' });
+        return signOut({ message: 'Vous ne disposez d\'aucun rôle sur Stargate. Merci de contacter un administrateur', severity: 'error' });
       }
 
-      const activeRoleNumber = localStorage.getItem('activeRoleNumber') || 0;
+      const activeRoleNumber = !localStorage.getItem('activeRoleNumber') || localStorage.getItem('activeRoleNumber') > d.me.roles.length - 1
+        ? 0
+        : localStorage.getItem('activeRoleNumber');
 
       const newRole = d.me.roles[activeRoleNumber].units[0]
         ? {
@@ -270,7 +272,7 @@ export function LoginContextProvider({ children }) {
         },
       });
       setIsCacheInit(true);
-      setIsLoggedUser(true);
+      return setIsLoggedUser(true);
     };
 
     const onError = () => {
