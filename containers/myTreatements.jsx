@@ -417,10 +417,8 @@ export default function MyTreatements() {
           )}
         </Grid>
         { (value === 1
-        && treated
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
-        && treated
-        && selectTreatedPath(treated).list.length > 0) && (
+        && (treated && selectTreatedPath(treated).list.length > 0)) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
           <Button
             size="small"
