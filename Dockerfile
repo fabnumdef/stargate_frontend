@@ -1,30 +1,27 @@
-FROM node:13-alpine as base
-FROM base as builder
+FROM node:14 AS base
+ADD . /app
+WORKDIR /app
 
-RUN apk update && apk upgrade
-RUN apk add git
+FROM base as prod-install
+WORKDIR /app
+RUN npm ci --only=production
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm install
-
-FROM base
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY . /usr/src/app/
-
+FROM base as prod-build
+WORKDIR /app
+COPY --from=prod-install /app/node_modules /app/node_modules
+RUN npm ci
 RUN npm run build
+
+FROM gcr.io/distroless/nodejs:14
+WORKDIR /app
+COPY --from=base /app /app
+COPY --from=prod-install /app/node_modules /app/node_modules
+COPY --from=prod-build /app/.next /app/.next
 
 EXPOSE 3000
 EXPOSE 9091
 ENV HOST=0.0.0.0
 ENV PORT=3000
+ENV NODE_ENV=production
 
-ENTRYPOINT [ "npm" ]
-CMD [ "start" ]
+CMD [ "server/index.js" ]
