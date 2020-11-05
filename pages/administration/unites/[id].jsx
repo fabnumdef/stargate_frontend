@@ -285,9 +285,9 @@ function CreateUnit() {
     if (unitData && unitCorresDatas && unitOfficerDatas && placesData) {
       setDefaultValues(mapEditUnit(
         unitData,
-        unitCorresDatas.listUsers.list,
-        unitOfficerDatas.listUsers.list,
-        placesData.getCampus.listPlaces.list,
+        JSON.parse(JSON.stringify(unitCorresDatas.listUsers.list)),
+        JSON.parse(JSON.stringify(unitOfficerDatas.listUsers.list)),
+        JSON.parse(JSON.stringify(placesData.getCampus.listPlaces.list)),
       ));
     }
   }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);
