@@ -50,6 +50,7 @@ export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!, $isDone: RequestVisitorIsDone, $visitorFilters: RequestVisitorFilters) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              getRequest(id: $requestId) {
                  id
                  reason

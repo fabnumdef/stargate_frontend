@@ -150,6 +150,7 @@ export const LIST_MY_VISITORS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(isDone: $isDone, requestsId: $requestsId) {
                generateCSVExportLink{
                 token

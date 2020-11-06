@@ -15,6 +15,7 @@ const GET_UNIT = gql`
     query getUnit($campusId: String!, $id: String!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             getUnit(id: $id) {
                 id
                 label
@@ -58,6 +59,7 @@ const GET_PLACES = gql`
     query listPlaces($campusId: String!, $hasUnit: HasUnitFilter) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listPlaces(hasUnit: $hasUnit) {
                 list {
                     id
