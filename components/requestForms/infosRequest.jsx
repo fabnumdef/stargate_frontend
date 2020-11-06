@@ -145,6 +145,7 @@ export const GET_PLACES_LIST = gql`
     query getPlacesList($campusId: String!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listPlaces {
                 list {
                     id

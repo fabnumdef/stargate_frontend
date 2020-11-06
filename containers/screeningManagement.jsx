@@ -112,6 +112,7 @@ export const LIST_VISITOR_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(search: $search, cursor: $cursor, isDone: $isDone) {
                list {
                  id
