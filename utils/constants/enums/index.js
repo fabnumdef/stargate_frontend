@@ -126,7 +126,6 @@ export const VISITOR_INFOS = {
   reference: 'Numero Document',
 };
 
-
 export const ERROR_TYPE = {
   required: 'Ce champ est obligatoire',
   enum: 'Pas la valeur attendu',

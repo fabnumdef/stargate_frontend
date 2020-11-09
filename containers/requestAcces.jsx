@@ -20,7 +20,6 @@ import {
   FormInfosImport,
 } from '../components';
 
-
 const AntTab = withStyles((theme) => ({
   root: {
     color: fade(theme.palette.primary.main, 0.8),

@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Link from 'next/link';
 
-
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import TablePagination from '@material-ui/core/TablePagination';
@@ -123,7 +122,6 @@ export default function MyRequestAcces() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
-
   const [value, setValue] = useState(() => {
     try {
       // Get from local storage by key
@@ -143,7 +141,6 @@ export default function MyRequestAcces() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-
   const {
     data: inProgress, fetchMore: fetchInProgress,
   } = useQuery(LIST_MY_REQUESTS, {
@@ -156,7 +153,6 @@ export default function MyRequestAcces() {
     },
     fetchPolicy: 'cache-and-network',
   });
-
 
   const { data: treated, fetchMore: fetchTreated } = useQuery(
     LIST_MY_REQUESTS,

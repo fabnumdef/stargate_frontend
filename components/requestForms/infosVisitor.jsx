@@ -700,7 +700,6 @@ export default function FormInfoVisitor({
                         fullWidth
                       />
                     )}
-
                     control={control}
                     name="reference"
                     defaultValue=""
@@ -824,8 +823,8 @@ FormInfoVisitor.propTypes = {
     from: PropTypes.string,
     to: PropTypes.string,
     reason: PropTypes.string,
-    place: PropTypes.array,
-    visitors: PropTypes.array,
+    place: PropTypes.arrayOf(PropTypes.object),
+    visitors: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,

@@ -382,8 +382,6 @@ export default function ScreeningManagement() {
             <EmptyArray type="à traiter" />
           </Grid>
         )}
-
-
       </Grid>
     </Template>
   );

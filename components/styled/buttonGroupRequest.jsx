@@ -82,7 +82,6 @@ query getTemplate($campusId: String!){
 }
 `;
 
-
 export default function GroupRequestButton() {
   const classes = useStyles();
 

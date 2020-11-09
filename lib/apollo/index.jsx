@@ -8,7 +8,6 @@ import { setContext } from '@apollo/client/link/context';
 import getConfig from 'next/config';
 import { typeDefs, resolvers } from './resolvers';
 
-
 const { publicRuntimeConfig } = getConfig();
 
 // On the client, we store the Apollo Client in the following variable.
@@ -30,7 +29,6 @@ const authLink = setContext((_, { headers }) => {
     },
   };
 });
-
 
 function createApolloClient() {
   const cache = new InMemoryCache({

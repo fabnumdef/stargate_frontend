@@ -149,7 +149,6 @@ export function LoginContextProvider({ children }) {
     return { role: '', unit: '', unitLabel: '' };
   });
 
-
   const signOut = useCallback(async (alert = false) => {
     localStorage.clear();
     await client.cache.reset();
@@ -201,7 +200,6 @@ export function LoginContextProvider({ children }) {
     return true;
   }, [authRenewMutation, signOut]);
 
-
   const [login] = useMutation(LOGIN, {
     onCompleted: (d) => {
       setToken(d.login.jwt);
@@ -232,7 +230,6 @@ export function LoginContextProvider({ children }) {
       }
     },
   });
-
 
   const signIn = useCallback((email, password, resetToken = null) => {
     login({ variables: { email, password, token: resetToken } });
@@ -287,7 +284,6 @@ export function LoginContextProvider({ children }) {
     }
   }, [meData, meLoading, meError]);
 
-
   useEffect(() => {
     if (router.query.token && !isLoggedUser) {
       signIn(decodeURIComponent(router.query.email), null, router.query.token);
@@ -314,7 +310,6 @@ export function LoginContextProvider({ children }) {
       );
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
-
 
   return (
     <LoginContext.Provider value={{

@@ -292,7 +292,6 @@ function CreateUnit() {
     }
   }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);
 
-
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Unité', 'Editer unité']} />
