@@ -21,11 +21,19 @@ import findValidationDate from '../../../utils/mappers/findValidationDate';
 
 import StatusLegend from '../../styled/statusLegend';
 
-function findRejectedRole(units) {
-  const sortRole = units.map((u) => `${ROLES[u.steps.find(
-    (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
-  ).role].shortLabel} - ${u.label}`);
-  return sortRole.join(', ').toString();
+function findRejectedRoles(units) {
+  const sortRoles = units
+    .filter((u) => u.steps.find(
+      (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
+    ))
+    .map((u) => {
+      const { role } = u.steps
+        .find((s) => s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative);
+      return role === ROLES.ROLE_ACCESS_OFFICE.role
+        ? ROLES[role].shortLabel
+        : `${ROLES[role].shortLabel} - ${u.label}`;
+    });
+  return sortRoles.join(', ').toString();
 }
 
 function findVisitorStatus(units) {
@@ -48,7 +56,7 @@ function createData({
     type: EMPLOYEE_TYPE[employeeType],
     date: format(findValidationDate(units), "dd/MM/yyyy à k'h'mm"),
     status: status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
-      ? `${VISITOR_STATUS[status]} par ${findRejectedRole(units)}`
+      ? `${VISITOR_STATUS[status]} par ${findRejectedRoles(units)}`
       : findVisitorStatus(units),
   };
 }

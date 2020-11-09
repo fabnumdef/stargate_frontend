@@ -72,7 +72,6 @@ export const READ_REQUEST = gql`
                         company
                         status
                         units {
-                            id
                             label
                               steps {
                                   role
