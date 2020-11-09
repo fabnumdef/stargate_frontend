@@ -11,11 +11,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from 'next/link';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { gql, useQuery, useApolloClient } from '@apollo/client';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { FORMS_LIST, ROLES } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import { DndModule } from '../../containers/index';
@@ -67,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
   textFieldBlock: {
     paddingLeft: '100px',
   },
+  selectMargin: {
+    marginTop: '10%',
+  },
   buttonsContainer: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -115,6 +119,8 @@ const UnitForm = ({
 }) => {
   const classes = useStyles();
   const client = useApolloClient();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const { addAlert } = useSnackBar();
   const {
     handleSubmit, errors, control, watch,
@@ -125,12 +131,12 @@ const UnitForm = ({
     .map((role, i) => ({
       id: i + 1, text: role.label, role: role.role, behavior: role.behavior,
     }));
-  const createDefaultCards = () => allCards.filter(
-    (card) => defaultValues.cards.find((c) => c.role === card.role),
+  const createDefaultCards = () => defaultValues.cards.map(
+    (card) => allCards.find((c) => c.role === card.role),
   );
   const [cards, setCards] = useState(type === 'create' ? allCards : createDefaultCards);
-
   const [assistantsList, setAssistantsList] = React.useState(defaultValues.assistantsList);
+
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
   };
@@ -187,7 +193,7 @@ const UnitForm = ({
       <Grid container item sm={12} xs={12}>
         <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>
-            <Typography variant="subtitle2">Description: </Typography>
+            <Typography variant="subtitle2">Description : </Typography>
             <Grid className={classes.textFieldBlock}>
               <Controller
                 as={(
@@ -235,7 +241,7 @@ const UnitForm = ({
             </Grid>
           </Grid>
           <Grid className={classes.sectionContainer}>
-            <Typography variant="subtitle2">Lieux: </Typography>
+            <Typography variant="subtitle2">Lieux : </Typography>
             <Grid className={classes.textFieldBlock}>
               <Controller
                 as={(
@@ -271,10 +277,21 @@ const UnitForm = ({
         <Grid item sm={6} xs={6}>
           <Grid className={classes.sectionContainer}>
             <Grid>
-              <Grid className={classes.titleUserSelect}>
+              <Grid
+                item
+                md={5}
+                sm={12}
+                className={classes.titleUserSelect}
+              >
                 <Typography variant="subtitle2" style={{ display: 'inline-block' }}>Correspondant&nbsp;:</Typography>
               </Grid>
-              <Grid className={classes.userSelect}>
+              <Grid
+                item
+                md={7}
+                sm={12}
+                className={`${
+                  matches ? classes.selectMargin : ''} ${classes.userSelect}`}
+              >
                 <FormControl
                   variant="outlined"
                   error={Object.prototype.hasOwnProperty.call(errors, 'unitCorrespondent')}
@@ -286,6 +303,7 @@ const UnitForm = ({
                   <Controller
                     as={(
                       <Select
+                        label="Responsable"
                         labelId="create-unit-unitCorrespondent"
                         id="unitCorrespondent"
                         labelWidth={labelWidth}
@@ -354,10 +372,21 @@ const UnitForm = ({
           </Grid>
           <Grid className={classes.sectionContainer}>
             <Grid>
-              <Grid className={classes.titleUserSelect}>
+              <Grid
+                item
+                md={5}
+                sm={12}
+                className={classes.titleUserSelect}
+              >
                 <Typography variant="subtitle2" style={{ display: 'inline-block' }}>Officier Sécurité&nbsp;:</Typography>
               </Grid>
-              <Grid className={classes.userSelect}>
+              <Grid
+                item
+                md={7}
+                sm={12}
+                className={`${
+                  matches ? classes.selectMargin : ''} ${classes.userSelect}`}
+              >
                 <FormControl
                   variant="outlined"
                   error={Object.prototype.hasOwnProperty.call(errors, 'unitOfficer')}

@@ -1,0 +1,12 @@
+#Dependences
+node_modules/
+public/
+
+#Conf
+.env
+#build
+.next/
+
+.vscode/
+
+.DS_Store

@@ -120,6 +120,7 @@ export const LIST_MY_VISITORS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(isDone: $isDone, requestsId: $requestsId) {
                generateCSVExportLink{
                 token
@@ -198,10 +199,10 @@ export default function MyTreatements() {
     },
   );
   // get link of export csv if BA role
-  const [exportCsv, { data: exportLink }] = useLazyQuery(LIST_MY_VISITORS, {
-    onCompleted: React.useCallback(() => {
+  const [exportCsv] = useLazyQuery(LIST_MY_VISITORS, {
+    onCompleted: React.useCallback((d) => {
       const link = document.createElement('a');
-      link.href = exportLink.getCampus.listVisitors.generateCSVExportLink.link;
+      link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
       link.setAttribute('download', `export-${new Date()}.csv`);
       document.body.appendChild(link);
       link.click();
