@@ -110,11 +110,12 @@ function getNationality() {
 }
 
 const ADD_VISITOR = gql`
-  mutation createVisitorReq($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
+  mutation createVisitorReq($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!, $as: ValidationPersonas!) {
     campusId @client @export(as: "campusId")
+    activeRoleCache @client @export (as: "as") {role: role}
     mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
-        createVisitor(visitor: $visitor){
+        createVisitor(visitor: $visitor, as: $as){
           id
           isInternal
           employeeType
