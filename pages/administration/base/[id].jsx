@@ -253,11 +253,13 @@ function EditCampus() {
     try {
       const resPlaces = await Promise.all(places.map(async (place) => {
         if (!place.id && !place.toDelete) {
-          await createPlace(place.label);
+          const createdPlace = await createPlace(place.label);
+          return createdPlace.mutateCampus.createPlace;
         }
         if (place.id && place.toDelete) {
           await deletePlace(place.id);
         }
+        return place;
       }));
       return resPlaces;
     } catch {
@@ -268,7 +270,6 @@ function EditCampus() {
   const submitEditPlaces = async (places) => {
     try {
       await submitPlaces(places);
-
       return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
     } catch (e) {
       return addAlert({
