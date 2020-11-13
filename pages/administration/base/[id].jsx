@@ -80,6 +80,7 @@ const EDIT_CAMPUS = gql`
     mutation editCampus($campus: CampusInput!, $id: String!) {
         editCampus(campus: $campus, id: $id) {
             id
+            label
         }
     }
 `;
@@ -139,7 +140,7 @@ function EditCampus() {
   const { data: adminsList } = useQuery(GET_USERS, {
     variables: { cursor: { offset: 0, first: 10 }, hasRole: { role: ROLES.ROLE_ADMIN.role } },
   });
-  const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id } });
+  const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const [defaultValues, setDefaultValues] = useState(null);
 
   const createPlace = async (placeName) => {
