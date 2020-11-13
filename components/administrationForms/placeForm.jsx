@@ -88,10 +88,11 @@ const PlaceForm = ({ list, submitForm }) => {
   const [hover, setHover] = useState({});
 
   const handleAdd = async () => {
+    const trimed = (str) => str.replace(/\s/g, '').toLowerCase();
     if (!placeName.length) {
       return null;
     }
-    if (placesList.some((e) => e.label === placeName)) {
+    if (placesList.some((e) => trimed(e.label) === trimed(placeName))) {
       return null;
     }
     const newList = [...placesList, { label: placeName }];
