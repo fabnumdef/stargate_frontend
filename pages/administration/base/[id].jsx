@@ -133,7 +133,7 @@ function EditCampus() {
   const [createPlaceReq] = useMutation(CREATE_PLACE);
   const [deletePlaceReq] = useMutation(DELETE_PLACE);
 
-  const { data: placesList } = useQuery(GET_PLACES, { variables: { id } });
+  const { data: placesList } = useQuery(GET_PLACES, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const { data: usersList, fetchMore } = useQuery(GET_USERS, {
     variables: { cursor: { offset: 0, first: 10 } },
   });
