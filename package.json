@@ -37,6 +37,7 @@
     "apollo-link-context": "^1.0.19",
     "apollo-link-error": "^1.1.13",
     "apollo-link-http": "^1.5.16",
+    "apollo-upload-client": "^13.0.0",
     "classnames": "^2.2.6",
     "cookie": "^0.3.1",
     "cross-env": "^7.0.2",

@@ -15,6 +15,7 @@ const GET_UNIT = gql`
     query getUnit($campusId: String!, $id: String!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             getUnit(id: $id) {
                 id
                 label
@@ -58,6 +59,7 @@ const GET_PLACES = gql`
     query listPlaces($campusId: String!, $hasUnit: HasUnitFilter) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listPlaces(hasUnit: $hasUnit) {
                 list {
                     id
@@ -285,9 +287,9 @@ function CreateUnit() {
     if (unitData && unitCorresDatas && unitOfficerDatas && placesData) {
       setDefaultValues(mapEditUnit(
         unitData,
-        unitCorresDatas.listUsers.list,
-        unitOfficerDatas.listUsers.list,
-        placesData.getCampus.listPlaces.list,
+        JSON.parse(JSON.stringify(unitCorresDatas.listUsers.list)),
+        JSON.parse(JSON.stringify(unitOfficerDatas.listUsers.list)),
+        JSON.parse(JSON.stringify(placesData.getCampus.listPlaces.list)),
       ));
     }
   }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);

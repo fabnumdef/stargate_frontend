@@ -31,6 +31,9 @@ import { useSnackBar } from '../lib/hooks/snackbar';
 
 import { useLogin } from '../lib/loginContext';
 import checkStatus from '../utils/mappers/checkStatusVisitor';
+import Loading from './loading';
+
+import EmptyArray from '../components/styled/emptyArray';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -83,6 +86,7 @@ function createData({
   units,
   identityDocuments,
   request,
+  generateIdentityFileExportLink,
 }, activeRole) {
   return {
     id,
@@ -94,7 +98,8 @@ function createData({
     report: null,
     screening: checkStatus(units, activeRole),
     requestId: request.id,
-    vAttachedFile: identityDocuments,
+    vAttachedFile: identityDocuments[0] ? identityDocuments[0].file.id : null,
+    link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null,
   };
 }
 
@@ -107,6 +112,7 @@ export const LIST_VISITOR_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(search: $search, cursor: $cursor, isDone: $isDone) {
                list {
                  id
@@ -129,6 +135,14 @@ export const LIST_VISITOR_REQUESTS = gql`
                  request {
                    id
                  }
+                 identityDocuments {
+                   file {
+                     id
+                   }
+                 }
+                   generateIdentityFileExportLink {
+                       link
+                   }
                }
                meta {
                  total
@@ -158,15 +172,14 @@ export default function ScreeningManagement() {
   const initMount = React.useRef(true);
 
   const {
-    data, loading, fetchMore, refetch,
+    data, fetchMore, refetch,
   } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       search,
     },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
   });
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
@@ -266,7 +279,7 @@ export default function ScreeningManagement() {
   };
 
   return (
-    <Template loading={loading}>
+    <Template>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -283,82 +296,95 @@ export default function ScreeningManagement() {
             ))}
           </Tabs>
         </Grid>
-        <Grid item sm={12} xs={12}>
-          <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-            <Grid container spacing={1} className={classes.searchField}>
-              <Grid item sm={2} xs={12} md={1} lg={1}>
-                {data && (
-                  <CSVLink
-                    style={{ textDecoration: 'none' }}
-                    className={classes.linkCsv}
-                    data={csvData()}
-                    separator=";"
-                    headers={csvHeaders}
-                    filename={csvName()}
+
+        { data && visitors.length > 0 ? (
+          <Grid item sm={12} xs={12}>
+            <Grid item sm={12} xs={12}>
+              <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
+                <Grid container spacing={1} className={classes.searchField}>
+                  <Grid item sm={2} xs={12} md={1} lg={1}>
+                    {data && (
+                      <CSVLink
+                        style={{ textDecoration: 'none' }}
+                        className={classes.linkCsv}
+                        data={csvData()}
+                        separator=";"
+                        headers={csvHeaders}
+                        filename={csvName()}
+                      >
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="primary"
+                          endIcon={<NoteAddIcon />}
+                        >
+                          Export
+                        </Button>
+                      </CSVLink>
+                    )}
+                  </Grid>
+                  <Grid item sm={6} xs={12} md={8} lg={8}>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 20, 30, 40, 50]}
+                      component="div"
+                      count={handlePageSize()}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onChangePage={handleChangePage}
+                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
+                  </Grid>
+                  <Grid item sm={3} xs={12} md={2} lg={2}>
+                    <TextField
+                      style={{ float: 'right' }}
+                      margin="dense"
+                      variant="outlined"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      placeholder="Rechercher..."
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                        inputProps: { 'data-testid': 'searchField' },
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                {!data ? <Loading /> : (
+                  <TabScreeningVisitors
+                    visitors={visitors}
+                    onChange={(visitorsChange) => setVisitors(visitorsChange)}
+                  />
+                ) }
+              </TabPanel>
+              <TabPanel value={value} index={1} />
+            </Grid>
+
+            <Grid item sm={12}>
+              <Grid container justify="flex-end">
+                <div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={submitForm}
+                    disabled={!visitors.find((visitor) => visitor.report !== null)}
                   >
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="primary"
-                      endIcon={<NoteAddIcon />}
-                    >
-                      Export
-                    </Button>
-                  </CSVLink>
-                )}
-              </Grid>
-              <Grid item sm={6} xs={12} md={8} lg={8}>
-                <TablePagination
-                  rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                  component="div"
-                  count={handlePageSize()}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
-              </Grid>
-              <Grid item sm={3} xs={12} md={2} lg={2}>
-                <TextField
-                  style={{ float: 'right' }}
-                  margin="dense"
-                  variant="outlined"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Rechercher..."
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    inputProps: { 'data-testid': 'searchField' },
-                  }}
-                />
+                    Soumettre
+                  </Button>
+                </div>
               </Grid>
             </Grid>
-            <TabScreeningVisitors
-              visitors={visitors}
-              onChange={(visitorsChange) => setVisitors(visitorsChange)}
-            />
-          </TabPanel>
-          <TabPanel value={value} index={1} />
-        </Grid>
-
-        <Grid item sm={12}>
-          <Grid container justify="flex-end">
-            <div>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={submitForm}
-                disabled={!visitors.find((visitor) => visitor.report !== null)}
-              >
-                Soumettre
-              </Button>
-            </div>
           </Grid>
-        </Grid>
+        ) : (
+          <Grid item sm={12} xs={12}>
+            <EmptyArray type="à traiter" />
+          </Grid>
+        )}
+
+
       </Grid>
     </Template>
   );

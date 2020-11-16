@@ -94,7 +94,10 @@ export const LIST_REQUESTS = gql`
                          owner {
                              firstname
                              lastname
-                             unit
+                             unit {
+                                 id
+                                 label
+                             }
                          }
                      }
                  }
@@ -474,6 +477,7 @@ export default function MenuRequest() {
           )}
         </Grid>
         { (value === 2
+        && treated
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
         && selectTreatedPath(treated).list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>

@@ -24,7 +24,7 @@ import Button from '@material-ui/core/Button';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import validator from 'validator';
-import { isValid } from 'date-fns';
+import { isValid, differenceInYears } from 'date-fns';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import { REQUEST_OBJECT, ID_DOCUMENT, EMPLOYEE_TYPE } from '../../utils/constants/enums';
@@ -33,6 +33,7 @@ import { mapVisitorData, mapVisitorEdit } from '../../utils/mappers/requestAcces
 import DatePicker from '../styled/date';
 import Nationalite from '../../utils/constants/insee/pays2019.json';
 import CheckAnimation from '../styled/animations/checked';
+import InputFile from '../styled/inputFile';
 
 const useStyles = makeStyles((theme) => ({
   radioGroup: {
@@ -72,8 +73,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function getKindControl(nationality, kind) {
+  if (nationality === 'Française') {
+    switch (kind) {
+      case ID_DOCUMENT.IDCARD:
+        return /^\d{12}$/;
+      case ID_DOCUMENT.PASSPORT:
+        return /^\d{2}[A-Za-z]{2}\d{5}$/;
+      case ID_DOCUMENT.CIMSCARD:
+        return /^\d{10}$/;
+      default:
+        return '';
+    }
+  } else return '';
+}
+
 function getTypeDocument(isInternal) {
-  // TODO Check if MIINARM or not
+  // TODO Check if MINARM or not
   if (isInternal === 'MINARM') {
     return [
       { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
@@ -94,7 +110,7 @@ function getNationality() {
 }
 
 const ADD_VISITOR = gql`
-  mutation createVisitor($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
+  mutation createVisitorReq($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
     campusId @client @export(as: "campusId")
     mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
@@ -117,6 +133,9 @@ const ADD_VISITOR = gql`
           identityDocuments {
               kind
               reference
+              file {
+                  id
+              }
           }
         }
       }
@@ -125,7 +144,7 @@ const ADD_VISITOR = gql`
 `;
 
 const EDIT_VISITOR = gql`
-    mutation editVisitor( $campusId: String!, $idRequest: String!, $visitor: RequestVisitorInput!, $idVisitor: String!) {
+    mutation editVisitorReq( $campusId: String!, $idRequest: String!, $visitor: RequestVisitorInput!, $idVisitor: String!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             mutateRequest(id: $idRequest) {
@@ -148,6 +167,9 @@ const EDIT_VISITOR = gql`
                     identityDocuments {
                         kind
                         reference
+                        file {
+                            id
+                        }
                     }
                 }
             }
@@ -156,7 +178,7 @@ const EDIT_VISITOR = gql`
 `;
 
 export default function FormInfoVisitor({
-  formData, setForm, handleNext, handleBack, selectVisitor,
+  formData, setForm, handleNext, handleBack, selectVisitor, setSelectVisitor,
 }) {
   const classes = useStyles();
   const {
@@ -173,6 +195,8 @@ export default function FormInfoVisitor({
       nationality: selectVisitor.nationality ? selectVisitor.nationality : '',
     },
   });
+
+  const [inputFile, setInputFile] = useState(selectVisitor.nationality && selectVisitor.nationality !== 'Française');
 
   useEffect(() => {
     if (selectVisitor.id) {
@@ -200,6 +224,10 @@ export default function FormInfoVisitor({
     setValue('nationality', value);
     setValue('kind', '');
     setValue('reference', '');
+    setInputFile(value !== 'Française');
+    if (selectVisitor.fileDefaultValue) {
+      setSelectVisitor({ ...selectVisitor, fileDefaultValue: '' });
+    }
   };
 
   const handleClickCancel = () => {
@@ -207,29 +235,65 @@ export default function FormInfoVisitor({
     else handleBack();
   };
 
-  const [createVisitor] = useMutation(ADD_VISITOR, {
-    onCompleted: (data) => {
+  const [createVisitorReq] = useMutation(ADD_VISITOR);
+
+  const [editVisitorReq] = useMutation(EDIT_VISITOR);
+
+  const createVisitor = async (visitorData) => {
+    try {
+      const { data } = await createVisitorReq({
+        variables: {
+          idRequest: formData.id,
+          visitor: { ...visitorData },
+        },
+      });
+
+      const newVisitors = formData.visitors;
+      newVisitors.push({ ...data.mutateCampus.mutateRequest.createVisitor, fileDefaultValue: visitorData.file ? visitorData.file[0].value : '' });
+
       setForm({
         ...formData,
-        visitors: [...formData.visitors, data.mutateCampus.mutateRequest.createVisitor],
+        visitors: newVisitors,
       });
-      // minArmOrNot();
-      handleNext();
-    },
-    onError: () => {
-      // Display good message
-      addAlert({
-        message: 'erreur graphQL',
-        severity: 'error',
-      });
-    },
-  });
 
-  const [editVisitor] = useMutation(EDIT_VISITOR, {
-    onCompleted: (data) => {
+      handleNext();
+    } catch (e) {
+      addAlert({ message: 'Erreur lors de la création de l\'utilisateur', severity: 'error' });
+    }
+  };
+
+  const editVisitor = async (datas) => {
+    const visitorData = datas;
+    if (visitorData.file && !visitorData.file[0] && selectVisitor.identityDocuments.find(
+      (actualDocs) => actualDocs.kind === visitorData.identityDocuments.kind,
+    ).file) {
+      const { file } = selectVisitor.identityDocuments.find(
+        (actualDocs) => actualDocs.kind === visitorData.identityDocuments.kind,
+      );
+      visitorData.identityDocuments.file = {
+        id: file.id,
+        filename: file.filename,
+        original: file.original,
+      };
+    }
+
+    try {
+      const { data } = await editVisitorReq({
+        variables: {
+          idRequest: formData.id,
+          visitor: { ...visitorData },
+          idVisitor: selectVisitor.id,
+        },
+      });
+
       const newVisitors = formData.visitors.map((visitor) => {
         if (visitor.id === data.mutateCampus.mutateRequest.editVisitor.id) {
-          return data.mutateCampus.mutateRequest.editVisitor;
+          return {
+            ...data.mutateCampus.mutateRequest.editVisitor,
+            fileDefaultValue: visitorData.file
+              ? visitorData.file[0].value
+              : selectVisitor.fileDefaultValue,
+          };
         }
         return visitor;
       });
@@ -237,30 +301,19 @@ export default function FormInfoVisitor({
         ...formData,
         visitors: newVisitors,
       });
-      // minArmOrNot();
+
       handleNext();
-    },
-    onError: () => {
-      // Display good message
-      addAlert({
-        message: 'erreur graphQL',
-        severity: 'error',
-      });
-    },
-  });
+    } catch {
+      addAlert({ message: 'Erreur lors de l\'édition de l\'utilisateur', severity: 'error' });
+    }
+  };
 
   const onSubmit = (data) => {
     const visitorData = mapVisitorData(data);
     if (selectVisitor.id) {
-      return editVisitor({
-        variables: {
-          idRequest: formData.id,
-          visitor: { ...visitorData },
-          idVisitor: selectVisitor.id,
-        },
-      });
+      return editVisitor(visitorData);
     }
-    return createVisitor({ variables: { idRequest: formData.id, visitor: { ...visitorData } } });
+    return createVisitor(visitorData);
   };
 
   const inputLabel = useRef(null);
@@ -611,7 +664,13 @@ export default function FormInfoVisitor({
                     </InputLabel>
                     <Controller
                       as={(
-                        <Select fullWidth labelId="kind" id="typeDocument" labelWidth={labelWidth}>
+                        <Select
+                          disabled={watch('nationality') === ''}
+                          fullWidth
+                          labelId="kind"
+                          id="typeDocument"
+                          labelWidth={labelWidth}
+                        >
                           {getTypeDocument(watch('isInternal')).map((doc) => (
                             <MenuItem key={doc.value} value={doc.value}>
                               {doc.label}
@@ -631,22 +690,27 @@ export default function FormInfoVisitor({
                     )}
                   </FormControl>
                 </Grid>
-
+                {watch('kind') !== 'HORS MINARM'}
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
                       <TextField
+                        disabled={watch('kind') === ''}
                         label="Numéro"
                         error={Object.prototype.hasOwnProperty.call(errors, 'reference')}
                         helperText={errors.reference && errors.reference.message}
                         fullWidth
                       />
                     )}
+
                     control={control}
                     name="reference"
                     defaultValue=""
                     rules={{
-                      validate: (value) => value.trim() !== '' || 'Le numéro de document est obligatoire',
+                      required: 'Le numéro de document est obligatoire',
+
+                      validate: (value) => validator.matches(value, getKindControl(watch('nationality'), watch('kind'))) || 'format invalide',
+
                     }}
                   />
                 </Grid>
@@ -659,7 +723,6 @@ export default function FormInfoVisitor({
                         error={Object.prototype.hasOwnProperty.call(errors, 'birthday')}
                         helperText={
                           errors.birthday
-                          && errors.birthday.type === 'required'
                           && errors.birthday.message
                         }
                         disableFuture
@@ -670,7 +733,17 @@ export default function FormInfoVisitor({
                     name="birthday"
                     rules={{
                       required: 'La date de naissance est obligatoire',
-                      validate: { valide: (value) => isValid(value) || 'Format invalide' },
+                      validate: {
+                        valide: (value) => isValid(value) || 'Format invalide',
+                        older: (value) => Math.abs(differenceInYears(new Date(), value)) <= 100
+                        || "Veuillez vérifier la date de naissance, l'âge du visiteur est supérieur à 100 ans",
+                        younger: (value) => (Math.abs(differenceInYears(new Date(), value)) >= 13
+                          || formData.object === REQUEST_OBJECT.PROFESSIONAL)
+                          || "Il n'est pas nécessaire de faire une demande de visite, la personne doit venir accompagnée d'une personne majeure ayant le droit d'accès à la base.",
+                        family: (value) => (Math.abs(differenceInYears(new Date(), value)) >= 16
+                          || formData.object === REQUEST_OBJECT.PRIVATE)
+                          || "Les mineurs de moins de 16 ans ne sont autorisés à venir que dans le cadre d'une visite de type famille",
+                      },
                     }}
                     defaultValue={null}
                   />
@@ -697,35 +770,30 @@ export default function FormInfoVisitor({
                 </Grid>
               </Grid>
             </Grid>
-            {/* TODO add with upload file feature */}
-            {/* {watch('nationality') !== 'Française' && ( */}
-            {/* <Grid
-            container
-            spacing={2}
-            className={classes.subTitle}
-            justify="space-between"
-            > */}
-            {/*  <Grid item xs={12} sm={12}> */}
-            {/*    <Typography variant="subtitle2" gutterBottom> */}
-            {/*      Scan papier identité: (obligatoire pour étranger) */}
-            {/*    </Typography> */}
-            {/*  </Grid> */}
-            {/*  <Grid item xs={12} sm={12} md={12} className={classes.comps}> */}
-            {/*    <Controller */}
-            {/*      as={InputFile} */}
-            {/*      rules={{ */}
-            {/*        required: watch('nationality') !== 'Française', */}
-            {/*      }} */}
-            {/*      control={control} */}
-            {/*      defaultValue="" */}
-            {/*      name="file" */}
-            {/*      onChange={(file) => file} */}
-            {/*      label="Fichier" */}
-            {/*      error={Object.prototype.hasOwnProperty.call(errors, 'file')} */}
-            {/*    /> */}
-            {/*  </Grid> */}
-            {/* </Grid> */}
-            {/* )} */}
+            {inputFile && (
+            <Grid container spacing={2} className={classes.subTitle} justify="space-between">
+              <Grid item xs={12} sm={12}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Scan papier identité : (obligatoire pour étranger)
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                <Controller
+                  as={InputFile}
+                  rules={{
+                    required: watch('nationality') !== 'Française',
+                  }}
+                  control={control}
+                  defaultValue=""
+                  name="file"
+                  editValue={selectVisitor.fileDefaultValue ? selectVisitor.fileDefaultValue : ''}
+                  onChange={(file) => file}
+                  label="Fichier"
+                  error={Object.prototype.hasOwnProperty.call(errors, 'file')}
+                />
+              </Grid>
+            </Grid>
+            )}
           </Grid>
           <Grid item sm={12}>
             <Grid container justify="flex-end">

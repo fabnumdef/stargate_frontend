@@ -62,7 +62,7 @@ function createData({
     owner: owner
       ? `
           ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
-          ${owner.unit}`
+          ${owner.unit.label}`
       : '',
 
     places: places.map((place, index) => {
@@ -150,6 +150,7 @@ export const LIST_MY_VISITORS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(isDone: $isDone, requestsId: $requestsId) {
                generateCSVExportLink{
                 token
