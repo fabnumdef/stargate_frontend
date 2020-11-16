@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { LoginForm, ForgotPassForm } from '../components';
-import { withApollo } from '../lib/apollo';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -92,4 +91,4 @@ SubmitButton.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-export default withApollo({ ssr: true })(LoginPage);
+export default LoginPage;

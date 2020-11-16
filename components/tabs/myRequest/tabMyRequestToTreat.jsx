@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -41,7 +41,7 @@ function createData({
     owner: owner
       ? `
           ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
-          ${owner.unit}`
+          ${owner.unit.label}`
       : '',
 
     places: places.map((place, index) => {
@@ -82,6 +82,7 @@ const useStyles = makeStyles({
 
 export default function TabMyRequestUntreated({ requests, detailLink, emptyLabel }) {
   const classes = useStyles();
+  const router = useRouter();
   const rows = React.useMemo(() => requests.reduce((acc, dem) => {
     acc.push(createData(dem));
     return acc;
@@ -141,11 +142,14 @@ export default function TabMyRequestUntreated({ requests, detailLink, emptyLabel
               <TableCell key="modif">
                 {hover[index] && (
                 <div style={{ float: 'right' }}>
-                  <Link href={`/demandes/${detailLink}/${row.id}`}>
-                    <IconButton aria-label="modifier" className={classes.icon} color="primary">
-                      <DescriptionIcon />
-                    </IconButton>
-                  </Link>
+                  <IconButton
+                    aria-label="modifier"
+                    className={classes.icon}
+                    color="primary"
+                    onClick={() => router.push(`/demandes/${detailLink}/${row.id}`)}
+                  >
+                    <DescriptionIcon />
+                  </IconButton>
                 </div>
                 )}
               </TableCell>

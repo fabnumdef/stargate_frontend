@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useApolloClient } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useApolloClient, useQuery } from '@apollo/client';
 
 import Link from 'next/link';
 // Material Import
@@ -15,17 +14,18 @@ import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsTreated } from '../../components';
 
 import Template from '../template';
+
 import { useLogin } from '../../lib/loginContext';
 import { checkRequestDetailAuth } from '../../utils/permissions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   idRequest: {
     marginLeft: '10px',
@@ -43,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export const READ_REQUEST = gql`
     query readRequest($requestId: String!, $campusId: String!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             getRequest(id: $requestId) {
                 id
                 reason
@@ -65,13 +65,13 @@ export const READ_REQUEST = gql`
                     list {
                         id
                         rank
+                        vip
                         firstname
                         birthLastname
                         employeeType
                         company
                         status
                         units {
-                            id
                             label
                               steps {
                                   role
@@ -97,52 +97,36 @@ export default function RequestDetailsTreated({ requestId }) {
   const { activeRole } = useLogin();
   const client = useApolloClient();
 
-  const userData = client.readQuery({
+  const userData = useMemo(() => client.readQuery({
     query: gql`
-        query getUserId {
-            me {
-                id
-            }
-        }
-    `,
-  });
+          query getUserId {
+              me {
+                  id
+              }
+          }
+      `,
+  }),
+  [client]);
 
-  const [data, setData] = useState(null);
-  const [loadData, setLoadData] = useState(true);
-
-  const getRequest = async () => {
-    const { data: requestData } = await client.query({
-      query: READ_REQUEST,
+  const { data, loading } = useQuery(READ_REQUEST,
+    {
       variables: { requestId },
-      fetchPolicy: 'no-cache',
     });
-    return setData(requestData);
-  };
+
 
   useEffect(() => {
-    if (!data) {
-      getRequest();
-    }
-
     if (data && (
       !checkRequestDetailAuth(data, activeRole)
       && data.getCampus.getRequest.owner.id !== userData.me.id
     )) {
       router.push('/');
-    } else if (data) {
-      setLoadData(false);
     }
   }, [data]);
 
-
-  if (loadData) {
-    return <div />;
-  }
-  // @todo a real 404 page
-  // if (error) return <p>page 404</p>;
+  // @todo error Page 404
 
   return (
-    <Template>
+    <Template loading={loading}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -150,16 +134,16 @@ export default function RequestDetailsTreated({ requestId }) {
               Demandes traitées :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
-              {data.getCampus.getRequest.id}
+              {data && data.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data.getCampus.getRequest} />
+          <DetailsInfosRequest request={data && data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsTreated
-            visitors={data.getCampus.getRequest.listVisitors.list}
+            visitors={data && data.getCampus.getRequest.listVisitors.list}
           />
         </Grid>
         <Grid item sm={12}>

@@ -71,10 +71,10 @@ export const mapUsersList = (usersList) => usersList.map((user) => ({
   id: user.id,
   lastname: user.lastname,
   firstname: user.firstname,
-  campus: user.roles[0].campuses[0] ? user.roles[0].campuses[0].label : '',
-  unit: user.roles[0].units[0] ? user.roles[0].units[0].label : '',
-  role: ROLES[user.roles[0].role].label,
-  userRole: user.roles[0].role,
+  campus: user.roles[0] && user.roles[0].campuses[0] ? user.roles[0].campuses[0].label : '-',
+  unit: user.roles[0] && user.roles[0].units[0] ? user.roles[0].units[0].label : '-',
+  role: user.roles[0] ? ROLES[user.roles[0].role].label : '-',
+  userRole: user.roles[0] ? user.roles[0].role : null,
   deleteLabel: user.email.original,
 }));
 

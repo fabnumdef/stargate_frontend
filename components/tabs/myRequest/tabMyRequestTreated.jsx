@@ -1,10 +1,10 @@
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,11 +23,14 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import CustomTableCellHeader from '../../styled/customTableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
 import { useLogin } from '../../../lib/loginContext';
+
+import { STATE_REQUEST } from '../../../utils/constants/enums';
+
 
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
@@ -49,7 +52,7 @@ function createData({
   id, requestData,
 }) {
   const {
-    owner, from, to, reason, places,
+    owner, from, to, reason, places, status,
   } = requestData[0];
   return {
     id,
@@ -59,15 +62,21 @@ function createData({
     owner: owner
       ? `
           ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
-          ${owner.unit}`
+          ${owner.unit.label}`
       : '',
 
     places: places.map((place, index) => {
       if (index === places.length - 1) return `${place.label}.`;
       return `${place.label}, `;
     }),
+    status,
     reason,
   };
+}
+
+function validRequest(status) {
+  return !(status === STATE_REQUEST.STATE_CANCELED.state
+  || status === STATE_REQUEST.STATE_REJECTED.state);
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -141,6 +150,7 @@ export const LIST_MY_VISITORS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(isDone: $isDone, requestsId: $requestsId) {
                generateCSVExportLink{
                 token
@@ -156,6 +166,8 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
   const { addAlert } = useSnackBar();
   const { activeRole } = useLogin();
+
+  const router = useRouter();
 
   const rows = React.useMemo(() => requests.reduce((acc, dem) => {
     acc.push(createData(dem));
@@ -178,7 +190,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      setChosen(rows.map((row) => row.id));
+      setChosen(rows.filter((row) => validRequest(row.status)).map((row) => row.id));
     } else {
       setChosen([]);
     }
@@ -210,7 +222,7 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
     const onCompleted = (d) => {
       const link = document.createElement('a');
       link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
-      link.setAttribute('download', 'test.csv');
+      link.setAttribute('download', `export-${new Date()}.csv`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -324,11 +336,14 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
               <TableCell key="modif">
                 {hover[index] && (
                 <div style={{ float: 'right' }}>
-                  <Link href={`/demandes/${detailLink}/${row.id}`}>
-                    <IconButton aria-label="modifier" className={classes.icon} color="primary">
-                      <DescriptionIcon />
-                    </IconButton>
-                  </Link>
+                  <IconButton
+                    aria-label="modifier"
+                    className={classes.icon}
+                    color="primary"
+                    onClick={() => router.push(`/demandes/${detailLink}/${row.id}`)}
+                  >
+                    <DescriptionIcon />
+                  </IconButton>
                 </div>
                 )}
               </TableCell>
@@ -337,12 +352,13 @@ const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, 
                   index === requests.length - 1 ? classes.borderBottom : ''
                 } ${classes.borderLeft} ${classes.textCenter}`}
               >
-
+                { validRequest(row.status) && (
                 <Checkbox
                   color="primary"
                   checked={chosen.includes(row.id)}
                   onChange={(event) => handleChangeCheckbox(event, row.id)}
                 />
+                )}
               </TableCell>
               <TableCell className={`${
                 index === requests.length - 1 ? classes.borderBottom : ''

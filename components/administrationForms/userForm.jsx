@@ -15,12 +15,11 @@ import Radio from '@material-ui/core/Radio';
 import Link from 'next/link';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import classNames from 'classnames';
 import { mapUserData } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import { ROLES } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
@@ -216,6 +215,48 @@ const UserForm = ({
         <Grid item sm={7} xs={7}>
           <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
             <Typography variant="subtitle2" gutterBottom>
+              Rôle
+            </Typography>
+          </Grid>
+          <FormControl
+            variant="outlined"
+            error={Object.prototype.hasOwnProperty.call(errors, 'roles')}
+            className={classes.formRadio}
+          >
+            <Controller
+              as={(
+                <RadioGroup
+                  className={classNames(
+                    classes.radioGroup,
+                    { [classes.errorText]: errors.role },
+                  )}
+                  aria-label="vip"
+                >
+                  {radioDisplay(userRole).map((roleItem) => (
+                    <FormControlLabel
+                      value={roleItem.role}
+                      control={<Radio color="primary" />}
+                      label={roleItem.label}
+                      labelPlacement="start"
+                      disabled={userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role}
+                    />
+                  ))}
+                </RadioGroup>
+                  )}
+              control={control}
+              rules={{ required: 'Le rôle est obligatoire' }}
+              name="role"
+              defaultValue={() => {
+                if (defaultValues.role) return defaultValues.role;
+                return (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) ? ROLES.ROLE_HOST.role : '';
+              }}
+            />
+            {errors.role && (
+            <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>
+            )}
+          </FormControl>
+          <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
+            <Typography variant="subtitle2" gutterBottom>
               Affectation
             </Typography>
           </Grid>
@@ -259,7 +300,7 @@ const UserForm = ({
                 )}
 
                 {errors.campus && (
-                  <FormHelperText className={classes.errorText}>Base obligatoire</FormHelperText>
+                <FormHelperText className={classes.errorText}>Base obligatoire</FormHelperText>
                 )}
               </FormControl>
 
@@ -297,48 +338,6 @@ const UserForm = ({
                 )}
               </FormControl>
               )}
-              <Grid container item style={{ justifyContent: 'space-between' }} xs={12} sm={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Rôle
-                </Typography>
-              </Grid>
-              <FormControl
-                variant="outlined"
-                error={Object.prototype.hasOwnProperty.call(errors, 'roles')}
-                className={classes.formRadio}
-              >
-                <Controller
-                  as={(
-                    <RadioGroup
-                      className={classNames(
-                        classes.radioGroup,
-                        { [classes.errorText]: errors.role },
-                      )}
-                      aria-label="vip"
-                    >
-                      {radioDisplay(userRole).map((roleItem) => (
-                        <FormControlLabel
-                          value={roleItem.role}
-                          control={<Radio color="primary" />}
-                          label={roleItem.label}
-                          labelPlacement="start"
-                          disabled={userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role}
-                        />
-                      ))}
-                    </RadioGroup>
-                  )}
-                  control={control}
-                  rules={{ required: 'Le rôle est obligatoire' }}
-                  name="role"
-                  defaultValue={() => {
-                    if (defaultValues.role) return defaultValues.role;
-                    return (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) ? ROLES.ROLE_HOST.role : '';
-                  }}
-                />
-                {errors.role && (
-                  <FormHelperText className={classes.errorText}>Le rôle obligatoire</FormHelperText>
-                )}
-              </FormControl>
             </Grid>
           </Grid>
         </Grid>

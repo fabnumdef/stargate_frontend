@@ -16,6 +16,7 @@ import Radio from '@material-ui/core/Radio';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
+import classNames from 'classnames';
 import CustomTableHeader from '../styled/customTableCellHeader';
 
 import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
@@ -113,6 +114,9 @@ const useStyles = makeStyles((theme) => ({
   },
   inactiveCell: {
     opacity: '0.2',
+  },
+  noFile: {
+    paddingLeft: '48px',
   },
 }));
 
@@ -244,9 +248,16 @@ export default function ScreeningTable({ visitors, onChange }) {
             </TableRow>
             <TableRow>
 
-
               {selectAll.map((checkbox, index) => (
-                <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''} ${classes.textCenter}`}>
+                <CustomTableHeader
+                  className={classNames(
+                    classes.textCenter,
+                    {
+                      [classes.borderLeft]: index === 0,
+                      [classes.borderRight]: index === selectAll.length - 1,
+                    },
+                  )}
+                >
                   <StyledFormLabel
                     control={(
                       <Checkbox
@@ -272,7 +283,7 @@ export default function ScreeningTable({ visitors, onChange }) {
                   const value = row[column.id];
                   switch (column.id) {
                     case 'birthLastname':
-                      return row.vAttachedFile === true ? (
+                      return row.vAttachedFile ? (
                         <TableCell
                           key={column.id}
                           align={column.align}
@@ -280,10 +291,12 @@ export default function ScreeningTable({ visitors, onChange }) {
                             row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         >
+                          <a href={row.link} download>
+                            <IconButton aria-label="AttachFileIcon">
+                              <AttachFileIcon />
+                            </IconButton>
+                          </a>
                           {value}
-                          <IconButton aria-label="AttachFileIcon">
-                            <AttachFileIcon />
-                          </IconButton>
                         </TableCell>
                       ) : (
                         <TableCell
@@ -293,7 +306,9 @@ export default function ScreeningTable({ visitors, onChange }) {
                             row.screening.step !== ACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                           }
                         >
-                          {value}
+                          <div className={classes.noFile}>
+                            {value}
+                          </div>
                         </TableCell>
                       );
                     case 'nationality':

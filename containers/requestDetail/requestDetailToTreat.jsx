@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation, useApolloClient } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { gql, useMutation, useApolloClient } from '@apollo/client';
 
 import Link from 'next/link';
 
@@ -12,7 +11,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
 import {
   DetailsInfosRequest,
   TabRequestVisitorsToTreat,
@@ -20,18 +19,19 @@ import {
 } from '../../components';
 
 import Template from '../template';
+
 import { useLogin } from '../../lib/loginContext';
 
 import { ROLES, STATE_REQUEST, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   idRequest: {
     marginLeft: '10px',
@@ -50,6 +50,7 @@ export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!, $isDone: RequestVisitorIsDone, $visitorFilters: RequestVisitorFilters) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              getRequest(id: $requestId) {
                  id
                  reason
@@ -67,6 +68,7 @@ export const READ_REQUEST = gql`
                  list {
                    id
                    rank
+                   vip
                    firstname
                    birthLastname
                    employeeType
@@ -94,7 +96,6 @@ export const READ_REQUEST = gql`
          }
        `;
 
-
 export const MUTATE_VISITOR = gql`
          mutation validateVisitorStep(
            $requestId: String!
@@ -114,7 +115,6 @@ export const MUTATE_VISITOR = gql`
            }
          }
        `;
-
 
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
@@ -217,13 +217,10 @@ export default function RequestDetails({ requestId }) {
     return fetchData();
   };
 
-
-  if (loading) return <p>Loading ....</p>;
-
   if (error) return <p>page 404</p>;
 
   return (
-    <Template>
+    <Template loading={loading}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">

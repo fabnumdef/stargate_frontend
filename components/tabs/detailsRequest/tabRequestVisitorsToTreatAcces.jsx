@@ -18,7 +18,6 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
 import WarningIcon from '@material-ui/icons/Warning';
-import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
 import TableContainer from '@material-ui/core/TableContainer';
 
 import CustomTableHeader from '../../styled/customTableCellHeader';
@@ -32,6 +31,9 @@ import ckeckStatusVisitor, {
   HIDDEN_STEP_STATUS,
   INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
+
+import VisitorGrid from '../../styled/visitor';
+import StatusLegend from '../../styled/statusLegend';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -68,12 +70,6 @@ const useStyles = makeStyles((theme) => ({
   searchField: {
     display: 'flex',
     justifyContent: 'space-between',
-  },
-  list: {
-    right: 0,
-    listStyle: 'none',
-    color: theme.palette.primary.main,
-    fontSize: '10px',
   },
   cellNoBorder: {
     border: 'none',
@@ -119,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units,
+  id, firstname, birthLastname, rank, company, employeeType, units, vip, vipReason,
 }, activeRole) {
   const findStep = ckeckStatusVisitor(units, activeRole);
   return {
@@ -130,7 +126,8 @@ function createData({
     company,
     type: EMPLOYEE_TYPE[employeeType],
     validation: null,
-    vip: false,
+    vip,
+    vipReason,
     steps: getDecisions(units),
     step: findStep.step,
   };
@@ -139,9 +136,9 @@ function createData({
 function CellDecision({ date, children }) {
   return (
     <>
-      {date}
-      {' '}
-      {children}
+      { date }
+      { ' ' }
+      { children }
     </>
   );
 }
@@ -158,7 +155,7 @@ function decisionReturn({ date, value, tags }) {
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive:
       return (
         <CellDecision date={validationDate}>
-          <span style={{ color: '#28a745', fontWeight: 'bold' }}>{tags[0]}</span>
+          <span style={{ color: '#28a745', fontWeight: 'bold' }}>{ tags[0] }</span>
         </CellDecision>
       );
     case WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative:
@@ -213,28 +210,24 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   const [selectAll, setSelectAll] = useState([
     {
       label: 'VA',
-      fullLabel: 'Visiteur Accompagné',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VA'],
     },
     {
       label: 'VL',
-      fullLabel: 'Visiteur Libre',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['VL'],
     },
     {
       label: 'L',
-      fullLabel: 'Libre',
       value: false,
       validation: ROLES[activeRole.role].workflow.positive,
       tags: ['L'],
     },
     {
       label: 'VIP',
-      fullLabel: 'Autorité',
       value: false,
       tags: ['VIP'],
     },
@@ -330,46 +323,40 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
   return rows.length
     ? (
       <div>
-        <div style={{ float: 'right' }}>
-          <ul className={classes.list}>
-            {selectAll.map((checkbox) => (
-              checkbox.fullLabel && <li>{`${checkbox.label} : ${checkbox.fullLabel}`}</li>
-            ))}
-          </ul>
-        </div>
+        <StatusLegend />
         <TableContainer>
           <Table size="small" className={classes.table} data-testid="screeningTable">
             <TableHead>
               <TableRow>
-                {columns.map((headCell) => {
+                { columns.map((headCell) => {
                   switch (headCell.id) {
                     case 'visitors':
                       return (
                         <CustomTableHeader rowSpan={2} key={headCell.id}>
-                          {/* @todo length etc ... */ `${headCell.label}`}
+                          {/* @todo length etc ... */ `${headCell.label}` }
                         </CustomTableHeader>
                       );
                     case 'steps':
                       return rows[0].steps.map((column) => (
                         <CustomTableHeader rowSpan={2} key={column.label}>
-                          {/* @todo length etc ... */ `${column.label}`}
+                          {/* @todo length etc ... */ `${column.label}` }
                         </CustomTableHeader>
                       ));
                     default:
                       return (
                         <CustomTableHeader rowSpan={2} key={headCell.id}>
-                          {headCell.label}
+                          { headCell.label }
                         </CustomTableHeader>
                       );
                   }
-                })}
+                }) }
                 <CustomTableHeader colSpan={selectAll.length} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ borderBottom: 'none' }}>
                   Validation
                 </CustomTableHeader>
               </TableRow>
               <TableRow>
 
-                {selectAll.map((checkbox, index) => (
+                { selectAll.map((checkbox, index) => (
                   <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`} style={{ textAlign: 'center' }}>
                     <StyledFormLabel
                       control={(
@@ -380,114 +367,112 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
                             handleSelectAll(event.target.checked, checkbox);
                           }}
                         />
-                        )}
+                      )}
                       label={checkbox.label}
                       labelPlacement="start"
                     />
                   </CustomTableHeader>
-                ))}
+                )) }
 
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map(
+              { rows.map(
                 (row, index) => row.step !== HIDDEN_STEP_STATUS && (
-                <TableRow hover tabIndex={-1} key={row.code}>
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    switch (column.id) {
-                      case 'steps':
-                        return value.map((step) => (
-                          <TableCell
-                            key={step.step}
-                            align={column.align}
-                          >
-                            {decisionReturn(step.value)}
-                          </TableCell>
-                        ));
-                      case 'visitor':
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                            className={
-                              row.visitor === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
-                            }
-                          >
-                            { value }
-                            {' '}
-                            {row.vip && (<StarBorderRoundedIcon color="secondary" />)}
-                          </TableCell>
-                        );
-                      default:
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                            className={
+                  <TableRow hover tabIndex={-1} key={row.code}>
+                    { columns.map((column) => {
+                      const value = row[column.id];
+                      switch (column.id) {
+                        case 'steps':
+                          return value.map((step) => (
+                            <TableCell
+                              key={step.step}
+                              align={column.align}
+                            >
+                              { decisionReturn(step.value) }
+                            </TableCell>
+                          ));
+                        case 'visitor':
+                          return (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                              className={
+                                row.visitor === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
+                              }
+                            >
+                              <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
+                            </TableCell>
+                          );
+                        default:
+                          return (
+                            <TableCell
+                              key={column.id}
+                              align={column.align}
+                              className={
                                 row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''
                               }
-                          >
-                            {value}
-                          </TableCell>
-                        );
-                    }
-                  })}
+                            >
+                              { value }
+                            </TableCell>
+                          );
+                      }
+                    }) }
 
-                  {selectAll.map((checkbox, indexCheck) => (
-                    (checkbox.label === 'VIP')
-                      ? (
-                        <TableCell
-                          className={`${
-                            index === rows.length - 1 ? classes.reportLastChild : ''
-                          }
+                    { selectAll.map((checkbox, indexCheck) => (
+                      (checkbox.label === 'VIP')
+                        ? (
+                          <TableCell
+                            className={`${
+                              index === rows.length - 1 ? classes.reportLastChild : ''
+                            }
                     `}
-                          style={{ textAlign: 'center' }}
-                        >
-                          <StyledFormLabel
-                            disabled={row.step === INACTIVE_STEP_STATUS}
-                            control={(
-                              <CustomCheckbox
-                                checked={row.vip}
-                                onChange={(event) => {
-                                  handleVip(event, row);
-                                }}
-                                color="primary"
-                              />
+                            style={{ textAlign: 'center' }}
+                          >
+                            <StyledFormLabel
+                              disabled={row.step === INACTIVE_STEP_STATUS}
+                              control={(
+                                <CustomCheckbox
+                                  checked={row.vip}
+                                  onChange={(event) => {
+                                    handleVip(event, row);
+                                  }}
+                                  color="primary"
+                                />
                               )}
-                            style={{ marginLeft: '10px' }}
-                          />
-                        </TableCell>
-                      )
-                      : (
-                        <TableCell
-                          className={`${
-                            index === rows.length - 1 ? classes.reportLastChild : ''
-                          }
+                              style={{ marginLeft: '10px' }}
+                            />
+                          </TableCell>
+                        )
+                        : (
+                          <TableCell
+                            className={`${
+                              index === rows.length - 1 ? classes.reportLastChild : ''
+                            }
                         ${indexCheck === selectAll.length - 1 ? classes.borderRight : ''}
                         ${indexCheck === 0 ? classes.borderLeft : ''}
                       `}
-                        >
-                          <StyledFormLabel
-                            value={checkbox.label}
-                            disabled={row.step === INACTIVE_STEP_STATUS}
-                            control={(
-                              <Radio
-                                color="primary"
-                                checked={rows[index].validation === checkbox.label}
-                                onChange={(event) => {
-                                  handleChange(event, row, checkbox);
-                                }}
-                                onClick={() => handleDeselect(index)}
-                              />
-                          )}
-                            style={{ marginLeft: '10px' }}
-                          />
-                        </TableCell>
-                      )))}
-                </TableRow>
+                          >
+                            <StyledFormLabel
+                              value={checkbox.label}
+                              disabled={row.step === INACTIVE_STEP_STATUS}
+                              control={(
+                                <Radio
+                                  color="primary"
+                                  checked={rows[index].validation === checkbox.label}
+                                  onChange={(event) => {
+                                    handleChange(event, row, checkbox);
+                                  }}
+                                  onClick={() => handleDeselect(index)}
+                                />
+                              )}
+                              style={{ marginLeft: '10px' }}
+                            />
+                          </TableCell>
+                        ))) }
+                  </TableRow>
                 ),
-              )}
+              ) }
             </TableBody>
           </Table>
         </TableContainer>

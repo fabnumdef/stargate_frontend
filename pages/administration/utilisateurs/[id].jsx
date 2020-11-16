@@ -1,12 +1,10 @@
 import React from 'react';
-import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 
 const GET_USER = gql`
@@ -78,16 +76,13 @@ function EditUser() {
     }
   };
 
-  const mapEditUser = (data) => {
-    const roleUser = data.roles.find((role) => role.role === 'ROLE_OBSERVER' || 'ROLE_HOST');
-    return {
-      ...data,
-      email: data.email.original,
-      campus: roleUser.campuses[0] ? roleUser.campuses[0].id : null,
-      unit: roleUser.units[0] ? roleUser.units[0].id : null,
-      role: roleUser ? roleUser.role : null,
-    };
-  };
+  const mapEditUser = (data) => ({
+    ...data,
+    email: data.email.original,
+    campus: data.roles[0] && data.roles[0].campuses[0] ? data.roles[0].campuses[0].id : null,
+    unit: data.roles[0] && data.roles[0].units[0] ? data.roles[0].units[0].id : null,
+    role: data.roles[0] ? data.roles[0].role : null,
+  });
 
   return (
     <Template>
@@ -105,4 +100,4 @@ function EditUser() {
   );
 }
 
-export default withApollo()(EditUser);
+export default EditUser;

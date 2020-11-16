@@ -1,11 +1,12 @@
 import React, {
-  createContext, useEffect, useState, useContext,
+  createContext, useEffect, useState, useContext, useCallback, useMemo,
 } from 'react';
 import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import {
+  gql, useApolloClient, useLazyQuery, useMutation,
+} from '@apollo/client';
 import PropTypes from 'prop-types';
-import { useSnackBar } from './ui-providers/snackbar';
+import { useSnackBar } from './hooks/snackbar';
 import { urlAuthorization } from '../utils/permissions';
 import { ROLES } from '../utils/constants/enums';
 
@@ -96,13 +97,18 @@ const GET_ROLE = gql`
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
-export function LoginContextProvider(props) {
-  const { children, client } = props;
-
+export function LoginContextProvider({ children }) {
+  const client = useApolloClient();
   const router = useRouter();
   const { addAlert } = useSnackBar();
 
-  const { data: init } = useQuery(GET_INITIALIZEDCACHE);
+  const init = useMemo(() => {
+    try {
+      return client.readQuery({ query: GET_INITIALIZEDCACHE });
+    } catch {
+      return null;
+    }
+  }, [client]);
 
   const tokenDuration = () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : undefined;
@@ -119,6 +125,10 @@ export function LoginContextProvider(props) {
     const expIn = exp - cur;
     const expiredToken = expIn <= 0;
 
+    if (expiredToken) {
+      localStorage.clear();
+    }
+
     return {
       renewTrigger,
       expIn,
@@ -130,6 +140,7 @@ export function LoginContextProvider(props) {
   const [isLoggedUser, setIsLoggedUser] = useState(
     !tokenDuration().expiredToken,
   );
+
   const [activeRole, setActiveRole] = useState(() => {
     if (isCacheInit) {
       const data = client.readQuery({ query: GET_ROLE });
@@ -138,55 +149,37 @@ export function LoginContextProvider(props) {
     return { role: '', unit: '', unitLabel: '' };
   });
 
-  const signOut = (alert = false) => {
-    router.push('/login');
-    setIsLoggedUser(false);
+
+  const signOut = useCallback(async (alert = false) => {
     localStorage.clear();
-    client.resetStore();
+    await client.cache.reset();
+    await client.clearStore();
+    await router.push('/login');
+    setIsLoggedUser(false);
+    setIsCacheInit(false);
     if (alert) addAlert(alert);
-  };
+  }, [addAlert, client, router]);
 
-  const getUserData = async () => {
-    try {
-      const { data: { me } } = await client.query({ query: GET_ME });
-      const activeRoleNumber = localStorage.getItem('activeRoleNumber') || 0;
-
-      const newRole = me.roles[activeRoleNumber].units[0]
-        ? {
-          role: me.roles[activeRoleNumber].role,
-          unit: me.roles[activeRoleNumber].units[0].id,
-          unitLabel: me.roles[activeRoleNumber].units[0].label,
-        }
-        : { role: me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
-
-      setActiveRole(newRole);
-
-      const campusId = me.roles[activeRoleNumber].campuses[0]
-        ? me.roles[activeRoleNumber].campuses[0].id
-        : null;
-
-      await client.cache.writeQuery({
-        query: INIT_CACHE,
-        data: {
-          initializedCache: true,
-          me,
-          activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
-          campusId,
-        },
-      });
-      setIsCacheInit(true);
-      return me;
-    } catch (e) {
-      setIsCacheInit(true);
-      return signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
-    }
-  };
+  const [getUserData, { data: meData, loading: meLoading, error: meError }] = useLazyQuery(GET_ME);
 
   const setToken = (token) => {
     localStorage.setItem('token', token);
   };
 
-  const authRenew = async () => {
+  /* eslint-disable no-use-before-define */
+  const [authRenewMutation] = useMutation(AUTH_RENEW, {
+    onCompleted: (d) => {
+      setToken(d.jwtRefresh.jwt);
+      authRenew();
+    },
+
+    onError: () => {
+      signOut({ message: 'Session expirée', severity: 'warning' });
+      clearTimeout((duration) => setTimeout(authRenew, duration));
+    },
+  });
+
+  const authRenew = useCallback(() => {
     const reloadAuth = (duration) => setTimeout(authRenew, duration);
     if (!localStorage.getItem('token')) {
       clearTimeout(reloadAuth);
@@ -201,60 +194,101 @@ export function LoginContextProvider(props) {
       return false;
     }
     if (expIn <= renewTrigger) {
-      try {
-        const {
-          data: {
-            jwtRefresh: { jwt },
-          },
-        } = await client.mutate({ mutation: AUTH_RENEW });
-        setToken(jwt);
-        authRenew();
-        return true;
-      } catch (error) {
-        signOut({ message: 'Session expirée', severity: 'warning' });
-        clearTimeout(reloadAuth);
-        return false;
-      }
-    } else {
-      reloadAuth((expIn - renewTrigger) * 1000);
+      authRenewMutation();
       return true;
     }
-  };
+    reloadAuth((expIn - renewTrigger) * 1000);
+    return true;
+  }, [authRenewMutation, signOut]);
 
-  const signIn = async (email, password, resetToken = null) => {
-    try {
-      const {
-        data: {
-          login: { jwt },
-        },
-      } = await client.mutate({
-        mutation: LOGIN,
-        variables: { email, password, token: resetToken },
-      });
-      setToken(jwt);
-      setIsLoggedUser(true);
+
+  const [login] = useMutation(LOGIN, {
+    onCompleted: (d) => {
+      setToken(d.login.jwt);
       localStorage.setItem('activeRoleNumber', 0);
-      await authRenew(setToken, signOut, client);
-      return getUserData();
-    } catch (e) {
+      authRenew(setToken, signOut, client);
+      getUserData();
+    },
+    onError: (e) => {
       switch (e.message) {
-        case `GraphQL error: Email "${email}" and password do not match.`:
-          return addAlert({
+        case `GraphQL error: Email "${router.query.email}" and password do not match.`:
+          addAlert({
             message: 'Mauvais identifiant et/ou mot de passe',
             severity: 'warning',
           });
+          break;
         case 'GraphQL error: Password expired':
-          return addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
+          addAlert({ message: 'Mot de passe expiré', severity: 'warning' });
+          break;
         case 'GraphQL error: Expired link':
-          return signOut({
+          signOut({
             message: 'Lien expiré, merci de refaire une demande de mot de passe',
             severity: 'warning',
           });
+          break;
         default:
-          return signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
+          signOut({ message: 'Erreur serveur, merci de réessayer', severity: 'warning' });
+          break;
+      }
+    },
+  });
+
+
+  const signIn = useCallback((email, password, resetToken = null) => {
+    login({ variables: { email, password, token: resetToken } });
+  });
+
+  useEffect(() => {
+    const onCompleted = (d) => {
+      if (!d.me.roles.length) {
+        return signOut({ message: 'Vous ne disposez d\'aucun rôle sur Stargate. Merci de contacter un administrateur', severity: 'error' });
+      }
+
+      const activeRoleNumber = !localStorage.getItem('activeRoleNumber') || localStorage.getItem('activeRoleNumber') > d.me.roles.length - 1
+        ? 0
+        : localStorage.getItem('activeRoleNumber');
+
+      const newRole = d.me.roles[activeRoleNumber].units[0]
+        ? {
+          role: d.me.roles[activeRoleNumber].role,
+          unit: d.me.roles[activeRoleNumber].units[0].id,
+          unitLabel: d.me.roles[activeRoleNumber].units[0].label,
+        }
+        : { role: d.me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
+
+      setActiveRole(newRole);
+
+      const campusId = d.me.roles[activeRoleNumber].campuses[0]
+        ? d.me.roles[activeRoleNumber].campuses[0].id
+        : null;
+
+      client.writeQuery({
+        query: INIT_CACHE,
+        data: {
+          initializedCache: true,
+          me: d.me,
+          activeRoleCache: { ...newRole },
+          campusId,
+        },
+      });
+      setIsCacheInit(true);
+      return setIsLoggedUser(true);
+    };
+
+    const onError = () => {
+      setIsCacheInit(false);
+      signOut({ message: 'Erreur lors de la récupération de vos données, merci de vous reconnecter', severity: 'error' });
+    };
+
+    if (onCompleted || onError) {
+      if (onCompleted && !meLoading && !meError && meData) {
+        onCompleted(meData);
+      } else if (onError && !meLoading && meError) {
+        onError();
       }
     }
-  };
+  }, [meData, meLoading, meError]);
+
 
   useEffect(() => {
     if (router.query.token && !isLoggedUser) {
@@ -283,9 +317,6 @@ export function LoginContextProvider(props) {
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
-  if ((isLoggedUser && !isCacheInit) || (!isLoggedUser && router.pathname !== '/login') || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) {
-    return <div />;
-  }
 
   return (
     <LoginContext.Provider value={{
@@ -295,20 +326,13 @@ export function LoginContextProvider(props) {
       activeRole,
     }}
     >
-      {children}
+      {((isLoggedUser && !isCacheInit)
+      || (!isLoggedUser && router.pathname !== '/login')
+      || (activeRole && !urlAuthorization(router.pathname, activeRole.role))) ? '' : children}
     </LoginContext.Provider>
   );
 }
 
 LoginContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
-  client: PropTypes.shape({
-    readQuery: PropTypes.func.isRequired,
-    resetStore: PropTypes.func.isRequired,
-    mutate: PropTypes.func.isRequired,
-    query: PropTypes.func.isRequired,
-    cache: PropTypes.shape({
-      writeData: PropTypes.func.isRequired,
-    }),
-  }).isRequired,
 };

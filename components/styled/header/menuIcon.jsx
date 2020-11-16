@@ -12,8 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import BuildIcon from '@material-ui/icons/Build';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import LinkOffOutlinedIcon from '@material-ui/icons/LinkOffOutlined';
-import gql from 'graphql-tag';
-import { useApolloClient, useQuery } from '@apollo/react-hooks';
+import { gql, useApolloClient, useQuery } from '@apollo/client';
 import { Select } from '@material-ui/core';
 import { useLogin } from '../../../lib/loginContext';
 import Avatar from './icon';
@@ -90,7 +89,7 @@ export default function MenuIcon() {
   const { signOut, setActiveRole, activeRole } = useLogin();
   const client = useApolloClient();
 
-  const { data: { me } } = useQuery(GET_ME);
+  const { data } = useQuery(GET_ME);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -107,43 +106,50 @@ export default function MenuIcon() {
   };
 
   const handleChangeRole = (evt) => {
-    const selectedRole = me.roles.find((role) => role.role === evt.target.value);
-    const newRole = {
-      role: selectedRole.role,
-      unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
-      unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : null,
-    };
+    if (data) {
+      const selectedRole = data.me.roles.find((role) => role.role === evt.target.value);
+      const newRole = {
+        role: selectedRole.role,
+        unit: selectedRole.units[0] ? selectedRole.units[0].id : null,
+        unitLabel: selectedRole.units[0] ? selectedRole.units[0].label : null,
+      };
 
-    client.cache.writeData({
-      data: {
-        activeRoleCache: { ...newRole, __typename: 'activeRoleCache' },
-        campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
-      },
-    });
-    localStorage.setItem('activeRoleNumber', me.roles.findIndex((role) => role.role === evt.target.value));
-    setActiveRole(newRole);
-    handleCloseMenu();
+      client.writeQuery({
+        query: gql`
+        query setRoleUser {
+          activeRoleCache
+          campusId
+        }`,
+        data: {
+          activeRoleCache: { ...newRole },
+          campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null,
+        },
+      });
+      localStorage.setItem('activeRoleNumber', data.me.roles.findIndex((role) => role.role === evt.target.value));
+      setActiveRole(newRole);
+      handleCloseMenu();
+    }
   };
 
   return (
     <div className={classes.root}>
       <Box fontWeight="fontWeightLight" display="flex" flexDirection="column">
-        <span>{me && `${me.firstname} ${me.lastname}`}</span>
-        { me && me.roles && me.roles.length > 1 ? (
+        <span>{data && `${data.me.firstname} ${data.me.lastname}`}</span>
+        { data && data.me.roles && data.me.roles.length > 1 ? (
           <Select
             labelId="select-role"
             id="role"
             value={activeRole.role}
             onChange={(evt) => handleChangeRole(evt)}
           >
-            {me.roles.map((role) => (
+            {data.me.roles.map((role) => (
               <MenuItem key={role.role} value={role.role}>
                 {ROLES[role.role].label}
               </MenuItem>
             ))}
           </Select>
-        ) : (
-          ROLES[me.roles[0].role].label
+        ) : (data
+          && ROLES[data.me.roles[0].role].label
         ) }
 
         <span>{activeRole.unitLabel ? activeRole.unitLabel : ''}</span>

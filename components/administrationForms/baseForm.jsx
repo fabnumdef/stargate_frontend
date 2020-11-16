@@ -12,10 +12,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-import Link from 'next/link';
 import Button from '@material-ui/core/Button';
-import PlaceForm from './placeForm';
-import DeletableList from '../lists/deletableList';
+import Table from '@material-ui/core/Table';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
 import { FORMS_LIST } from '../../utils/constants/enums';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,8 +27,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '20px',
   },
   nameInput: {
-    marginLeft: '60px',
-    width: '400px',
+    width: '300px',
   },
   formSelect: {
     width: '300px',
@@ -33,12 +36,11 @@ const useStyles = makeStyles((theme) => ({
   titleUserSelect: {
     display: 'inline-block',
     width: '160px',
-    textAlign: 'right',
   },
   userSelect: {
     display: 'inline-block',
     width: '70%',
-    padding: '0 0 15px 16px',
+    padding: '0 0 15px 0px',
   },
   assistantSelect: {
     width: '250px',
@@ -48,10 +50,30 @@ const useStyles = makeStyles((theme) => ({
     width: '250px',
     marginBottom: '3px',
   },
+  rightBorder: {
+    borderColor: theme.palette.primary.main,
+    borderRight: '2px solid',
+  },
+  marginAdministrator: {
+    marginTop: '10%',
+  },
+  tableContainer: {
+    maxHeight: '140px',
+  },
+  row: {
+    borderBottom: 'none',
+    color: 'rgba(0, 0, 0, 0.87)',
+    paddingLeft: '0px',
+  },
+  icon: {
+    marginBottom: '-16px',
+    marginTop: '-16px',
+    padding: '1px 3px 1px 3px',
+  },
   buttonsContainer: {
     display: 'flex',
     justifyContent: 'flex-end',
-    marginTop: '30px',
+    marginTop: '15%',
     '& button': {
       margin: '3px',
     },
@@ -86,10 +108,10 @@ const PaginationButton = ({
         if (!fetchMoreResult) return prev;
         return setSelectList({
           listUsers:
-            {
-              list: [...selectList.listUsers.list, ...fetchMoreResult.listUsers.list],
-              meta: fetchMoreResult.listUsers.meta,
-            },
+          {
+            list: [...selectList.listUsers.list, ...fetchMoreResult.listUsers.list],
+            meta: fetchMoreResult.listUsers.meta,
+          },
         });
       },
     });
@@ -103,7 +125,7 @@ const PaginationButton = ({
 };
 
 PaginationButton.propTypes = {
-  users: PropTypes.objectOf(PropTypes.array).isRequired,
+  users: PropTypes.objectOf(PropTypes.any).isRequired,
   fetchMore: PropTypes.func.isRequired,
   selectList: PropTypes.objectOf(PropTypes.object).isRequired,
   setSelectList: PropTypes.func.isRequired,
@@ -114,7 +136,7 @@ const BaseForm = ({
 }) => {
   const classes = useStyles();
   const {
-    handleSubmit, errors, control, watch,
+    handleSubmit, errors, control, watch, setValue,
   } = useForm();
 
   const [selectList, setSelectList] = useState(usersList);
@@ -122,6 +144,7 @@ const BaseForm = ({
   const [assistantsList, setAssistantsList] = useState({
     [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
   });
+
   const addAssistant = (event, typeAssistant) => {
     setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
   };
@@ -135,12 +158,10 @@ const BaseForm = ({
     setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
   };
 
-  const [placesList, setPlacesList] = useState(defaultValues.placesList);
-
   const findCampusAdmin = () => selectList.listUsers.list.find((user) => user.id === defaultValues.admin.id) || '';
 
   const onSubmit = (data) => {
-    submitForm(data, assistantsList, placesList);
+    submitForm(data, assistantsList);
   };
 
   const inputLabel = useRef(null);
@@ -150,12 +171,32 @@ const BaseForm = ({
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
+  const [hover, setHover] = useState({});
+  const handleMouseEnter = (index) => {
+    setHover((prevState) => ({ ...prevState, [index]: true }));
+  };
+
+  const handleMouseLeave = (index) => {
+    setTimeout(() => { }, 2000);
+    setHover((prevState) => ({ ...prevState, [index]: false }));
+  };
+
+  const handleCancel = () => {
+    setValue('name', defaultValues.name);
+    setValue('campusAdmin', defaultValues.admin ? findCampusAdmin : '');
+    setAssistantsList({
+      [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.baseForm}>
-      <Grid container item sm={12} xs={12}>
-        <Grid sm={6} xs={6}>
-          <Grid container>
+      <Grid container item sm={12} xs={12} md={12}>
+        <Grid container>
+          <Grid item sm={12} xs={12} md={3}>
             <Typography variant="subtitle2">Nom&nbsp;:</Typography>
+          </Grid>
+          <Grid item sm={12} xs={12} md={12} lg={6}>
             <Controller
               as={(
                 <TextField
@@ -164,7 +205,7 @@ const BaseForm = ({
                   helperText={errors.name && errors.name.message}
                   className={classes.nameInput}
                 />
-              )}
+                    )}
               rules={{ validate: (value) => value.trim() !== '' || 'Le nom est obligatoire' }}
               control={control}
               name="name"
@@ -172,68 +213,93 @@ const BaseForm = ({
             />
           </Grid>
         </Grid>
-        <Grid sm={6} xs={6}>
-          <Grid container>
-            <Grid className={classes.titleUserSelect}>
-              <Typography variant="subtitle2">Administrateur&nbsp;:</Typography>
-            </Grid>
-            <Grid className={classes.userSelect}>
-              <FormControl
-                variant="outlined"
-                error={Object.prototype.hasOwnProperty.call(errors, 'campusAdmin')}
-                className={classes.formSelect}
-              >
-                <InputLabel ref={inputLabel} id="select-outlined-label">
-                  Responsable
-                </InputLabel>
-                <Controller
-                  as={(
-                    <Select
-                      labelId="create-campus-admin"
-                      id="campusAdmin"
-                      labelWidth={labelWidth}
-                    >
-                      {selectList && selectList.listUsers.list.map((user) => (
-                        <MenuItem key={user.id} value={user}>
-                          {`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
-                        </MenuItem>
-                      ))}
-                      <PaginationButton
-                        users={selectList.listUsers}
-                        fetchMore={fetchMore}
-                        selectList={selectList}
-                        setSelectList={setSelectList}
-                      />
-                    </Select>
-                  )}
-                  control={control}
-                  defaultValue={defaultValues.admin ? findCampusAdmin : ''}
-                  name="campusAdmin"
-                  rules={{ required: true }}
-                />
-                {errors.campusAdmin && (
-                  <FormHelperText className={classes.errorText}>
-                    Administrateur obligatoire
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
+        <Grid container className={classes.marginAdministrator}>
+          <Grid item sm={12} xs={12} md={12} lg={3} className={classes.titleUserSelect}>
+            <Typography variant="subtitle2">Administrateur&nbsp;:</Typography>
           </Grid>
-          <Grid className={classes.titleUserSelect}>
-            <Typography variant="subtitle3">Adjoint(s):</Typography>
+          <Grid item sm={12} xs={12} md={12} lg={6} className={classes.userSelect}>
+            <FormControl
+              variant="outlined"
+              error={Object.prototype.hasOwnProperty.call(errors, 'campusAdmin')}
+              className={classes.formSelect}
+            >
+              <InputLabel ref={inputLabel} id="select-outlined-label">
+                Responsable
+              </InputLabel>
+              <Controller
+                as={(
+                  <Select
+                    labelId="create-campus-admin"
+                    id="campusAdmin"
+                    labelWidth={labelWidth}
+                  >
+                    { selectList && selectList.listUsers.list.map((user) => (
+                      <MenuItem key={user.id} value={user}>
+                        { `${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}` }
+                      </MenuItem>
+                    )) }
+                    <PaginationButton
+                      users={selectList.listUsers}
+                      fetchMore={fetchMore}
+                      selectList={selectList}
+                      setSelectList={setSelectList}
+                    />
+                  </Select>
+                        )}
+                control={control}
+                defaultValue={defaultValues.admin ? findCampusAdmin : ''}
+                name="campusAdmin"
+                rules={{ required: true }}
+              />
+              { errors.campusAdmin && (
+              <FormHelperText className={classes.errorText}>
+                Administrateur obligatoire
+              </FormHelperText>
+              ) }
+            </FormControl>
           </Grid>
-          <Grid className={classes.userSelect}>
+
+        </Grid>
+        <Grid container>
+          <Grid item sm={12} xs={12} md={12} lg={3} className={classes.titleUserSelect}>
+            <Typography>Adjoint(s) :</Typography>
+          </Grid>
+          <Grid item sm={12} xs={12} md={12} lg={6} className={classes.userSelect}>
             <FormControl className={classes.assistantSelect}>
-              {assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].map((user) => (
-                !user.toDelete && (
-                <DeletableList
-                  label={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`}
-                  id={user.id}
-                  deleteItem={deleteAssistant}
-                  type={FORMS_LIST.ADMIN_ASSISTANTS}
-                />
-                )
-              ))}
+              <TableContainer className={classes.tableContainer}>
+                <Table size="small" data-testid="placeTable">
+                  <TableBody>
+                    { assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].map((user, index) => (
+                      !user.toDelete && (
+                      <TableRow
+                        hover
+                        onMouseOver={() => handleMouseEnter(index)}
+                        onFocus={() => handleMouseEnter(index)}
+                        onMouseLeave={() => handleMouseLeave(index)}
+                        tabIndex={-1}
+                      >
+                        <TableCell key={user.id} className={classes.row}>
+                          { `${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}` }
+                        </TableCell>
+                        <TableCell key="delete" className={classes.row}>
+                          { hover[index] && (
+                          <div style={{ float: 'right' }}>
+                            <IconButton
+                              aria-label="supprimer"
+                              className={classes.icon}
+                              color="primary"
+                              onClick={() => deleteAssistant(user.id, FORMS_LIST.ADMIN_ASSISTANTS)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </div>
+                          ) }
+                        </TableCell>
+                      </TableRow>
+                      ))) }
+                  </TableBody>
+                </Table>
+              </TableContainer>
               <Select
                 labelId="demo-mutiple-chip-label"
                 id="demo-mutiple-chip"
@@ -243,7 +309,7 @@ const BaseForm = ({
                 renderValue={() => (<em>optionnel</em>)}
                 onChange={(evt) => addAssistant(evt, FORMS_LIST.ADMIN_ASSISTANTS)}
               >
-                {selectList && selectList.listUsers.list.map((user) => (
+                { selectList && selectList.listUsers.list.map((user) => (
                   (!watch('campusAdmin') || watch('campusAdmin').id !== user.id) && (
                   <MenuItem key={user.id} value={user}>
                     <Checkbox
@@ -252,7 +318,7 @@ const BaseForm = ({
                     <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                   </MenuItem>
                   )
-                ))}
+                )) }
                 <PaginationButton
                   users={selectList.listUsers}
                   fetchMore={fetchMore}
@@ -262,29 +328,26 @@ const BaseForm = ({
               </Select>
             </FormControl>
           </Grid>
-          <Grid>
-            <PlaceForm list={placesList} setList={setPlacesList} />
-          </Grid>
         </Grid>
+
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Link href="/">
-          <Button variant="outlined" color="primary">
-            Annuler
-          </Button>
-        </Link>
+        <Button onClick={handleCancel} variant="outlined" color="primary">
+          Annuler
+        </Button>
         <Button type="submit" variant="contained" color="primary">
-          Valider
+          Sauvegarder
         </Button>
       </Grid>
     </form>
+
   );
 };
 
 BaseForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
-  usersList: PropTypes.arrayOf(PropTypes.object).isRequired,
+  usersList: PropTypes.objectOf(PropTypes.object).isRequired,
   fetchMore: PropTypes.func.isRequired,
 };
 

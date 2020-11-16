@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import {
+  gql, useQuery, useMutation, useApolloClient,
+} from '@apollo/client';
 
 import Link from 'next/link';
 
@@ -16,16 +17,17 @@ import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsProgress } from '../../components';
 
 import Template from '../template';
-import { useSnackBar } from '../../lib/ui-providers/snackbar';
 
-const useStyles = makeStyles((theme) => ({
+import { useSnackBar } from '../../lib/hooks/snackbar';
+
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   idRequest: {
     marginLeft: '10px',
@@ -42,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '20px 0',
   },
 }));
-
 
 export const READ_REQUEST = gql`
          query readRequest($requestId: String!, $campusId: String!) {
@@ -64,12 +65,13 @@ export const READ_REQUEST = gql`
                listVisitors {
                  list {
                    id
+                   vip
                    rank
                    firstname
                    birthLastname
                    employeeType
                    company
-                   status 
+                   status
                    units {
                      id
                      label
@@ -105,7 +107,6 @@ export const DELETE_VISITOR = gql`
          }
        `;
 
-
 export default function RequestDetails({ requestId }) {
   const classes = useStyles();
   const router = useRouter();
@@ -121,7 +122,6 @@ export default function RequestDetails({ requestId }) {
     `,
   });
 
-
   const { addAlert } = useSnackBar();
 
   const {
@@ -132,8 +132,6 @@ export default function RequestDetails({ requestId }) {
 
   const [deleteVisitor] = useMutation(DELETE_VISITOR);
 
-  if (loading) return <p>Loading ....</p>;
-
   if (data && userData && data.getCampus.getRequest.owner.id !== userData.me.id) {
     router.push('/');
     return <div />;
@@ -143,7 +141,7 @@ export default function RequestDetails({ requestId }) {
   // if (error) return <p>page 404</p>;
 
   return (
-    <Template>
+    <Template loading={loading}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -151,16 +149,16 @@ export default function RequestDetails({ requestId }) {
               Demandes en cours :
             </Typography>
             <Typography variant="subtitle2" className={classes.idRequest}>
-              {data.getCampus.getRequest.id}
+              {data && data.getCampus.getRequest.id}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data.getCampus.getRequest} />
+          <DetailsInfosRequest request={data && data.getCampus.getRequest} />
         </Grid>
         <Grid item sm={12} xs={12} className={classes.tabContent}>
           <TabRequestVisitorsProgress
-            visitors={data.getCampus.getRequest.listVisitors.list}
+            visitors={data && data.getCampus.getRequest.listVisitors.list}
             onDelete={async (idVisitor) => {
               try {
                 // @todo waiting back to delete

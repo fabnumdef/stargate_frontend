@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-
+import { gql, useQuery, useMutation } from '@apollo/client';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -22,18 +20,22 @@ import { CSVLink } from 'react-csv';
 import {
   TabPanel, TabScreeningVisitors,
 } from '../components';
+
 import Template from './template';
 
 import { AntTab } from './menuRequest';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
-import { useSnackBar } from '../lib/ui-providers/snackbar';
+import { useSnackBar } from '../lib/hooks/snackbar';
 
 import { useLogin } from '../lib/loginContext';
 import checkStatus from '../utils/mappers/checkStatusVisitor';
+import Loading from './loading';
 
-const useStyles = makeStyles((theme) => ({
+import EmptyArray from '../components/styled/emptyArray';
+
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
   },
@@ -45,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   pageTitleHolder: {
     borderBottom: '1px solid #e5e5e5',
@@ -54,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 'auto',
   },
 }));
-
 
 function csvName() {
   const date = new Date(Date.now());
@@ -85,6 +86,7 @@ function createData({
   units,
   identityDocuments,
   request,
+  generateIdentityFileExportLink,
 }, activeRole) {
   return {
     id,
@@ -96,10 +98,10 @@ function createData({
     report: null,
     screening: checkStatus(units, activeRole),
     requestId: request.id,
-    vAttachedFile: identityDocuments,
+    vAttachedFile: identityDocuments[0] ? identityDocuments[0].file.id : null,
+    link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null,
   };
 }
-
 
 export const LIST_VISITOR_REQUESTS = gql`
          query ListVisitorsRequestQuery(
@@ -110,6 +112,7 @@ export const LIST_VISITOR_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listVisitors(search: $search, cursor: $cursor, isDone: $isDone) {
                list {
                  id
@@ -132,6 +135,14 @@ export const LIST_VISITOR_REQUESTS = gql`
                  request {
                    id
                  }
+                 identityDocuments {
+                   file {
+                     id
+                   }
+                 }
+                   generateIdentityFileExportLink {
+                       link
+                   }
                }
                meta {
                  total
@@ -156,18 +167,19 @@ export default function ScreeningManagement() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const [filters, setFilters] = React.useState('');
+  const [search, setSearch] = React.useState(null);
 
   const initMount = React.useRef(true);
 
-  const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
+  const {
+    data, fetchMore, refetch,
+  } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
       isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-      search: filters,
+      search,
     },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
   });
 
   const [shiftVisitor] = useMutation(MUTATE_VISITOR);
@@ -232,11 +244,6 @@ export default function ScreeningManagement() {
     handleFetchMore();
   }, [page, rowsPerPage]);
 
-  React.useEffect(() => {
-    refetch();
-  }, [filters]);
-
-
   const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
     vBirthName: visitor.birthLastname.toUpperCase(),
     vBirthDate: visitor.birthday,
@@ -289,82 +296,95 @@ export default function ScreeningManagement() {
             ))}
           </Tabs>
         </Grid>
-        <Grid item sm={12} xs={12}>
-          <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-            <Grid container spacing={1} className={classes.searchField}>
-              <Grid item sm={2} xs={12} md={1} lg={1}>
-                {data && (
-                  <CSVLink
-                    style={{ textDecoration: 'none' }}
-                    className={classes.linkCsv}
-                    data={csvData()}
-                    separator=";"
-                    headers={csvHeaders}
-                    filename={csvName()}
+
+        { data && visitors.length > 0 ? (
+          <Grid item sm={12} xs={12}>
+            <Grid item sm={12} xs={12}>
+              <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
+                <Grid container spacing={1} className={classes.searchField}>
+                  <Grid item sm={2} xs={12} md={1} lg={1}>
+                    {data && (
+                      <CSVLink
+                        style={{ textDecoration: 'none' }}
+                        className={classes.linkCsv}
+                        data={csvData()}
+                        separator=";"
+                        headers={csvHeaders}
+                        filename={csvName()}
+                      >
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="primary"
+                          endIcon={<NoteAddIcon />}
+                        >
+                          Export
+                        </Button>
+                      </CSVLink>
+                    )}
+                  </Grid>
+                  <Grid item sm={6} xs={12} md={8} lg={8}>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 20, 30, 40, 50]}
+                      component="div"
+                      count={handlePageSize()}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onChangePage={handleChangePage}
+                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
+                  </Grid>
+                  <Grid item sm={3} xs={12} md={2} lg={2}>
+                    <TextField
+                      style={{ float: 'right' }}
+                      margin="dense"
+                      variant="outlined"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      placeholder="Rechercher..."
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                        inputProps: { 'data-testid': 'searchField' },
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                {!data ? <Loading /> : (
+                  <TabScreeningVisitors
+                    visitors={visitors}
+                    onChange={(visitorsChange) => setVisitors(visitorsChange)}
+                  />
+                ) }
+              </TabPanel>
+              <TabPanel value={value} index={1} />
+            </Grid>
+
+            <Grid item sm={12}>
+              <Grid container justify="flex-end">
+                <div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={submitForm}
+                    disabled={!visitors.find((visitor) => visitor.report !== null)}
                   >
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="primary"
-                      endIcon={<NoteAddIcon />}
-                    >
-                      Export
-                    </Button>
-                  </CSVLink>
-                )}
-              </Grid>
-              <Grid item sm={6} xs={12} md={8} lg={8}>
-                <TablePagination
-                  rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                  component="div"
-                  count={handlePageSize()}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
-              </Grid>
-              <Grid item sm={3} xs={12} md={2} lg={2}>
-                <TextField
-                  style={{ float: 'right' }}
-                  margin="dense"
-                  variant="outlined"
-                  value={filters}
-                  onChange={(event) => setFilters(event.target.value)}
-                  placeholder="Rechercher..."
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    inputProps: { 'data-testid': 'searchField' },
-                  }}
-                />
+                    Soumettre
+                  </Button>
+                </div>
               </Grid>
             </Grid>
-            <TabScreeningVisitors
-              visitors={visitors}
-              onChange={(visitorsChange) => setVisitors(visitorsChange)}
-            />
-          </TabPanel>
-          <TabPanel value={value} index={1} />
-        </Grid>
-
-        <Grid item sm={12}>
-          <Grid container justify="flex-end">
-            <div>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={submitForm}
-                disabled={!visitors.find((visitor) => visitor.report !== null)}
-              >
-                Soumettre
-              </Button>
-            </div>
           </Grid>
-        </Grid>
+        ) : (
+          <Grid item sm={12} xs={12}>
+            <EmptyArray type="à traiter" />
+          </Grid>
+        )}
+
+
       </Grid>
     </Template>
   );

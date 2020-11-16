@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import gql from 'graphql-tag';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import PlaceForm from '../../../components/administrationForms/placeForm';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditCampus } from '../../../utils/mappers/adminMappers';
+
+const useStyles = makeStyles((theme) => ({
+
+  rightBorder: {
+    borderColor: theme.palette.primary.main,
+    borderRight: '2px solid',
+    minHeight: '50vh',
+  },
+
+}));
 
 const GET_USERS = gql`
     query listUsers($cursor: OffsetCursor, $hasRole: HasRoleInput) {
@@ -19,7 +31,7 @@ const GET_USERS = gql`
                 lastname
                 roles {
                     role
-                    userInCharge 
+                    userInCharge
                     campuses {
                         id
                         label
@@ -40,7 +52,7 @@ const GET_USERS = gql`
 `;
 
 const EDIT_USER = gql`
-    mutation editUser($id: ObjectID! $user: UserInput) {
+    mutation editUser($id: ObjectID!, $user: UserInput) {
         editUser(id: $id, user: $user) {
           id
         }
@@ -48,7 +60,7 @@ const EDIT_USER = gql`
 `;
 
 const DELETE_ROLE = gql`
-    mutation deleteUserRole($id: ObjectID! $user: UserInput) {
+    mutation deleteUserRole($id: ObjectID!, $user: UserInput) {
         deleteUserRole(id: $id, user: $user) {
             id
         }
@@ -108,7 +120,10 @@ const DELETE_PLACE = gql`
 `;
 
 function EditCampus() {
+  const widthBreak = 1030;
+  const matches = useMediaQuery(`(min-width:${widthBreak}px)`);
   const { addAlert } = useSnackBar();
+  const classes = useStyles();
   const router = useRouter();
   const { id } = router.query;
   const [editCampus] = useMutation(EDIT_CAMPUS);
@@ -177,22 +192,6 @@ function EditCampus() {
     }
   };
 
-  const submitPlaces = async (places) => {
-    try {
-      const resPlaces = await Promise.all(places.map(async (place) => {
-        if (!place.id && !place.toDelete) {
-          await createPlace(place.label);
-        }
-        if (place.id && place.toDelete) {
-          await deletePlace(place.id);
-        }
-      }));
-      return resPlaces;
-    } catch {
-      return null;
-    }
-  };
-
   const deleteAssistant = async (assistant) => {
     try {
       const resAssistant = await deleteUserRoleReq({
@@ -211,7 +210,7 @@ function EditCampus() {
     }
   };
 
-  const submitEditCampus = async (data, assistantsList, places) => {
+  const submitEditCampus = async (data, assistantsList) => {
     try {
       if (data.name !== editCampusData.getCampus.label) {
         await editCampus({ variables: { id, campus: { label: data.name } } });
@@ -240,10 +239,36 @@ function EditCampus() {
         return assistant;
       }));
 
+      return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
+    } catch (e) {
+      return addAlert({
+        message: 'Erreur serveur, merci de réessayer',
+        severity: 'warning',
+      });
+    }
+  };
+
+  const submitPlaces = async (places) => {
+    try {
+      const resPlaces = await Promise.all(places.map(async (place) => {
+        if (!place.id && !place.toDelete) {
+          await createPlace(place.label);
+        }
+        if (place.id && place.toDelete) {
+          await deletePlace(place.id);
+        }
+      }));
+      return resPlaces;
+    } catch {
+      return null;
+    }
+  };
+
+  const submitEditPlaces = async (places) => {
+    try {
       await submitPlaces(places);
 
-      addAlert({ message: 'La base a bien été modifiée', severity: 'success' });
-      return router.push('/');
+      return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
     } catch (e) {
       return addAlert({
         message: 'Erreur serveur, merci de réessayer',
@@ -268,16 +293,37 @@ function EditCampus() {
       <PageTitle title="Administration" subtitles={['Base']} />
       {defaultValues
       && (
-        <BaseForm
-          submitForm={submitEditCampus}
-          defaultValues={defaultValues}
-          usersList={usersList}
-          campusId={id}
-          fetchMore={fetchMore}
-        />
+        <>
+          <Grid container>
+            <Grid
+              item
+              sm={10}
+              xs={10}
+              md={6}
+              className={`${matches ? classes.rightBorder : ''}`}
+            >
+              <BaseForm
+                submitForm={submitEditCampus}
+                defaultValues={defaultValues}
+                usersList={usersList}
+                campusId={id}
+                fetchMore={fetchMore}
+              />
+            </Grid>
+            <Grid item sm={10} xs={10} md={6}>
+              <PlaceForm
+                submitForm={submitEditPlaces}
+                defaultValues={defaultValues}
+                list={placesList.getCampus.listPlaces.list}
+                campusId={id}
+                fetchMore={fetchMore}
+              />
+            </Grid>
+          </Grid>
+        </>
       )}
     </Template>
   );
 }
 
-export default withApollo()(EditCampus);
+export default EditCampus;

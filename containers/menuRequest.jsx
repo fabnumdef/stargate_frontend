@@ -1,7 +1,5 @@
 import React from 'react';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-
+import { gql, useQuery } from '@apollo/client';
 // Material Import
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -52,6 +50,7 @@ export const AntTab = withStyles((theme) => ({
   root: {
     textTransform: 'none',
     color: theme.palette.primary.main,
+    fontSize: '1rem',
     minWidth: 72,
     marginRight: theme.spacing(5),
     '&:hover': {
@@ -59,7 +58,7 @@ export const AntTab = withStyles((theme) => ({
     },
     '&$selected': {
       color: theme.palette.primary.main,
-      fontWeight: theme.typography.fontWeightBold,
+      fontWeight: 'bold',
       backgroundColor: fade(theme.palette.primary.main, 0),
     },
     backgroundColor: fade(theme.palette.primary.main, 0.1),
@@ -80,6 +79,7 @@ export const LIST_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+               id
                listRequestByVisitorStatus(as: $as, filters: $filters, cursor: $cursor, isDone: $isDone) {
                  list {
                      id
@@ -94,7 +94,10 @@ export const LIST_REQUESTS = gql`
                          owner {
                              firstname
                              lastname
-                             unit
+                             unit {
+                                 id
+                                 label
+                             }
                          }
                      }
                  }
@@ -114,6 +117,7 @@ export const LIST_MY_REQUESTS = gql`
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
+             id
              listMyRequests(filters: $filters, cursor: $cursor) {
                list {
                  id
@@ -122,6 +126,7 @@ export const LIST_MY_REQUESTS = gql`
                  reason
                  status
                  places {
+                   id
                    label
                  }
                }
@@ -133,12 +138,25 @@ export const LIST_MY_REQUESTS = gql`
          }
        `;
 
+
 export default function MenuRequest() {
   const classes = useStyles();
   const { activeRole } = useLogin();
 
-  const [value, setValue] = React.useState(activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+  const [value, setValue] = React.useState(
+    () => {
+      try {
+      // Get from local storage by key
+        const item = JSON.parse(window.localStorage.getItem('menuValue'));
 
+        // Parse stored json or if none return initialValue
+        if (item) return item;
+        return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+      } catch (error) {
+        return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+      }
+    },
+  );
   /** @todo searchField filters
   const [search, setSearch] = React.useState('');
    */
@@ -148,9 +166,7 @@ export default function MenuRequest() {
 
   const childRef = React.useRef();
 
-  const initMount = React.useRef(true);
-
-  const { data: toTreat, fetchMore: fetchToTreat } = useQuery(
+  const { data: toTreat, fetchMore: fetchToTreat, loading: loadingToTreat } = useQuery(
     LIST_REQUESTS,
     {
       variables: {
@@ -164,12 +180,13 @@ export default function MenuRequest() {
         },
         isDone: { value: false },
       },
-      notifyOnNetworkStatusChange: true,
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-and-network',
     },
   );
 
-  const { data: inProgress, fetchMore: fetchInProgress } = useQuery(LIST_MY_REQUESTS, {
+  const {
+    data: inProgress, fetchMore: fetchInProgress, loading: loadingProgress,
+  } = useQuery(LIST_MY_REQUESTS, {
     variables: {
       filters: { status: STATE_REQUEST.STATE_CREATED.state },
       cursor: {
@@ -177,11 +194,10 @@ export default function MenuRequest() {
         offset: page * rowsPerPage,
       },
     },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   });
 
-  const selectTreatedOptions = () => {
+  const selectTreatedOptions = React.useMemo(() => {
     if (activeRole.role === ROLES.ROLE_HOST.role) {
       return {
         cursor: {
@@ -206,7 +222,7 @@ export default function MenuRequest() {
       as: { role: activeRole.role, unit: activeRole.unit },
       isDone: { value: true },
     };
-  };
+  }, [activeRole.role, activeRole.unit, page, rowsPerPage]);
 
   const selectTreatedPath = (treatedData) => {
     if (activeRole.role === ROLES.ROLE_HOST.role) {
@@ -215,11 +231,10 @@ export default function MenuRequest() {
     return treatedData.getCampus.listRequestByVisitorStatus;
   };
 
-  const { data: treated, fetchMore: fetchTreated } = useQuery(
+  const { data: treated, fetchMore: fetchTreated, loading: loadingTreated } = useQuery(
     activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
     {
-      variables: selectTreatedOptions(),
-      notifyOnNetworkStatusChange: true,
+      variables: selectTreatedOptions,
       fetchPolicy: 'cache-and-network',
     },
   );
@@ -238,6 +253,7 @@ export default function MenuRequest() {
     switch (value) {
       case 0:
         fetchToTreat({
+          query: LIST_REQUESTS,
           variables: {
             cursor: {
               first: rowsPerPage,
@@ -249,35 +265,24 @@ export default function MenuRequest() {
             },
             isDone: { value: false },
           },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
-            return fetchMoreResult;
-          },
         });
         break;
       case 1:
         fetchInProgress({
+          query: LIST_MY_REQUESTS,
           variables: {
             cursor: {
               first: rowsPerPage,
               offset: page * rowsPerPage,
             },
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) {
-              return prev;
-            }
-            return fetchMoreResult;
+            filters: { status: STATE_REQUEST.STATE_CREATED.state },
           },
         });
         break;
       case 2:
         fetchTreated({
-          variables: selectTreatedOptions(),
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
-            return fetchMoreResult;
-          },
+          query: activeRole.role === ROLES.ROLE_HOST.role ? LIST_MY_REQUESTS : LIST_REQUESTS,
+          variables: selectTreatedOptions,
         });
         break;
       default:
@@ -285,20 +290,15 @@ export default function MenuRequest() {
   };
 
   const handleChangePage = (event, newPage) => {
+    handleFetchMore();
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
+    handleFetchMore();
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  React.useEffect(() => {
-    if (initMount.current) {
-      initMount.current = false;
-    }
-    handleFetchMore();
-  }, [page, rowsPerPage]);
 
   const refetchQueries = [
     {
@@ -306,7 +306,6 @@ export default function MenuRequest() {
       variables: {
         filters: { status: STATE_REQUEST.STATE_CREATED.state },
       },
-      fetchPolicy: 'cache-and-network',
     },
     {
       query: LIST_REQUESTS,
@@ -314,7 +313,6 @@ export default function MenuRequest() {
         isDone: { value: true },
         as: { role: activeRole.role, unit: activeRole.unit },
       },
-      fetchPolicy: 'cache-and-network',
     }];
 
   const tabList = [
@@ -347,7 +345,8 @@ export default function MenuRequest() {
     },
   ];
 
-  const handleChange = (event, newValue) => {
+  const handleChange = async (event, newValue) => {
+    window.localStorage.setItem('menuValue', JSON.stringify(newValue));
     setValue(newValue);
     setPage(0);
   };
@@ -369,7 +368,7 @@ export default function MenuRequest() {
   };
 
   return (
-    <Template>
+    <Template loading={loadingToTreat && loadingTreated && loadingProgress}>
       <Grid container spacing={2} className={classes.root}>
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
@@ -478,6 +477,7 @@ export default function MenuRequest() {
           )}
         </Grid>
         { (value === 2
+        && treated
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
         && selectTreatedPath(treated).list.length > 0) && (
         <Grid item sm={2} xs={12} md={4} lg={4}>

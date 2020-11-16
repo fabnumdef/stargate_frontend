@@ -6,16 +6,16 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import { useSnackBar } from '../lib/ui-providers/snackbar';
+import { useSnackBar } from '../lib/hooks/snackbar';
 import Template from './template';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   account: {
     width: '100%',
     height: '75vh',
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   pageTitle: {
     margin: '16px 0',
     color: '#0d40a0',
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: 'bold',
   },
   pageTitleHolder: {
     borderBottom: '1px solid #e5e5e5',
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CHECK_ACTUAL_PASS = gql`  
+export const CHECK_ACTUAL_PASS = gql`
     mutation checkActualPass($email: EmailAddress!, $password: String) {
         me @client {
             email {

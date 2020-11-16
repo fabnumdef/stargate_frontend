@@ -5,13 +5,14 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 
 export default function InputFile({
-  label, onChange, error,
+  label, onChange, error, editValue,
 }) {
-  const [value, setValue] = useState();
+  const [formValue, setValue] = useState(editValue);
 
   const handleChange = (event) => {
-    setValue(event.target.value);
-    onChange(event.target.value);
+    const { value, files } = event.target;
+    setValue(value);
+    onChange({ value, files: files[0] });
   };
 
   return (
@@ -26,7 +27,7 @@ export default function InputFile({
           style={{ display: 'none' }}
         />
         <TextField
-          value={value || ''}
+          value={formValue}
           error={error || false}
           helperText={error && `Le ${label} est obligatoire`}
           InputProps={{
@@ -48,4 +49,5 @@ InputFile.propTypes = {
   label: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.bool.isRequired,
+  editValue: PropTypes.string.isRequired,
 };

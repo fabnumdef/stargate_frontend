@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
+import VisitorGrid from '../../styled/visitor';
 
 import {
   EMPLOYEE_TYPE,
@@ -18,18 +19,36 @@ import {
 } from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
 
-function findRejectedRole(units) {
-  const sortRole = units.map((u) => `${ROLES[u.steps.find(
-    (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
-  ).role].shortLabel} - ${u.label}`);
-  return sortRole.join(', ').toString();
+import StatusLegend from '../../styled/statusLegend';
+
+function findRejectedRoles(units) {
+  const sortRoles = units
+    .filter((u) => u.steps.find(
+      (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
+    ))
+    .map((u) => {
+      const { role } = u.steps
+        .find((s) => s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative);
+      return role === ROLES.ROLE_ACCESS_OFFICE.role
+        ? ROLES[role].shortLabel
+        : `${ROLES[role].shortLabel} - ${u.label}`;
+    });
+  return sortRoles.join(', ').toString();
+}
+
+function findVisitorStatus(units) {
+  const status = units.find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
+    .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
+  return status ? status.join(', ').toString() : '';
 }
 
 function createData({
-  id, firstname, birthLastname, units, rank, company, employeeType, status,
+  id, firstname, birthLastname, units, rank, company, employeeType, status, vip, vipReason,
 }) {
   return {
     id,
+    vip,
+    vipReason,
     visitor: rank
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -37,8 +56,8 @@ function createData({
     type: EMPLOYEE_TYPE[employeeType],
     date: format(findValidationDate(units), "dd/MM/yyyy à k'h'mm"),
     status: status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
-      ? `${VISITOR_STATUS[status]} par ${findRejectedRole(units)}`
-      : VISITOR_STATUS[status],
+      ? `${VISITOR_STATUS[status]} par ${findRejectedRoles(units)}`
+      : findVisitorStatus(units),
   };
 }
 
@@ -57,37 +76,44 @@ export default function TabRequestVisitors({ visitors }) {
   }, []);
 
   return (
-    <TableContainer>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <CustomTableCell key={column.id} align={column.align}>
-                {column.label}
-              </CustomTableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              role="checkbox"
-              tabIndex={-1}
-              key={row.id}
-            >
-              {columns.map((column) => {
-                const value = row[column.id];
-                return (
-                  <TableCell key={column.id} align={column.align}>
-                    {column.format && typeof value === 'number' ? column.format(value) : value}
-                  </TableCell>
-                );
-              })}
+    <div>
+      <StatusLegend />
+      <TableContainer>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              { columns.map((column) => (
+                <CustomTableCell key={column.id} align={column.align}>
+                  { column.label }
+                </CustomTableCell>
+              )) }
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            { rows.map((row) => (
+              <TableRow
+                role="checkbox"
+                tabIndex={-1}
+                key={row.id}
+              >
+                { columns.map((column) => {
+                  const value = row[column.id];
+                  return column.id === 'visitor' ? (
+                    <TableCell key={column.id} align={column.align}>
+                      <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
+                    </TableCell>
+                  ) : (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                    </TableCell>
+                  );
+                }) }
+              </TableRow>
+            )) }
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 }
 

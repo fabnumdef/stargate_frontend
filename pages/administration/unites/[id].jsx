@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import gql from 'graphql-tag';
-import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
+import {
+  gql, useApolloClient, useMutation, useQuery,
+} from '@apollo/client';
 import { useRouter } from 'next/router';
-import { withApollo } from '../../../lib/apollo';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
 import UnitForm from '../../../components/administrationForms/unitForm';
-import { useSnackBar } from '../../../lib/ui-providers/snackbar';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
 import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditUnit } from '../../../utils/mappers/adminMappers';
@@ -15,6 +15,7 @@ const GET_UNIT = gql`
     query getUnit($campusId: String!, $id: ObjectID!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             getUnit(id: $id) {
                 id
                 label
@@ -58,6 +59,7 @@ const GET_PLACES = gql`
     query listPlaces($campusId: String!, $hasUnit: HasUnitFilter) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listPlaces(hasUnit: $hasUnit) {
                 list {
                     id
@@ -73,7 +75,7 @@ const GET_PLACES = gql`
 `;
 
 const EDIT_UNIT = gql`
-    mutation editUnit($campusId: String!,$id: ObjectID!, $unit: UnitInput!) {
+    mutation editUnit($campusId: String!, $id: ObjectID!, $unit: UnitInput!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             editUnit(id: $id, unit: $unit) {
@@ -285,9 +287,9 @@ function CreateUnit() {
     if (unitData && unitCorresDatas && unitOfficerDatas && placesData) {
       setDefaultValues(mapEditUnit(
         unitData,
-        unitCorresDatas.listUsers.list,
-        unitOfficerDatas.listUsers.list,
-        placesData.getCampus.listPlaces.list,
+        JSON.parse(JSON.stringify(unitCorresDatas.listUsers.list)),
+        JSON.parse(JSON.stringify(unitOfficerDatas.listUsers.list)),
+        JSON.parse(JSON.stringify(placesData.getCampus.listPlaces.list)),
       ));
     }
   }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);
@@ -308,4 +310,4 @@ function CreateUnit() {
   );
 }
 
-export default withApollo()(CreateUnit);
+export default CreateUnit;
