@@ -15,8 +15,6 @@ function getMenus(router, setSubMenuAdmin, subMenuAdmin) {
     { label: 'Mes Demandes', permission: '/', action: () => router.push('/') },
     { label: 'Nouvelle Demande', permission: '/nouvelle-demande', action: () => router.push('/nouvelle-demande') },
     { label: 'Administration', permission: '/administration', action: () => setSubMenuAdmin(!subMenuAdmin) },
-    { label: 'A propos', permission: '/no-route', action: () => router.push('/no-route') },
-    { label: 'Contactez Nous', permission: '/no-route', action: () => router.push('/no-route') },
   ];
 }
 
