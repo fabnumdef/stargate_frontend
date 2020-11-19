@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import {
+  gql, useMutation, useQuery,
+} from '@apollo/client';
 import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -130,9 +132,28 @@ function EditCampus() {
   const [editCampus] = useMutation(EDIT_CAMPUS);
   const [editUserReq] = useMutation(EDIT_USER);
   const [deleteUserRoleReq] = useMutation(DELETE_ROLE);
-  const [createPlaceReq] = useMutation(CREATE_PLACE);
+  const [createPlaceReq] = useMutation(CREATE_PLACE,
+    {
+      update: (cache, { data: { mutateCampus: { createPlace: createdPlace } } }) => {
+        const currentPlaces = cache.readQuery({ query: GET_PLACES, variables: { id } });
+        const updatedPlaces = {
+          ...currentPlaces,
+          getCampus: {
+            ...currentPlaces.getCampus,
+            listPlaces: {
+              ...currentPlaces.getCampus.listPlaces,
+              list: [...currentPlaces.getCampus.listPlaces.list, createdPlace],
+            },
+          },
+        };
+        cache.writeQuery({
+          query: GET_PLACES,
+          variables: { id },
+          data: updatedPlaces,
+        });
+      },
+    });
   const [deletePlaceReq] = useMutation(DELETE_PLACE);
-
   const { data: placesList } = useQuery(GET_PLACES, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const { data: usersList, fetchMore } = useQuery(GET_USERS, {
     variables: { cursor: { offset: 0, first: 10 } },

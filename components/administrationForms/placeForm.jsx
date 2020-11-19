@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
@@ -126,6 +126,10 @@ const PlaceForm = ({ list, submitForm }) => {
   const handleCancel = () => {
     setPlaceList(list);
   };
+
+  useEffect(() => {
+    setPlaceList(list);
+  }, [list]);
 
   return (
     <form onSubmit={handleSubmit(onSubmitPlaces)}>
