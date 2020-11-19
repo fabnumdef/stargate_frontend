@@ -153,7 +153,30 @@ function EditCampus() {
         });
       },
     });
-  const [deletePlaceReq] = useMutation(DELETE_PLACE);
+  const [deletePlaceReq] = useMutation(DELETE_PLACE,
+    {
+      update: (cache, { data: { mutateCampus: { deletePlace: deletedPlace } } }) => {
+        const currentPlaces = cache.readQuery({ query: GET_PLACES, variables: { id } });
+        const newList = currentPlaces.getCampus.listPlaces.list.filter(
+          (place) => place.id !== deletedPlace.id,
+        );
+        const updatedPlaces = {
+          ...currentPlaces,
+          getCampus: {
+            ...currentPlaces.getCampus,
+            listPlaces: {
+              ...currentPlaces.getCampus.listPlaces,
+              list: newList,
+            },
+          },
+        };
+        cache.writeQuery({
+          query: GET_PLACES,
+          variables: { id },
+          data: updatedPlaces,
+        });
+      },
+    });
   const { data: placesList } = useQuery(GET_PLACES, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const { data: usersList, fetchMore } = useQuery(GET_USERS, {
     variables: { cursor: { offset: 0, first: 10 } },
