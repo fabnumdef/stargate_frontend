@@ -25,7 +25,16 @@ app.prepare().then(() => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
   });
-  server.use(helmet());
+  server.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'", process.env.API_URL],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  }));
+
 
   server.use(async (ctx, n) => {
     ctx.res.statusCode = 200;
