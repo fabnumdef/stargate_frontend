@@ -352,17 +352,13 @@ function EditCampus() {
                 submitForm={submitEditCampus}
                 defaultValues={defaultValues}
                 usersList={usersList}
-                campusId={id}
                 fetchMore={fetchMore}
               />
             </Grid>
             <Grid item sm={10} xs={10} md={6}>
               <PlaceForm
                 submitForm={submitEditPlaces}
-                defaultValues={defaultValues}
                 list={placesList.getCampus.listPlaces.list}
-                campusId={id}
-                fetchMore={fetchMore}
               />
             </Grid>
           </Grid>

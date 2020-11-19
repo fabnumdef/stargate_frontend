@@ -212,7 +212,6 @@ const PlaceForm = ({ list, submitForm }) => {
 PlaceForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  defaultValues: PropTypes.shape({ createdPlaceName: PropTypes.string }).isRequired,
 };
 
 export default PlaceForm;
