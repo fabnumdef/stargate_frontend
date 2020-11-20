@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   userSelect: {
     display: 'inline-block',
     width: '70%',
-    padding: '0 0 15px 0px',
+    padding: '20px 0 15px 0px',
   },
   assistantSelect: {
     width: '250px',
