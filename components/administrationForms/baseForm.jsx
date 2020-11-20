@@ -21,6 +21,7 @@ import TableRow from '@material-ui/core/TableRow';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import { FORMS_LIST } from '../../utils/constants/enums';
+import updateAssistantList from '../../utils/mappers/editAssistantList';
 
 const useStyles = makeStyles((theme) => ({
   baseForm: {
@@ -139,15 +140,23 @@ const BaseForm = ({
     handleSubmit, errors, control, watch, setValue,
   } = useForm();
 
+  const [updated, setUpdated] = useState(false);
+
   const [selectList, setSelectList] = useState(usersList);
 
   const [assistantsList, setAssistantsList] = useState({
     [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
   });
 
-  const addAssistant = (event, typeAssistant) => {
-    setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
+  const editAssistant = (event, typeAssistant) => {
+    const updatedList = {
+      ...assistantsList,
+      [typeAssistant]: updateAssistantList(event.target.value, defaultValues.assistants),
+    };
+    setUpdated(true);
+    setAssistantsList(updatedList);
   };
+
   const deleteAssistant = (id, typeAssistant) => {
     const newUsers = assistantsList[typeAssistant].map((user) => {
       if (user.id === id) {
@@ -155,6 +164,7 @@ const BaseForm = ({
       }
       return user;
     });
+    setUpdated(true);
     setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
   };
 
@@ -307,13 +317,14 @@ const BaseForm = ({
                 displayEmpty
                 value={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS]}
                 renderValue={() => (<em>optionnel</em>)}
-                onChange={(evt) => addAssistant(evt, FORMS_LIST.ADMIN_ASSISTANTS)}
+                onChange={(evt) => editAssistant(evt, FORMS_LIST.ADMIN_ASSISTANTS)}
               >
                 { selectList && selectList.listUsers.list.map((user) => (
                   (!watch('campusAdmin') || watch('campusAdmin').id !== user.id) && (
                   <MenuItem key={user.id} value={user}>
                     <Checkbox
-                      checked={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].indexOf(user) > -1}
+                      checked={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].filter((
+                        (assistant) => (assistant.id === user.id && !assistant.toDelete))).length}
                     />
                     <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                   </MenuItem>
@@ -332,10 +343,10 @@ const BaseForm = ({
 
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Button onClick={handleCancel} variant="outlined" color="primary">
+        <Button onClick={handleCancel} disabled={!updated} variant="outlined" color="primary">
           Annuler
         </Button>
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" disabled={!updated} variant="contained" color="primary">
           Sauvegarder
         </Button>
       </Grid>
