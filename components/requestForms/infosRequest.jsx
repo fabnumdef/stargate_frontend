@@ -493,7 +493,7 @@ export default function FormInfosClaimant({
 FormInfosClaimant.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
-    visitors: PropTypes.array,
+    visitors: PropTypes.arrayOf(PropTypes.object),
     request: PropTypes.objectOf(PropTypes.object),
   }).isRequired,
   setForm: PropTypes.func.isRequired,

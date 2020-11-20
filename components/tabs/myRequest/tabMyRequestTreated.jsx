@@ -31,7 +31,6 @@ import { useLogin } from '../../../lib/loginContext';
 
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 
-
 const columns = [
   { id: 'id', label: 'N° demande', width: '220px' },
   {

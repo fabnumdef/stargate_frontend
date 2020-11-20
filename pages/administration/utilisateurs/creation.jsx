@@ -78,7 +78,6 @@ function CreateUser() {
     };
   }
 
-
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur', 'Nouvel utilisateur']} />

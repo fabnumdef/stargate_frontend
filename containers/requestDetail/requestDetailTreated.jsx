@@ -114,7 +114,6 @@ export default function RequestDetailsTreated({ requestId }) {
       variables: { requestId },
     });
 
-
   useEffect(() => {
     if (data && (
       !checkRequestDetailAuth(data, activeRole)

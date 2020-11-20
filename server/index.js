@@ -35,7 +35,6 @@ app.prepare().then(() => {
     },
   }));
 
-
   server.use(async (ctx, n) => {
     ctx.res.statusCode = 200;
     await n();

@@ -76,7 +76,6 @@ const GET_UNITS = gql`
     }
 `;
 
-
 const radioDisplay = (userRole) => {
   if (userRole.role === ROLES.ROLE_UNIT_CORRESPONDENT.role) { return [ROLES.ROLE_HOST]; }
   if (isAdmin(userRole.role)) {
@@ -139,7 +138,6 @@ const UserForm = ({
       addAlert({ message: 'Une erreur est survenue au chargement de la liste des unités', severity: 'error' });
     }
   };
-
 
   useEffect(() => {
     if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);

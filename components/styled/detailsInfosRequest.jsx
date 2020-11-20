@@ -66,7 +66,6 @@ export default function DetailsInfosRequest({ request }) {
   );
 }
 
-
 DetailsInfosRequest.propTypes = {
   request: PropTypes.shape({
     owner: PropTypes.shape({

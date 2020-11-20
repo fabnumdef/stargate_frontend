@@ -12,7 +12,6 @@ import { LoginContextProvider } from '../lib/loginContext';
 import theme from '../styles/theme';
 import { SnackBarProvider } from '../lib/hooks/snackbar';
 
-
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     // Remove the server-side injected CSS.
