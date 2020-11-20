@@ -1,4 +1,5 @@
 const Koa = require('koa');
+const helmet = require('koa-helmet');
 const http = require('http');
 const next = require('next');
 const Router = require('@koa/router');
@@ -20,11 +21,20 @@ process.on('SIGTERM', () => {
 app.prepare().then(() => {
   const server = new Koa();
   const router = new Router();
-
   router.all('*', async (ctx) => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
   });
+  server.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'", process.env.API_URL],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  }));
+
 
   server.use(async (ctx, n) => {
     ctx.res.statusCode = 200;

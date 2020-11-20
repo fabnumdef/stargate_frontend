@@ -98,22 +98,25 @@ function createData({
     report: null,
     screening: checkStatus(units, activeRole),
     requestId: request.id,
-    vAttachedFile: identityDocuments[0] ? identityDocuments[0].file.id : null,
+    vAttachedFile: identityDocuments[0] && identityDocuments[0].file
+      ? identityDocuments[0].file.id
+      : null,
     link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null,
   };
 }
 
 export const LIST_VISITOR_REQUESTS = gql`
-         query ListVisitorsRequestQuery(
+         query ListVisitorsToValidateRequestQuery(
            $campusId: String!
            $search: String
            $cursor: OffsetCursor!
-           $isDone: RequestVisitorIsDone
+           $as: ValidationPersonas!
          ) {
            campusId @client @export(as: "campusId")
+           activeRoleCache @client @export(as: "as") { role: role }
            getCampus(id: $campusId) {
              id
-             listVisitors(search: $search, cursor: $cursor, isDone: $isDone) {
+             listVisitorsToValidate(search: $search, cursor: $cursor, as: $as) {
                list {
                  id
                  firstname
@@ -145,7 +148,7 @@ export const LIST_VISITOR_REQUESTS = gql`
                    }
                }
                meta {
-                 total
+                   total
                }
              }
            }
@@ -175,7 +178,6 @@ export default function ScreeningManagement() {
     data, fetchMore, refetch,
   } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
-      isDone: { role: activeRole.role, value: false },
       cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       search,
     },
@@ -187,7 +189,7 @@ export default function ScreeningManagement() {
   React.useEffect(() => {
     if (!data) return;
     setVisitors(
-      data.getCampus.listVisitors.list.reduce((acc, dem) => {
+      data.getCampus.listVisitorsToValidate.list.reduce((acc, dem) => {
         acc.push(createData(dem, activeRole));
         return acc;
       }, []),
@@ -198,8 +200,8 @@ export default function ScreeningManagement() {
     {
       index: 0,
       label: `À traiter ${
-        data && data.getCampus.listVisitors.meta.total > 0
-          ? `(${data.getCampus.listVisitors.meta.total})`
+        data && data.getCampus.listVisitorsToValidate.meta.total > 0
+          ? `(${data.getCampus.listVisitorsToValidate.meta.total})`
           : ''
       }`,
     },
@@ -208,7 +210,6 @@ export default function ScreeningManagement() {
   const handleFetchMore = () => {
     fetchMore({
       variables: {
-        isDone: { role: activeRole.role, value: false },
         cursor: { first: rowsPerPage, offset: page * rowsPerPage },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -220,7 +221,7 @@ export default function ScreeningManagement() {
 
   const handlePageSize = () => {
     if (!data) return 0;
-    return data.getCampus.listVisitors.meta.total;
+    return data.getCampus.listVisitorsToValidate.meta.total;
   };
 
   const handleChangePage = (event, newPage) => {
