@@ -26,7 +26,6 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_SCREENING.role,
         ROLES.ROLE_HOST.role,
         ROLES.ROLE_OBSERVER.role,
-        // @todo rename when we defined that role name
         ROLES.ROLE_GATEKEEPER.role,
       ].includes(role);
     case path.includes('/administration/base'):
