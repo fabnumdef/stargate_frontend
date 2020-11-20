@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Table from '@material-ui/core/Table';
@@ -13,15 +13,34 @@ import VisitorGrid from '../../styled/visitor';
 
 import {
   EMPLOYEE_TYPE,
+  ROLES,
   VISITOR_STATUS,
   WORKFLOW_BEHAVIOR,
 } from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
-import findRejectedRole from '../../../utils/mappers/findRejectedRole';
-import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';
 
 import StatusLegend from '../../styled/statusLegend';
 
+function findRejectedRoles(units) {
+  const sortRoles = units
+    .filter((u) => u.steps.find(
+      (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
+    ))
+    .map((u) => {
+      const { role } = u.steps
+        .find((s) => s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative);
+      return role === ROLES.ROLE_ACCESS_OFFICE.role
+        ? ROLES[role].shortLabel
+        : `${ROLES[role].shortLabel} - ${u.label}`;
+    });
+  return sortRoles.join(', ').toString();
+}
+
+function findVisitorStatus(units) {
+  const status = units.find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
+    .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
+  return status ? status.join(', ').toString() : '';
+}
 
 function createData({
   id, firstname, birthLastname, units, rank, company, employeeType, status, vip, vipReason,
@@ -37,7 +56,7 @@ function createData({
     type: EMPLOYEE_TYPE[employeeType],
     date: format(findValidationDate(units), "dd/MM/yyyy à k'h'mm"),
     status: status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
-      ? `${VISITOR_STATUS[status]} par ${findRejectedRole(units)}`
+      ? `${VISITOR_STATUS[status]} par ${findRejectedRoles(units)}`
       : findVisitorStatus(units),
   };
 }
@@ -51,10 +70,10 @@ const columns = [
 ];
 
 export default function TabRequestVisitors({ visitors }) {
-  const rows = useMemo(() => visitors.reduce((acc, vis) => {
+  const rows = visitors.reduce((acc, vis) => {
     acc.push(createData(vis));
     return acc;
-  }, []), [visitors]);
+  }, []);
 
   return (
     <div>

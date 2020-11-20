@@ -12,8 +12,6 @@ export const urlAuthorization = (path, role) => {
   const allRoles = [
     '/compte',
     '/login',
-    '/contact',
-    '/no-route',
   ];
   switch (true) {
     case allRoles.includes(path):
