@@ -4,9 +4,8 @@ import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 
 import MyTreatements from './myTreatements';
-import ScreeningRequest from './screeningManagement';
+import ScreeningManagement from './screeningManagement';
 import GatekeeperManagement from './gatekeeperManagement';
-
 
 function selectLandingComponent(role) {
   switch (role) {
