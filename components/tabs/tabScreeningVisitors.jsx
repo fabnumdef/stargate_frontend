@@ -120,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const columns = [
   { id: 'birthLastname', label: 'Nom de N.', fullLabel: 'Nom de Naissance' },
   { id: 'firstname', label: 'Prénom' },
@@ -135,13 +134,11 @@ const StyledFormLabel = withStyles({
   },
 })(FormControlLabel);
 
-
 export default function ScreeningTable({ visitors, onChange }) {
   const { activeRole } = useLogin();
 
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('birthLastname');
-
 
   const createSortHandler = (property) => () => {
     const isAsc = orderBy === property && order === 'asc';
@@ -369,7 +366,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                     style={{ marginLeft: '10px' }}
                   />
                 </TableCell>
-
 
                 <TableCell
                   className={`${

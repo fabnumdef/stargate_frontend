@@ -103,6 +103,12 @@ const theme = createMuiTheme(
           lineHeight: '2.65',
           minWidth: '0',
         },
+        outlinedPrimary: {
+          backgroundColor: 'white',
+        },
+        outlinedSecondary: {
+          backgroundColor: 'white',
+        },
       },
       MuiTableCell: {
         body: {

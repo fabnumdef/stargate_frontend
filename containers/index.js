@@ -8,7 +8,8 @@ export { default as RequestDetailToTreat } from './requestDetail/requestDetailTo
 export { default as RequestDetailProgress } from './requestDetail/requestDetailProgress';
 export { default as RequestDetailTreated } from './requestDetail/requestDetailTreated';
 
-export { default as MenuRequest } from './menuRequest';
+export { default as MyTreatements } from './myTreatements';
 export { default as RequestAcces } from './requestAcces';
+export { default as MyAccesRequests } from './myAccesRequests';
 
 export { default as DndModule } from './dndContainer';

@@ -28,10 +28,15 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {
   isValid, differenceInDays, isBefore, isThursday, isFriday,
 } from 'date-fns';
-import { mapRequestEdit } from '../../utils/mappers/requestAcces';
+import validator from 'validator';
+
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { mapRequestEdit, mapCreateRequest } from '../../utils/mappers/requestAcces';
 
 import { useSnackBar } from '../../lib/hooks/snackbar';
+
 // Date Validators
+import CheckAnimation from '../styled/animations/checked';
 
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
@@ -89,6 +94,9 @@ const useStyles = makeStyles((theme) => ({
   buttonCancel: {
     marginRight: '5px',
   },
+  checkPos: {
+    marginBottom: '5px',
+  },
 }));
 
 // eslint-disable-next-line no-unused-vars
@@ -115,7 +123,6 @@ function isDeadlineRespected(value) {
   }
   return days >= 2;
 }
-
 const fromMinDate = () => {
   const date = new Date();
   if (isThursday(date)) {
@@ -140,7 +147,6 @@ const REQUEST_ATTRIBUTES = gql`
       }
     }
   `;
-
 export const GET_PLACES_LIST = gql`
     query getPlacesList($campusId: String!) {
         campusId @client @export(as: "campusId")
@@ -157,9 +163,7 @@ export const GET_PLACES_LIST = gql`
                 }
             }
         }
-    }
-`;
-
+    }`;
 export const CREATE_REQUEST = gql`
          mutation createRequest($request: RequestInput!, $campusId: String!, $unit: RequestOwnerUnitInput!) {
             campusId @client @export(as: "campusId")
@@ -186,7 +190,7 @@ export const EDIT_REQUEST = gql`
        `;
 
 export default function FormInfosClaimant({
-  formData, setForm, handleNext,
+  formData, setForm, handleNext, group,
 }) {
   const classes = useStyles();
 
@@ -256,14 +260,19 @@ export default function FormInfosClaimant({
   const [expanded, setExpanded] = useState(false);
 
   const onSubmit = (data) => {
-    const places = data.places.map((p) => p.id);
+    const request = mapCreateRequest(data, group);
+
     if (!formData.id) {
-      createRequest({ variables: { request: { ...data, places } } });
+      createRequest({
+        variables: {
+          request,
+        },
+      });
     } else {
       updateRequest({
         variables: {
           id: formData.id,
-          request: { ...data, places },
+          request,
         },
       });
     }
@@ -271,13 +280,87 @@ export default function FormInfosClaimant({
 
   return (
     <div>
-      <Typography className={classes.instruction} variant="body1">
-        Tous les champs sont obligatoires
-      </Typography>
       <form data-testid="form-demandeur" onSubmit={handleSubmit(onSubmit)}>
         {/* Debut Main principal Layout */}
         <Grid container spacing={6}>
-          {/* Column 1 */}
+          { group && (
+            <Grid item sm={12} xs={12} md={12}>
+              <Grid container direction="column">
+                {/* Item 1 */}
+                <Grid item md={12} sm={12}>
+                  <Typography variant="subtitle2">Référent groupe :</Typography>
+                </Grid>
+                <Grid item sm={6} xs={6}>
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Email"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'refEmail')}
+                        InputProps={
+                          watch('refEmail') && validator.isEmail(watch('refEmail'))
+                            ? {
+                              endAdornment: (
+                                <InputAdornment position="end" className={classes.checkPos}>
+                                  <CheckAnimation />
+                                </InputAdornment>
+                              ),
+                              inputProps: { 'data-testid': 'visiteur-email' },
+                            }
+                            : { inputProps: { 'data-testid': 'visiteur-email' } }
+                        }
+                        helperText={errors.refEmail && errors.refEmail.message}
+                        fullWidth
+                      />
+                    )}
+                    control={control}
+                    name="refEmail"
+                    defaultValue=""
+                    rules={{
+                      required: "L'email du référent est obligatoire",
+                      validate: (value) => validator.isEmail(value) || 'Format invalide',
+                    }}
+                  />
+
+                </Grid>
+
+                <Grid item sm={6} xs={6}>
+                  <TextField
+                    label="Nom"
+                    fullWidth
+                    name="refName"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'refName')}
+                    helperText={errors.refName && errors.refName.message}
+                    inputRef={register({
+                      validate: (value) => value.trim() !== '' || 'Le nom est obligatoire',
+                    })}
+                  />
+                </Grid>
+                <Grid item sm={6} xs={6}>
+                  <TextField
+                    label="Prénom"
+                    fullWidth
+                    name="refFirstName"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'refFirstName')}
+                    helperText={errors.refFirstName && errors.refFirstName.message}
+                    inputRef={register({
+                      validate: (value) => value.trim() !== '' || 'Le prénom est obligatoire',
+                    })}
+                  />
+                </Grid>
+                <Grid item sm={6} xs={6}>
+                  <TextField
+                    label="Téléphone"
+                    fullWidth
+                    name="refPhone"
+                    error={Object.prototype.hasOwnProperty.call(errors, 'refPhone')}
+                    helperText={errors.refPhone && errors.refPhone.message}
+                    inputRef={register()}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
+
           <Grid item sm={12} xs={12} md={6}>
             <Grid container direction="row" spacing={2}>
               {/* Item 1 */}
@@ -493,9 +576,10 @@ export default function FormInfosClaimant({
 FormInfosClaimant.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.string,
-    visitors: PropTypes.array,
+    visitors: PropTypes.arrayOf(PropTypes.object),
     request: PropTypes.objectOf(PropTypes.object),
   }).isRequired,
   setForm: PropTypes.func.isRequired,
   handleNext: PropTypes.func.isRequired,
+  group: PropTypes.bool.isRequired,
 };

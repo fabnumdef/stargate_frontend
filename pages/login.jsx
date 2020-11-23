@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { LoginForm, ForgotPassForm } from '../components';
 
-
 const useStyles = makeStyles((theme) => ({
   mainLoginForm: {
     marginTop: '10vh',

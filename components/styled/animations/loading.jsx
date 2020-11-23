@@ -113,7 +113,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export default function LoadingAnimation() {
   const classes = useStyles();
 
