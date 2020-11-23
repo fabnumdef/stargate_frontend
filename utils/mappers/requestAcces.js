@@ -30,4 +30,22 @@ export const mapRequestEdit = (data) => ({
   reason: data.reason,
 });
 
+export const mapCreateRequest = (data, group) => {
+  const {
+    object, reason, from, to,
+  } = data;
+
+  const places = data.places.map((p) => p.id);
+  const referent = group ? {
+    email: data.refEmail,
+    firstname: data.refFirstName,
+    lastname: data.refName,
+    phone: data.refPhone,
+  } : null;
+
+  return {
+    object, reason, from, to, places, referent,
+  };
+};
+
 export default {};

@@ -3,9 +3,10 @@ import React from 'react';
 import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 
-import MenuRequest from './menuRequest';
-import ScreeningManagement from './screeningManagement';
+import MyTreatements from './myTreatements';
+import ScreeningRequest from './screeningManagement';
 import GatekeeperManagement from './gatekeeperManagement';
+
 
 function selectLandingComponent(role) {
   switch (role) {
@@ -14,7 +15,7 @@ function selectLandingComponent(role) {
     case ROLES.ROLE_GATEKEEPER.role:
       return <GatekeeperManagement />;
     default:
-      return <MenuRequest />;
+      return <MyTreatements />;
   }
 }
 

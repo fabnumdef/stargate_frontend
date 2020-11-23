@@ -364,7 +364,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                   />
                 </TableCell>
 
-
                 <TableCell
                   className={`${
                     index === visitors.length - 1 ? classes.reportLastChild : ''

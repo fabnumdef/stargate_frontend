@@ -110,11 +110,12 @@ function getNationality() {
 }
 
 const ADD_VISITOR = gql`
-  mutation createVisitorReq($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!) {
+  mutation createVisitorReq($idRequest: String!, $visitor: RequestVisitorInput!, $campusId: String!, $as: ValidationPersonas!) {
     campusId @client @export(as: "campusId")
+    activeRoleCache @client @export (as: "as") {role: role}
     mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
-        createVisitor(visitor: $visitor){
+        createVisitor(visitor: $visitor, as: $as){
           id
           isInternal
           employeeType
@@ -192,14 +193,14 @@ export default function FormInfoVisitor({
     clearError,
   } = useForm({
     defaultValues: {
-      nationality: selectVisitor.nationality ? selectVisitor.nationality : '',
+      nationality: (selectVisitor && selectVisitor.nationality) ? selectVisitor.nationality : '',
     },
   });
 
-  const [inputFile, setInputFile] = useState(selectVisitor.nationality && selectVisitor.nationality !== 'Française');
+  const [inputFile, setInputFile] = useState(selectVisitor && selectVisitor.nationality && selectVisitor.nationality !== 'Française');
 
   useEffect(() => {
-    if (selectVisitor.id) {
+    if (selectVisitor && selectVisitor.id) {
       const visitorData = mapVisitorEdit(selectVisitor);
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(
@@ -225,7 +226,7 @@ export default function FormInfoVisitor({
     setValue('kind', '');
     setValue('reference', '');
     setInputFile(value !== 'Française');
-    if (selectVisitor.fileDefaultValue) {
+    if (selectVisitor && selectVisitor.fileDefaultValue) {
       setSelectVisitor({ ...selectVisitor, fileDefaultValue: '' });
     }
   };
@@ -310,7 +311,7 @@ export default function FormInfoVisitor({
 
   const onSubmit = (data) => {
     const visitorData = mapVisitorData(data);
-    if (selectVisitor.id) {
+    if (selectVisitor && selectVisitor.id) {
       return editVisitor(visitorData);
     }
     return createVisitor(visitorData);
@@ -326,9 +327,7 @@ export default function FormInfoVisitor({
 
   return (
     <div>
-      <Typography className={classes.instruction} variant="body1">
-        Tous les champs sont obligatoires
-      </Typography>
+
       <form data-testid="form-visiteur" onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={6}>
           <Grid item sm={12} xs={12} md={6}>
@@ -593,7 +592,7 @@ export default function FormInfoVisitor({
                   name="vip"
                   defaultValue="FALSE"
                 />
-                {(selectVisitor.vip || watch('vip') === 'TRUE') && (
+                {((selectVisitor && selectVisitor.vip) || watch('vip') === 'TRUE') && (
                   <Grid item xs={12} sm={12}>
                     <Controller
                       as={(
@@ -785,7 +784,7 @@ export default function FormInfoVisitor({
                   control={control}
                   defaultValue=""
                   name="file"
-                  editValue={selectVisitor.fileDefaultValue ? selectVisitor.fileDefaultValue : ''}
+                  editValue={(selectVisitor && selectVisitor.fileDefaultValue) ? selectVisitor.fileDefaultValue : ''}
                   onChange={(file) => file}
                   label="Fichier"
                   error={Object.prototype.hasOwnProperty.call(errors, 'file')}

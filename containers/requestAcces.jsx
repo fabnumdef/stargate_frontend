@@ -13,7 +13,12 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import NoSsr from '../lib/nossr';
 
 import Template from './template';
-import { FormInfosRequest, FormInfosVisitor, FormInfosRecapDemande } from '../components';
+import {
+  FormInfosRequest,
+  FormInfosVisitor,
+  FormInfosRecapDemande,
+  FormInfosImport,
+} from '../components';
 
 const AntTab = withStyles((theme) => ({
   root: {
@@ -52,6 +57,12 @@ const useStyles = makeStyles(() => ({
   pageTitleControl: {
     marginLeft: 'auto',
   },
+  instruction: {
+    marginBottom: '1%',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    marginLeft: '2%',
+  },
 }));
 
 function TabPanel({ children, value, index }) {
@@ -78,7 +89,7 @@ function getSteps() {
   return ['Demande', 'Visiteur', 'Recapitulatif'];
 }
 
-export default function RequestAccesForm() {
+export default function RequestAccesForm({ group }) {
   const classes = useStyles();
 
   // Stepper's functions
@@ -94,7 +105,7 @@ export default function RequestAccesForm() {
   };
 
   // functionality to update a Visitor.
-  const [selectVisitor, setSelectVisitor] = useState({});
+  const [selectVisitor, setSelectVisitor] = useState(null);
 
   // FormState
   const [formData, setForm] = useState({
@@ -107,33 +118,60 @@ export default function RequestAccesForm() {
         <Grid item sm={12} xs={12}>
           <Box display="flex" alignItems="center">
             <Typography variant="h5" className={classes.pageTitle}>
-              Nouvelle Demande
+              {group ? 'Nouvelle Demande Groupe' : 'Nouvelle Demande'}
             </Typography>
           </Box>
         </Grid>
         <Grid item sm={12} xs={12}>
           <Tabs value={activeStep} aria-label="Etapes demande acces">
             {steps.map((label, index) => (
-              <AntTab className={classes.stepperTitles} label={`${index + 1}. ${label}`} key={`tab ${label}`} />
+              <AntTab
+                className={classes.stepperTitles}
+                label={`${index + 1}. ${label}`}
+                key={`tab ${label}`}
+              />
             ))}
           </Tabs>
         </Grid>
         <Grid item sm={12} xs={12}>
           <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
             <NoSsr>
-              <FormInfosRequest formData={formData} setForm={setForm} handleNext={handleNext} />
+              <Typography className={classes.instruction} variant="body1">
+                Tous les champs sont obligatoires
+              </Typography>
+              <FormInfosRequest
+                formData={formData}
+                setForm={setForm}
+                handleNext={handleNext}
+                group={group}
+                setSelectVisitor={setSelectVisitor}
+                handleBack={handleBack}
+              />
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
             <NoSsr>
-              <FormInfosVisitor
-                formData={formData}
-                setForm={setForm}
-                selectVisitor={selectVisitor}
-                handleNext={handleNext}
-                setSelectVisitor={setSelectVisitor}
-                handleBack={handleBack}
-              />
+              {(() => {
+                if (group && !selectVisitor) {
+                  return (
+                    <FormInfosImport
+                      formData={formData}
+                      setForm={setForm}
+                      handleNext={handleNext}
+                      handleBack={handleBack}
+                    />
+                  );
+                }
+                return (
+                  <FormInfosVisitor
+                    formData={formData}
+                    setForm={setForm}
+                    selectVisitor={selectVisitor}
+                    handleNext={handleNext}
+                    handleBack={handleBack}
+                  />
+                );
+              })()}
             </NoSsr>
           </TabPanel>
           <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>
@@ -144,6 +182,7 @@ export default function RequestAccesForm() {
                 handleNext={handleNext}
                 handleBack={handleBack}
                 setSelectVisitor={setSelectVisitor}
+                group={group}
               />
             </NoSsr>
           </TabPanel>
@@ -152,3 +191,11 @@ export default function RequestAccesForm() {
     </Template>
   );
 }
+
+RequestAccesForm.propTypes = {
+  group: PropTypes.bool,
+};
+
+RequestAccesForm.defaultProps = {
+  group: false,
+};
