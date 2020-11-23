@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const LIST_VISITOR_REQUESTS = gql`
-  query ListVisitorsRequestQuery($campusId: String!, $search: String, $cursor: OffsetCursor!) {
+  query ListVisitorsRequestQuery($campusId: ObjectID!, $search: String, $cursor: OffsetCursor!) {
     campusId @client @export(as: "campusId")
     getCampus(id: $campusId) {
       listVisitors(search: $search, cursor: $cursor) {

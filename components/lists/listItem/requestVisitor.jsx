@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-wrap-multilines */
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -128,3 +129,25 @@ export default function RequestVisitorItem({ requestVisitor }) {
     </ListItem>
   );
 }
+
+RequestVisitorItem.propTypes = {
+  requestVisitor: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    request: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      from: PropTypes.instanceOf(Date).isRequired,
+      to: PropTypes.instanceOf(Date).isRequired,
+      owner: PropTypes.shape({
+        rank: PropTypes.string,
+        firstname: PropTypes.string.isRequired,
+        lastname: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+    birthLastname: PropTypes.string.isRequired,
+    usageLastname: PropTypes.string.isRequired,
+    firstname: PropTypes.string.isRequired,
+    birthday: PropTypes.instanceOf(Date).isRequired,
+    birthplace: PropTypes.string.isRequired,
+    nationality: PropTypes.string.isRequired,
+  }).isRequired,
+};

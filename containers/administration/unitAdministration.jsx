@@ -52,7 +52,7 @@ const GET_UNITS_USERS = gql`
 `;
 
 const DELETE_UNIT = gql`
-    mutation deleteUnit($campusId: String!, $id: String!) {
+    mutation deleteUnit($campusId: String!, $id: ObjectID!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             deleteUnit(id: $id) {
