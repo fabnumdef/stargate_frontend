@@ -98,7 +98,7 @@ export default function InfosImport({
     let render = <CheckCircleIcon style={{ color: '#28a745' }} />;
 
     if (visitor.errors) {
-      if (errorStatement) {
+      if (!errorStatement) {
         setErrorStatement(true);
       }
       render = <ErrorIcon style={{ color: red.A400 }} />;

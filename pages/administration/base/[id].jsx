@@ -52,7 +52,7 @@ const GET_USERS = gql`
 `;
 
 const EDIT_USER = gql`
-    mutation editUser($id: String! $user: UserInput) {
+    mutation editUser($id: ObjectID!, $user: UserInput) {
         editUser(id: $id, user: $user) {
           id
         }
@@ -60,7 +60,7 @@ const EDIT_USER = gql`
 `;
 
 const DELETE_ROLE = gql`
-    mutation deleteUserRole($id: String! $user: UserInput) {
+    mutation deleteUserRole($id: ObjectID!, $user: UserInput) {
         deleteUserRole(id: $id, user: $user) {
             id
         }
@@ -110,7 +110,7 @@ const CREATE_PLACE = gql`
 `;
 
 const DELETE_PLACE = gql`
-    mutation deletePlaces($campusId: String!, $id: String!) {
+    mutation deletePlaces($campusId: String!, $id: ObjectID!) {
         mutateCampus(id: $campusId) {
             deletePlace(id: $id) {
                 id

@@ -12,7 +12,7 @@ import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
 import { mapEditUnit } from '../../../utils/mappers/adminMappers';
 
 const GET_UNIT = gql`
-    query getUnit($campusId: String!, $id: String!) {
+    query getUnit($campusId: String!, $id: ObjectID!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
             id
@@ -75,7 +75,7 @@ const GET_PLACES = gql`
 `;
 
 const EDIT_UNIT = gql`
-    mutation editUnit($campusId: String!,$id: String!, $unit: UnitInput!) {
+    mutation editUnit($campusId: String!, $id: ObjectID!, $unit: UnitInput!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             editUnit(id: $id, unit: $unit) {
@@ -86,7 +86,7 @@ const EDIT_UNIT = gql`
 `;
 
 const EDIT_USER = gql`
-    mutation editUser($id: String!, $user: UserInput!) {
+    mutation editUser($id: ObjectID!, $user: UserInput!) {
         editUser(id: $id, user: $user) {
             id
         }
@@ -94,7 +94,7 @@ const EDIT_USER = gql`
 `;
 
 const DELETE_ROLE = gql`
-    mutation deleteUserRole($id: String! $user: UserInput) {
+    mutation deleteUserRole($id: ObjectID! $user: UserInput) {
         deleteUserRole(id: $id, user: $user) {
             id
         }
@@ -102,7 +102,7 @@ const DELETE_ROLE = gql`
 `;
 
 const EDIT_PLACE = gql`
-    mutation editPlace($campusId: String!, $id: String!, $place: PlaceInput!) {
+    mutation editPlace($campusId: String!, $id: ObjectID!, $place: PlaceInput!) {
         campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             editPlace(id: $id, place: $place) {

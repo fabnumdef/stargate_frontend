@@ -43,7 +43,7 @@ const GET_USERS_LIST = gql`
 `;
 
 const DELETE_USER = gql`
-  mutation deleteUser($id: String!) {
+  mutation deleteUser($id: ObjectID!) {
       deleteUser(id: $id) {
           id
       }
