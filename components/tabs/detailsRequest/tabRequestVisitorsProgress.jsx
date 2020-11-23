@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -59,10 +59,10 @@ const columns = [
 export default function TabRequestVisitors({ visitors, onDelete }) {
   const classes = useStyles();
 
-  const rows = visitors.reduce((acc, vis) => {
+  const rows = useMemo(() => visitors.reduce((acc, vis) => {
     acc.push(createData(vis));
     return acc;
-  }, []);
+  }, []), [visitors]);
 
   const [hover, setHover] = useState({});
   const [del, setDel] = useState({});

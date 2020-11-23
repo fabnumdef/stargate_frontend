@@ -24,6 +24,7 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_SCREENING.role,
         ROLES.ROLE_HOST.role,
         ROLES.ROLE_OBSERVER.role,
+        ROLES.ROLE_GATEKEEPER.role,
       ].includes(role);
     case path.includes('/administration/base'):
     case path.includes('/administration/unites'):
@@ -63,7 +64,8 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_HOST.role,
       ].includes(role);
     default:
-      return false;
+      // @todo change to false when its over
+      return true;
   }
 };
 

@@ -4,12 +4,15 @@ import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 
 import MyTreatements from './myTreatements';
-import ScreeningRequest from './screeningManagement';
+import ScreeningManagement from './screeningManagement';
+import GatekeeperManagement from './gatekeeperManagement';
 
 function selectLandingComponent(role) {
   switch (role) {
     case ROLES.ROLE_SCREENING.role:
-      return <ScreeningRequest />;
+      return <ScreeningManagement />;
+    case ROLES.ROLE_GATEKEEPER.role:
+      return <GatekeeperManagement />;
     default:
       return <MyTreatements />;
   }

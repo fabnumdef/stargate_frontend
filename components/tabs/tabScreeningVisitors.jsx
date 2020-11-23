@@ -233,7 +233,6 @@ export default function ScreeningTable({ visitors, onChange }) {
                     );
                 }
               })}
-
               <CustomTableHeader
                 colSpan={selectAll.length}
                 className={`${classes.reportHeader} ${classes.reportRow}`}
@@ -241,10 +240,8 @@ export default function ScreeningTable({ visitors, onChange }) {
               >
                 Signalement
               </CustomTableHeader>
-
             </TableRow>
             <TableRow>
-
               {selectAll.map((checkbox, index) => (
                 <CustomTableHeader
                   className={classNames(
