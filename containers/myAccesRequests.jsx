@@ -87,7 +87,7 @@ export const AntTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 export const LIST_MY_REQUESTS = gql`
-  query listMyRequests($campusId: ObjectID!, $cursor: OffsetCursor!, $filters: RequestFilters!) {
+  query listMyRequests($campusId: String!, $cursor: OffsetCursor!, $filters: RequestFilters!) {
     campusId @client @export(as: "campusId")
     getCampus(id: $campusId) {
       id
