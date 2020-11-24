@@ -92,7 +92,7 @@ const PlaceForm = ({ list, submitForm }) => {
     if (!placeName.length) {
       return null;
     }
-    if (placesList.some((e) => trimed(e.label) === trimed(placeName))) {
+    if (placesList.some((e) => trimed(e.label) === trimed(placeName) && !e.toDelete)) {
       return null;
     }
     const newList = [...placesList, { label: placeName }];
@@ -101,12 +101,14 @@ const PlaceForm = ({ list, submitForm }) => {
   };
 
   const handleDelete = async (label) => {
-    const newList = placesList.map((place) => {
-      if (place.label === label) {
-        return { ...place, toDelete: true };
-      }
-      return place;
-    });
+    const listId = list.map((place) => place.id);
+    const newList = placesList.filter((place) => (listId.includes(place.id)))
+      .map((place) => {
+        if (place.label === label) {
+          return { ...place, toDelete: true };
+        }
+        return place;
+      });
     setPlaceList(newList);
   };
 
