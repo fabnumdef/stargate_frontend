@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -11,7 +11,6 @@ import Template from '../../containers/template';
 import PageTitle from '../styled/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
-import { useLogin } from '../../lib/loginContext';
 
 const useStyles = makeStyles({
   root: {
@@ -24,9 +23,9 @@ const useStyles = makeStyles({
 });
 
 function IndexAdministration({
-  getList,
-  list,
-  count,
+  fetchMore,
+  refetch,
+  result,
   searchInput,
   setSearchInput,
   deleteMutation,
@@ -36,25 +35,33 @@ function IndexAdministration({
 }) {
   const classes = useStyles();
   const { addAlert } = useSnackBar();
-  const { activeRole } = useLogin();
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [deleteItemReq] = useMutation(deleteMutation);
 
+  const handleFetchMore = (selectedPage) => {
+    fetchMore({
+      variables: {
+        cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return fetchMoreResult;
+      },
+    });
+  };
+
   const handleChangePage = (event, selectedPage) => {
     setPage(selectedPage);
+    handleFetchMore(selectedPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  React.useEffect(() => {
-    getList(rowsPerPage, page);
-  }, [page, rowsPerPage, searchInput, activeRole]);
 
   const handleChangeFilter = (e) => {
     setSearchInput(e.target.value);
@@ -65,11 +72,16 @@ function IndexAdministration({
     try {
       await deleteItemReq({ variables: { id } });
       setSearchInput('');
+      console.log(deleteLabel, id);
       addAlert({ message: tabData(deleteLabel).deletedText, severity: 'success' });
-      if (list.length === 1 && page > 0) {
-        return setPage(page - 1);
+      let updatedPage = page;
+      if (result.list.length === 1 && page > 0) {
+        updatedPage = page - 1;
+        setPage(page - 1);
       }
-      return getList(rowsPerPage, page);
+      return refetch({
+        cursor: { first: rowsPerPage, offset: updatedPage * rowsPerPage },
+      });
     } catch (e) {
       addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
       return e;
@@ -99,7 +111,7 @@ function IndexAdministration({
         </Grid>
         <Grid item sm={12}>
           <TabAdmin
-            rows={list}
+            rows={result.list}
             columns={columns}
             deleteItem={deleteItem}
             tabData={tabData}
@@ -109,7 +121,7 @@ function IndexAdministration({
           <TablePagination
             rowsPerPageOptions={[10, 20, 30, 40, 50]}
             component="div"
-            count={count}
+            count={result.total}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={handleChangePage}
@@ -122,9 +134,9 @@ function IndexAdministration({
 }
 
 IndexAdministration.propTypes = {
-  getList: PropTypes.func.isRequired,
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  count: PropTypes.number,
+  fetchmore: PropTypes.func.isRequired,
+  refetch: PropTypes.func.isRequired,
+  result: PropTypes.objectOf(PropTypes.object).isRequired,
   searchInput: PropTypes.string,
   setSearchInput: PropTypes.func.isRequired,
   deleteMutation: PropTypes.objectOf(PropTypes.shape).isRequired,

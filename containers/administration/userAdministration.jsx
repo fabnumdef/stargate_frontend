@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { gql, useApolloClient } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
@@ -57,32 +57,32 @@ const createUserData = (data) => ({
 });
 
 function UserAdministration() {
-  const client = useApolloClient();
   const { activeRole } = useLogin();
-
-  const [usersList, setUsersList] = useState(undefined);
+  const [usersList, setUsersList] = useState({ list: [], total: 0 });
   const [searchInput, setSearchInput] = useState('');
 
-  const getList = async (rowsPerPage, page) => {
-    const { data } = await client.query({
-      query: GET_USERS_LIST,
-      variables: {
-        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-        search: searchInput,
-        hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
-          ? {}
-          : { unit: activeRole.unit },
-      },
-      fetchPolicy: 'no-cache',
-    });
-    return setUsersList(data);
-  };
+  const onCompletedQuery = (data) => setUsersList({
+    list: mapUsersList(data.listUsers.list),
+    total: data.listUsers.meta.total,
+  });
+
+  const { refetch, fetchMore } = useQuery(GET_USERS_LIST, {
+    variables: {
+      cursor: { first: 10, offset: 0 },
+      search: searchInput,
+      hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
+        ? {}
+        : { unit: activeRole.unit },
+    },
+    fetchPolicy: 'cache-and-network',
+    onCompleted: (d) => onCompletedQuery(d),
+  });
 
   return (
     <IndexAdministration
-      getList={getList}
-      list={usersList ? mapUsersList(usersList.listUsers.list) : []}
-      count={usersList && usersList.listUsers.meta.total}
+      fetchMore={fetchMore}
+      refetch={refetch}
+      result={usersList}
       searchInput={searchInput}
       setSearchInput={setSearchInput}
       deleteMutation={DELETE_USER}
