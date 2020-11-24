@@ -133,7 +133,11 @@ PaginationButton.propTypes = {
 };
 
 const BaseForm = ({
-  submitForm, defaultValues, usersList, fetchMore,
+  submitForm,
+  defaultValues,
+  setDefaultValues,
+  usersList,
+  fetchMore,
 }) => {
   const classes = useStyles();
   const {
@@ -206,6 +210,7 @@ const BaseForm = ({
     setAssistantsList({
       [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
     });
+    setUpdated(false);
   };
 
   const editName = (campusName) => {
@@ -385,6 +390,7 @@ const BaseForm = ({
 BaseForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
+  setDefaultValues: PropTypes.func.isRequired,
   usersList: PropTypes.objectOf(PropTypes.object).isRequired,
   fetchMore: PropTypes.func.isRequired,
 };

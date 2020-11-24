@@ -182,7 +182,7 @@ function EditCampus() {
     variables: { cursor: { offset: 0, first: 10 } },
   });
   const { data: adminsList } = useQuery(GET_USERS, {
-    variables: { cursor: { offset: 0, first: 10 }, hasRole: { role: ROLES.ROLE_ADMIN.role } },
+    variables: { cursor: { offset: 0, first: 10 }, hasRole: { role: ROLES.ROLE_ADMIN.role }, fetchPolicy: 'cache-and-network' },
   });
   const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const [defaultValues, setDefaultValues] = useState(null);
@@ -283,7 +283,6 @@ function EditCampus() {
         }
         return assistant;
       }));
-
       return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
     } catch (e) {
       return addAlert({
@@ -324,15 +323,13 @@ function EditCampus() {
   };
 
   useEffect(() => {
-    if (editCampusData && usersList && placesList && adminsList) {
+    if (editCampusData && usersList && adminsList) {
       setDefaultValues(mapEditCampus(
-        id,
         editCampusData.getCampus.label,
-        placesList,
         adminsList.listUsers.list,
       ));
     }
-  }, [editCampusData, usersList, placesList, adminsList]);
+  }, [editCampusData, usersList, adminsList]);
 
   return (
     <Template>
@@ -351,6 +348,7 @@ function EditCampus() {
               <BaseForm
                 submitForm={submitEditCampus}
                 defaultValues={defaultValues}
+                setDefaultValues={setDefaultValues}
                 usersList={usersList}
                 fetchMore={fetchMore}
               />
