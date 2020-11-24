@@ -116,7 +116,7 @@ export const LIST_MY_VISITORS = gql`
          query listMyVisitors(
            $campusId: String!
            $isDone: RequestVisitorIsDone!
-           $requestsId: [ObjectID]
+           $requestsId: [String]
          ) {
            campusId @client @export(as: "campusId")
            getCampus(id: $campusId) {
