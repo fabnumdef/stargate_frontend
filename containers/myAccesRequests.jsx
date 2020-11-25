@@ -129,9 +129,9 @@ export default function MyRequestAcces() {
 
       // Parse stored json or if none return initialValue
       if (item) return item;
-      return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+      return (activeRole.role === ROLES.ROLE_HOST.role ? 0 : 1);
     } catch (error) {
-      return (activeRole.role === ROLES.ROLE_HOST.role ? 1 : 0);
+      return (activeRole.role === ROLES.ROLE_HOST.role ? 0 : 1);
     }
   });
   /** @todo searchField filters
