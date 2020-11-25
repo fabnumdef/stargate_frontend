@@ -319,7 +319,6 @@ export function LoginContextProvider({ children }) {
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 
-
   return (
     <LoginContext.Provider value={{
       signIn,
