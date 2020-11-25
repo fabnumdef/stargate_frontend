@@ -85,6 +85,7 @@ const radioDisplay = (userRole) => {
       ROLES.ROLE_SCREENING,
       ROLES.ROLE_ACCESS_OFFICE,
       ROLES.ROLE_ADMIN,
+      ROLES.ROLE_GATEKEEPER,
     ];
   }
   if (isSuperAdmin(userRole.role)) {
@@ -95,6 +96,7 @@ const radioDisplay = (userRole) => {
       ROLES.ROLE_ACCESS_OFFICE,
       ROLES.ROLE_ADMIN,
       ROLES.ROLE_SUPERADMIN,
+      ROLES.ROLE_GATEKEEPER,
     ];
   }
   return [];
@@ -121,6 +123,7 @@ const UserForm = ({
     ROLES.ROLE_SUPERADMIN.role,
     ROLES.ROLE_ACCESS_OFFICE.role,
     ROLES.ROLE_SCREENING.role,
+    ROLES.ROLE_GATEKEEPER.role,
   ];
 
   const onSubmit = (data) => {
@@ -144,7 +147,7 @@ const UserForm = ({
     if (defaultValues.campus) {
       getListUnits(defaultValues.campus);
     }
-  }, []);
+  }, [inputLabel, defaultValues]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.createUserForm}>

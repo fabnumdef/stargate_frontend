@@ -83,27 +83,43 @@ export default function GatekeeperManagement() {
   const classes = useStyles();
   // filters
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(1);
+  const [list, setList] = useState(null);
 
   const [search, setSearch] = useState(null);
-
   const {
     data,
+    fetchMore,
   } = useQuery(LIST_VISITOR_REQUESTS, {
     variables: {
-      cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+      cursor: { first: rowsPerPage, offset: 0 },
       search,
     },
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
+    onCompleted: (d) => list ? null : setList(d),
   });
+
+  const handleFetchMore = (selectedPage) => {
+    fetchMore({
+      variables: {
+        cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        setList(fetchMoreResult);
+        return fetchMoreResult;
+      },
+    });
+  };
 
   const handlePageSize = () => {
     if (!data) return 0;
     return data.getCampus.listVisitors.meta.total;
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = async (event, newPage) => {
     setPage(newPage);
+    handleFetchMore(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -142,8 +158,8 @@ export default function GatekeeperManagement() {
 
         <Grid item sm={12}>
           <List>
-            {data
-             && data.getCampus.listVisitors.list.map((visitorRequest) => (
+            {list
+             && list.getCampus.listVisitors.list.map((visitorRequest) => (
                <ListItemVisitors requestVisitor={visitorRequest} />
              ))}
           </List>
