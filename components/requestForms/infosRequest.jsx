@@ -350,6 +350,7 @@ export default function FormInfosClaimant({
                 <Grid item sm={6} xs={6}>
                   <TextField
                     label="Téléphone"
+                    type="tel"
                     fullWidth
                     name="refPhone"
                     error={Object.prototype.hasOwnProperty.call(errors, 'refPhone')}

@@ -61,7 +61,9 @@ export default function InfosImport({
 
   const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (dataCallback) => {
-      addAlert({ message: 'Import réussi', severity: 'success' });
+      if (errorStatement === true) {
+        addAlert({ message: 'Import réussi', severity: 'success' });
+      }
       const visitors = [];
       dataCallback.mutateCampus.mutateRequest.createGroupVisitors.forEach((visitor) => {
         if (visitor.visitor !== null) {
@@ -98,7 +100,7 @@ export default function InfosImport({
     let render = <CheckCircleIcon style={{ color: '#28a745' }} />;
 
     if (visitor.errors) {
-      if (!errorStatement) {
+      if (errorStatement === false) {
         setErrorStatement(true);
       }
       render = <ErrorIcon style={{ color: red.A400 }} />;
@@ -186,7 +188,7 @@ export default function InfosImport({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 && !errorStatement} onClick={handleNext}>
+            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 && errorStatement === true} onClick={handleNext}>
               Envoyer
             </Button>
           </div>
