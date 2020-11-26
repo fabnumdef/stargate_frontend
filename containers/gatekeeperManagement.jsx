@@ -96,7 +96,7 @@ export default function GatekeeperManagement() {
       search,
     },
     fetchPolicy: 'cache-and-network',
-    onCompleted: (d) => list ? null : setList(d),
+    onCompleted: (d) => (list ? null : setList(d)),
   });
 
   const handleFetchMore = (selectedPage) => {
