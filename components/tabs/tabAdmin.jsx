@@ -123,18 +123,19 @@ export default function TabAdmin({
       <TableBody>
         {rows.map((row, index) => {
           if (del[index]) {
+            const label = (row.name ? row.name : row.lastname);
             return (
               <TableRow tabIndex={-1}>
                 <TableCell colSpan={columns.length + 1}>
                   <Grid container>
                     <Grid item sm={10}>
-                      {tabData(row.deleteLabel).confirmDeleteText}
+                      {tabData(label).confirmDeleteText}
                     </Grid>
                     <Grid item sm={2}>
                       <IconButton
                         aria-label="valide"
                         className={classes.icon}
-                        onClick={() => handleDeleteConfirm(row.id, row.deleteLabel)}
+                        onClick={() => handleDeleteConfirm(row.id, label)}
                       >
                         <DoneIcon />
                       </IconButton>
