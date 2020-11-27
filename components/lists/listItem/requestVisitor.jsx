@@ -8,7 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { format } from 'date-fns';
-import { VISITOR_STATUS, STATE_REQUEST } from '../../../utils/constants/enums';
+import { VISITOR_STATUS, ROLES, STATE_REQUEST } from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 const useStyles = makeStyles(() => ({
@@ -24,11 +24,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+function findVisitorStatus(units) {
+  const status = units.find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
+    .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
+  return status ? status.join(', ').toString() : '';
+}
+
 export default function RequestVisitorItem({ requestVisitor }) {
+  // console.log(requestVisitor.units);
   const status = useMemo(
-    () => (requestVisitor.status === STATE_REQUEST.STATE_CANCELED.state
-      ? VISITOR_STATUS.CANCELED
-      : findValidationStep(requestVisitor.units)),
+    () => (findVisitorStatus(requestVisitor.units) ? findVisitorStatus(requestVisitor.units)
+      : findValidationStep(requestVisitor.units)
+    ),
     [requestVisitor.status, requestVisitor.units],
   );
 

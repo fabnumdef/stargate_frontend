@@ -52,6 +52,7 @@ export const LIST_VISITOR_REQUESTS = gql`
               state {
                 isOK
                 value
+                tags
               }
             }
           }
