@@ -85,7 +85,6 @@ export default function InfosImport({
     },
   });
 
-
   useEffect(() => {
     // On Component creation, init visitors to empty array.
     setForm({ ...formData, visitors: [] });
