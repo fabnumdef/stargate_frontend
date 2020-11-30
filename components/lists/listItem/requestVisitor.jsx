@@ -8,7 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { format } from 'date-fns';
-import { VISITOR_STATUS, ROLES, STATE_REQUEST } from '../../../utils/constants/enums';
+import { ROLES } from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 const useStyles = makeStyles(() => ({
