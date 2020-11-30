@@ -61,25 +61,30 @@ export default function InfosImport({
 
   const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (dataCallback) => {
-      if (errorStatement === true) {
-        addAlert({ message: 'Import réussi', severity: 'success' });
-      }
+      let errors = false;
       const visitors = [];
       dataCallback.mutateCampus.mutateRequest.createGroupVisitors.forEach((visitor) => {
         if (visitor.visitor !== null) {
           visitors.push(visitor.visitor);
         }
+        if (errors === false && visitor.errors) {
+          errors = true;
+        }
       });
+      if (errors === false) {
+        addAlert({ message: 'Import réussi', severity: 'success' });
+      }
       setForm({ ...formData, visitors });
     },
     onError: () => {
       // Display good message
       addAlert({
-        message: 'erreur graphQL',
+        message: "Échec de l'import",
         severity: 'error',
       });
     },
   });
+
 
   useEffect(() => {
     // On Component creation, init visitors to empty array.
@@ -87,6 +92,7 @@ export default function InfosImport({
   }, []);
 
   const handleChange = ({ target: { validity, files: [file] } }) => {
+    setErrorStatement(false);
     if (validity.valid) importFile({ variables: { idRequest: formData.id, file } });
   };
 
@@ -188,7 +194,7 @@ export default function InfosImport({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 && errorStatement === true} onClick={handleNext}>
+            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 || errorStatement === true} onClick={handleNext}>
               Envoyer
             </Button>
           </div>
