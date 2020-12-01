@@ -384,6 +384,7 @@ export default function MyTreatements() {
         { (value === 1
         && activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role
         && treated
+        && treated.getCampus.listRequestByVisitorStatus.meta.total > 0
         )
         && (
         <Grid item sm={2} xs={12} md={4} lg={4}>
