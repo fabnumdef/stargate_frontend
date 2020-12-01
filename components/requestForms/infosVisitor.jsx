@@ -779,7 +779,7 @@ export default function FormInfoVisitor({
                 <Controller
                   as={InputFile}
                   rules={{
-                    required: watch('nationality') !== 'Française',
+                    required: watch('nationality') !== 'Française' && !selectVisitor,
                   }}
                   control={control}
                   defaultValue=""
