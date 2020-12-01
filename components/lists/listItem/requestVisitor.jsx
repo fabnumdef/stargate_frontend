@@ -25,7 +25,6 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function RequestVisitorItem({ requestVisitor }) {
-  // console.log(requestVisitor.units);
   const status = useMemo(
     () => (findVisitorStatus(requestVisitor.units) ? findVisitorStatus(requestVisitor.units)
       : findValidationStep(requestVisitor.units)
