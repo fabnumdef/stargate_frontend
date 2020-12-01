@@ -62,19 +62,25 @@ export default function InfosImport({
 
   const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
     onCompleted: (dataCallback) => {
-      addAlert({ message: 'Import réussi', severity: 'success' });
+      let errors = false;
       const visitors = [];
       dataCallback.mutateCampus.mutateRequest.createGroupVisitors.forEach((visitor) => {
         if (visitor.visitor !== null) {
           visitors.push(visitor.visitor);
         }
+        if (errors === false && visitor.errors) {
+          errors = true;
+        }
       });
+      if (errors === false) {
+        addAlert({ message: 'Import réussi', severity: 'success' });
+      }
       setForm({ ...formData, visitors });
     },
     onError: () => {
       // Display good message
       addAlert({
-        message: 'erreur graphQL',
+        message: "Échec de l'import",
         severity: 'error',
       });
     },
@@ -86,6 +92,7 @@ export default function InfosImport({
   }, []);
 
   const handleChange = ({ target: { validity, files: [file] } }) => {
+    setErrorStatement(false);
     if (validity.valid) importFile({ variables: { idRequest: formData.id, file } });
   };
 
@@ -99,7 +106,7 @@ export default function InfosImport({
     let render = <CheckCircleIcon style={{ color: '#28a745' }} />;
 
     if (visitor.errors) {
-      if (!errorStatement) {
+      if (errorStatement === false) {
         setErrorStatement(true);
       }
       render = <ErrorIcon style={{ color: red.A400 }} />;
@@ -187,7 +194,7 @@ export default function InfosImport({
             </Button>
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 && !errorStatement} onClick={handleNext}>
+            <Button type="submit" variant="contained" color="primary" disabled={formData.visitors.length <= 0 || errorStatement === true} onClick={handleNext}>
               Envoyer
             </Button>
           </div>
