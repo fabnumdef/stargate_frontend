@@ -8,8 +8,8 @@ import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { format } from 'date-fns';
-import { VISITOR_STATUS, STATE_REQUEST } from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
+import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';
 
 const useStyles = makeStyles(() => ({
   subtitles: {
@@ -26,10 +26,10 @@ const useStyles = makeStyles(() => ({
 
 export default function RequestVisitorItem({ requestVisitor }) {
   const status = useMemo(
-    () => (requestVisitor.status === STATE_REQUEST.STATE_CANCELED.state
-      ? VISITOR_STATUS.CANCELED
-      : findValidationStep(requestVisitor.units)),
-    [requestVisitor.status, requestVisitor.units],
+    () => (findVisitorStatus(requestVisitor.units) ? findVisitorStatus(requestVisitor.units)
+      : findValidationStep(requestVisitor.units)
+    ),
+    [requestVisitor.units],
   );
 
   const classes = useStyles();
