@@ -286,6 +286,17 @@ export function LoginContextProvider({ children }) {
     }
   }, [meData, meLoading, meError]);
 
+  function landingPath(role) {
+    switch (role) {
+      case ROLES.ROLE_SUPERADMIN.role || ROLES.ROLE_ADMIN.role:
+        return '/administration/utilisateurs';
+      case ROLES.ROLE_HOST.role:
+        return '/mes-demandes';
+      default:
+        return '/';
+    }
+  }
+
   useEffect(() => {
     if (router.query.token && !isLoggedUser) {
       signIn(decodeURIComponent(router.query.email), null, router.query.token);
@@ -304,12 +315,7 @@ export function LoginContextProvider({ children }) {
     if ((isLoggedUser
       && router.pathname === '/login') || (isCacheInit && !urlAuthorization(router.pathname, activeRole.role))
     ) {
-      router.push(
-        (activeRole.role === ROLES.ROLE_SUPERADMIN.role
-          || activeRole.role === ROLES.ROLE_ADMIN.role)
-          ? '/administration/utilisateurs'
-          : '/',
-      );
+      router.push(landingPath(activeRole.role));
     }
   }, [isLoggedUser, activeRole, isCacheInit]);
 

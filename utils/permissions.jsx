@@ -22,7 +22,6 @@ export const urlAuthorization = (path, role) => {
         ROLES.ROLE_SECURITY_OFFICER.role,
         ROLES.ROLE_ACCESS_OFFICE.role,
         ROLES.ROLE_SCREENING.role,
-        ROLES.ROLE_HOST.role,
         ROLES.ROLE_OBSERVER.role,
         ROLES.ROLE_GATEKEEPER.role,
       ].includes(role);
