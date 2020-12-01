@@ -15,11 +15,12 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 import { VISITOR_INFOS, ERROR_TYPE } from '../../utils/constants/enums';
 
 const IMPORT_VISITOR = gql`
-  mutation importFile($file: Upload!, $idRequest:String!, $campusId: String!) {
+  mutation importFile($file: Upload!, $idRequest:String!, $campusId: String!, $as: ValidationPersonas!) {
     campusId @client @export(as: "campusId")
+    activeRoleCache @client @export (as: "as") {role: role}
     mutateCampus(id: $campusId) {
       mutateRequest(id: $idRequest) {
-        createGroupVisitors(file: $file){
+        createGroupVisitors(file: $file, as: $as){
           visitor {
             id
             isInternal
