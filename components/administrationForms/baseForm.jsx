@@ -171,6 +171,15 @@ const BaseForm = ({
   const findCampusAdmin = () => selectList.listUsers.list.find((user) => user.id === defaultValues.admin.id) || '';
 
   const onSubmit = (data) => {
+    const updatedDefaultValues = {
+      name: data.name,
+      admin: data.campusAdmin,
+      assistants: assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].filter(
+        (user) => (user.toDelete !== true),
+      ),
+    };
+    setDefaultValues(updatedDefaultValues);
+    setUpdated(false);
     submitForm(data, assistantsList);
   };
 
@@ -199,6 +208,16 @@ const BaseForm = ({
     });
   };
 
+  const editName = (campusName) => {
+    setValue('name', campusName);
+    setUpdated(true);
+  };
+
+  const editCampusAdmin = (admin) => {
+    setValue('campusAdmin', admin);
+    setUpdated(true);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={classes.baseForm}>
       <Grid container item sm={12} xs={12} md={12}>
@@ -220,6 +239,10 @@ const BaseForm = ({
               control={control}
               name="name"
               defaultValue={defaultValues.name}
+              onChange={([event]) => {
+                editName(event.target.value);
+                return event.target.value;
+              }}
             />
           </Grid>
         </Grid>
@@ -260,6 +283,10 @@ const BaseForm = ({
                 defaultValue={defaultValues.admin ? findCampusAdmin : ''}
                 name="campusAdmin"
                 rules={{ required: true }}
+                onChange={([event]) => {
+                  editCampusAdmin(event.target.value);
+                  return event.target.value;
+                }}
               />
               { errors.campusAdmin && (
               <FormHelperText className={classes.errorText}>
