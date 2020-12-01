@@ -6,7 +6,7 @@ export const mapVisitorData = (data) => {
     if (visitor.isInternal === 'HORS MINARM') visitor.isInternal = false;
   }
 
-  if (visitor.file.length === 0) {
+  if (visitor.file && visitor.file.length === 0) {
     delete visitor.file;
   }
 
