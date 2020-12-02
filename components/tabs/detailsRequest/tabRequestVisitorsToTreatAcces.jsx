@@ -357,7 +357,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
               <TableRow>
 
                 { selectAll.map((checkbox, index) => (
-                  <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''}`} style={{ textAlign: 'center' }}>
+                  <CustomTableHeader className={`${index === selectAll.length - 1 ? classes.borderRight : ''} ${index === selectAll.length - 5 ? classes.borderLeft : ''}`} style={{ textAlign: 'center' }}>
                     <StyledFormLabel
                       control={(
                         <Checkbox

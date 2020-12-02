@@ -780,6 +780,7 @@ export default function FormInfoVisitor({
                   as={InputFile}
                   rules={{
                     required: watch('nationality') !== 'Française' && !selectVisitor,
+                    validate: (value) => (!selectVisitor) || (selectVisitor && (selectVisitor.fileDefaultValue !== '' || value)),
                   }}
                   control={control}
                   defaultValue=""

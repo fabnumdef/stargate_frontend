@@ -309,7 +309,10 @@ export default function TabRequestVisitors({ visitors, onChange }) {
             <TableRow>
 
               { selectAll.map((checkbox, index) => (
-                <CustomTableHeader className={`${classes.textCenter} ${index === selectAll.length - 1 ? classes.borderRight : ''}`}>
+                <CustomTableHeader className={`${classes.textCenter} ${index === selectAll.length - 1 ? classes.borderRight : ''}
+                 ${activeRole.role !== ROLES.ROLE_SECURITY_OFFICER.role && index === selectAll.length - 2 ? classes.borderLeft : ''}
+                 ${activeRole.role === ROLES.ROLE_SECURITY_OFFICER.role && index === selectAll.length - 3 ? classes.borderLeft : ''}`}
+                >
                   <StyledFormLabel
                     control={(
                       <Checkbox
