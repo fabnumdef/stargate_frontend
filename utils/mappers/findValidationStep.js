@@ -4,8 +4,7 @@ const findValidationStep = (units) => {
   const actualSteps = [];
   units.map((u) => {
     const actualStep = u.steps.find(
-      (s) =>
-        s.state.isOK === null || s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
+      (s) => s.state.isOK === null || s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
     );
     if (actualStep) {
       actualSteps.push(
@@ -13,7 +12,7 @@ const findValidationStep = (units) => {
           actualStep.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
             ? 'Refusé par'
             : ''
-        } ${ROLES[actualStep.role].label} - ${u.label}`
+        } ${ROLES[actualStep.role].label} - ${u.label}`,
       );
     }
     return u;
