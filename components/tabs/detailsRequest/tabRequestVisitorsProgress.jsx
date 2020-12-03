@@ -117,7 +117,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                         </Typography>
                         { rows.length === 1 && (
                           <Typography variant="body1" color="error">
-                            Si il n&apos;y a plus de visiteur, la demande va être supprimée.
+                            S&apos;il n&apos;y a plus de visiteur, la demande va être supprimée.
                           </Typography>
                         ) }
                       </Grid>

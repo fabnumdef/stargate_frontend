@@ -77,7 +77,9 @@ export const READ_REQUEST = gql`
                        role
                        behavior
                        state {
+                           isOK
                            value
+                           tags
                        }
                      }
                    }
