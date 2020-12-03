@@ -19,6 +19,7 @@ import AddIcon from '@material-ui/icons/Add';
 
 import CustomTableCell from '../styled/customTableCellHeader';
 import VisitorGrid from '../styled/visitor';
+import { EMPLOYEE_TYPE } from '../../utils/constants/enums';
 
 const columns = [
   { id: 'visiteur', label: 'Visiteur', minWidth: 150 },
@@ -42,7 +43,7 @@ function createData({
   birthLastname,
   rank,
   company,
-  type,
+  employeeType,
 }) {
   return {
     id,
@@ -52,7 +53,7 @@ function createData({
       ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
       : `${birthLastname.toUpperCase()} ${firstname}`,
     unite: company,
-    type,
+    type: EMPLOYEE_TYPE[employeeType],
   };
 }
 

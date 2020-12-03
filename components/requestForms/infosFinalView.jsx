@@ -107,7 +107,7 @@ export default function InfosFinalView({
   const [createRequest] = useMutation(CREATE_REQUEST, {
     onCompleted: (data) => {
       if (data.mutateCampus.shiftRequest.status === STATE_REQUEST.STATE_CREATED.state) {
-        router.push('/');
+        router.push('/mes-demandes');
         addAlert({
           message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créé`,
           severity: 'success',
