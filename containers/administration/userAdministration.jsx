@@ -28,9 +28,11 @@ const GET_USERS_LIST = gql`
               roles {
                   role
                   campuses {
+                      id
                       label
                   }
                   units {
+                      id
                       label
                   }
               }

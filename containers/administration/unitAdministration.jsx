@@ -37,6 +37,9 @@ const GET_UNITS_LIST = gql`
               roles {
                   role
                   userInCharge
+                  campuses {
+                      id
+                  }
                   units {
                       id
                   }
