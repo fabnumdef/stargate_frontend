@@ -41,7 +41,7 @@ export default function RequestVisitorItem({ requestVisitor }) {
           <Grid container>
             <Grid item sm={12} className={classes.gridFlex}>
               <Typography variant="h5" color="primary">
-                # Demandes :
+                # Demande :
               </Typography>
               <Typography variant="subtitle2" color="primary" className={classes.information}>
                 {requestVisitor.request.id}

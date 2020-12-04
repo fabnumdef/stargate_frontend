@@ -2,14 +2,18 @@ import { ROLES, WORKFLOW_BEHAVIOR } from '../constants/enums';
 
 const findValidationStep = (units) => {
   const actualSteps = [];
-  const negative = WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE;
   units.map((u) => {
-    const actualStep = u.steps.find((s) => s.state.isOK === null || s.state.value === negative);
+    const actualStep = u.steps.find(
+      (s) => s.state.isOK === null
+        || s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
+    );
     if (actualStep) {
       actualSteps.push(
-        `${actualStep.state.value === negative ? 'Refusé par' : ''} ${
-          ROLES[actualStep.role].label
-        } - ${u.label}`,
+        `${
+          actualStep.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
+            ? 'Refusé par'
+            : ''
+        } ${ROLES[actualStep.role].label} - ${u.label}`,
       );
     }
     return u;

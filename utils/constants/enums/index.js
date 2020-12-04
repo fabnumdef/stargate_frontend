@@ -114,7 +114,7 @@ export const VISITOR_INFOS = {
   firstname: 'Prénom',
   employeeType: 'Type employé',
   birthLastname: 'Nom de naissance',
-  usageLastname: 'Nom d\'usage',
+  usageLastname: "Nom d'usage",
   rank: 'Grade',
   company: 'Unité/Entreprise',
   email: 'Mail',
@@ -129,7 +129,7 @@ export const VISITOR_INFOS = {
 
 export const ERROR_TYPE = {
   required: 'Ce champ est obligatoire',
-  enum: 'Pas la valeur attendu',
+  enum: 'Pas la valeur attendue',
   regexp: 'Mail non conforme',
   date: 'Format de date invalide',
 };
