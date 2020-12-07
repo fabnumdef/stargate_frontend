@@ -26,6 +26,7 @@ function IndexAdministration({
   fetchMore,
   refetch,
   result,
+  onCompletedQuery,
   searchInput,
   setSearchInput,
   deleteMutation,
@@ -46,10 +47,8 @@ function IndexAdministration({
       variables: {
         cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage },
       },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return fetchMoreResult;
-      },
+    }).then((res) => {
+      onCompletedQuery(res.data);
     });
   };
 
@@ -72,7 +71,6 @@ function IndexAdministration({
     try {
       await deleteItemReq({ variables: { id } });
       setSearchInput('');
-      console.log(deleteLabel, id);
       addAlert({ message: tabData(deleteLabel).deletedText, severity: 'success' });
       let updatedPage = page;
       if (result.list.length === 1 && page > 0) {

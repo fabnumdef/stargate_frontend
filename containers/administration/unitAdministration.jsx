@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUnitsList } from '../../utils/mappers/adminMappers';
@@ -75,22 +75,25 @@ function UnitAdministration() {
     return setUnitsList({ list: mappedList, total: data.getCampus.listUnits.meta.total });
   };
 
-  const { refetch, fetchMore } = useQuery(GET_UNITS_LIST, {
+  const { data, refetch, fetchMore } = useQuery(GET_UNITS_LIST, {
     variables: {
       cursor: { first: 10, offset: 0 },
       search: searchInput,
     },
-    fetchPolicy: 'cache-and-network',
-    onCompleted: (d) => onCompletedQuery(d),
   });
 
-  // TODO : fix pagination on units
+  useEffect(() => {
+    if (data) {
+      onCompletedQuery(data);
+    }
+  }, [data]);
 
   return (
     <IndexAdministration
       result={unitsList}
       fetchMore={fetchMore}
       refetch={refetch}
+      onCompletedQuery={onCompletedQuery}
       searchInput={searchInput}
       setSearchInput={setSearchInput}
       deleteMutation={DELETE_UNIT}

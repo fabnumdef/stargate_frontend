@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
@@ -68,7 +68,7 @@ function UserAdministration() {
     total: data.listUsers.meta.total,
   });
 
-  const { refetch, fetchMore } = useQuery(GET_USERS_LIST, {
+  const { data, refetch, fetchMore } = useQuery(GET_USERS_LIST, {
     variables: {
       cursor: { first: 10, offset: 0 },
       search: searchInput,
@@ -76,15 +76,20 @@ function UserAdministration() {
         ? {}
         : { unit: activeRole.unit },
     },
-    fetchPolicy: 'cache-and-network',
-    onCompleted: (d) => onCompletedQuery(d),
   });
+
+  useEffect(() => {
+    if (data) {
+      onCompletedQuery(data);
+    }
+  }, [data]);
 
   return (
     <IndexAdministration
       fetchMore={fetchMore}
       refetch={refetch}
       result={usersList}
+      onCompletedQuery={onCompletedQuery}
       searchInput={searchInput}
       setSearchInput={setSearchInput}
       deleteMutation={DELETE_USER}
