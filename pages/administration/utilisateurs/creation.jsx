@@ -29,6 +29,22 @@ const CREATE_USER = gql`
   mutation createUser($user: UserInput!) {
       createUser(user: $user) {
           id
+          firstname
+          lastname
+          email {
+              original
+          }
+          roles {
+              role
+              campuses {
+                  id
+                  label
+              }
+              units {
+                  id
+                  label
+              }
+          }
       }
   }
 `;
