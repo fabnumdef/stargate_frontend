@@ -14,6 +14,14 @@ const CREATE_UNIT = gql`
         mutateCampus(id: $campusId) {
             createUnit(unit: $unit) {
                 id
+                label
+                trigram
+                workflow {
+                    steps {
+                        role
+                        behavior
+                    }
+                }
             }
         }
     }
