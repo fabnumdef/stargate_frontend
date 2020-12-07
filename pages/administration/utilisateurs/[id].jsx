@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/pageTitle';
@@ -35,6 +35,22 @@ const EDIT_USER = gql`
     mutation editUser($user: UserInput!, $id: ObjectID!) {
         editUser(user: $user, id: $id) {
             id
+            firstname
+            lastname
+            email {
+                original
+            }
+            roles {
+                role
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
         }
     }
 `;
@@ -43,9 +59,11 @@ function EditUser() {
   const { addAlert } = useSnackBar();
   const router = useRouter();
   const { id } = router.query;
-  const [editUser] = useMutation(EDIT_USER);
   const { data: editUserData } = useQuery(GET_USER, { variables: { id } });
+  const [editUser] = useMutation(EDIT_USER);
   const { activeRole } = useLogin();
+
+  const [defaultValues, setDefaultValues] = useState(null);
 
   const submitEditUser = async (user) => {
     try {
@@ -84,14 +102,20 @@ function EditUser() {
     role: data.roles[0] ? data.roles[0].role : null,
   });
 
+  useEffect(() => {
+    if (editUserData && editUserData.getUser) {
+      setDefaultValues(mapEditUser(editUserData.getUser));
+    }
+  }, [editUserData]);
+
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Utilisateur', 'Modifier utilisateur']} />
-      {editUserData
+      {defaultValues
       && (
         <UserForm
           submitForm={submitEditUser}
-          defaultValues={mapEditUser(editUserData.getUser)}
+          defaultValues={defaultValues}
           userRole={activeRole}
           type="edit"
         />
