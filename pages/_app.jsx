@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
 
-  const client = useApollo(pageProps.initialApolloState);
+  const client = useApollo(pageProps);
 
   return (
     <SnackBarProvider>
