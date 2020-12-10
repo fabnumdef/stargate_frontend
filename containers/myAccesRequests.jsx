@@ -151,7 +151,6 @@ export default function MyRequestAcces() {
         offset: page * rowsPerPage,
       },
     },
-    fetchPolicy: 'cache-and-network',
   });
 
   const { data: treated, fetchMore: fetchTreated } = useQuery(
@@ -171,7 +170,6 @@ export default function MyRequestAcces() {
           ],
         },
       },
-      fetchPolicy: 'cache-and-network',
     },
   );
 
