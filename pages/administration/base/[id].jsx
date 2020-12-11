@@ -335,6 +335,8 @@ function EditCampus() {
     <Template>
       <PageTitle title="Administration" subtitles={['Base']} />
       {defaultValues
+      && usersList
+      && placesList
       && (
         <>
           <Grid container>
