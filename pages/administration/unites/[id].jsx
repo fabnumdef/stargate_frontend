@@ -80,6 +80,14 @@ const EDIT_UNIT = gql`
         mutateCampus(id: $campusId) {
             editUnit(id: $id, unit: $unit) {
                 id
+                label
+                trigram
+                workflow {
+                    steps {
+                        role
+                        behavior
+                    }
+                }
             }
         }
     }
@@ -89,6 +97,20 @@ const EDIT_USER = gql`
     mutation editUser($id: ObjectID!, $user: UserInput!) {
         editUser(id: $id, user: $user) {
             id
+            firstname
+            lastname
+            roles {
+                role
+                userInCharge
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
         }
     }
 `;
@@ -107,6 +129,11 @@ const EDIT_PLACE = gql`
         mutateCampus(id: $campusId) {
             editPlace(id: $id, place: $place) {
                 id
+                label
+                unitInCharge {
+                    id
+                    label
+                }
             }
         }
     }
