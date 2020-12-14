@@ -4,9 +4,10 @@ import { useRouter } from 'next/router';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
 import { gql, useApolloClient } from '@apollo/client';
 import Grid from '@material-ui/core/Grid';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { urlAuthorization } from '../../../utils/permissions';
 import { useLogin } from '../../../lib/loginContext';
 
@@ -36,7 +37,7 @@ const ButtonMenu = withStyles(() => ({
   },
 }))(Button);
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   appBar: {
     position: 'fixed',
     top: '71px',
@@ -45,6 +46,27 @@ const useStyles = makeStyles(() => ({
   grow: {
     flexGrow: 1,
   },
+  menuList: {
+    width: '140px',
+    height: '35px',
+    color: '#fff',
+    justifyContent: 'center',
+    display: 'flex',
+
+  },
+  primaryColor: {
+    backgroundColor: theme.palette.primary.main,
+    '&:hover': {
+      backgroundColor: 'rgb(10, 45, 103)',
+    },
+  },
+  secondaryColor: {
+    backgroundColor: theme.palette.secondary.main,
+    '&:hover': {
+      backgroundColor: 'rgb(115, 19, 90)',
+    },
+  },
+
   subButtons: {
     position: 'absolute',
     top: '33px',
@@ -60,6 +82,15 @@ export default function MenuItems() {
   const router = useRouter();
   const client = useApolloClient();
   const [subMenuAdmin, setSubMenuAdmin] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const adminClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const adminClose = () => {
+    setAnchorEl(null);
+  };
 
   const menu = getMenus(router, setSubMenuAdmin, subMenuAdmin);
   const campus = client.readQuery({
@@ -80,18 +111,39 @@ export default function MenuItems() {
         {menu.map(({ permission, action, label }) => (
           urlAuthorization(permission, activeRole.role) && (
             <Grid key={label}>
-              <ButtonMenu size="small" variant="contained" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={action}>
+              <ButtonMenu size="small" variant="contained" aria-haspopup="true" color={checkActiveButton(permission) ? 'secondary' : 'primary'} onClick={label === 'Administration' ? adminClick : action}>
                 {label}
-                <Collapse in={subMenuAdmin && label === 'Administration'} className={classes.subButtons}>
-                  {campus && getAdminMenu(router, campus.campusId).map((subMenu) => (
-                    urlAuthorization(subMenu.permission, activeRole.role) && (
-                    <ButtonMenu key={subMenu.label} size="small" variant="contained" color={router.pathname.includes(subMenu.permission) ? 'secondary' : 'primary'} onClick={subMenu.action}>
-                      {subMenu.label}
-                    </ButtonMenu>
-                    )
-                  ))}
-                </Collapse>
               </ButtonMenu>
+              {label === 'Administration'
+              && (
+              <Menu
+                MenuListProps={{ disablePadding: true }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                elevation={0}
+                getContentAnchorEl={null}
+                id="adminMenu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={adminClose}
+              >
+                {campus && getAdminMenu(router, campus.campusId).map((subMenu) => (
+                  urlAuthorization(subMenu.permission, activeRole.role) && (
+                  <MenuItem className={`${classes.menuList} ${router.pathname.includes(subMenu.permission) ? classes.secondaryColor : classes.primaryColor}`} onClick={subMenu.action}>
+                    {subMenu.label}
+                  </MenuItem>
+                  )
+                ))}
+              </Menu>
+              )}
+
             </Grid>
           )
         ))}
