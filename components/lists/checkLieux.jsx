@@ -6,9 +6,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExpansionPanelStyled = withStyles(() => ({
+const AccordionStyled = withStyles(() => ({
   root: {
     boxShadow: 'none',
     '&:not(:last-child)': {
@@ -45,9 +45,9 @@ const ExpansionPanelStyled = withStyles(() => ({
     },
   },
   expanded: {},
-}))(ExpansionPanel);
+}))(Accordion);
 
-const ExpansionPanelSummaryStyled = withStyles((theme) => ({
+const AccordionSummaryStyled = withStyles((theme) => ({
   root: {
     backgroundColor: fade(theme.palette.primary.main, 0.1),
     borderBottom: `1px solid ${theme.palette.primary.main}`,
@@ -63,7 +63,7 @@ const ExpansionPanelSummaryStyled = withStyles((theme) => ({
     },
   },
   expanded: {},
-}))(ExpansionPanelSummary);
+}))(AccordionSummary);
 
 const ListStyled = withStyles(() => ({
   padding: {
@@ -104,8 +104,8 @@ export default function ListLieux({
   const classes = useStyles();
 
   return (
-    <ExpansionPanelStyled expanded={expanded} onChange={handleChange()}>
-      <ExpansionPanelSummaryStyled
+    <AccordionStyled expanded={expanded} onChange={handleChange()}>
+      <AccordionSummaryStyled
         expandIcon={<ExpandMoreIcon />}
         IconButtonProps={{ 'data-testid': `expand-icon-${label}` }}
         aria-controls="panel1a-content"
@@ -123,8 +123,8 @@ export default function ListLieux({
             />
           ))}
         </div>
-      </ExpansionPanelSummaryStyled>
-      <ExpansionPanelDetails>
+      </AccordionSummaryStyled>
+      <AccordionDetails>
         <ListStyled className={classes.root}>
           {options.map((place) => {
             const labelId = `checkbox-list-label-${place.id}`;
@@ -151,8 +151,8 @@ export default function ListLieux({
             );
           })}
         </ListStyled>
-      </ExpansionPanelDetails>
-    </ExpansionPanelStyled>
+      </AccordionDetails>
+    </AccordionStyled>
   );
 }
 
