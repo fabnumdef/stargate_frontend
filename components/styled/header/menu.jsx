@@ -75,7 +75,7 @@ export default function MenuItems() {
 
   return (
     <>
-      <Toolbar className={classes.appBar}>
+      <Toolbar className={`${classes.appBar} mui-fixed`}>
         <div className={classes.grow} />
         {menu.map(({ permission, action, label }) => (
           urlAuthorization(permission, activeRole.role) && (
