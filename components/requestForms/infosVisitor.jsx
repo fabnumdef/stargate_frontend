@@ -833,17 +833,26 @@ FormInfoVisitor.propTypes = {
   handleNext: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
   selectVisitor: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.string.isRequired,
     nid: PropTypes.string,
-    firstname: PropTypes.string,
-    birthLastname: PropTypes.string,
+    firstname: PropTypes.string.isRequired,
+    birthLastname: PropTypes.string.isRequired,
     usageLastname: PropTypes.string,
     rank: PropTypes.string,
-    company: PropTypes.string,
-    email: PropTypes.string,
-    vip: PropTypes.bool,
+    company: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    vip: PropTypes.bool.isRequired,
     vipReason: PropTypes.string,
-    nationality: PropTypes.string,
-    reference: PropTypes.string,
-  }).isRequired,
+    nationality: PropTypes.string.isRequired,
+    reference: PropTypes.string.isRequired,
+  }),
+};
+
+FormInfoVisitor.defaultProps = {
+  selectVisitor: {
+    nid: '',
+    usageLastname: '',
+    rank: '',
+    vipReason: '',
+  },
 };
