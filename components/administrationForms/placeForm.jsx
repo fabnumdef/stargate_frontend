@@ -155,13 +155,14 @@ const PlaceForm = ({ list, submitForm }) => {
               <TableBody>
                 { placesList.map((place, index) => !place.toDelete && (
                   <TableRow
+                    key={place.id}
                     hover
                     onMouseOver={() => handleMouseEnter(index)}
                     onFocus={() => handleMouseEnter(index)}
                     onMouseLeave={() => handleMouseLeave(index)}
                     tabIndex={-1}
                   >
-                    <TableCell key={place.id} className={classes.row}>
+                    <TableCell key={`${place.id} ${place.label}`} className={classes.row}>
                       { place.label }
                     </TableCell>
                     <TableCell key="delete" className={classes.row}>

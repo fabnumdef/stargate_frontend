@@ -27,7 +27,7 @@ export default function StatusLegend() {
     <div className={classes.statusLegend}>
       <ul className={classes.list}>
         { statusLegend.map((item) => (
-          item.fullLabel && <li>{ `${item.label} : ${item.fullLabel}` }</li>
+          item.fullLabel && <li key={item.label}>{ `${item.label} : ${item.fullLabel}` }</li>
         )) }
       </ul>
     </div>

@@ -136,7 +136,7 @@ export default function MenuItems() {
               >
                 {campus && getAdminMenu(router, campus.campusId).map((subMenu) => (
                   urlAuthorization(subMenu.permission, activeRole.role) && (
-                  <MenuItem className={`${classes.menuList} ${router.pathname.includes(subMenu.permission) ? classes.secondaryColor : classes.primaryColor}`} onClick={subMenu.action}>
+                  <MenuItem key={subMenu.label} className={`${classes.menuList} ${router.pathname.includes(subMenu.permission) ? classes.secondaryColor : classes.primaryColor}`} onClick={subMenu.action}>
                     {subMenu.label}
                   </MenuItem>
                   )

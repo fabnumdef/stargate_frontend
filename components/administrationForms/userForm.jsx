@@ -232,6 +232,7 @@ const UserForm = ({
                 >
                   {radioDisplay(userRole).map((roleItem) => (
                     <FormControlLabel
+                      key={roleItem.role}
                       value={roleItem.role}
                       control={<Radio color="primary" />}
                       label={roleItem.label}

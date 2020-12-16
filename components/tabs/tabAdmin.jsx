@@ -99,8 +99,8 @@ export default function TabAdmin({
         <TableRow>
           {columns.map((column) => (
             <CustomTableCellHeader
-              key={column.id}
               align={column.align}
+              key={column.label}
               style={{
                 fontWeight: '600',
                 fontSize: '18px',
@@ -110,7 +110,7 @@ export default function TabAdmin({
             </CustomTableCellHeader>
           ))}
           <CustomTableCellHeader
-            key="actions"
+            key="action"
             align="right"
             style={{
               minWidth: '130px',
@@ -124,8 +124,8 @@ export default function TabAdmin({
         {rows.map((row, index) => {
           if (del[index]) {
             return (
-              <TableRow tabIndex={-1} key={row.id}>
-                <TableCell key="delete" colSpan={columns.length + 1}>
+              <TableRow tabIndex={-1}>
+                <TableCell colSpan={columns.length + 1}>
                   <Grid container>
                     <Grid item sm={10}>
                       {tabData(row.deleteLabel).confirmDeleteText}
@@ -166,16 +166,16 @@ export default function TabAdmin({
               {columns.map((column) => {
                 const value = row[column.id];
                 return column.id === 'criblage' ? (
-                  <TableCell key={column.id} align={column.align}>
+                  <TableCell key={`${row.id} ${column.id}`} align={column.align}>
                     {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
                   </TableCell>
                 ) : (
-                  <TableCell key={column.id}>
+                  <TableCell key={`${row.id} ${column.id}`}>
                     {column.format && typeof value === 'number' ? column.format(value) : value}
                   </TableCell>
                 );
               })}
-              <TableCell key="modif" align="right">
+              <TableCell align="right">
                 {(hover[index] && editAuth(row)) && (
                   <>
                     <Link href={`${router.pathname}/${row.id}`}>
