@@ -9,7 +9,7 @@ const findValidationStep = (units) => {
       actualSteps.push(
         `${actualStep.state.value === negative ? 'Refusé par' : ''} ${
           ROLES[actualStep.role].label
-        } - ${u.label}`
+        } - ${u.label}`,
       );
     }
     return u;

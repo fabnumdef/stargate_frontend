@@ -21,7 +21,7 @@ import findValidationDate from '../../../utils/mappers/findValidationDate';
 import StatusLegend from '../../styled/statusLegend';
 
 function createData({
-  id, firstname, birthLastname, units, rank, company, employeeType, status, vip, vipReason,
+  id, firstname, birthLastname, units, rank, company, employeeType, vip, vipReason,
 }) {
   return {
     id,
