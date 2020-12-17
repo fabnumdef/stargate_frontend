@@ -68,6 +68,47 @@ function UserAdministration() {
     total: data.listUsers.meta.total,
   });
 
+  const updateDeleteMutation = (cache, data, page, rowsPerPage) => {
+    const deletedUser = data.deleteUser;
+    const currentUsers = cache.readQuery({
+      query: GET_USERS_LIST,
+      variables: {
+        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+        search: searchInput,
+        hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
+          ? {}
+          : { unit: activeRole.unit },
+      },
+    });
+    const newList = currentUsers.listUsers.list.filter(
+      (user) => user.id !== deletedUser.id,
+    );
+    const updatedTotal = currentUsers.listUsers.meta.total - 1;
+    const updatedUsers = {
+      ...currentUsers,
+      listUsers: {
+        ...currentUsers.listUsers,
+        ...(updatedTotal < 10)
+        && { list: newList },
+        meta: {
+          ...currentUsers.listUsers.meta,
+          total: updatedTotal,
+        },
+      },
+    };
+    cache.writeQuery({
+      query: GET_USERS_LIST,
+      variables: {
+        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+        search: searchInput,
+        hasRole: (isAdmin(activeRole.role) || isSuperAdmin(activeRole.role))
+          ? {}
+          : { unit: activeRole.unit },
+      },
+      data: updatedUsers,
+    });
+  };
+
   const { data, refetch, fetchMore } = useQuery(GET_USERS_LIST, {
     variables: {
       cursor: { first: 10, offset: 0 },
@@ -93,6 +134,7 @@ function UserAdministration() {
       searchInput={searchInput}
       setSearchInput={setSearchInput}
       deleteMutation={DELETE_USER}
+      updateFunction={updateDeleteMutation}
       tabData={createUserData}
       columns={columns}
       subtitles={['Utilisateurs']}
