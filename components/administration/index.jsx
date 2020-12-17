@@ -30,6 +30,7 @@ function IndexAdministration({
   searchInput,
   setSearchInput,
   deleteMutation,
+  updateFunction,
   tabData,
   columns,
   subtitles,
@@ -40,7 +41,11 @@ function IndexAdministration({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [deleteItemReq] = useMutation(deleteMutation);
+  const [deleteItemReq] = useMutation(deleteMutation, {
+    update(cache, { data }) {
+      updateFunction(cache, data, page, rowsPerPage);
+    },
+  });
 
   const handleFetchMore = (selectedPage) => {
     fetchMore({
@@ -138,6 +143,7 @@ IndexAdministration.propTypes = {
   searchInput: PropTypes.string,
   setSearchInput: PropTypes.func.isRequired,
   deleteMutation: PropTypes.objectOf(PropTypes.shape).isRequired,
+  updateFunction: PropTypes.func.isRequired,
   tabData: PropTypes.func.isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   subtitles: PropTypes.arrayOf(PropTypes.string).isRequired,
