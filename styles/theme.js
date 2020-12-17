@@ -151,7 +151,7 @@ const theme = createMuiTheme(
       },
     },
   },
-  frFR
+  frFR,
 );
 
 export default theme;
