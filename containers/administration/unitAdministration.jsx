@@ -71,8 +71,8 @@ const createUnitData = (data) => ({
 function UnitAdministration() {
   const client = useApolloClient();
 
-  const [unitsList, setUnitsList] = useState(null);
-  const [searchInput, setSearchInput] = useState(null);
+  const [unitsList, setUnitsList] = useState(undefined);
+  const [searchInput, setSearchInput] = useState('');
 
   const getList = async (rowsPerPage, page) => {
     const { data: listUnits } = await client.query({
