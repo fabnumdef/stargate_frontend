@@ -845,7 +845,9 @@ FormInfoVisitor.propTypes = {
     vip: PropTypes.bool.isRequired,
     vipReason: PropTypes.string,
     nationality: PropTypes.string.isRequired,
-    reference: PropTypes.string.isRequired,
+    identityDocuments: PropTypes.arrayOf(PropTypes.shape({
+      reference: PropTypes.string.isRequired,
+    })),
   }),
 };
 
