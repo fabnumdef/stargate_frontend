@@ -197,8 +197,10 @@ export default function FormInfoVisitor({
     },
   });
 
-  const [inputFile, setInputFile] = useState(selectVisitor && selectVisitor.nationality && selectVisitor.nationality !== 'Française');
-  const [controlledValue, setControlledValue] = useState(selectVisitor ? selectVisitor.nationality : null);
+  const [inputFile, setInputFile] = useState(selectVisitor && selectVisitor.nationality
+    && selectVisitor.nationality !== 'Française');
+  const [controlledValue, setControlledValue] = useState(selectVisitor
+    ? selectVisitor.nationality : null);
 
   useEffect(() => {
     if (selectVisitor && selectVisitor.id) {
