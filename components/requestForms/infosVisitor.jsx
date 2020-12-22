@@ -690,7 +690,6 @@ export default function FormInfoVisitor({
                     )}
                   </FormControl>
                 </Grid>
-                {watch('kind') !== 'HORS MINARM'}
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
@@ -713,7 +712,6 @@ export default function FormInfoVisitor({
                     }}
                   />
                 </Grid>
-
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
