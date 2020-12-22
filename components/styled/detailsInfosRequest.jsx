@@ -81,5 +81,10 @@ DetailsInfosRequest.propTypes = {
     from: PropTypes.string,
     to: PropTypes.string,
     reason: PropTypes.string,
-  }).isRequired,
+  }),
+
+};
+
+DetailsInfosRequest.defaultProps = {
+  request: {},
 };
