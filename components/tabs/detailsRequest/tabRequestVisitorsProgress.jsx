@@ -18,7 +18,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
 import VisitorGrid from '../../styled/visitor';
 
-import { EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS } from '../../../utils/constants/enums';
+import {
+  EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS,
+} from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 const useStyles = makeStyles({
@@ -30,6 +32,8 @@ const useStyles = makeStyles({
     marginBottom: '-20px',
   },
 });
+
+const visitorCanceled = VISITOR_STATUS.CANCELED;
 
 function createData({
   id, firstname, birthLastname, rank, company, employeeType, units, status, vip, vipReason,
@@ -44,7 +48,7 @@ function createData({
     company,
     type: EMPLOYEE_TYPE[employeeType],
     actualStep: status === STATE_REQUEST.STATE_CANCELED.state
-      ? VISITOR_STATUS.CANCELED
+      ? visitorCanceled
       : findValidationStep(units),
   };
 }
@@ -179,7 +183,7 @@ export default function TabRequestVisitors({ visitors, onDelete }) {
                   }
                 }) }
                 <TableCell key="actions">
-                  { hover[index] && (
+                  {row.actualStep === visitorCanceled ? '' : hover[index] && (
                     <div style={{ float: 'right' }}>
                       <IconButton
                         color="primary"
