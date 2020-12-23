@@ -21,6 +21,7 @@ import TableRow from '@material-ui/core/TableRow';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import { FORMS_LIST } from '../../utils/constants/enums';
+import updateAssistantList from '../../utils/mappers/editAssistantList';
 
 const useStyles = makeStyles((theme) => ({
   baseForm: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   userSelect: {
     display: 'inline-block',
     width: '70%',
-    padding: '0 0 15px 0px',
+    padding: '20px 0 15px 0px',
   },
   assistantSelect: {
     width: '250px',
@@ -132,12 +133,18 @@ PaginationButton.propTypes = {
 };
 
 const BaseForm = ({
-  submitForm, defaultValues, usersList, fetchMore,
+  submitForm,
+  defaultValues,
+  setDefaultValues,
+  usersList,
+  fetchMore,
 }) => {
   const classes = useStyles();
   const {
     handleSubmit, errors, control, watch, setValue,
   } = useForm();
+
+  const [updated, setUpdated] = useState(false);
 
   const [selectList, setSelectList] = useState(usersList);
 
@@ -145,9 +152,15 @@ const BaseForm = ({
     [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
   });
 
-  const addAssistant = (event, typeAssistant) => {
-    setAssistantsList({ ...assistantsList, [typeAssistant]: event.target.value });
+  const editAssistant = (event, typeAssistant) => {
+    const updatedList = {
+      ...assistantsList,
+      [typeAssistant]: updateAssistantList(event.target.value, defaultValues.assistants),
+    };
+    setUpdated(true);
+    setAssistantsList(updatedList);
   };
+
   const deleteAssistant = (id, typeAssistant) => {
     const newUsers = assistantsList[typeAssistant].map((user) => {
       if (user.id === id) {
@@ -155,12 +168,22 @@ const BaseForm = ({
       }
       return user;
     });
+    setUpdated(true);
     setAssistantsList({ ...assistantsList, [typeAssistant]: newUsers });
   };
 
   const findCampusAdmin = () => selectList.listUsers.list.find((user) => user.id === defaultValues.admin.id) || '';
 
   const onSubmit = (data) => {
+    const updatedDefaultValues = {
+      name: data.name,
+      admin: data.campusAdmin,
+      assistants: assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].filter(
+        (user) => (user.toDelete !== true),
+      ),
+    };
+    setDefaultValues(updatedDefaultValues);
+    setUpdated(false);
     submitForm(data, assistantsList);
   };
 
@@ -187,6 +210,17 @@ const BaseForm = ({
     setAssistantsList({
       [FORMS_LIST.ADMIN_ASSISTANTS]: defaultValues.assistants,
     });
+    setUpdated(false);
+  };
+
+  const editName = (campusName) => {
+    setValue('name', campusName);
+    setUpdated(true);
+  };
+
+  const editCampusAdmin = (admin) => {
+    setValue('campusAdmin', admin);
+    setUpdated(true);
   };
 
   return (
@@ -210,6 +244,10 @@ const BaseForm = ({
               control={control}
               name="name"
               defaultValue={defaultValues.name}
+              onChange={([event]) => {
+                editName(event.target.value);
+                return event.target.value;
+              }}
             />
           </Grid>
         </Grid>
@@ -250,6 +288,10 @@ const BaseForm = ({
                 defaultValue={defaultValues.admin ? findCampusAdmin : ''}
                 name="campusAdmin"
                 rules={{ required: true }}
+                onChange={([event]) => {
+                  editCampusAdmin(event.target.value);
+                  return event.target.value;
+                }}
               />
               { errors.campusAdmin && (
               <FormHelperText className={classes.errorText}>
@@ -307,13 +349,14 @@ const BaseForm = ({
                 displayEmpty
                 value={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS]}
                 renderValue={() => (<em>optionnel</em>)}
-                onChange={(evt) => addAssistant(evt, FORMS_LIST.ADMIN_ASSISTANTS)}
+                onChange={(evt) => editAssistant(evt, FORMS_LIST.ADMIN_ASSISTANTS)}
               >
                 { selectList && selectList.listUsers.list.map((user) => (
                   (!watch('campusAdmin') || watch('campusAdmin').id !== user.id) && (
                   <MenuItem key={user.id} value={user}>
                     <Checkbox
-                      checked={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].indexOf(user) > -1}
+                      checked={assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].filter((
+                        (assistant) => (assistant.id === user.id && !assistant.toDelete))).length}
                     />
                     <ListItemText primary={`${user.rank ? user.rank : ''} ${user.firstname} ${user.lastname}`} />
                   </MenuItem>
@@ -332,10 +375,10 @@ const BaseForm = ({
 
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Button onClick={handleCancel} variant="outlined" color="primary">
+        <Button onClick={handleCancel} disabled={!updated} variant="outlined" color="primary">
           Annuler
         </Button>
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" disabled={!updated} variant="contained" color="primary">
           Sauvegarder
         </Button>
       </Grid>
@@ -347,6 +390,7 @@ const BaseForm = ({
 BaseForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
+  setDefaultValues: PropTypes.func.isRequired,
   usersList: PropTypes.objectOf(PropTypes.object).isRequired,
   fetchMore: PropTypes.func.isRequired,
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
@@ -88,10 +88,11 @@ const PlaceForm = ({ list, submitForm }) => {
   const [hover, setHover] = useState({});
 
   const handleAdd = async () => {
+    const trimed = (str) => str.replace(/\s/g, '').toLowerCase();
     if (!placeName.length) {
       return null;
     }
-    if (placesList.some((e) => e.label === placeName)) {
+    if (placesList.some((e) => trimed(e.label) === trimed(placeName) && !e.toDelete)) {
       return null;
     }
     const newList = [...placesList, { label: placeName }];
@@ -100,12 +101,14 @@ const PlaceForm = ({ list, submitForm }) => {
   };
 
   const handleDelete = async (label) => {
-    const newList = placesList.map((place) => {
-      if (place.label === label) {
-        return { ...place, toDelete: true };
-      }
-      return place;
-    });
+    const listId = list.map((place) => place.id);
+    const newList = placesList.filter((place) => (listId.includes(place.id)))
+      .map((place) => {
+        if (place.label === label) {
+          return { ...place, toDelete: true };
+        }
+        return place;
+      });
     setPlaceList(newList);
   };
 
@@ -125,6 +128,10 @@ const PlaceForm = ({ list, submitForm }) => {
   const handleCancel = () => {
     setPlaceList(list);
   };
+
+  useEffect(() => {
+    setPlaceList(list);
+  }, [list]);
 
   return (
     <form onSubmit={handleSubmit(onSubmitPlaces)}>
@@ -193,10 +200,10 @@ const PlaceForm = ({ list, submitForm }) => {
         </Grid>
       </Grid>
       <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Button type="button" onClick={handleCancel} variant="outlined" color="primary">
+        <Button type="button" onClick={handleCancel} disabled={list === placesList} variant="outlined" color="primary">
           Annuler
         </Button>
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" disabled={list === placesList} variant="contained" color="primary">
           Sauvegarder
         </Button>
       </Grid>
@@ -207,7 +214,6 @@ const PlaceForm = ({ list, submitForm }) => {
 PlaceForm.propTypes = {
   submitForm: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  defaultValues: PropTypes.shape({ createdPlaceName: PropTypes.string }).isRequired,
 };
 
 export default PlaceForm;

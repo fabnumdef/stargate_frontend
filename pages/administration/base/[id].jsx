@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import {
+  gql, useMutation, useQuery,
+} from '@apollo/client';
 import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -80,6 +82,7 @@ const EDIT_CAMPUS = gql`
     mutation editCampus($campus: CampusInput!, $id: String!) {
         editCampus(campus: $campus, id: $id) {
             id
+            label
         }
     }
 `;
@@ -129,17 +132,59 @@ function EditCampus() {
   const [editCampus] = useMutation(EDIT_CAMPUS);
   const [editUserReq] = useMutation(EDIT_USER);
   const [deleteUserRoleReq] = useMutation(DELETE_ROLE);
-  const [createPlaceReq] = useMutation(CREATE_PLACE);
-  const [deletePlaceReq] = useMutation(DELETE_PLACE);
-
-  const { data: placesList } = useQuery(GET_PLACES, { variables: { id } });
+  const [createPlaceReq] = useMutation(CREATE_PLACE,
+    {
+      update: (cache, { data: { mutateCampus: { createPlace: createdPlace } } }) => {
+        const currentPlaces = cache.readQuery({ query: GET_PLACES, variables: { id } });
+        const updatedPlaces = {
+          ...currentPlaces,
+          getCampus: {
+            ...currentPlaces.getCampus,
+            listPlaces: {
+              ...currentPlaces.getCampus.listPlaces,
+              list: [...currentPlaces.getCampus.listPlaces.list, createdPlace],
+            },
+          },
+        };
+        cache.writeQuery({
+          query: GET_PLACES,
+          variables: { id },
+          data: updatedPlaces,
+        });
+      },
+    });
+  const [deletePlaceReq] = useMutation(DELETE_PLACE,
+    {
+      update: (cache, { data: { mutateCampus: { deletePlace: deletedPlace } } }) => {
+        const currentPlaces = cache.readQuery({ query: GET_PLACES, variables: { id } });
+        const newList = currentPlaces.getCampus.listPlaces.list.filter(
+          (place) => place.id !== deletedPlace.id,
+        );
+        const updatedPlaces = {
+          ...currentPlaces,
+          getCampus: {
+            ...currentPlaces.getCampus,
+            listPlaces: {
+              ...currentPlaces.getCampus.listPlaces,
+              list: newList,
+            },
+          },
+        };
+        cache.writeQuery({
+          query: GET_PLACES,
+          variables: { id },
+          data: updatedPlaces,
+        });
+      },
+    });
+  const { data: placesList } = useQuery(GET_PLACES, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const { data: usersList, fetchMore } = useQuery(GET_USERS, {
     variables: { cursor: { offset: 0, first: 10 } },
   });
   const { data: adminsList } = useQuery(GET_USERS, {
-    variables: { cursor: { offset: 0, first: 10 }, hasRole: { role: ROLES.ROLE_ADMIN.role } },
+    variables: { cursor: { offset: 0, first: 10 }, hasRole: { role: ROLES.ROLE_ADMIN.role }, fetchPolicy: 'cache-and-network' },
   });
-  const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id } });
+  const { data: editCampusData } = useQuery(GET_CAMPUS, { variables: { id }, fetchPolicy: 'cache-and-network' });
   const [defaultValues, setDefaultValues] = useState(null);
 
   const createPlace = async (placeName) => {
@@ -238,7 +283,6 @@ function EditCampus() {
         }
         return assistant;
       }));
-
       return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
     } catch (e) {
       return addAlert({
@@ -252,11 +296,13 @@ function EditCampus() {
     try {
       const resPlaces = await Promise.all(places.map(async (place) => {
         if (!place.id && !place.toDelete) {
-          await createPlace(place.label);
+          const createdPlace = await createPlace(place.label);
+          return createdPlace.mutateCampus.createPlace;
         }
         if (place.id && place.toDelete) {
           await deletePlace(place.id);
         }
+        return place;
       }));
       return resPlaces;
     } catch {
@@ -267,7 +313,6 @@ function EditCampus() {
   const submitEditPlaces = async (places) => {
     try {
       await submitPlaces(places);
-
       return addAlert({ message: 'La modification a bien été effectuée', severity: 'success' });
     } catch (e) {
       return addAlert({
@@ -278,20 +323,20 @@ function EditCampus() {
   };
 
   useEffect(() => {
-    if (editCampusData && usersList && placesList && adminsList) {
+    if (editCampusData && usersList && adminsList) {
       setDefaultValues(mapEditCampus(
-        id,
         editCampusData.getCampus.label,
-        placesList,
         adminsList.listUsers.list,
       ));
     }
-  }, [editCampusData, usersList, placesList, adminsList]);
+  }, [editCampusData, usersList, adminsList]);
 
   return (
     <Template>
       <PageTitle title="Administration" subtitles={['Base']} />
       {defaultValues
+      && usersList
+      && placesList
       && (
         <>
           <Grid container>
@@ -305,18 +350,15 @@ function EditCampus() {
               <BaseForm
                 submitForm={submitEditCampus}
                 defaultValues={defaultValues}
+                setDefaultValues={setDefaultValues}
                 usersList={usersList}
-                campusId={id}
                 fetchMore={fetchMore}
               />
             </Grid>
             <Grid item sm={10} xs={10} md={6}>
               <PlaceForm
                 submitForm={submitEditPlaces}
-                defaultValues={defaultValues}
                 list={placesList.getCampus.listPlaces.list}
-                campusId={id}
-                fetchMore={fetchMore}
               />
             </Grid>
           </Grid>

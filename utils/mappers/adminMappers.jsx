@@ -99,7 +99,7 @@ export const mapUnitsList = (unitsList, usersList) => unitsList.map((unit) => {
   };
 });
 
-export const mapEditCampus = (campusId, campusName, placesList, adminsList) => {
+export const mapEditCampus = (campusName, adminsList) => {
   const admin = adminsList.find(
     (user) => user.roles.find((role) => role.userInCharge === user.id),
   );
@@ -110,6 +110,5 @@ export const mapEditCampus = (campusId, campusName, placesList, adminsList) => {
     name: campusName,
     admin: admin || null,
     assistants,
-    placesList: placesList.getCampus.listPlaces.list,
   };
 };
