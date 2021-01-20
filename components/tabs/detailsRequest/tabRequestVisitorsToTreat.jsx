@@ -24,8 +24,6 @@ import { EMPLOYEE_TYPE, ROLES } from '../../../utils/constants/enums';
 
 import ckeckStatusVisitor, {
   ACTIVE_STEP_STATUS,
-  HIDDEN_STEP_STATUS,
-  INACTIVE_STEP_STATUS,
 } from '../../../utils/mappers/checkStatusVisitor';
 
 import checkCriblageVisitor, {
@@ -47,17 +45,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 750,
     marginTop: '0.5%',
     marginBottom: '1%',
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
   },
   radioGroup: {
     flexDirection: 'row',
@@ -107,9 +94,6 @@ const useStyles = makeStyles((theme) => ({
   },
   paginator: {
     float: 'left',
-  },
-  inactiveCell: {
-    opacity: '0.2',
   },
 }));
 
@@ -167,7 +151,8 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   const [rows, setDataRows] = useState(
     visitors.reduce((acc, dem) => {
       acc.push(createData(dem, activeRole));
-      return acc;
+      const activeRows = acc.filter((row) => row.step === ACTIVE_STEP_STATUS);
+      return activeRows;
     }, []),
   );
 
@@ -215,11 +200,9 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   const handleSelectAll = useCallback((checkbox, checkedValue) => {
     const newArray = rows.slice();
     newArray.forEach((row) => {
-      if (row.step === ACTIVE_STEP_STATUS) {
-        newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue.label : null;
-        newArray[newArray.indexOf(row)].decision = checkbox ? checkedValue.validation : null;
-        newArray[newArray.indexOf(row)].tags = checkedValue.tags;
-      }
+      newArray[newArray.indexOf(row)].validation = checkbox ? checkedValue.label : null;
+      newArray[newArray.indexOf(row)].decision = checkbox ? checkedValue.validation : null;
+      newArray[newArray.indexOf(row)].tags = checkedValue.tags;
     });
     setDataRows(newArray);
 
@@ -265,7 +248,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
   }, [rows]);
 
   useEffect(() => {
-    if (rows.every((row) => row.step === HIDDEN_STEP_STATUS || !rows.length)) {
+    if (!rows.length) {
       router.push('/');
     }
     onChange(rows);
@@ -334,7 +317,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
           </TableHead>
           <TableBody>
             { rows.map(
-              (row, index) => row.step !== HIDDEN_STEP_STATUS && (
+              (row, index) => (
                 <TableRow hover tabIndex={-1} key={row.code}>
                   { columns.map((column) => {
                     const value = row[column.id];
@@ -351,10 +334,7 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                             <TableCell
                               key={column.id}
                               align={column.align}
-                              className={
-                                `${row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}
-                            ${classes.textCenter}`
-                              }
+                              className={classes.textCenter}
                             >
                               { criblageReturn(value) }
                             </TableCell>
@@ -365,8 +345,6 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                           <TableCell
                             key={column.id}
                             align={column.align}
-                            className={`
-                                ${row.step === INACTIVE_STEP_STATUS ? classes.inactiveCell : ''}`}
                           >
                             { value }
                           </TableCell>
@@ -385,7 +363,6 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                     >
                       <StyledFormLabel
                         value={checkbox.label}
-                        disabled={row.step === INACTIVE_STEP_STATUS}
                         control={(
                           <Radio
                             color="primary"
@@ -397,7 +374,6 @@ export default function TabRequestVisitors({ visitors, onChange }) {
                               handleChange(event, row, checkbox);
                             }}
                             onClick={() => handleDeselect(index)}
-                            disabled={row.step === INACTIVE_STEP_STATUS}
                           />
                         )}
                         style={{ marginLeft: '10px' }}
