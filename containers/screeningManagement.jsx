@@ -30,7 +30,7 @@ import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 import { useSnackBar } from '../lib/hooks/snackbar';
 
 import { useLogin } from '../lib/loginContext';
-import checkStatus from '../utils/mappers/checkStatusVisitor';
+import checkStatus, { ACTIVE_STEP_STATUS } from '../utils/mappers/checkStatusVisitor';
 import Loading from './loading';
 
 import EmptyArray from '../components/styled/emptyArray';
@@ -191,7 +191,10 @@ export default function ScreeningManagement() {
     setVisitors(
       data.getCampus.listVisitorsToValidate.list.reduce((acc, dem) => {
         acc.push(createData(dem, activeRole));
-        return acc;
+        const activeVisitors = acc.filter(
+          (visitor) => visitor.screening.step === ACTIVE_STEP_STATUS,
+        );
+        return activeVisitors;
       }, []),
     );
   }, [data]);
