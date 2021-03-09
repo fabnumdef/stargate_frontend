@@ -366,7 +366,7 @@ UserForm.propTypes = {
     email: PropTypes.string,
     role: PropTypes.string,
     campus: PropTypes.string,
-    unit: PropTypes.objectOf(PropTypes.string.isRequired),
+    unit: PropTypes.string.isRequired,
   }).isRequired,
   userRole: PropTypes.shape({
     role: PropTypes.string.isRequired,
