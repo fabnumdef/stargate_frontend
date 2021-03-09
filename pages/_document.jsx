@@ -9,7 +9,7 @@ import 'typeface-roboto';
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="fr" style={{ overflowX: 'hidden' }}>
+      <Html lang="fr" style={{ boxSizing: 'border-box' }}>
         <Head>
           <meta
             name="viewport"

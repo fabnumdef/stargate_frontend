@@ -6,7 +6,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 const useStyles = makeStyles((theme) => ({
   footer: {
     position: 'absolute',
-    width: '100vw',
+    width: '100%',
   },
   footerImg: {
     width: 'auto',
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   backgroundImg: {
     height: '83px',
-    width: '100vw',
+    width: '100%',
     position: 'absolute',
     bottom: '0',
     background: theme.palette.primary.main,
@@ -41,7 +41,7 @@ export default function Footer() {
   const matches = useMediaQuery(`(min-width:${widthBreak}px)`);
 
   return (
-    <div className={classes.footer}>
+    <div className={`${classes.footer} mui-fixed`}>
       <div className={classes.backgroundImg} />
       <img
         className={classes.footerImg}
@@ -50,7 +50,7 @@ export default function Footer() {
       />
       <img
         className={`${
-          matches ? classes.footerFabImg : classes.footerFabImgNone}`}
+          matches ? classes.footerFabImg : classes.footerFabImgNone} mui-fixed`}
         src="/img/footerFabNum.png"
         alt="Footer Fabrique numérique"
       />

@@ -18,7 +18,7 @@ export default function Template({ children, loading }) {
   const classes = useStyles();
 
   return (
-    <div>
+    <>
       <Header />
       <Box
         className={classes.container}
@@ -30,7 +30,7 @@ export default function Template({ children, loading }) {
         ) : children}
       </Box>
       <Footer />
-    </div>
+    </>
   );
 }
 
