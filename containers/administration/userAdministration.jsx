@@ -60,8 +60,8 @@ function UserAdministration() {
   const client = useApolloClient();
   const { activeRole } = useLogin();
 
-  const [usersList, setUsersList] = useState(null);
-  const [searchInput, setSearchInput] = useState(null);
+  const [usersList, setUsersList] = useState(undefined);
+  const [searchInput, setSearchInput] = useState('');
 
   const getList = async (rowsPerPage, page) => {
     const { data } = await client.query({

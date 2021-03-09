@@ -31,7 +31,7 @@ export default function CustomTableCell({ children, style, ...others }) {
 
 CustomTableCell.propTypes = {
   children: PropTypes.node,
-  style: PropTypes.oneOf(PropTypes.object),
+  style: PropTypes.objectOf(PropTypes.string),
 };
 
 CustomTableCell.defaultProps = {

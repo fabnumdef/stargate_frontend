@@ -125,16 +125,16 @@ export default function TabMyRequestUntreated({ requests, detailLink, emptyLabel
               onMouseLeave={() => handleMouseLeave(index)}
               role="checkbox"
               tabIndex={-1}
-              key={row.code}
+              key={row.id}
             >
               {columns.map((column) => {
                 const value = row[column.id];
                 return column.id === 'criblage' ? (
-                  <TableCell key={column.id} align={column.align}>
+                  <TableCell key={`${row.id} ${column.id}`} align={column.align}>
                     {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
                   </TableCell>
                 ) : (
-                  <TableCell key={column.id} align={column.align} style={column.style}>
+                  <TableCell key={`${row.id} ${column.id}`} align={column.align} style={column.style}>
                     {column.format && typeof value === 'number' ? column.format(value) : value}
                   </TableCell>
                 );

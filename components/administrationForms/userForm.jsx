@@ -232,6 +232,7 @@ const UserForm = ({
                 >
                   {radioDisplay(userRole).map((roleItem) => (
                     <FormControlLabel
+                      key={roleItem.role}
                       value={roleItem.role}
                       control={<Radio color="primary" />}
                       label={roleItem.label}
@@ -328,7 +329,7 @@ const UserForm = ({
                     )}
                   control={control}
                   name="unit"
-                  defaultValue={(isSuperAdmin(userRole.role) && type === 'create') ? '' : defaultValues.unit}
+                  defaultValue={(isSuperAdmin(userRole.role) && type === 'create') ? defaultValues.unit : ''}
                   rules={{ required: true }}
                 />
                 {errors.unit && (
@@ -361,7 +362,7 @@ UserForm.propTypes = {
     firstname: PropTypes.string,
     email: PropTypes.string,
     role: PropTypes.string,
-    campus: PropTypes.objectOf(PropTypes.string.isRequired),
+    campus: PropTypes.string,
     unit: PropTypes.objectOf(PropTypes.string.isRequired),
   }).isRequired,
   userRole: PropTypes.shape({

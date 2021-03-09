@@ -197,7 +197,10 @@ export default function FormInfoVisitor({
     },
   });
 
-  const [inputFile, setInputFile] = useState(selectVisitor && selectVisitor.nationality && selectVisitor.nationality !== 'Française');
+  const [inputFile, setInputFile] = useState(selectVisitor && selectVisitor.nationality
+    && selectVisitor.nationality !== 'Française');
+  const [controlledValue, setControlledValue] = useState(selectVisitor
+    ? selectVisitor.nationality : null);
 
   useEffect(() => {
     if (selectVisitor && selectVisitor.id) {
@@ -219,10 +222,10 @@ export default function FormInfoVisitor({
       { required: 'La nationalité est obligatoire' },
     );
   }, [register]);
-
   const handleNationalityChange = (event, value) => {
     clearError('nationality');
     setValue('nationality', value);
+    setControlledValue(value);
     setValue('kind', '');
     setValue('reference', '');
     setInputFile(value !== 'Française');
@@ -593,31 +596,31 @@ export default function FormInfoVisitor({
                   defaultValue="FALSE"
                 />
                 {((selectVisitor && selectVisitor.vip) || watch('vip') === 'TRUE') && (
-                  <Grid item xs={12} sm={12}>
-                    <Controller
-                      as={(
-                        <TextField
-                          label="Veuillez justifier"
-                          multiline
-                          rowsMax="4"
-                          error={Object.prototype.hasOwnProperty.call(errors, 'vipReason')}
-                          helperText={
+                <Grid item xs={12} sm={12}>
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Veuillez justifier"
+                        multiline
+                        rowsMax="4"
+                        error={Object.prototype.hasOwnProperty.call(errors, 'vipReason')}
+                        helperText={
                             errors.vipReason
                             && errors.vipReason.type === 'required'
                             && 'La justification est obligatoire.'
                           }
-                          fullWidth
-                          inputProps={{ maxLength: 50 }}
-                        />
+                        fullWidth
+                        inputProps={{ maxLength: 50 }}
+                      />
                       )}
-                      control={control}
-                      name="vipReason"
-                      rules={{
-                        required: watch('vip') || '' === 'OUI',
-                      }}
-                      defaultValue=""
-                    />
-                  </Grid>
+                    control={control}
+                    name="vipReason"
+                    rules={{
+                      required: watch('vip') || '' === 'OUI',
+                    }}
+                    defaultValue=""
+                  />
+                </Grid>
                 )}
               </FormControl>
             </Grid>
@@ -632,10 +635,10 @@ export default function FormInfoVisitor({
               <Grid container spacing={2} className={classes.comps}>
                 <Grid item xs={12} sm={12} md={12}>
                   <Autocomplete
-                    freeSolo
                     id="combo-box-naissance"
                     options={getNationality()}
                     getOptionLabel={(option) => option}
+                    value={controlledValue}
                     onChange={handleNationalityChange}
                     defaultValue={getNationality().find((n) => n === getValues().nationality)}
                     renderInput={(params) => (
@@ -689,7 +692,6 @@ export default function FormInfoVisitor({
                     )}
                   </FormControl>
                 </Grid>
-                {watch('kind') !== 'HORS MINARM'}
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
@@ -712,7 +714,6 @@ export default function FormInfoVisitor({
                     }}
                   />
                 </Grid>
-
                 <Grid item xs={12} sm={12} md={12}>
                   <Controller
                     as={(
@@ -833,17 +834,28 @@ FormInfoVisitor.propTypes = {
   handleNext: PropTypes.func.isRequired,
   handleBack: PropTypes.func.isRequired,
   selectVisitor: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.string.isRequired,
     nid: PropTypes.string,
-    firstname: PropTypes.string,
-    birthLastname: PropTypes.string,
+    firstname: PropTypes.string.isRequired,
+    birthLastname: PropTypes.string.isRequired,
     usageLastname: PropTypes.string,
     rank: PropTypes.string,
-    company: PropTypes.string,
-    email: PropTypes.string,
-    vip: PropTypes.bool,
+    company: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    vip: PropTypes.bool.isRequired,
     vipReason: PropTypes.string,
-    nationality: PropTypes.string,
-    reference: PropTypes.string,
-  }).isRequired,
+    nationality: PropTypes.string.isRequired,
+    identityDocuments: PropTypes.arrayOf(PropTypes.shape({
+      reference: PropTypes.string.isRequired,
+    })),
+  }),
+};
+
+FormInfoVisitor.defaultProps = {
+  selectVisitor: {
+    nid: '',
+    usageLastname: '',
+    rank: '',
+    vipReason: '',
+  },
 };

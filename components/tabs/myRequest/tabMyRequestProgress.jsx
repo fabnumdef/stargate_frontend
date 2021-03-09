@@ -202,12 +202,12 @@ export default function TabMyRequestToTreat({ request, queries, emptyLabel }) {
                 onMouseOver={() => handleMouseEnter(index)}
                 onFocus={() => handleMouseEnter(index)}
                 onMouseLeave={() => handleMouseLeave(index)}
-                key={row.code}
+                key={row.id}
               >
                 {columns.map((column) => {
                   const value = row[column.id];
                   return (
-                    <TableCell key={column.id} align={column.align} component="td" scope="row" style={column.style}>
+                    <TableCell key={`${row.id} ${column.id}`} align={column.align} component="td" scope="row" style={column.style}>
                       {column.format && typeof value === 'number' ? column.format(value) : value}
                     </TableCell>
                   );

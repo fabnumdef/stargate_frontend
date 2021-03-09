@@ -124,13 +124,18 @@ function IndexAdministration({
 IndexAdministration.propTypes = {
   getList: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.object).isRequired,
-  count: PropTypes.number.isRequired,
-  searchInput: PropTypes.string.isRequired,
+  count: PropTypes.number,
+  searchInput: PropTypes.string,
   setSearchInput: PropTypes.func.isRequired,
   deleteMutation: PropTypes.objectOf(PropTypes.shape).isRequired,
   tabData: PropTypes.func.isRequired,
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   subtitles: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+
+IndexAdministration.defaultProps = {
+  count: 10,
+  searchInput: '',
 };
 
 export default IndexAdministration;

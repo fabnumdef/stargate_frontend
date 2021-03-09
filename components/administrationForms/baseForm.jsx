@@ -314,6 +314,7 @@ const BaseForm = ({
                     { assistantsList[FORMS_LIST.ADMIN_ASSISTANTS].map((user, index) => (
                       !user.toDelete && (
                       <TableRow
+                        key={user.id}
                         hover
                         onMouseOver={() => handleMouseEnter(index)}
                         onFocus={() => handleMouseEnter(index)}

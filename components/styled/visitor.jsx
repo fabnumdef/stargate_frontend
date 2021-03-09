@@ -43,10 +43,11 @@ export default function Visitor({ name, vip, vipReason }) {
 
 Visitor.propTypes = {
   name: PropTypes.string.isRequired,
-  vip: PropTypes.bool,
-  vipReason: PropTypes.string.isRequired,
+  vip: PropTypes.bool.isRequired,
+  vipReason: PropTypes.string,
+
 };
 
 Visitor.defaultProps = {
-  vip: false,
+  vipReason: '',
 };

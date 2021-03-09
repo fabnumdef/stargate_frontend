@@ -78,8 +78,13 @@ DetailsInfosRequest.propTypes = {
         label: PropTypes.string,
       }),
     ),
-    from: PropTypes.instanceOf(Date),
-    to: PropTypes.instanceOf(Date),
+    from: PropTypes.string,
+    to: PropTypes.string,
     reason: PropTypes.string,
-  }).isRequired,
+  }),
+
+};
+
+DetailsInfosRequest.defaultProps = {
+  request: {},
 };

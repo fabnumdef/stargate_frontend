@@ -77,7 +77,6 @@ const theme = createMuiTheme(
         },
       },
       MuiAppBar: {
-        opacity: 0,
         colorPrimary: {
           color: '#000000',
           backgroundColor: '#ffffff',
