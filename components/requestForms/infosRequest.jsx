@@ -348,15 +348,22 @@ export default function FormInfosClaimant({
                   />
                 </Grid>
                 <Grid item sm={6} xs={6}>
-                  <TextField
-                    label="Téléphone"
-                    type="tel"
-                    fullWidth
+                  <Controller
+                    as={(
+                      <TextField
+                        label="Téléphone"
+                        type="tel"
+                        fullWidth
+                        error={Object.prototype.hasOwnProperty.call(errors, 'refPhone')}
+                        helperText={errors.refPhone && errors.refPhone.message}
+                        inputRef={register()}
+                      />
+                  )}
+                    control={control}
                     name="refPhone"
-                    error={Object.prototype.hasOwnProperty.call(errors, 'refPhone')}
-                    helperText={errors.refPhone && errors.refPhone.message}
-                    inputRef={register()}
+                    defaultValue=""
                   />
+                  <FormHelperText className={classes.instruction}>optionnel</FormHelperText>
                 </Grid>
               </Grid>
             </Grid>
