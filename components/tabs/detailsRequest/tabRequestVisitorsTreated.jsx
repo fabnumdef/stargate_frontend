@@ -10,40 +10,18 @@ import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
 import VisitorGrid from '../../styled/visitor';
+import findValidationStep from '../../../utils/mappers/findValidationStep';
+import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';
 
 import {
   EMPLOYEE_TYPE,
-  ROLES,
-  VISITOR_STATUS,
-  WORKFLOW_BEHAVIOR,
 } from '../../../utils/constants/enums';
 import findValidationDate from '../../../utils/mappers/findValidationDate';
 
 import StatusLegend from '../../styled/statusLegend';
 
-function findRejectedRoles(units) {
-  const sortRoles = units
-    .filter((u) => u.steps.find(
-      (step) => step.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative,
-    ))
-    .map((u) => {
-      const { role } = u.steps
-        .find((s) => s.state.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative);
-      return role === ROLES.ROLE_ACCESS_OFFICE.role
-        ? ROLES[role].shortLabel
-        : `${ROLES[role].shortLabel} - ${u.label}`;
-    });
-  return sortRoles.join(', ').toString();
-}
-
-function findVisitorStatus(units) {
-  const status = units.find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
-    .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
-  return status ? status.join(', ').toString() : '';
-}
-
 function createData({
-  id, firstname, birthLastname, units, rank, company, employeeType, status, vip, vipReason,
+  id, firstname, birthLastname, units, rank, company, employeeType, vip, vipReason,
 }) {
   return {
     id,
@@ -55,9 +33,7 @@ function createData({
     company,
     type: EMPLOYEE_TYPE[employeeType],
     date: format(findValidationDate(units), "dd/MM/yyyy à k'h'mm"),
-    status: status === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
-      ? `${VISITOR_STATUS[status]} par ${findRejectedRoles(units)}`
-      : findVisitorStatus(units),
+    status: findVisitorStatus(units) ? findVisitorStatus(units) : findValidationStep(units),
   };
 }
 
