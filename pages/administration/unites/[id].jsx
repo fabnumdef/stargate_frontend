@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  gql, useApolloClient, useMutation, useQuery,
+  gql, useMutation, useQuery,
 } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/pageTitle';
@@ -80,6 +80,14 @@ const EDIT_UNIT = gql`
         mutateCampus(id: $campusId) {
             editUnit(id: $id, unit: $unit) {
                 id
+                label
+                trigram
+                workflow {
+                    steps {
+                        role
+                        behavior
+                    }
+                }
             }
         }
     }
@@ -89,6 +97,20 @@ const EDIT_USER = gql`
     mutation editUser($id: ObjectID!, $user: UserInput!) {
         editUser(id: $id, user: $user) {
             id
+            firstname
+            lastname
+            roles {
+                role
+                userInCharge
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
         }
     }
 `;
@@ -107,6 +129,11 @@ const EDIT_PLACE = gql`
         mutateCampus(id: $campusId) {
             editPlace(id: $id, place: $place) {
                 id
+                label
+                unitInCharge {
+                    id
+                    label
+                }
             }
         }
     }
@@ -114,15 +141,13 @@ const EDIT_PLACE = gql`
 
 function CreateUnit() {
   const { addAlert } = useSnackBar();
-  const client = useApolloClient();
   const router = useRouter();
   const { id } = router.query;
   const [unitData, setUnitData] = useState(null);
 
-  const getUnit = async () => {
-    const { data } = await client.query({ query: GET_UNIT, variables: { id }, fetchPolicy: 'no-cache' });
-    return setUnitData(data.getCampus.getUnit);
-  };
+  const { data: unit } = useQuery(GET_UNIT, {
+    variables: { id }, fetchPolicy: 'cache-and-network',
+  });
 
   const { data: unitCorresDatas } = useQuery(GET_USERS, {
     variables: { hasRole: { role: ROLES.ROLE_UNIT_CORRESPONDENT.role, unit: id } },
@@ -132,6 +157,7 @@ function CreateUnit() {
   });
   const { data: placesData } = useQuery(GET_PLACES, {
     variables: { hasUnit: { id } },
+    fetchPolicy: 'cache-and-network',
   });
 
   const [editUnit] = useMutation(EDIT_UNIT);
@@ -278,18 +304,18 @@ function CreateUnit() {
   };
 
   useEffect(() => {
-    if (!unitData) {
-      getUnit();
+    if (unit) {
+      setUnitData(unit.getCampus.getUnit);
     }
-  }, [unitData]);
+  }, [unit]);
 
   useEffect(() => {
     if (unitData && unitCorresDatas && unitOfficerDatas && placesData) {
       setDefaultValues(mapEditUnit(
         unitData,
-        JSON.parse(JSON.stringify(unitCorresDatas.listUsers.list)),
-        JSON.parse(JSON.stringify(unitOfficerDatas.listUsers.list)),
-        JSON.parse(JSON.stringify(placesData.getCampus.listPlaces.list)),
+        [...unitCorresDatas.listUsers.list],
+        [...unitOfficerDatas.listUsers.list],
+        [...placesData.getCampus.listPlaces.list],
       ));
     }
   }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);

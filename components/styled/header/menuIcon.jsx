@@ -21,6 +21,7 @@ import { ROLES } from '../../../utils/constants/enums/index';
 const GET_ME = gql`
     query getMe {
         me {
+            id
             firstname,
             lastname,
             roles {
@@ -88,8 +89,8 @@ export default function MenuIcon() {
   const router = useRouter();
   const { signOut, setActiveRole, activeRole } = useLogin();
   const client = useApolloClient();
-
-  const { data } = useQuery(GET_ME);
+  const { data } = useQuery(GET_ME,
+    { fetchPolicy: 'cache-only' });
 
   const [anchorEl, setAnchorEl] = useState(null);
 

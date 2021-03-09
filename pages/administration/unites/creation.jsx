@@ -1,5 +1,5 @@
 import React from 'react';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useApolloClient, useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/pageTitle';
 import Template from '../../../containers/template';
@@ -14,6 +14,14 @@ const CREATE_UNIT = gql`
         mutateCampus(id: $campusId) {
             createUnit(unit: $unit) {
                 id
+                label
+                trigram
+                workflow {
+                    steps {
+                        role
+                        behavior
+                    }
+                }
             }
         }
     }
@@ -23,6 +31,20 @@ const EDIT_USER = gql`
     mutation editUser($id: ObjectID!, $user: UserInput!) {
         editUser(id: $id, user: $user) {
             id
+            firstname
+            lastname
+            roles {
+                role
+                userInCharge
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
         }
     }
 `;
@@ -33,6 +55,29 @@ const EDIT_PLACE = gql`
         mutateCampus(id: $campusId) {
             editPlace(id: $id, place: $place) {
                 id
+                label
+                unitInCharge {
+                    id
+                    label
+                }
+            }
+        }
+    }
+`;
+
+const GET_UNITS_LIST = gql`
+    query listUnits($cursor: OffsetCursor, $campusId: String!, $search: String) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
+            listUnits(cursor: $cursor, search: $search) {
+                meta {
+                    offset
+                    first
+                    total
+                }
+                list {
+                    id
+                }
             }
         }
     }
@@ -41,7 +86,52 @@ const EDIT_PLACE = gql`
 function CreateUnit() {
   const { addAlert } = useSnackBar();
   const router = useRouter();
-  const [createUnit] = useMutation(CREATE_UNIT);
+  const client = useApolloClient();
+  const { campusId } = client.readQuery({
+    query: gql`
+    query getCampusId {
+        campusId
+    }
+  `,
+  });
+  const [createUnit] = useMutation(CREATE_UNIT,
+    {
+      update: (cache, { data: { mutateCampus: { createUnit: createdUnit } } }) => {
+        const currentUnits = cache.readQuery({
+          query: GET_UNITS_LIST,
+          variables: {
+            cursor: { first: 10, offset: 0 },
+            search: null,
+            campusId,
+          },
+        });
+        const updatedTotal = currentUnits.getCampus.listUnits.meta.total + 1;
+        const updatedUnits = {
+          ...currentUnits,
+          getCampus: {
+            ...currentUnits.getCampus,
+            listUnits: {
+              ...currentUnits.getCampus.listUnits,
+              ...(updatedTotal < 10)
+              && { list: [...currentUnits.getCampus.listUnits.list, createdUnit] },
+              meta: {
+                ...currentUnits.getCampus.listUnits.meta,
+                total: updatedTotal,
+              },
+            },
+          },
+        };
+        cache.writeQuery({
+          query: GET_UNITS_LIST,
+          variables: {
+            cursor: { first: 10, offset: 0 },
+            search: null,
+            campusId,
+          },
+          data: updatedUnits,
+        });
+      },
+    });
   const [editUserReq] = useMutation(EDIT_USER);
   const [editPlaceReq] = useMutation(EDIT_PLACE);
   const { activeRole } = useLogin();

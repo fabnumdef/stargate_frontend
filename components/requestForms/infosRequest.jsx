@@ -38,7 +38,7 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 // Date Validators
 import CheckAnimation from '../styled/animations/checked';
 
-import { REQUEST_OBJECT } from '../../utils/constants/enums';
+import { REQUEST_OBJECT, STATE_REQUEST } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
 import { useLogin } from '../../lib/loginContext';
@@ -189,6 +189,23 @@ export const EDIT_REQUEST = gql`
          ${REQUEST_ATTRIBUTES}
        `;
 
+export const LIST_MY_REQUESTS = gql`
+  query listMyRequests($campusId: String!, $cursor: OffsetCursor!, $filters: RequestFilters!) {
+    campusId @client @export(as: "campusId")
+    getCampus(id: $campusId) {
+      id
+      listMyRequests(filters: $filters, cursor: $cursor) {
+        list {
+          id
+        }
+        meta {
+          total
+        }
+      }
+    }
+  }
+`;
+
 export default function FormInfosClaimant({
   formData, setForm, handleNext, group,
 }) {
@@ -199,6 +216,13 @@ export default function FormInfosClaimant({
 
   const { data: placesList } = useQuery(GET_PLACES_LIST);
   const { activeRole } = useLogin();
+  const { campusId } = client.readQuery({
+    query: gql`
+    query getCampusId {
+        campusId
+    }
+  `,
+  });
 
   const checkSelection = async (value) => {
     const { data } = await client.query({ query: GET_PLACES_LIST });
@@ -212,6 +236,42 @@ export default function FormInfosClaimant({
   };
 
   const [createRequest] = useMutation(CREATE_REQUEST, {
+    update: (cache, { data: { mutateCampus: { createRequest: createdRequest } } }) => {
+      const currentRequests = cache.readQuery({
+        query: LIST_MY_REQUESTS,
+        variables: {
+          filters: { status: STATE_REQUEST.STATE_CREATED.state },
+          cursor: { first: 10, offset: 0 },
+          campusId,
+        },
+      });
+      const updatedTotal = currentRequests.getCampus.listMyRequests.meta.total + 1;
+      const updatedRequests = {
+        ...currentRequests,
+        getCampus: {
+          ...currentRequests.getCampus,
+          listMyRequests: {
+            ...currentRequests.getCampus.listMyRequests,
+            ...(updatedTotal < 10) && {
+              list: [...currentRequests.getCampus.listMyRequests.list, createdRequest],
+            },
+            meta: {
+              ...currentRequests.getCampus.listMyRequests.meta,
+              total: updatedTotal,
+            },
+          },
+        },
+      };
+      cache.writeQuery({
+        query: LIST_MY_REQUESTS,
+        variables: {
+          filters: { status: STATE_REQUEST.STATE_CREATED.state },
+          cursor: { first: 10, offset: 0 },
+        },
+        data: updatedRequests,
+        campusId,
+      });
+    },
     onCompleted: (data) => {
       setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
       handleNext();

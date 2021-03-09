@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   gql, useQuery, useMutation, useApolloClient,
@@ -101,6 +101,7 @@ export const DELETE_VISITOR = gql`
              mutateRequest(id: $requestId) {
                cancelVisitor(id: $idVisitor) {
                  id
+                 status
                }
              }
            }
@@ -132,10 +133,11 @@ export default function RequestDetails({ requestId }) {
 
   const [deleteVisitor] = useMutation(DELETE_VISITOR);
 
-  if (data && userData && data.getCampus.getRequest.owner.id !== userData.me.id) {
-    router.push('/');
-    return <div />;
-  }
+  useEffect(() => {
+    if (data && userData && data.getCampus.getRequest.owner.id !== userData.me.id) {
+      router.push('/');
+    }
+  }, [data]);
 
   // @todo a real 404 page
   // if (error) return <p>page 404</p>;

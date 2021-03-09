@@ -53,22 +53,6 @@ const GET_ME = gql`
 const INIT_CACHE = gql`
     query initCache {
         initializedCache
-        me {
-            id
-            firstname
-            lastname
-            roles {
-                role
-                campuses {
-                  id
-                  label
-                }
-                units {
-                    id
-                    label
-                }
-            }
-        }
         activeRoleCache {
             role
             unit
@@ -156,6 +140,7 @@ export function LoginContextProvider({ children }) {
     await router.push('/login');
     setIsLoggedUser(false);
     setIsCacheInit(false);
+    setActiveRole({ role: '', unit: '', unitLabel: '' });
     if (alert) addAlert(alert);
   }, [addAlert, client, router]);
 
@@ -263,7 +248,6 @@ export function LoginContextProvider({ children }) {
         query: INIT_CACHE,
         data: {
           initializedCache: true,
-          me: d.me,
           activeRoleCache: { ...newRole },
           campusId,
         },
