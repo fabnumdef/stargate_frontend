@@ -18,202 +18,222 @@ import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCell from '../../styled/customTableCellHeader';
 import VisitorGrid from '../../styled/visitor';
 
-import {
-  EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS,
-} from '../../../utils/constants/enums';
+import { EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS } from '../../../utils/constants/enums';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 
 const useStyles = makeStyles({
-  container: {
-    maxHeight: 440,
-  },
-  icon: {
-    marginTop: '-20px',
-    marginBottom: '-20px',
-  },
+    container: {
+        maxHeight: 440
+    },
+    icon: {
+        marginTop: '-20px',
+        marginBottom: '-20px'
+    }
 });
 
 const visitorCanceled = VISITOR_STATUS.CANCELED;
 
 function createData({
-  id, firstname, birthLastname, rank, company, employeeType, units, status, vip, vipReason,
-}) {
-  return {
     id,
-    vip,
-    vipReason,
-    visitor: rank
-      ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
-      : `${birthLastname.toUpperCase()} ${firstname}`,
+    firstname,
+    birthLastname,
+    rank,
     company,
-    type: EMPLOYEE_TYPE[employeeType],
-    actualStep: status === STATE_REQUEST.STATE_CANCELED.state
-      ? visitorCanceled
-      : findValidationStep(units),
-  };
+    employeeType,
+    units,
+    status,
+    vip,
+    vipReason
+}) {
+    return {
+        id,
+        vip,
+        vipReason,
+        visitor: rank
+            ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
+            : `${birthLastname.toUpperCase()} ${firstname}`,
+        company,
+        type: EMPLOYEE_TYPE[employeeType],
+        actualStep:
+            status === STATE_REQUEST.STATE_CANCELED.state
+                ? visitorCanceled
+                : findValidationStep(units)
+    };
 }
 
 const columns = [
-  { id: 'visitor', label: 'Visiteur(s)' },
-  { id: 'company', label: 'Unité/Société' },
-  { id: 'type', label: 'Type' },
-  { id: 'step', label: 'Etape de validation' },
+    { id: 'visitor', label: 'Visiteur(s)' },
+    { id: 'company', label: 'Unité/Société' },
+    { id: 'type', label: 'Type' },
+    { id: 'step', label: 'Etape de validation' }
 ];
 
 export default function TabRequestVisitors({ visitors, onDelete }) {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  const rows = useMemo(() => visitors.reduce((acc, vis) => {
-    acc.push(createData(vis));
-    return acc;
-  }, []), [visitors]);
+    const rows = useMemo(
+        () =>
+            visitors.reduce((acc, vis) => {
+                acc.push(createData(vis));
+                return acc;
+            }, []),
+        [visitors]
+    );
 
-  const [hover, setHover] = useState({});
-  const [del, setDel] = useState({});
+    const [hover, setHover] = useState({});
+    const [del, setDel] = useState({});
 
-  const handleMouseEnter = (index) => {
-    setHover((prevState) => ({ ...prevState, [index]: true }));
-  };
+    const handleMouseEnter = (index) => {
+        setHover((prevState) => ({ ...prevState, [index]: true }));
+    };
 
-  const handleDelete = (index) => {
-    setHover({});
-    setDel({ [index]: true });
-  };
+    const handleDelete = (index) => {
+        setHover({});
+        setDel({ [index]: true });
+    };
 
-  const handleDeleteConfirm = (id) => {
-    onDelete(id);
-    setDel({});
-  };
+    const handleDeleteConfirm = (id) => {
+        onDelete(id);
+        setDel({});
+    };
 
-  const handleDeleteAvorted = () => {
-    setDel({});
-  };
+    const handleDeleteAvorted = () => {
+        setDel({});
+    };
 
-  const handleMouseLeave = (index) => {
-    setTimeout(() => { }, 2000);
-    setHover((prevState) => ({ ...prevState, [index]: false }));
-  };
+    const handleMouseLeave = (index) => {
+        setTimeout(() => {}, 2000);
+        setHover((prevState) => ({ ...prevState, [index]: false }));
+    };
 
-  return (
-    <TableContainer>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            { columns.map((column) => (
-              <CustomTableCell key={column.id} align={column.align}>
-                { column.label }
-              </CustomTableCell>
-            )) }
-            <CustomTableCell key="actions" style={{ minWidth: '80px' }} />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          { rows.map((row, index) => {
-            if (del[index]) {
-              return (
-                <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                  <TableCell key="delete" align="justify" colspan={columns.length + 1}>
-                    <Grid container>
-                      <Grid item sm={10}>
-                        <Typography variant="body1">
-                          { `Êtes-vous sûr de vouloir supprimer ${row.visitor}
+    return (
+        <TableContainer>
+            <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                    <TableRow>
+                        {columns.map((column) => (
+                            <CustomTableCell key={column.id} align={column.align}>
+                                {column.label}
+                            </CustomTableCell>
+                        ))}
+                        <CustomTableCell key="actions" style={{ minWidth: '80px' }} />
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows.map((row, index) => {
+                        if (del[index]) {
+                            return (
+                                <TableRow tabIndex={-1} key={row.emailVisiteur}>
+                                    <TableCell
+                                        key="delete"
+                                        align="justify"
+                                        colspan={columns.length + 1}>
+                                        <Grid container>
+                                            <Grid item sm={10}>
+                                                <Typography variant="body1">
+                                                    {`Êtes-vous sûr de vouloir supprimer ${row.visitor}
                          de la demande ?`}
-                        </Typography>
-                        { rows.length === 1 && (
-                          <Typography variant="body1" color="error">
-                            S&apos;il n&apos;y a plus de visiteur, la demande va être supprimée.
-                          </Typography>
-                        ) }
-                      </Grid>
-                      <Grid item sm={2}>
-                        <div style={{ float: 'right' }}>
-                          <IconButton
-                            aria-label="valide"
-                            color="secondary"
-                            className={classes.icon}
-                            onClick={() => handleDeleteConfirm(row.id)}
-                          >
-                            <DoneIcon />
-                          </IconButton>
+                                                </Typography>
+                                                {rows.length === 1 && (
+                                                    <Typography variant="body1" color="error">
+                                                        S&apos;il n&apos;y a plus de visiteur, la
+                                                        demande va être supprimée.
+                                                    </Typography>
+                                                )}
+                                            </Grid>
+                                            <Grid item sm={2}>
+                                                <div style={{ float: 'right' }}>
+                                                    <IconButton
+                                                        aria-label="valide"
+                                                        color="secondary"
+                                                        className={classes.icon}
+                                                        onClick={() => handleDeleteConfirm(row.id)}>
+                                                        <DoneIcon />
+                                                    </IconButton>
 
-                          <IconButton
-                            aria-label="cancel"
-                            className={classes.icon}
-                            onClick={() => handleDeleteAvorted()}
-                          >
-                            <CloseIcon />
-                          </IconButton>
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </TableCell>
-                </TableRow>
-              );
-            }
-            return (
-              <TableRow
-                onMouseOver={() => handleMouseEnter(index)}
-                onFocus={() => handleMouseEnter(index)}
-                onMouseLeave={() => handleMouseLeave(index)}
-                role="checkbox"
-                tabIndex={-1}
-                key={row.id}
-              >
-                { columns.map((column) => {
-                  const value = row[column.id];
-                  switch (column.id) {
-                    case 'visitor':
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
-                        </TableCell>
-                      );
-                    case 'step':
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          { row.actualStep }
-                        </TableCell>
-                      );
-                    default:
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          { column.format && typeof value === 'number' ? column.format(value) : value }
-                        </TableCell>
-                      );
-                  }
-                }) }
-                <TableCell key="actions">
-                  {row.actualStep === visitorCanceled ? '' : hover[index] && (
-                    <div style={{ float: 'right' }}>
-                      <IconButton
-                        color="primary"
-                        aria-label="delete"
-                        className={classes.icon}
-                        onClick={() => handleDelete(index)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </div>
-                  ) }
-                </TableCell>
-              </TableRow>
-            );
-          }) }
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+                                                    <IconButton
+                                                        aria-label="cancel"
+                                                        className={classes.icon}
+                                                        onClick={() => handleDeleteAvorted()}>
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        }
+                        return (
+                            <TableRow
+                                onMouseOver={() => handleMouseEnter(index)}
+                                onFocus={() => handleMouseEnter(index)}
+                                onMouseLeave={() => handleMouseLeave(index)}
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.id}>
+                                {columns.map((column) => {
+                                    const value = row[column.id];
+                                    switch (column.id) {
+                                        case 'visitor':
+                                            return (
+                                                <TableCell key={column.id} align={column.align}>
+                                                    <VisitorGrid
+                                                        name={value}
+                                                        vip={row.vip}
+                                                        vipReason={row.vipReason}
+                                                    />
+                                                </TableCell>
+                                            );
+                                        case 'step':
+                                            return (
+                                                <TableCell key={column.id} align={column.align}>
+                                                    {row.actualStep}
+                                                </TableCell>
+                                            );
+                                        default:
+                                            return (
+                                                <TableCell key={column.id} align={column.align}>
+                                                    {column.format && typeof value === 'number'
+                                                        ? column.format(value)
+                                                        : value}
+                                                </TableCell>
+                                            );
+                                    }
+                                })}
+                                <TableCell key="actions">
+                                    {row.actualStep === visitorCanceled
+                                        ? ''
+                                        : hover[index] && (
+                                              <div style={{ float: 'right' }}>
+                                                  <IconButton
+                                                      color="primary"
+                                                      aria-label="delete"
+                                                      className={classes.icon}
+                                                      onClick={() => handleDelete(index)}>
+                                                      <DeleteIcon />
+                                                  </IconButton>
+                                              </div>
+                                          )}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
 }
 
 TabRequestVisitors.propTypes = {
-  visitors: PropTypes.arrayOf(
-    PropTypes.shape({
-      firstname: PropTypes.string,
-    }),
-  ),
-  onDelete: PropTypes.func.isRequired,
+    visitors: PropTypes.arrayOf(
+        PropTypes.shape({
+            firstname: PropTypes.string
+        })
+    ),
+    onDelete: PropTypes.func.isRequired
 };
 
 TabRequestVisitors.defaultProps = {
-  visitors: [],
+    visitors: []
 };

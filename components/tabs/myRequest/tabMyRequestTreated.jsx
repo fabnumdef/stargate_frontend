@@ -27,304 +27,324 @@ import EmptyArray from '../../styled/emptyArray';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 
 const columns = [
-  { id: 'id', label: 'N° demande', width: '220px' },
-  {
-    id: 'periode', label: 'Période', width: '100px', style: { textAlign: 'center' },
-  },
-  { id: 'owner', label: 'Demandeur' },
-  { id: 'places', label: 'Lieu' },
-  { id: 'reason', label: 'Motif' },
+    { id: 'id', label: 'N° demande', width: '220px' },
+    {
+        id: 'periode',
+        label: 'Période',
+        width: '100px',
+        style: { textAlign: 'center' }
+    },
+    { id: 'owner', label: 'Demandeur' },
+    { id: 'places', label: 'Lieu' },
+    { id: 'reason', label: 'Motif' }
 ];
 
 const StyledFormLabel = withStyles({
-  root: {
-    margin: 'auto',
-  },
+    root: {
+        margin: 'auto'
+    }
 })(FormControlLabel);
 
-function createData({
-  id, requestData,
-}) {
-  const {
-    owner, from, to, reason, places, status,
-  } = requestData[0];
-  return {
-    id,
-    periode: `${format(new Date(from), 'dd/MM/yyyy')}
+function createData({ id, requestData }) {
+    const { owner, from, to, reason, places, status } = requestData[0];
+    return {
+        id,
+        periode: `${format(new Date(from), 'dd/MM/yyyy')}
           au
           ${format(new Date(to), 'dd/MM/yyyy')}`,
-    owner: owner
-      ? `
+        owner: owner
+            ? `
           ${owner.rank || ''} ${owner.lastname.toUpperCase()} ${owner.firstname} -
           ${owner.unit.label}`
-      : '',
+            : '',
 
-    places: places.map((place, index) => {
-      if (index === places.length - 1) return `${place.label}.`;
-      return `${place.label}, `;
-    }),
-    status,
-    reason,
-  };
+        places: places.map((place, index) => {
+            if (index === places.length - 1) return `${place.label}.`;
+            return `${place.label}, `;
+        }),
+        status,
+        reason
+    };
 }
 
 function validRequest(status) {
-  return !(status === STATE_REQUEST.STATE_CANCELED.state
-  || status === STATE_REQUEST.STATE_REJECTED.state);
+    return !(
+        status === STATE_REQUEST.STATE_CANCELED.state ||
+        status === STATE_REQUEST.STATE_REJECTED.state
+    );
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  container: {
-    maxHeight: 440,
-  },
-  icon: {
-    marginBottom: '-20px',
-    marginTop: '-20px',
-  },
-  buttons: {
-    marginTop: '1vh',
-    marginBottom: '1vh',
-  },
-  cellNoBorder: {
-    border: 'none',
-  },
-  borderRight: {
-    borderRight: 'solid 1px',
-  },
-  borderBottom: {
-    borderBottom: 'solid 1px',
-  },
-  borderLeft: {
-    borderLeft: 'solid 1px',
-  },
-  textCenter: {
-    textAlign: 'center',
-  },
-  rowForm: {
-    backgroundColor: fade(theme.palette.primary.main, 0.05),
-    color: `${theme.palette.primary.main}!important`,
-  },
-  reportHeader: {
-    textAlign: 'center',
-    minWidth: '450px',
-    borderTop: 'solid 1px',
-    whiteSpace: 'nowrap',
-  },
-  reportRow: {
-    borderLeft: 'solid 1px',
-    borderRight: 'solid 1px',
-  },
-  reportLastChild: {
-    borderBottom: 'solid 1px',
-  },
-  export: {
-    color: 'white',
-  },
-  sortedHeader: {
-    color: `${theme.palette.primary.main}!important`,
-  },
-  exportContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
-  inactive: {
-    opacity: '.3',
-    fontStyle: 'italic',
-  },
+    root: {
+        width: '100%'
+    },
+    container: {
+        maxHeight: 440
+    },
+    icon: {
+        marginBottom: '-20px',
+        marginTop: '-20px'
+    },
+    buttons: {
+        marginTop: '1vh',
+        marginBottom: '1vh'
+    },
+    cellNoBorder: {
+        border: 'none'
+    },
+    borderRight: {
+        borderRight: 'solid 1px'
+    },
+    borderBottom: {
+        borderBottom: 'solid 1px'
+    },
+    borderLeft: {
+        borderLeft: 'solid 1px'
+    },
+    textCenter: {
+        textAlign: 'center'
+    },
+    rowForm: {
+        backgroundColor: fade(theme.palette.primary.main, 0.05),
+        color: `${theme.palette.primary.main}!important`
+    },
+    reportHeader: {
+        textAlign: 'center',
+        minWidth: '450px',
+        borderTop: 'solid 1px',
+        whiteSpace: 'nowrap'
+    },
+    reportRow: {
+        borderLeft: 'solid 1px',
+        borderRight: 'solid 1px'
+    },
+    reportLastChild: {
+        borderBottom: 'solid 1px'
+    },
+    export: {
+        color: 'white'
+    },
+    sortedHeader: {
+        color: `${theme.palette.primary.main}!important`
+    },
+    exportContainer: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    inactive: {
+        opacity: '.3',
+        fontStyle: 'italic'
+    }
 }));
 
 const TabMyRequestUntreated = forwardRef(({ requests, detailLink, emptyLabel }, ref) => {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  const router = useRouter();
+    const router = useRouter();
 
-  const rows = React.useMemo(() => requests.reduce((acc, dem) => {
-    acc.push(createData(dem));
-    return acc;
-  }, []), [requests]);
+    const rows = React.useMemo(
+        () =>
+            requests.reduce((acc, dem) => {
+                acc.push(createData(dem));
+                return acc;
+            }, []),
+        [requests]
+    );
 
-  const [hover, setHover] = useState({});
-  // sort Date
-  const [order, setOrder] = useState('asc');
+    const [hover, setHover] = useState({});
+    // sort Date
+    const [order, setOrder] = useState('asc');
 
-  const [chosen, setChosen] = useState([]);
+    const [chosen, setChosen] = useState([]);
 
-  const createSortHandler = () => {
-    const isAsc = order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-  };
+    const createSortHandler = () => {
+        const isAsc = order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+    };
 
-  const handleSelectAll = (event) => {
-    if (event.target.checked) {
-      setChosen(rows.filter((row) => validRequest(row.status)).map((row) => row.id));
-    } else {
-      setChosen([]);
-    }
-  };
+    const handleSelectAll = (event) => {
+        if (event.target.checked) {
+            setChosen(rows.filter((row) => validRequest(row.status)).map((row) => row.id));
+        } else {
+            setChosen([]);
+        }
+    };
 
-  const handleMouseEnter = (index) => {
-    setHover((prevState) => ({ ...prevState, [index]: true }));
-  };
+    const handleMouseEnter = (index) => {
+        setHover((prevState) => ({ ...prevState, [index]: true }));
+    };
 
-  const handleMouseLeave = (index) => {
-    setTimeout(() => {}, 2000);
-    setHover((prevState) => ({ ...prevState, [index]: false }));
-  };
+    const handleMouseLeave = (index) => {
+        setTimeout(() => {}, 2000);
+        setHover((prevState) => ({ ...prevState, [index]: false }));
+    };
 
-  const handleChangeCheckbox = (event, id) => {
-    if (event.target.checked) {
-      setChosen((ids) => [...ids, id]);
-    } else {
-      const chosenTemp = [...chosen];
-      const indexId = chosenTemp.indexOf(id);
-      if (indexId > -1) {
-        chosenTemp.splice(indexId, 1);
-      }
-      setChosen(chosenTemp);
-    }
-  };
+    const handleChangeCheckbox = (event, id) => {
+        if (event.target.checked) {
+            setChosen((ids) => [...ids, id]);
+        } else {
+            const chosenTemp = [...chosen];
+            const indexId = chosenTemp.indexOf(id);
+            if (indexId > -1) {
+                chosenTemp.splice(indexId, 1);
+            }
+            setChosen(chosenTemp);
+        }
+    };
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      chosen,
-    }),
-  );
-  // triggerEvent from Parent Component
+    useImperativeHandle(ref, () => ({
+        chosen
+    }));
+    // triggerEvent from Parent Component
 
-  return requests.length > 0 ? (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <CustomTableCellHeader
-                key={column.id}
-                rowSpan={2}
-                align={column.align}
-                style={{ width: column.width }}
-              >
-                {column.label}
-              </CustomTableCellHeader>
-            ))}
-            <CustomTableCellHeader key="actions" rowSpan={2} style={{ minWidth: '120px', width: '130px' }} />
-            <CustomTableCellHeader colSpan={2} className={`${classes.reportHeader} ${classes.reportRow}`} style={{ minWidth: '150px', width: '180px', borderBottom: 'none' }}>
-              Export
-            </CustomTableCellHeader>
-          </TableRow>
-          <TableRow className={classes.textCenter}>
-            <CustomTableCellHeader className={`${classes.textCenter} ${classes.borderLeft}`}>
-              <StyledFormLabel
-                control={(
-                  <Checkbox
-                    color="primary"
-                    onChange={(event) => handleSelectAll(event)}
-                  />
-                      )}
-              />
-            </CustomTableCellHeader>
-            <CustomTableCellHeader className={`${classes.textCenter} ${classes.borderRight}`}>
-              <TableSortLabel
-                className={classes.sortedHeader}
-                direction={order}
-                onClick={createSortHandler}
-              >
-                Date
-              </TableSortLabel>
-            </CustomTableCellHeader>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows && rows.map((row, index) => (
-            <TableRow
-              hover
-              onMouseOver={() => handleMouseEnter(index)}
-              onFocus={() => handleMouseEnter(index)}
-              onMouseLeave={() => handleMouseLeave(index)}
-              role="checkbox"
-              tabIndex={-1}
-              key={row.code}
-            >
-              {columns.map((column) => {
-                const value = row[column.id];
-                return column.id === 'criblage' ? (
-                  <TableCell key={column.id} align={column.align}>
-                    {value ? <DoneIcon style={{ color: '#4CAF50' }} /> : <ErrorIcon />}
-                  </TableCell>
-                ) : (
-                  <TableCell key={column.id} align={column.align} style={column.style}>
-                    {column.format && typeof value === 'number' ? column.format(value) : value}
-                  </TableCell>
-                );
-              })}
-              <TableCell key="modif">
-                {hover[index] && (
-                <div style={{ float: 'right' }}>
-                  <IconButton
-                    aria-label="modifier"
-                    className={classes.icon}
-                    color="primary"
-                    onClick={() => router.push(`/demandes/${detailLink}/${row.id}`)}
-                  >
-                    <DescriptionIcon />
-                  </IconButton>
-                </div>
-                )}
-              </TableCell>
-              <TableCell
-                className={`${
-                  index === requests.length - 1 ? classes.borderBottom : ''
-                } ${classes.borderLeft} ${classes.textCenter}`}
-              >
-                { validRequest(row.status) && (
-                <Checkbox
-                  color="primary"
-                  checked={chosen.includes(row.id)}
-                  onChange={(event) => handleChangeCheckbox(event, row.id)}
-                />
-                )}
-              </TableCell>
-              <TableCell className={`${
-                index === requests.length - 1 ? classes.borderBottom : ''
-              } ${classes.borderRight} ${classes.textCenter}`}
-              >
-                26/08/2020
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  ) : (
-    <EmptyArray type={emptyLabel} />
-  );
+    return requests.length > 0 ? (
+        <TableContainer>
+            <Table size="small">
+                <TableHead>
+                    <TableRow>
+                        {columns.map((column) => (
+                            <CustomTableCellHeader
+                                key={column.id}
+                                rowSpan={2}
+                                align={column.align}
+                                style={{ width: column.width }}>
+                                {column.label}
+                            </CustomTableCellHeader>
+                        ))}
+                        <CustomTableCellHeader
+                            key="actions"
+                            rowSpan={2}
+                            style={{ minWidth: '120px', width: '130px' }}
+                        />
+                        <CustomTableCellHeader
+                            colSpan={2}
+                            className={`${classes.reportHeader} ${classes.reportRow}`}
+                            style={{ minWidth: '150px', width: '180px', borderBottom: 'none' }}>
+                            Export
+                        </CustomTableCellHeader>
+                    </TableRow>
+                    <TableRow className={classes.textCenter}>
+                        <CustomTableCellHeader
+                            className={`${classes.textCenter} ${classes.borderLeft}`}>
+                            <StyledFormLabel
+                                control={
+                                    <Checkbox
+                                        color="primary"
+                                        onChange={(event) => handleSelectAll(event)}
+                                    />
+                                }
+                            />
+                        </CustomTableCellHeader>
+                        <CustomTableCellHeader
+                            className={`${classes.textCenter} ${classes.borderRight}`}>
+                            <TableSortLabel
+                                className={classes.sortedHeader}
+                                direction={order}
+                                onClick={createSortHandler}>
+                                Date
+                            </TableSortLabel>
+                        </CustomTableCellHeader>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows &&
+                        rows.map((row, index) => (
+                            <TableRow
+                                hover
+                                onMouseOver={() => handleMouseEnter(index)}
+                                onFocus={() => handleMouseEnter(index)}
+                                onMouseLeave={() => handleMouseLeave(index)}
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.code}>
+                                {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return column.id === 'criblage' ? (
+                                        <TableCell key={column.id} align={column.align}>
+                                            {value ? (
+                                                <DoneIcon style={{ color: '#4CAF50' }} />
+                                            ) : (
+                                                <ErrorIcon />
+                                            )}
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell
+                                            key={column.id}
+                                            align={column.align}
+                                            style={column.style}>
+                                            {column.format && typeof value === 'number'
+                                                ? column.format(value)
+                                                : value}
+                                        </TableCell>
+                                    );
+                                })}
+                                <TableCell key="modif">
+                                    {hover[index] && (
+                                        <div style={{ float: 'right' }}>
+                                            <IconButton
+                                                aria-label="modifier"
+                                                className={classes.icon}
+                                                color="primary"
+                                                onClick={() =>
+                                                    router.push(`/demandes/${detailLink}/${row.id}`)
+                                                }>
+                                                <DescriptionIcon />
+                                            </IconButton>
+                                        </div>
+                                    )}
+                                </TableCell>
+                                <TableCell
+                                    className={`${
+                                        index === requests.length - 1 ? classes.borderBottom : ''
+                                    } ${classes.borderLeft} ${classes.textCenter}`}>
+                                    {validRequest(row.status) && (
+                                        <Checkbox
+                                            color="primary"
+                                            checked={chosen.includes(row.id)}
+                                            onChange={(event) =>
+                                                handleChangeCheckbox(event, row.id)
+                                            }
+                                        />
+                                    )}
+                                </TableCell>
+                                <TableCell
+                                    className={`${
+                                        index === requests.length - 1 ? classes.borderBottom : ''
+                                    } ${classes.borderRight} ${classes.textCenter}`}>
+                                    26/08/2020
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    ) : (
+        <EmptyArray type={emptyLabel} />
+    );
 });
 
 export default TabMyRequestUntreated;
 
 TabMyRequestUntreated.propTypes = {
-  request: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      from: PropTypes.date,
-      to: PropTypes.date,
-      owner: PropTypes.shape({
-        firstname: PropTypes.string,
-        birthLastname: PropTypes.string,
-        rank: PropTypes.string,
-        company: PropTypes.string,
-      }),
-      places: PropTypes.arrayOf(PropTypes.string),
-      reason: PropTypes.string,
-    }),
-  ),
-  detailLink: PropTypes.string.isRequired,
-  emptyLabel: PropTypes.string.isRequired,
+    requests: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string,
+            from: PropTypes.date,
+            to: PropTypes.date,
+            owner: PropTypes.shape({
+                firstname: PropTypes.string,
+                birthLastname: PropTypes.string,
+                rank: PropTypes.string,
+                company: PropTypes.string
+            }),
+            places: PropTypes.arrayOf(PropTypes.string),
+            reason: PropTypes.string
+        })
+    ),
+    detailLink: PropTypes.string.isRequired,
+    emptyLabel: PropTypes.string.isRequired
 };
 
 TabMyRequestUntreated.defaultProps = {
-  request: [],
+    request: []
 };

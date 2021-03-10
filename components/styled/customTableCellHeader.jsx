@@ -8,33 +8,32 @@ import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: fade(theme.palette.primary.main, 0.05),
-    color: theme.palette.primary.main,
-  },
+    head: {
+        backgroundColor: fade(theme.palette.primary.main, 0.05),
+        color: theme.palette.primary.main
+    }
 }))(TableCell);
 
 export default function CustomTableCell({ children, style, ...others }) {
-  return (
-    <StyledTableCell
-      {...others}
-      style={{
-        ...style,
-        fontWeight: '600',
-        fontSize: '1rem',
-      }}
-    >
-      {children}
-    </StyledTableCell>
-  );
+    return (
+        <StyledTableCell
+            {...others}
+            style={{
+                ...style,
+                fontWeight: '600',
+                fontSize: '1rem'
+            }}>
+            {children}
+        </StyledTableCell>
+    );
 }
 
 CustomTableCell.propTypes = {
-  children: PropTypes.node,
-  style: PropTypes.objectOf(PropTypes.string),
+    children: PropTypes.node,
+    style: PropTypes.objectOf(PropTypes.string)
 };
 
 CustomTableCell.defaultProps = {
-  children: '',
-  style: {},
+    children: '',
+    style: {}
 };

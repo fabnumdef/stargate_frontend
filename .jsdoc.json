@@ -1,35 +1,25 @@
 {
-  "source": {
-    "include": [
-      "components",
-      "containers",
-      "lib",
-      "pages",
-      "server",
-      "utils",
-      "README.md"
-    ],
-    "includePattern": "\\.(jsx|js)$",
-    "excludePattern": "(node_modules/|public/)"
-  },
-  "sourceType": "module",
-  "tags": {
-    "allowUnknownTags": true,
-    "dictionaries": ["jsdoc","closure"]
-  },
-  "plugins": [
-    "plugins/markdown"
-  ],
-  "templates": {
-    "cleverLinks": false,
-    "monospaceLinks": true,
-    "useLongnameInNav": false,
-    "showInheritedInNav": true
-  },
-  "opts": {
-    "destination": "./public/",
-    "encoding": "utf8",
-    "recurse": true,
-    "template": "./node_modules/minami"
-  }
+    "source": {
+        "include": ["components", "containers", "lib", "pages", "server", "utils", "README.md"],
+        "includePattern": "\\.(jsx|js)$",
+        "excludePattern": "(node_modules/|public/)"
+    },
+    "sourceType": "module",
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc", "closure"]
+    },
+    "plugins": ["plugins/markdown"],
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": true,
+        "useLongnameInNav": false,
+        "showInheritedInNav": true
+    },
+    "opts": {
+        "destination": "./public/",
+        "encoding": "utf8",
+        "recurse": true,
+        "template": "./node_modules/minami"
+    }
 }

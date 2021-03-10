@@ -18,28 +18,28 @@ import { useLogin } from '../../lib/loginContext';
 import { checkRequestDetailAuth } from '../../utils/permissions';
 
 const useStyles = makeStyles(() => ({
-  root: {
-    width: '100%',
-  },
-  pageTitle: {
-    margin: '16px 0',
-    color: '#0d40a0',
-    fontWeight: 'bold',
-  },
-  idRequest: {
-    marginLeft: '10px',
-    marginTop: '4px',
-    color: '#0d40a0',
-  },
-  pageTitleHolder: {
-    borderBottom: '1px solid #e5e5e5',
-  },
-  pageTitleControl: {
-    marginLeft: 'auto',
-  },
-  tabContent: {
-    margin: '20px 0',
-  },
+    root: {
+        width: '100%'
+    },
+    pageTitle: {
+        margin: '16px 0',
+        color: '#0d40a0',
+        fontWeight: 'bold'
+    },
+    idRequest: {
+        marginLeft: '10px',
+        marginTop: '4px',
+        color: '#0d40a0'
+    },
+    pageTitleHolder: {
+        borderBottom: '1px solid #e5e5e5'
+    },
+    pageTitleControl: {
+        marginLeft: 'auto'
+    },
+    tabContent: {
+        margin: '20px 0'
+    }
 }));
 
 export const READ_REQUEST = gql`
@@ -73,16 +73,16 @@ export const READ_REQUEST = gql`
                         units {
                             id
                             label
-                              steps {
-                                  role
-                                  behavior
-                                  state {
-                                     isOK
-                                     date
-                                     tags
-                                     value
-                                  }
-                              }
+                            steps {
+                                role
+                                behavior
+                                state {
+                                    isOK
+                                    date
+                                    tags
+                                    value
+                                }
+                            }
                         }
                     }
                 }
@@ -92,73 +92,79 @@ export const READ_REQUEST = gql`
 `;
 
 export default function RequestDetailsTreated({ requestId }) {
-  const classes = useStyles();
-  const router = useRouter();
-  const { activeRole } = useLogin();
-  const client = useApolloClient();
+    const classes = useStyles();
+    const router = useRouter();
+    const { activeRole } = useLogin();
+    const client = useApolloClient();
 
-  const userData = useMemo(() => client.readQuery({
-    query: gql`
-          query getUserId {
-              me {
-                  id
-              }
-          }
-      `,
-  }),
-  [client]);
+    const userData = useMemo(
+        () =>
+            client.readQuery({
+                query: gql`
+                    query getUserId {
+                        me {
+                            id
+                        }
+                    }
+                `
+            }),
+        [client]
+    );
 
-  const { data, loading } = useQuery(READ_REQUEST,
-    {
-      variables: { requestId },
+    const { data, loading } = useQuery(READ_REQUEST, {
+        variables: { requestId }
     });
 
-  useEffect(() => {
-    if (data && (
-      !checkRequestDetailAuth(data, activeRole)
-      && data.getCampus.getRequest.owner.id !== userData.me.id
-    )) {
-      router.push('/');
-    }
-  }, [data]);
+    useEffect(() => {
+        if (
+            data &&
+            !checkRequestDetailAuth(data, activeRole) &&
+            data.getCampus.getRequest.owner.id !== userData.me.id
+        ) {
+            router.push('/');
+        }
+    }, [data]);
 
-  // @todo error Page 404
+    // @todo error Page 404
 
-  return (
-    <Template loading={loading}>
-      <Grid container spacing={2} className={classes.root}>
-        <Grid item sm={12} xs={12}>
-          <Box display="flex" alignItems="center">
-            <Typography variant="h5" className={classes.pageTitle}>
-              Demandes traitées :
-            </Typography>
-            <Typography variant="subtitle2" className={classes.idRequest}>
-              {data && data.getCampus.getRequest.id}
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item sm={12} xs={12}>
-          <DetailsInfosRequest request={data && data.getCampus.getRequest} />
-        </Grid>
-        <Grid item sm={12} xs={12} className={classes.tabContent}>
-          <TabRequestVisitorsTreated
-            visitors={data && data.getCampus.getRequest.listVisitors.list}
-          />
-        </Grid>
-        <Grid item sm={12}>
-          <Grid container justify="flex-end">
-            <div>
-              <Button variant="outlined" color="primary" onClick={() => router.back()}>
-                Retour
-              </Button>
-            </div>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Template>
-  );
+    return (
+        <Template loading={loading}>
+            <Grid container spacing={2} className={classes.root}>
+                <Grid item sm={12} xs={12}>
+                    <Box display="flex" alignItems="center">
+                        <Typography variant="h5" className={classes.pageTitle}>
+                            Demandes traitées :
+                        </Typography>
+                        <Typography variant="subtitle2" className={classes.idRequest}>
+                            {data && data.getCampus.getRequest.id}
+                        </Typography>
+                    </Box>
+                </Grid>
+                <Grid item sm={12} xs={12}>
+                    <DetailsInfosRequest request={data && data.getCampus.getRequest} />
+                </Grid>
+                <Grid item sm={12} xs={12} className={classes.tabContent}>
+                    <TabRequestVisitorsTreated
+                        visitors={data && data.getCampus.getRequest.listVisitors.list}
+                    />
+                </Grid>
+                <Grid item sm={12}>
+                    <Grid container justify="flex-end">
+                        <div>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => router.back()}>
+                                Retour
+                            </Button>
+                        </div>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Template>
+    );
 }
 
 RequestDetailsTreated.propTypes = {
-  requestId: PropTypes.string.isRequired,
+    requestId: PropTypes.string.isRequired
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { UnitAdministration } from '../../../containers';
 
 function UnitAdministrationIndex() {
-  return <UnitAdministration />;
+    return <UnitAdministration />;
 }
 
 export default UnitAdministrationIndex;
