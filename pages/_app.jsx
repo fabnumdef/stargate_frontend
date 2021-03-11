@@ -1,59 +1,56 @@
 import React, { useEffect } from 'react';
-import { ApolloProvider } from '@apollo/client';
-import PropTypes from 'prop-types';
-import Head from 'next/head';
-import App from 'next/app';
 
-// Material-UI providers
+import { ApolloProvider } from '@apollo/client';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
+import Head from 'next/head';
+import PropTypes from 'prop-types';
+
 import { useApollo } from '../lib/apollo';
 import { LoginContextProvider } from '../lib/loginContext';
-import theme from '../styles/theme';
 import { SnackBarProvider } from '../lib/hooks/snackbar';
+import theme from '../styles/theme';
 
-function MyApp({ Component, pageProps }) {
-  useEffect(() => {
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side');
-    if (jssStyles && jssStyles.parentElement) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
-  }, []);
+/**
+ * @component
+ * Override comportment of each application's pages
+ * @param {AppProps} Components pages components
+ * @param {AppProps} pageProps pages props
+ */
+export default function App({ Component, pageProps }) {
+    /** Keep the apollo cache in localStorage to avoid data loss. */
+    const apolloClient = useApollo(pageProps);
 
-  const client = useApollo(pageProps);
+    useEffect(() => {
+        /** Remove the server-side injected CSS. */
+        const jssStyles = document.querySelector('#jss-server-side');
+        if (jssStyles && jssStyles.parentElement) {
+            jssStyles.parentElement.removeChild(jssStyles);
+        }
+    });
 
-  return (
-    <SnackBarProvider>
-      <ApolloProvider client={client}>
-        <LoginContextProvider client={client}>
-          <ThemeProvider theme={theme}>
-            <Head>
-              <title>Stargate</title>
-            </Head>
-
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-            <CssBaseline />
-            {/* pageProps are never the same,
-            and all needed by the component, but well extracted from App props */}
-            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </LoginContextProvider>
-      </ApolloProvider>
-    </SnackBarProvider>
-
-  );
+    return (
+        <ApolloProvider client={apolloClient}>
+            <ThemeProvider theme={theme}>
+                <SnackBarProvider>
+                    <LoginContextProvider>
+                        <Head>
+                            <title>Stargate</title>
+                            <meta
+                                name="viewport"
+                                content="minimum-scale=1, initial-scale=1, width=device-width"
+                            />
+                        </Head>
+                        <CssBaseline />
+                        <Component {...pageProps} />
+                    </LoginContextProvider>
+                </SnackBarProvider>
+            </ThemeProvider>
+        </ApolloProvider>
+    );
 }
 
-MyApp.getInitialProps = async (appContext) => {
-  const appProps = await App.getInitialProps(appContext);
-  return { ...appProps };
+App.propTypes = {
+    Component: PropTypes.elementType.isRequired,
+    pageProps: PropTypes.objectOf(PropTypes.any).isRequired
 };
-
-MyApp.propTypes = {
-  Component: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  pageProps: PropTypes.objectOf(PropTypes.any).isRequired,
-};
-
-export default MyApp;

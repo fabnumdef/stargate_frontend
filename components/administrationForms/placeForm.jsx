@@ -18,203 +18,218 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CustomTableHeader from '../styled/customTableCellHeader';
 
 const useStyles = makeStyles((theme) => ({
-  placesContainer: {
-
-    margin: '25px 35px',
-  },
-  placesContaineSize: {
-    width: '440px',
-  },
-  placesHeader: {
-    height: '50px',
-    backgroundColor: 'rgba(15, 65, 148, 0.1)',
-    padding: '10px 15px',
-  },
-  placesForm: {
-    paddingLeft: '40px',
-  },
-  inputContainer: {
-    width: '250px',
-    alignItems: 'flex-end',
-    paddingLeft: '16px',
-  },
-  tableContainer: {
-    maxHeight: '280px',
-  },
-  nameContainer: {
-    display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-  },
-  submitButton: {
-    color: 'white',
-    width: '20px',
-    height: '20px',
-    borderRadius: '5px',
-    boxShadow: '5px 3px 6px 0 rgba(0, 0, 0, 0.16)',
-  },
-  row: {
-    borderBottom: 'none',
-  },
-  icon: {
-    marginBottom: '-16px',
-    marginTop: '-16px',
-    padding: '1px 3px 1px 3px',
-  },
-  buttonsContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginTop: '15%',
-    '& button': {
-      margin: '3px',
+    placesContainer: {
+        margin: '25px 35px'
     },
-  },
-  headerPlaces: {
-    backgroundColor: fade(theme.palette.primary.main, 0.05),
-    color: theme.palette.primary.main,
-  },
-}
-));
+    placesContaineSize: {
+        width: '440px'
+    },
+    placesHeader: {
+        height: '50px',
+        backgroundColor: 'rgba(15, 65, 148, 0.1)',
+        padding: '10px 15px'
+    },
+    placesForm: {
+        paddingLeft: '40px'
+    },
+    inputContainer: {
+        width: '250px',
+        alignItems: 'flex-end',
+        paddingLeft: '16px'
+    },
+    tableContainer: {
+        maxHeight: '280px'
+    },
+    nameContainer: {
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between'
+    },
+    submitButton: {
+        color: 'white',
+        width: '20px',
+        height: '20px',
+        borderRadius: '5px',
+        boxShadow: '5px 3px 6px 0 rgba(0, 0, 0, 0.16)'
+    },
+    row: {
+        borderBottom: 'none'
+    },
+    icon: {
+        marginBottom: '-16px',
+        marginTop: '-16px',
+        padding: '1px 3px 1px 3px'
+    },
+    buttonsContainer: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginTop: '15%',
+        '& button': {
+            margin: '3px'
+        }
+    },
+    headerPlaces: {
+        backgroundColor: fade(theme.palette.primary.main, 0.05),
+        color: theme.palette.primary.main
+    }
+}));
 // '(min-width:955px)';
 const PlaceForm = ({ list, submitForm }) => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up('md'));
-  const classes = useStyles();
-  const {
-    handleSubmit,
-  } = useForm();
-  const [placeName, setPlaceName] = useState('');
-  const [placesList, setPlaceList] = useState(list);
-  const [hover, setHover] = useState({});
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('md'));
+    const classes = useStyles();
+    const { handleSubmit } = useForm();
+    const [placeName, setPlaceName] = useState('');
+    const [placesList, setPlaceList] = useState(list);
+    const [hover, setHover] = useState({});
 
-  const handleAdd = async () => {
-    const trimed = (str) => str.replace(/\s/g, '').toLowerCase();
-    if (!placeName.length) {
-      return null;
-    }
-    if (placesList.some((e) => trimed(e.label) === trimed(placeName) && !e.toDelete)) {
-      return null;
-    }
-    const newList = [...placesList, { label: placeName }];
-    setPlaceList(newList);
-    return setPlaceName('');
-  };
-
-  const handleDelete = async (label) => {
-    const listId = list.map((place) => place.id);
-    const newList = placesList.filter((place) => (listId.includes(place.id)))
-      .map((place) => {
-        if (place.label === label) {
-          return { ...place, toDelete: true };
+    const handleAdd = async () => {
+        const trimed = (str) => str.replace(/\s/g, '').toLowerCase();
+        if (!placeName.length) {
+            return null;
         }
-        return place;
-      });
-    setPlaceList(newList);
-  };
+        if (placesList.some((e) => trimed(e.label) === trimed(placeName) && !e.toDelete)) {
+            return null;
+        }
+        const newList = [...placesList, { label: placeName }];
+        setPlaceList(newList);
+        return setPlaceName('');
+    };
 
-  const onSubmitPlaces = () => {
-    submitForm(placesList);
-  };
+    const handleDelete = async (label) => {
+        const listId = list.map((place) => place.id);
+        const newList = placesList
+            .filter((place) => listId.includes(place.id))
+            .map((place) => {
+                if (place.label === label) {
+                    return { ...place, toDelete: true };
+                }
+                return place;
+            });
+        setPlaceList(newList);
+    };
 
-  const handleMouseEnter = (index) => {
-    setHover((prevState) => ({ ...prevState, [index]: true }));
-  };
+    const onSubmitPlaces = () => {
+        submitForm(placesList);
+    };
 
-  const handleMouseLeave = (index) => {
-    setTimeout(() => { }, 2000);
-    setHover((prevState) => ({ ...prevState, [index]: false }));
-  };
+    const handleMouseEnter = (index) => {
+        setHover((prevState) => ({ ...prevState, [index]: true }));
+    };
 
-  const handleCancel = () => {
-    setPlaceList(list);
-  };
+    const handleMouseLeave = (index) => {
+        setTimeout(() => {}, 2000);
+        setHover((prevState) => ({ ...prevState, [index]: false }));
+    };
 
-  useEffect(() => {
-    setPlaceList(list);
-  }, [list]);
+    const handleCancel = () => {
+        setPlaceList(list);
+    };
 
-  return (
-    <form onSubmit={handleSubmit(onSubmitPlaces)}>
-      <Grid className={`${
-        matches ? classes.placesContaine : ''} ${classes.placesContaineSize} `}
-      >
+    useEffect(() => {
+        setPlaceList(list);
+    }, [list]);
 
-        <Grid className={`${
-          matches ? classes.placesForm : ''}`}
-        >
-          <TableContainer className={classes.tableContainer}>
-            <Table size="small" data-testid="placeTable">
-              <TableHead>
-                <TableRow>
-                  <CustomTableHeader>
-                    Lieux
-                  </CustomTableHeader>
-                  <CustomTableHeader key="action" style={{ minWidth: '50px', width: '60px' }} />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                { placesList.map((place, index) => !place.toDelete && (
-                  <TableRow
-                    key={place.id}
-                    hover
-                    onMouseOver={() => handleMouseEnter(index)}
-                    onFocus={() => handleMouseEnter(index)}
-                    onMouseLeave={() => handleMouseLeave(index)}
-                    tabIndex={-1}
-                  >
-                    <TableCell key={`${place.id} ${place.label}`} className={classes.row}>
-                      { place.label }
-                    </TableCell>
-                    <TableCell key="delete" className={classes.row}>
-                      { hover[index] && (
-                      <div style={{ float: 'right' }}>
-                        <IconButton
-                          aria-label="supprimer"
-                          className={classes.icon}
-                          color="primary"
-                          onClick={() => handleDelete(place.label)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </div>
-                      ) }
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Grid container className={classes.nameContainer}>
-            <Grid item md={5} sm={5} xs={5} className={classes.inputContainer}>
-              <TextField
-                label="Nom"
-                onChange={(e) => setPlaceName(e.target.value)}
-                value={placeName}
-              />
+    return (
+        <form onSubmit={handleSubmit(onSubmitPlaces)}>
+            <Grid
+                className={`${matches ? classes.placesContaine : ''} ${
+                    classes.placesContaineSize
+                } `}>
+                <Grid className={`${matches ? classes.placesForm : ''}`}>
+                    <TableContainer className={classes.tableContainer}>
+                        <Table size="small" data-testid="placeTable">
+                            <TableHead>
+                                <TableRow>
+                                    <CustomTableHeader>Lieux</CustomTableHeader>
+                                    <CustomTableHeader
+                                        key="action"
+                                        style={{ minWidth: '50px', width: '60px' }}
+                                    />
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {placesList.map(
+                                    (place, index) =>
+                                        !place.toDelete && (
+                                            <TableRow
+                                                key={place.id}
+                                                hover
+                                                onMouseOver={() => handleMouseEnter(index)}
+                                                onFocus={() => handleMouseEnter(index)}
+                                                onMouseLeave={() => handleMouseLeave(index)}
+                                                tabIndex={-1}>
+                                                <TableCell
+                                                    key={`${place.id} ${place.label}`}
+                                                    className={classes.row}>
+                                                    {place.label}
+                                                </TableCell>
+                                                <TableCell key="delete" className={classes.row}>
+                                                    {hover[index] && (
+                                                        <div style={{ float: 'right' }}>
+                                                            <IconButton
+                                                                aria-label="supprimer"
+                                                                className={classes.icon}
+                                                                color="primary"
+                                                                onClick={() =>
+                                                                    handleDelete(place.label)
+                                                                }>
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <Grid container className={classes.nameContainer}>
+                        <Grid item md={5} sm={5} xs={5} className={classes.inputContainer}>
+                            <TextField
+                                label="Nom"
+                                onChange={(e) => setPlaceName(e.target.value)}
+                                value={placeName}
+                            />
+                        </Grid>
+                        <Grid item md={2} sm={2} xs={2}>
+                            <Button
+                                type="button"
+                                className={classes.submitButton}
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAdd}>
+                                +
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
             </Grid>
-            <Grid item md={2} sm={2} xs={2}>
-              <Button type="button" className={classes.submitButton} variant="contained" color="primary" onClick={handleAdd}>
-                +
-              </Button>
+            <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
+                <Button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={list === placesList}
+                    variant="outlined"
+                    color="primary">
+                    Annuler
+                </Button>
+                <Button
+                    type="submit"
+                    disabled={list === placesList}
+                    variant="contained"
+                    color="primary">
+                    Sauvegarder
+                </Button>
             </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-        <Button type="button" onClick={handleCancel} disabled={list === placesList} variant="outlined" color="primary">
-          Annuler
-        </Button>
-        <Button type="submit" disabled={list === placesList} variant="contained" color="primary">
-          Sauvegarder
-        </Button>
-      </Grid>
-    </form>
-  );
+        </form>
+    );
 };
 
 PlaceForm.propTypes = {
-  submitForm: PropTypes.func.isRequired,
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
+    submitForm: PropTypes.func.isRequired,
+    list: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export default PlaceForm;

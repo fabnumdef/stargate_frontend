@@ -17,9 +17,7 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import { format } from 'date-fns';
 import { CSVLink } from 'react-csv';
 
-import {
-  TabPanel, TabScreeningVisitors,
-} from '../components';
+import { TabPanel, TabScreeningVisitors } from '../components';
 
 import Template from './template';
 
@@ -36,358 +34,373 @@ import Loading from './loading';
 import EmptyArray from '../components/styled/emptyArray';
 
 const useStyles = makeStyles(() => ({
-  root: {
-    width: '100%',
-  },
-  tab: {
-    '& .MuiBox-root': {
-      padding: 'Opx',
+    root: {
+        width: '100%'
     },
-  },
-  pageTitle: {
-    margin: '16px 0',
-    color: '#0d40a0',
-    fontWeight: 'bold',
-  },
-  pageTitleHolder: {
-    borderBottom: '1px solid #e5e5e5',
-  },
-  pageTitleControl: {
-    marginLeft: 'auto',
-  },
+    tab: {
+        '& .MuiBox-root': {
+            padding: 'Opx'
+        }
+    },
+    pageTitle: {
+        margin: '16px 0',
+        color: '#0d40a0',
+        fontWeight: 'bold'
+    },
+    pageTitleHolder: {
+        borderBottom: '1px solid #e5e5e5'
+    },
+    pageTitleControl: {
+        marginLeft: 'auto'
+    }
 }));
 
 function csvName() {
-  const date = new Date(Date.now());
-  const options = {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-  };
-  const titleCsv = `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
-  return titleCsv;
+    const date = new Date(Date.now());
+    const options = {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit'
+    };
+    const titleCsv = `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
+    return titleCsv;
 }
 
 const csvHeaders = [
-  { label: 'Nom de N.', key: 'vBirthName', fullLabel: 'Nom de Naissance' },
-  { label: 'Prénom', key: 'vFirstName' },
-  { label: 'Date de N.', key: 'vBirthDate', fullLabel: 'Date de Naissance' },
-  { label: 'Lieu de N.', key: 'vBirthPlace', fullLabel: 'Lieu de Naissance' },
-  { label: 'Nationalité', key: 'vNationality' },
+    { label: 'Nom de N.', key: 'vBirthName', fullLabel: 'Nom de Naissance' },
+    { label: 'Prénom', key: 'vFirstName' },
+    { label: 'Date de N.', key: 'vBirthDate', fullLabel: 'Date de Naissance' },
+    { label: 'Lieu de N.', key: 'vBirthPlace', fullLabel: 'Lieu de Naissance' },
+    { label: 'Nationalité', key: 'vNationality' }
 ];
 
-function createData({
-  id,
-  nationality,
-  birthday,
-  birthplace,
-  firstname,
-  birthLastname,
-  units,
-  identityDocuments,
-  request,
-  generateIdentityFileExportLink,
-}, activeRole) {
-  return {
-    id,
-    nationality,
-    birthday: format(new Date(birthday), 'dd/MM/yyyy'),
-    birthplace,
-    firstname,
-    birthLastname,
-    report: null,
-    screening: checkStatus(units, activeRole),
-    requestId: request.id,
-    vAttachedFile: identityDocuments[0] && identityDocuments[0].file
-      ? identityDocuments[0].file.id
-      : null,
-    link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null,
-  };
+function createData(
+    {
+        id,
+        nationality,
+        birthday,
+        birthplace,
+        firstname,
+        birthLastname,
+        units,
+        identityDocuments,
+        request,
+        generateIdentityFileExportLink
+    },
+    activeRole
+) {
+    return {
+        id,
+        nationality,
+        birthday: format(new Date(birthday), 'dd/MM/yyyy'),
+        birthplace,
+        firstname,
+        birthLastname,
+        report: null,
+        screening: checkStatus(units, activeRole),
+        requestId: request.id,
+        vAttachedFile:
+            identityDocuments[0] && identityDocuments[0].file ? identityDocuments[0].file.id : null,
+        link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null
+    };
 }
 
 export const LIST_VISITOR_REQUESTS = gql`
-         query ListVisitorsToValidateRequestQuery(
-           $campusId: String!
-           $search: String
-           $cursor: OffsetCursor!
-           $as: ValidationPersonas!
-         ) {
-           campusId @client @export(as: "campusId")
-           activeRoleCache @client @export(as: "as") { role: role }
-           getCampus(id: $campusId) {
-             id
-             listVisitorsToValidate(search: $search, cursor: $cursor, as: $as) {
-               list {
-                 id
-                 firstname
-                 nationality
-                 birthday
-                 birthplace
-                 birthLastname
-                 units {
-                     id
-                     label
-                       steps {
-                          role
-                           state {
-                               isOK
-                               value
-                           }
-                       }
-                 }
-                 request {
-                   id
-                 }
-                 identityDocuments {
-                   file {
-                     id
-                   }
-                 }
-                   generateIdentityFileExportLink {
-                       link
-                   }
-               }
-               meta {
-                   total
-               }
-             }
-           }
-         }
-       `;
+    query ListVisitorsToValidateRequestQuery(
+        $campusId: String!
+        $search: String
+        $cursor: OffsetCursor!
+        $as: ValidationPersonas!
+    ) {
+        campusId @client @export(as: "campusId")
+        activeRoleCache @client @export(as: "as") {
+            role: role
+        }
+        getCampus(id: $campusId) {
+            id
+            listVisitorsToValidate(search: $search, cursor: $cursor, as: $as) {
+                list {
+                    id
+                    firstname
+                    nationality
+                    birthday
+                    birthplace
+                    birthLastname
+                    units {
+                        id
+                        label
+                        steps {
+                            role
+                            state {
+                                isOK
+                                value
+                            }
+                        }
+                    }
+                    request {
+                        id
+                    }
+                    identityDocuments {
+                        file {
+                            id
+                        }
+                    }
+                    generateIdentityFileExportLink {
+                        link
+                    }
+                }
+                meta {
+                    total
+                }
+            }
+        }
+    }
+`;
 
 export default function ScreeningManagement() {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  const { addAlert } = useSnackBar();
-  const { activeRole } = useLogin();
+    const { addAlert } = useSnackBar();
+    const { activeRole } = useLogin();
 
-  // submit values
-  const [visitors, setVisitors] = useState([]);
-  // tabMotor
-  const [value, setValue] = useState(0);
+    // submit values
+    const [visitors, setVisitors] = useState([]);
+    // tabMotor
+    const [value, setValue] = useState(0);
 
-  // filters
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    // filters
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const [search, setSearch] = React.useState(null);
+    const [search, setSearch] = React.useState(null);
 
-  const initMount = React.useRef(true);
+    const initMount = React.useRef(true);
 
-  const {
-    data, fetchMore, refetch,
-  } = useQuery(LIST_VISITOR_REQUESTS, {
-    variables: {
-      cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-      search,
-    },
-    fetchPolicy: 'cache-and-network',
-  });
-
-  const [shiftVisitor] = useMutation(MUTATE_VISITOR);
-
-  React.useEffect(() => {
-    if (!data) return;
-    setVisitors(
-      data.getCampus.listVisitorsToValidate.list.reduce((acc, dem) => {
-        acc.push(createData(dem, activeRole));
-        const activeVisitors = acc.filter(
-          (visitor) => visitor.screening.step === ACTIVE_STEP_STATUS,
-        );
-        return activeVisitors;
-      }, []),
-    );
-  }, [data]);
-
-  const tabList = [
-    {
-      index: 0,
-      label: `À traiter ${
-        data && data.getCampus.listVisitorsToValidate.meta.total > 0
-          ? `(${data.getCampus.listVisitorsToValidate.meta.total})`
-          : ''
-      }`,
-    },
-  ];
-
-  const handleFetchMore = () => {
-    fetchMore({
-      variables: {
-        cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return fetchMoreResult;
-      },
+    const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
+        variables: {
+            cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+            search
+        },
+        fetchPolicy: 'cache-and-network'
     });
-  };
 
-  const handlePageSize = () => {
-    if (!data) return 0;
-    return data.getCampus.listVisitorsToValidate.meta.total;
-  };
+    const [shiftVisitor] = useMutation(MUTATE_VISITOR);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    React.useEffect(() => {
+        if (!data) return;
+        setVisitors(
+            data.getCampus.listVisitorsToValidate.list.reduce((acc, dem) => {
+                acc.push(createData(dem, activeRole));
+                const activeVisitors = acc.filter(
+                    (visitor) => visitor.screening.step === ACTIVE_STEP_STATUS
+                );
+                return activeVisitors;
+            }, [])
+        );
+    }, [data]);
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    setPage(0);
-  };
-
-  React.useEffect(() => {
-    if (initMount.current) {
-      initMount.current = false;
-    }
-    handleFetchMore();
-  }, [page, rowsPerPage]);
-
-  const csvData = () => visitors.filter((visitor) => visitor.screening.step === 'activeSteps').map((visitor) => ({
-    vBirthName: visitor.birthLastname.toUpperCase(),
-    vBirthDate: visitor.birthday,
-    vBirthPlace: visitor.birthplace.toUpperCase(),
-    vFirstName: visitor.firstname.toUpperCase(),
-    vNationality: visitor.nationality.toUpperCase(),
-  }));
-
-  const submitForm = async () => {
-    await Promise.all(
-      visitors.map(async (visitor) => {
-        if (visitor.report !== null) {
-          try {
-            await shiftVisitor({
-              variables: {
-                requestId: visitor.requestId,
-                visitorId: visitor.id,
-                decision: visitor.report,
-                as: { role: activeRole.role },
-              },
-            });
-          } catch (e) {
-            addAlert({
-              message: e.message,
-              severity: 'error',
-            });
-          }
+    const tabList = [
+        {
+            index: 0,
+            label: `À traiter ${
+                data && data.getCampus.listVisitorsToValidate.meta.total > 0
+                    ? `(${data.getCampus.listVisitorsToValidate.meta.total})`
+                    : ''
+            }`
         }
-      }),
-    );
-    // refresh the query
-    refetch();
-  };
+    ];
 
-  return (
-    <Template>
-      <Grid container spacing={2} className={classes.root}>
-        <Grid item sm={12} xs={12}>
-          <Box display="flex" alignItems="center">
-            <Typography variant="h5" className={classes.pageTitle}>
-              Demandes de contrôle
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item sm={12} xs={12}>
-          {/** Tabulator  */}
-          <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="off">
-            {tabList.map((tab, index) => (
-              <AntTab label={tab.label} id={index} aria-controls={index} key={tab.label} />
-            ))}
-          </Tabs>
-        </Grid>
+    const handleFetchMore = () => {
+        fetchMore({
+            variables: {
+                cursor: { first: rowsPerPage, offset: page * rowsPerPage }
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+                if (!fetchMoreResult) return prev;
+                return fetchMoreResult;
+            }
+        });
+    };
 
-        { data && visitors.length > 0 ? (
-          <Grid item sm={12} xs={12}>
-            <Grid item sm={12} xs={12}>
-              <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                <Grid container spacing={1} className={classes.searchField}>
-                  <Grid item sm={2} xs={12} md={1} lg={1}>
-                    {data && (
-                      <CSVLink
-                        style={{ textDecoration: 'none' }}
-                        className={classes.linkCsv}
-                        data={csvData()}
-                        separator=";"
-                        headers={csvHeaders}
-                        filename={csvName()}
-                      >
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="primary"
-                          endIcon={<NoteAddIcon />}
-                        >
-                          Export
-                        </Button>
-                      </CSVLink>
-                    )}
-                  </Grid>
-                  <Grid item sm={6} xs={12} md={8} lg={8}>
-                    <TablePagination
-                      rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                      component="div"
-                      count={handlePageSize()}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onChangePage={handleChangePage}
-                      onChangeRowsPerPage={handleChangeRowsPerPage}
-                    />
-                  </Grid>
-                  <Grid item sm={3} xs={12} md={2} lg={2}>
-                    <TextField
-                      style={{ float: 'right' }}
-                      margin="dense"
-                      variant="outlined"
-                      value={search}
-                      onChange={(event) => setSearch(event.target.value)}
-                      placeholder="Rechercher..."
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <SearchIcon />
-                          </InputAdornment>
-                        ),
-                        inputProps: { 'data-testid': 'searchField' },
-                      }}
-                    />
-                  </Grid>
+    const handlePageSize = () => {
+        if (!data) return 0;
+        return data.getCampus.listVisitorsToValidate.meta.total;
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+        setPage(0);
+    };
+
+    React.useEffect(() => {
+        if (initMount.current) {
+            initMount.current = false;
+        }
+        handleFetchMore();
+    }, [page, rowsPerPage]);
+
+    const csvData = () =>
+        visitors
+            .filter((visitor) => visitor.screening.step === 'activeSteps')
+            .map((visitor) => ({
+                vBirthName: visitor.birthLastname.toUpperCase(),
+                vBirthDate: visitor.birthday,
+                vBirthPlace: visitor.birthplace.toUpperCase(),
+                vFirstName: visitor.firstname.toUpperCase(),
+                vNationality: visitor.nationality.toUpperCase()
+            }));
+
+    const submitForm = async () => {
+        await Promise.all(
+            visitors.map(async (visitor) => {
+                if (visitor.report !== null) {
+                    try {
+                        await shiftVisitor({
+                            variables: {
+                                requestId: visitor.requestId,
+                                visitorId: visitor.id,
+                                decision: visitor.report,
+                                as: { role: activeRole.role }
+                            }
+                        });
+                    } catch (e) {
+                        addAlert({
+                            message: e.message,
+                            severity: 'error'
+                        });
+                    }
+                }
+            })
+        );
+        // refresh the query
+        refetch();
+    };
+
+    return (
+        <Template>
+            <Grid container spacing={2} className={classes.root}>
+                <Grid item sm={12} xs={12}>
+                    <Box display="flex" alignItems="center">
+                        <Typography variant="h5" className={classes.pageTitle}>
+                            Demandes de contrôle
+                        </Typography>
+                    </Box>
                 </Grid>
-                {!data ? <Loading /> : (
-                  <TabScreeningVisitors
-                    visitors={visitors}
-                    onChange={(visitorsChange) => setVisitors(visitorsChange)}
-                  />
-                ) }
-              </TabPanel>
-              <TabPanel value={value} index={1} />
-            </Grid>
+                <Grid item sm={12} xs={12}>
+                    {/** Tabulator  */}
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        variant="scrollable"
+                        scrollButtons="off">
+                        {tabList.map((tab, index) => (
+                            <AntTab
+                                label={tab.label}
+                                id={index}
+                                aria-controls={index}
+                                key={tab.label}
+                            />
+                        ))}
+                    </Tabs>
+                </Grid>
 
-            <Grid item sm={12}>
-              <Grid container justify="flex-end">
-                <div>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={submitForm}
-                    disabled={!visitors.find((visitor) => visitor.report !== null)}
-                  >
-                    Soumettre
-                  </Button>
-                </div>
-              </Grid>
+                {data && visitors.length > 0 ? (
+                    <Grid item sm={12} xs={12}>
+                        <Grid item sm={12} xs={12}>
+                            <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
+                                <Grid container spacing={1} className={classes.searchField}>
+                                    <Grid item sm={2} xs={12} md={1} lg={1}>
+                                        {data && (
+                                            <CSVLink
+                                                style={{ textDecoration: 'none' }}
+                                                className={classes.linkCsv}
+                                                data={csvData()}
+                                                separator=";"
+                                                headers={csvHeaders}
+                                                filename={csvName()}>
+                                                <Button
+                                                    size="small"
+                                                    variant="contained"
+                                                    color="primary"
+                                                    endIcon={<NoteAddIcon />}>
+                                                    Export
+                                                </Button>
+                                            </CSVLink>
+                                        )}
+                                    </Grid>
+                                    <Grid item sm={6} xs={12} md={8} lg={8}>
+                                        <TablePagination
+                                            rowsPerPageOptions={[10, 20, 30, 40, 50]}
+                                            component="div"
+                                            count={handlePageSize()}
+                                            rowsPerPage={rowsPerPage}
+                                            page={page}
+                                            onChangePage={handleChangePage}
+                                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                                        />
+                                    </Grid>
+                                    <Grid item sm={3} xs={12} md={2} lg={2}>
+                                        <TextField
+                                            style={{ float: 'right' }}
+                                            margin="dense"
+                                            variant="outlined"
+                                            value={search}
+                                            onChange={(event) => setSearch(event.target.value)}
+                                            placeholder="Rechercher..."
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <SearchIcon />
+                                                    </InputAdornment>
+                                                ),
+                                                inputProps: { 'data-testid': 'searchField' }
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                {!data ? (
+                                    <Loading />
+                                ) : (
+                                    <TabScreeningVisitors
+                                        visitors={visitors}
+                                        onChange={(visitorsChange) => setVisitors(visitorsChange)}
+                                    />
+                                )}
+                            </TabPanel>
+                            <TabPanel value={value} index={1} />
+                        </Grid>
+
+                        <Grid item sm={12}>
+                            <Grid container justify="flex-end">
+                                <div>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={submitForm}
+                                        disabled={
+                                            !visitors.find((visitor) => visitor.report !== null)
+                                        }>
+                                        Soumettre
+                                    </Button>
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                ) : (
+                    <Grid item sm={12} xs={12}>
+                        <EmptyArray type="à traiter" />
+                    </Grid>
+                )}
             </Grid>
-          </Grid>
-        ) : (
-          <Grid item sm={12} xs={12}>
-            <EmptyArray type="à traiter" />
-          </Grid>
-        )}
-      </Grid>
-    </Template>
-  );
+        </Template>
+    );
 }

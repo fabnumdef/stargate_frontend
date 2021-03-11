@@ -1,782 +1,782 @@
 [
-  {
-    "libcog": "FRANCE",
-    "nationalite": "Française"
-  },
-  {
-    "libcog": "DANEMARK",
-    "nationalite": "Danoise"
-  },
-  {
-    "libcog": "FEROE (ILES)",
-    "nationalite": "Féroïenne"
-  },
-  {
-    "libcog": "ISLANDE",
-    "nationalite": "Islandaise"
-  },
-  {
-    "libcog": "NORVEGE",
-    "nationalite": "Norvégienne"
-  },
-  {
-    "libcog": "SUEDE",
-    "nationalite": "Suédoise"
-  },
-  {
-    "libcog": "FINLANDE",
-    "nationalite": "Finlandaise"
-  },
-  {
-    "libcog": "ESTONIE",
-    "nationalite": "Estonienne"
-  },
-  {
-    "libcog": "LETTONIE",
-    "nationalite": "Lettone"
-  },
-  {
-    "libcog": "LITUANIE",
-    "nationalite": "Lituanienne"
-  },
-  {
-    "libcog": "ALLEMAGNE",
-    "nationalite": "Allemande"
-  },
-  {
-    "libcog": "AUTRICHE",
-    "nationalite": "Autrichienne"
-  },
-  {
-    "libcog": "BULGARIE",
-    "nationalite": "Bulgare"
-  },
-  {
-    "libcog": "HONGRIE",
-    "nationalite": "Hongroise"
-  },
-  {
-    "libcog": "LIECHTENSTEIN",
-    "nationalite": "Liechtensteinoise"
-  },
-  {
-    "libcog": "ROUMANIE",
-    "nationalite": "Roumaine"
-  },
-  {
-    "libcog": "TCHEQUE (REPUBLIQUE)",
-    "nationalite": "Tchéque"
-  },
-  {
-    "libcog": "SLOVAQUIE",
-    "nationalite": "Slovaque"
-  },
-  {
-    "libcog": "BOSNIE-HERZEGOVINE",
-    "nationalite": "Bosniaque"
-  },
-  {
-    "libcog": "CROATIE",
-    "nationalite": "Croate"
-  },
-  {
-    "libcog": "MONTENEGRO",
-    "nationalite": "Monténégrine"
-  },
-  {
-    "libcog": "SERBIE",
-    "nationalite": "Serbe"
-  },
-  {
-    "libcog": "POLOGNE",
-    "nationalite": "Polonaise"
-  },
-  {
-    "libcog": "RUSSIE",
-    "nationalite": "Russe"
-  },
-  {
-    "libcog": "ALBANIE",
-    "nationalite": "Albanaise"
-  },
-  {
-    "libcog": "GRECE",
-    "nationalite": "Grecque"
-  },
-  {
-    "libcog": "ITALIE",
-    "nationalite": "Italienne"
-  },
-  {
-    "libcog": "SAINT-MARIN",
-    "nationalite": "Saint-Marinaise"
-  },
-  {
-    "libcog": "VATICAN, ou SAINT-SIEGE",
-    "nationalite": "Vaticane"
-  },
-  {
-    "libcog": "ANDORRE",
-    "nationalite": "Andorrane"
-  },
-  {
-    "libcog": "BELGIQUE",
-    "nationalite": "Bèlge"
-  },
-  {
-    "libcog": "ROYAUME-UNI",
-    "nationalite": "Britannique"
-  },
-  {
-    "libcog": "GIBRALTAR",
-    "nationalite": "Gibraltarienne"
-  },
-  {
-    "libcog": "ESPAGNE",
-    "nationalite": "Espagnole"
-  },
-  {
-    "libcog": "PAYS-BAS",
-    "nationalite": "Néerlandaise"
-  },
-  {
-    "libcog": "IRLANDE, ou EIRE",
-    "nationalite": "Irlandaise"
-  },
-  {
-    "libcog": "LUXEMBOURG",
-    "nationalite": "Luxembourgeoise"
-  },
-  {
-    "libcog": "MONACO",
-    "nationalite": "Monégascque"
-  },
-  {
-    "libcog": "PORTUGAL",
-    "nationalite": "Portugaise"
-  },
-  {
-    "libcog": "SUISSE",
-    "nationalite": "Suisse"
-  },
-  {
-    "libcog": "MALTE",
-    "nationalite": "Maltaise"
-  },
-  {
-    "libcog": "SLOVENIE",
-    "nationalite": "Slovéne"
-  },
-  {
-    "libcog": "BIELORUSSIE",
-    "nationalite": "Biélorusse"
-  },
-  {
-    "libcog": "MOLDAVIE",
-    "nationalite": "Moldave"
-  },
-  {
-    "libcog": "UKRAINE",
-    "nationalite": "Ukrainienne"
-  },
-  {
-    "libcog": "KOSOVO",
-    "nationalite": "Kosovare"
-  },
-  {
-    "libcog": "ARABIE SAOUDITE",
-    "nationalite": "Émiratie"
-  },
-  {
-    "libcog": "YEMEN (REPUBLIQUE ARABE DU)",
-    "nationalite": "Yemenite"
-  },
-  {
-    "libcog": "IRAQ",
-    "nationalite": "Iraquienne"
-  },
-  {
-    "libcog": "IRAN",
-    "nationalite": "Iranienne"
-  },
-  {
-    "libcog": "LIBAN",
-    "nationalite": "Libanaise"
-  },
-  {
-    "libcog": "SYRIE",
-    "nationalite": "Syrienne"
-  },
-  {
-    "libcog": "ISRAEL",
-    "nationalite": "Israëlienne"
-  },
-  {
-    "libcog": "TURQUIE",
-    "nationalite": "Turque"
-  },
-  {
-    "libcog": "AFGHANISTAN",
-    "nationalite": "Afghane"
-  },
-  {
-    "libcog": "PAKISTAN",
-    "nationalite": "Pakistanaise"
-  },
-  {
-    "libcog": "BHOUTAN",
-    "nationalite": "Bhoutanaise"
-  },
-  {
-    "libcog": "NEPAL",
-    "nationalite": "Népalaise"
-  },
-  {
-    "libcog": "CHINE",
-    "nationalite": "Chinoise"
-  },
-  {
-    "libcog": "JAPON",
-    "nationalite": "Japonaise"
-  },
-  {
-    "libcog": "THAILANDE",
-    "nationalite": "Thaïlandaise"
-  },
-  {
-    "libcog": "PHILIPPINES",
-    "nationalite": "Philippine"
-  },
-  {
-    "libcog": "JORDANIE",
-    "nationalite": "Jordanienne"
-  },
-  {
-    "libcog": "INDE",
-    "nationalite": "Indienne"
-  },
-  {
-    "libcog": "BIRMANIE",
-    "nationalite": "Birmane"
-  },
-  {
-    "libcog": "BRUNEI",
-    "nationalite": "Brunei"
-  },
-  {
-    "libcog": "SINGAPOUR",
-    "nationalite": "Singapourienne"
-  },
-  {
-    "libcog": "MALAISIE",
-    "nationalite": "Malaisienne"
-  },
-  {
-    "libcog": "MALDIVES",
-    "nationalite": "Maldivienne"
-  },
-  {
-    "libcog": "INDONESIE",
-    "nationalite": "Indonésienne"
-  },
-  {
-    "libcog": "CAMBODGE",
-    "nationalite": "Cambodgienne"
-  },
-  {
-    "libcog": "SRI LANKA",
-    "nationalite": "Sri Lankaise"
-  },
-  {
-    "libcog": "TAIWAN",
-    "nationalite": "Taiwanaise"
-  },
-  {
-    "libcog": "COREE (REPUBLIQUE POPULAIRE DEMOCRATIQUE DE)",
-    "nationalite": "Nord-Coréenne"
-  },
-  {
-    "libcog": "COREE (REPUBLIQUE DE)",
-    "nationalite": "Sud-Coréenne"
-  },
-  {
-    "libcog": "KOWEIT",
-    "nationalite": "Koweïtienne"
-  },
-  {
-    "libcog": "LAOS",
-    "nationalite": "Laotienne"
-  },
-  {
-    "libcog": "MONGOLIE",
-    "nationalite": "Mongole"
-  },
-  {
-    "libcog": "VIET NAM",
-    "nationalite": "Vietnamienne"
-  },
-  {
-    "libcog": "BANGLADESH",
-    "nationalite": "Bangladaise"
-  },
-  {
-    "libcog": "EMIRATS ARABES UNIS",
-    "nationalite": "Émiratie"
-  },
-  {
-    "libcog": "QATAR",
-    "nationalite": "Qatarienne"
-  },
-  {
-    "libcog": "BAHREIN",
-    "nationalite": "Bahreïn"
-  },
-  {
-    "libcog": "OMAN",
-    "nationalite": "Omanaise"
-  },
-  {
-    "libcog": "YEMEN",
-    "nationalite": "Yemenite"
-  },
-  {
-    "libcog": "ARMENIE",
-    "nationalite": "Arménienne"
-  },
-  {
-    "libcog": "AZERBAIDJAN",
-    "nationalite": "Azerbaidjanaise"
-  },
-  {
-    "libcog": "CHYPRE",
-    "nationalite": "Chypriote"
-  },
-  {
-    "libcog": "GEORGIE",
-    "nationalite": "Géorgienne"
-  },
-  {
-    "libcog": "KAZAKHSTAN",
-    "nationalite": "Kazakh"
-  },
-  {
-    "libcog": "KIRGHIZISTAN",
-    "nationalite": "Kirghize"
-  },
-  {
-    "libcog": "OUZBEKISTAN",
-    "nationalite": "Ouzbek"
-  },
-  {
-    "libcog": "TADJIKISTAN",
-    "nationalite": "Tadjike"
-  },
-  {
-    "libcog": "TURKMENISTAN",
-    "nationalite": "Turkmène"
-  },
-  {
-    "libcog": "PALESTINE (Etat de)",
-    "nationalite": "Palestinienne"
-  },
-  {
-    "libcog": "EGYPTE",
-    "nationalite": "Égyptienne"
-  },
-  {
-    "libcog": "LIBERIA",
-    "nationalite": "Liberienne"
-  },
-  {
-    "libcog": "AFRIQUE DU SUD",
-    "nationalite": "Sud-Africaine"
-  },
-  {
-    "libcog": "GAMBIE",
-    "nationalite": "Gambienne"
-  },
-  {
-    "libcog": "TANZANIE",
-    "nationalite": "Tanzanienne"
-  },
-  {
-    "libcog": "ZIMBABWE",
-    "nationalite": "Zimbabwéenne"
-  },
-  {
-    "libcog": "NAMIBIE",
-    "nationalite": "Namibienne"
-  },
-  {
-    "libcog": "CONGO (REPUBLIQUE DEMOCRATIQUE)",
-    "nationalite": "Congolaise"
-  },
-  {
-    "libcog": "GUINEE EQUATORIALE",
-    "nationalite": "Équato-Guinéenne"
-  },
-  {
-    "libcog": "ETHIOPIE",
-    "nationalite": "Ethiopienne"
-  },
-  {
-    "libcog": "LIBYE",
-    "nationalite": "Libyenne"
-  },
-  {
-    "libcog": "ERYTHREE",
-    "nationalite": "Érythréenne"
-  },
-  {
-    "libcog": "SOMALIE",
-    "nationalite": "Somalienne"
-  },
-  {
-    "libcog": "BURUNDI",
-    "nationalite": "Burundaise"
-  },
-  {
-    "libcog": "CAMEROUN",
-    "nationalite": "Camerounaise"
-  },
-  {
-    "libcog": "CENTRAFRICAINE (REPUBLIQUE)",
-    "nationalite": "République centrafricaine"
-  },
-  {
-    "libcog": "CONGO",
-    "nationalite": "Congolaise"
-  },
-  {
-    "libcog": "COTE D'IVOIRE",
-    "nationalite": "Ivoirienne"
-  },
-  {
-    "libcog": "BENIN",
-    "nationalite": "Béninoise"
-  },
-  {
-    "libcog": "GABON",
-    "nationalite": "Gabonaise"
-  },
-  {
-    "libcog": "GHANA",
-    "nationalite": "Ghanéenne"
-  },
-  {
-    "libcog": "GUINEE",
-    "nationalite": "Guinéenne"
-  },
-  {
-    "libcog": "BURKINA",
-    "nationalite": "Burkinabé"
-  },
-  {
-    "libcog": "KENYA",
-    "nationalite": "Kenyane"
-  },
-  {
-    "libcog": "MADAGASCAR",
-    "nationalite": "Malgache"
-  },
-  {
-    "libcog": "MALAWI",
-    "nationalite": "Malawienne"
-  },
-  {
-    "libcog": "MALI",
-    "nationalite": "Malienne"
-  },
-  {
-    "libcog": "MAURITANIE",
-    "nationalite": "Mauritanienne"
-  },
-  {
-    "libcog": "NIGER",
-    "nationalite": "Nigérienne"
-  },
-  {
-    "libcog": "NIGERIA",
-    "nationalite": "Nigérianne"
-  },
-  {
-    "libcog": "OUGANDA",
-    "nationalite": "Ougandaise"
-  },
-  {
-    "libcog": "RWANDA",
-    "nationalite": "Rwandaise"
-  },
-  {
-    "libcog": "SENEGAL",
-    "nationalite": "Sénégalaise"
-  },
-  {
-    "libcog": "SIERRA LEONE",
-    "nationalite": "Sierra Leonaise"
-  },
-  {
-    "libcog": "SOUDAN",
-    "nationalite": "Soudanaise"
-  },
-  {
-    "libcog": "TCHAD",
-    "nationalite": "Tchadienne"
-  },
-  {
-    "libcog": "TOGO",
-    "nationalite": "Togolaise"
-  },
-  {
-    "libcog": "ZAMBIE",
-    "nationalite": "Zambienne"
-  },
-  {
-    "libcog": "BOTSWANA",
-    "nationalite": "Botswanaise"
-  },
-  {
-    "libcog": "SOUDAN DU SUD",
-    "nationalite": "Sud-Soudanaise"
-  },
-  {
-    "libcog": "MAROC",
-    "nationalite": "Marocaine"
-  },
-  {
-    "libcog": "TUNISIE",
-    "nationalite": "Tunisienne"
-  },
-  {
-    "libcog": "ALGERIE",
-    "nationalite": "Algérienne"
-  },
-  {
-    "libcog": "SAHARA OCCIDENTAL",
-    "nationalite": "Sahara Occidental"
-  },
-  {
-    "libcog": "MAURICE",
-    "nationalite": "Mauricienne"
-  },
-  {
-    "libcog": "ESWATINI",
-    "nationalite": "Swazie"
-  },
-  {
-    "libcog": "GUINEE-BISSAU",
-    "nationalite": "Bissau-Guinéenne"
-  },
-  {
-    "libcog": "MOZAMBIQUE",
-    "nationalite": "Mozambicaine"
-  },
-  {
-    "libcog": "SAO TOME-ET-PRINCIPE",
-    "nationalite": "São Tomé et Principe"
-  },
-  {
-    "libcog": "ANGOLA",
-    "nationalite": "Angolaise"
-  },
-  {
-    "libcog": "CAP-VERT",
-    "nationalite": "Cap-Verdienne"
-  },
-  {
-    "libcog": "COMORES",
-    "nationalite": "Comorienne"
-  },
-  {
-    "libcog": "SEYCHELLES",
-    "nationalite": "Seychelloise"
-  },
-  {
-    "libcog": "DJIBOUTI",
-    "nationalite": "Djiboutienne"
-  },
-  {
-    "libcog": "CANADA",
-    "nationalite": "Canadienne"
-  },
-  {
-    "libcog": "ETATS-UNIS",
-    "nationalite": "Américaine"
-  },
-  {
-    "libcog": "MEXIQUE",
-    "nationalite": "Méxicaine"
-  },
-  {
-    "libcog": "COSTA RICA",
-    "nationalite": "Costaricienne"
-  },
-  {
-    "libcog": "CUBA",
-    "nationalite": "Cubaine"
-  },
-  {
-    "libcog": "DOMINICAINE (REPUBLIQUE)",
-    "nationalite": "Dominicaine"
-  },
-  {
-    "libcog": "GUATEMALA",
-    "nationalite": "Guatemaltèque"
-  },
-  {
-    "libcog": "HAITI",
-    "nationalite": "Haitienne"
-  },
-  {
-    "libcog": "HONDURAS",
-    "nationalite": "Hondurienne"
-  },
-  {
-    "libcog": "NICARAGUA",
-    "nationalite": "Nicaraguayenne"
-  },
-  {
-    "libcog": "PANAMA",
-    "nationalite": "Panaméenne"
-  },
-  {
-    "libcog": "EL SALVADOR",
-    "nationalite": "Salvadorienne"
-  },
-  {
-    "libcog": "ARGENTINE",
-    "nationalite": "Argentine"
-  },
-  {
-    "libcog": "BRESIL",
-    "nationalite": "Brésilienne"
-  },
-  {
-    "libcog": "CHILI",
-    "nationalite": "Chilienne"
-  },
-  {
-    "libcog": "BOLIVIE",
-    "nationalite": "Bolivienne"
-  },
-  {
-    "libcog": "COLOMBIE",
-    "nationalite": "Colombienne"
-  },
-  {
-    "libcog": "EQUATEUR",
-    "nationalite": "Équatorienne"
-  },
-  {
-    "libcog": "PARAGUAY",
-    "nationalite": "Paraguayenne"
-  },
-  {
-    "libcog": "PEROU",
-    "nationalite": "Péruvienne"
-  },
-  {
-    "libcog": "URUGUAY",
-    "nationalite": "Uruguayenne"
-  },
-  {
-    "libcog": "VENEZUELA",
-    "nationalite": "venezuelienne"
-  },
-  {
-    "libcog": "BERMUDES",
-    "nationalite": "Bermudes"
-  },
-  {
-    "libcog": "ANGUILLA",
-    "nationalite": "Anguillaise"
-  },
-  {
-    "libcog": "JAMAIQUE",
-    "nationalite": "Jamaicaine"
-  },
-  {
-    "libcog": "GUYANA",
-    "nationalite": "Guyanaise"
-  },
-  {
-    "libcog": "BELIZE",
-    "nationalite": "Bélize"
-  },
-  {
-    "libcog": "GROENLAND",
-    "nationalite": "Groenlandaise"
-  },
-  {
-    "libcog": "PORTO RICO",
-    "nationalite": "Portoricaine"
-  },
-  {
-    "libcog": "TRINITE-ET-TOBAGO",
-    "nationalite": "Trinidadienne"
-  },
-  {
-    "libcog": "BARBADE",
-    "nationalite": "Barbadienne"
-  },
-  {
-    "libcog": "SURINAME",
-    "nationalite": "Suriname"
-  },
-  {
-    "libcog": "DOMINIQUE",
-    "nationalite": "Dominicaine"
-  },
-  {
-    "libcog": "SAINTE-LUCIE",
-    "nationalite": "Sainte-Lucie"
-  },
-  {
-    "libcog": "AUSTRALIE",
-    "nationalite": "Australienne"
-  },
-  {
-    "libcog": "NOUVELLE-ZELANDE",
-    "nationalite": "Néo-Zelandaise"
-  },
-  {
-    "libcog": "SAMOA",
-    "nationalite": "Samoane"
-  },
-  {
-    "libcog": "NAURU",
-    "nationalite": "Nauruane"
-  },
-  {
-    "libcog": "FIDJI",
-    "nationalite": "Fidjienne"
-  },
-  {
-    "libcog": "TONGA",
-    "nationalite": "Tongienne"
-  },
-  {
-    "libcog": "PAPOUASIE-NOUVELLE-GUINEE",
-    "nationalite": "Papouasienne"
-  },
-  {
-    "libcog": "TUVALU",
-    "nationalite": "Tuvaluane"
-  },
-  {
-    "libcog": "VANUATU",
-    "nationalite": "Vanuatuane"
-  },
-  {
-    "libcog": "MARSHALL (ILES)",
-    "nationalite": "Marshallaise"
-  },
-  {
-    "libcog": "MICRONESIE (ETATS FEDERES DE)",
-    "nationalite": "Micronésienne"
-  },
-  {
-    "libcog": "PALAOS (ILES)",
-    "nationalite": "Palaos"
-  }
+    {
+        "libcog": "FRANCE",
+        "nationalite": "Française"
+    },
+    {
+        "libcog": "DANEMARK",
+        "nationalite": "Danoise"
+    },
+    {
+        "libcog": "FEROE (ILES)",
+        "nationalite": "Féroïenne"
+    },
+    {
+        "libcog": "ISLANDE",
+        "nationalite": "Islandaise"
+    },
+    {
+        "libcog": "NORVEGE",
+        "nationalite": "Norvégienne"
+    },
+    {
+        "libcog": "SUEDE",
+        "nationalite": "Suédoise"
+    },
+    {
+        "libcog": "FINLANDE",
+        "nationalite": "Finlandaise"
+    },
+    {
+        "libcog": "ESTONIE",
+        "nationalite": "Estonienne"
+    },
+    {
+        "libcog": "LETTONIE",
+        "nationalite": "Lettone"
+    },
+    {
+        "libcog": "LITUANIE",
+        "nationalite": "Lituanienne"
+    },
+    {
+        "libcog": "ALLEMAGNE",
+        "nationalite": "Allemande"
+    },
+    {
+        "libcog": "AUTRICHE",
+        "nationalite": "Autrichienne"
+    },
+    {
+        "libcog": "BULGARIE",
+        "nationalite": "Bulgare"
+    },
+    {
+        "libcog": "HONGRIE",
+        "nationalite": "Hongroise"
+    },
+    {
+        "libcog": "LIECHTENSTEIN",
+        "nationalite": "Liechtensteinoise"
+    },
+    {
+        "libcog": "ROUMANIE",
+        "nationalite": "Roumaine"
+    },
+    {
+        "libcog": "TCHEQUE (REPUBLIQUE)",
+        "nationalite": "Tchéque"
+    },
+    {
+        "libcog": "SLOVAQUIE",
+        "nationalite": "Slovaque"
+    },
+    {
+        "libcog": "BOSNIE-HERZEGOVINE",
+        "nationalite": "Bosniaque"
+    },
+    {
+        "libcog": "CROATIE",
+        "nationalite": "Croate"
+    },
+    {
+        "libcog": "MONTENEGRO",
+        "nationalite": "Monténégrine"
+    },
+    {
+        "libcog": "SERBIE",
+        "nationalite": "Serbe"
+    },
+    {
+        "libcog": "POLOGNE",
+        "nationalite": "Polonaise"
+    },
+    {
+        "libcog": "RUSSIE",
+        "nationalite": "Russe"
+    },
+    {
+        "libcog": "ALBANIE",
+        "nationalite": "Albanaise"
+    },
+    {
+        "libcog": "GRECE",
+        "nationalite": "Grecque"
+    },
+    {
+        "libcog": "ITALIE",
+        "nationalite": "Italienne"
+    },
+    {
+        "libcog": "SAINT-MARIN",
+        "nationalite": "Saint-Marinaise"
+    },
+    {
+        "libcog": "VATICAN, ou SAINT-SIEGE",
+        "nationalite": "Vaticane"
+    },
+    {
+        "libcog": "ANDORRE",
+        "nationalite": "Andorrane"
+    },
+    {
+        "libcog": "BELGIQUE",
+        "nationalite": "Bèlge"
+    },
+    {
+        "libcog": "ROYAUME-UNI",
+        "nationalite": "Britannique"
+    },
+    {
+        "libcog": "GIBRALTAR",
+        "nationalite": "Gibraltarienne"
+    },
+    {
+        "libcog": "ESPAGNE",
+        "nationalite": "Espagnole"
+    },
+    {
+        "libcog": "PAYS-BAS",
+        "nationalite": "Néerlandaise"
+    },
+    {
+        "libcog": "IRLANDE, ou EIRE",
+        "nationalite": "Irlandaise"
+    },
+    {
+        "libcog": "LUXEMBOURG",
+        "nationalite": "Luxembourgeoise"
+    },
+    {
+        "libcog": "MONACO",
+        "nationalite": "Monégascque"
+    },
+    {
+        "libcog": "PORTUGAL",
+        "nationalite": "Portugaise"
+    },
+    {
+        "libcog": "SUISSE",
+        "nationalite": "Suisse"
+    },
+    {
+        "libcog": "MALTE",
+        "nationalite": "Maltaise"
+    },
+    {
+        "libcog": "SLOVENIE",
+        "nationalite": "Slovéne"
+    },
+    {
+        "libcog": "BIELORUSSIE",
+        "nationalite": "Biélorusse"
+    },
+    {
+        "libcog": "MOLDAVIE",
+        "nationalite": "Moldave"
+    },
+    {
+        "libcog": "UKRAINE",
+        "nationalite": "Ukrainienne"
+    },
+    {
+        "libcog": "KOSOVO",
+        "nationalite": "Kosovare"
+    },
+    {
+        "libcog": "ARABIE SAOUDITE",
+        "nationalite": "Émiratie"
+    },
+    {
+        "libcog": "YEMEN (REPUBLIQUE ARABE DU)",
+        "nationalite": "Yemenite"
+    },
+    {
+        "libcog": "IRAQ",
+        "nationalite": "Iraquienne"
+    },
+    {
+        "libcog": "IRAN",
+        "nationalite": "Iranienne"
+    },
+    {
+        "libcog": "LIBAN",
+        "nationalite": "Libanaise"
+    },
+    {
+        "libcog": "SYRIE",
+        "nationalite": "Syrienne"
+    },
+    {
+        "libcog": "ISRAEL",
+        "nationalite": "Israëlienne"
+    },
+    {
+        "libcog": "TURQUIE",
+        "nationalite": "Turque"
+    },
+    {
+        "libcog": "AFGHANISTAN",
+        "nationalite": "Afghane"
+    },
+    {
+        "libcog": "PAKISTAN",
+        "nationalite": "Pakistanaise"
+    },
+    {
+        "libcog": "BHOUTAN",
+        "nationalite": "Bhoutanaise"
+    },
+    {
+        "libcog": "NEPAL",
+        "nationalite": "Népalaise"
+    },
+    {
+        "libcog": "CHINE",
+        "nationalite": "Chinoise"
+    },
+    {
+        "libcog": "JAPON",
+        "nationalite": "Japonaise"
+    },
+    {
+        "libcog": "THAILANDE",
+        "nationalite": "Thaïlandaise"
+    },
+    {
+        "libcog": "PHILIPPINES",
+        "nationalite": "Philippine"
+    },
+    {
+        "libcog": "JORDANIE",
+        "nationalite": "Jordanienne"
+    },
+    {
+        "libcog": "INDE",
+        "nationalite": "Indienne"
+    },
+    {
+        "libcog": "BIRMANIE",
+        "nationalite": "Birmane"
+    },
+    {
+        "libcog": "BRUNEI",
+        "nationalite": "Brunei"
+    },
+    {
+        "libcog": "SINGAPOUR",
+        "nationalite": "Singapourienne"
+    },
+    {
+        "libcog": "MALAISIE",
+        "nationalite": "Malaisienne"
+    },
+    {
+        "libcog": "MALDIVES",
+        "nationalite": "Maldivienne"
+    },
+    {
+        "libcog": "INDONESIE",
+        "nationalite": "Indonésienne"
+    },
+    {
+        "libcog": "CAMBODGE",
+        "nationalite": "Cambodgienne"
+    },
+    {
+        "libcog": "SRI LANKA",
+        "nationalite": "Sri Lankaise"
+    },
+    {
+        "libcog": "TAIWAN",
+        "nationalite": "Taiwanaise"
+    },
+    {
+        "libcog": "COREE (REPUBLIQUE POPULAIRE DEMOCRATIQUE DE)",
+        "nationalite": "Nord-Coréenne"
+    },
+    {
+        "libcog": "COREE (REPUBLIQUE DE)",
+        "nationalite": "Sud-Coréenne"
+    },
+    {
+        "libcog": "KOWEIT",
+        "nationalite": "Koweïtienne"
+    },
+    {
+        "libcog": "LAOS",
+        "nationalite": "Laotienne"
+    },
+    {
+        "libcog": "MONGOLIE",
+        "nationalite": "Mongole"
+    },
+    {
+        "libcog": "VIET NAM",
+        "nationalite": "Vietnamienne"
+    },
+    {
+        "libcog": "BANGLADESH",
+        "nationalite": "Bangladaise"
+    },
+    {
+        "libcog": "EMIRATS ARABES UNIS",
+        "nationalite": "Émiratie"
+    },
+    {
+        "libcog": "QATAR",
+        "nationalite": "Qatarienne"
+    },
+    {
+        "libcog": "BAHREIN",
+        "nationalite": "Bahreïn"
+    },
+    {
+        "libcog": "OMAN",
+        "nationalite": "Omanaise"
+    },
+    {
+        "libcog": "YEMEN",
+        "nationalite": "Yemenite"
+    },
+    {
+        "libcog": "ARMENIE",
+        "nationalite": "Arménienne"
+    },
+    {
+        "libcog": "AZERBAIDJAN",
+        "nationalite": "Azerbaidjanaise"
+    },
+    {
+        "libcog": "CHYPRE",
+        "nationalite": "Chypriote"
+    },
+    {
+        "libcog": "GEORGIE",
+        "nationalite": "Géorgienne"
+    },
+    {
+        "libcog": "KAZAKHSTAN",
+        "nationalite": "Kazakh"
+    },
+    {
+        "libcog": "KIRGHIZISTAN",
+        "nationalite": "Kirghize"
+    },
+    {
+        "libcog": "OUZBEKISTAN",
+        "nationalite": "Ouzbek"
+    },
+    {
+        "libcog": "TADJIKISTAN",
+        "nationalite": "Tadjike"
+    },
+    {
+        "libcog": "TURKMENISTAN",
+        "nationalite": "Turkmène"
+    },
+    {
+        "libcog": "PALESTINE (Etat de)",
+        "nationalite": "Palestinienne"
+    },
+    {
+        "libcog": "EGYPTE",
+        "nationalite": "Égyptienne"
+    },
+    {
+        "libcog": "LIBERIA",
+        "nationalite": "Liberienne"
+    },
+    {
+        "libcog": "AFRIQUE DU SUD",
+        "nationalite": "Sud-Africaine"
+    },
+    {
+        "libcog": "GAMBIE",
+        "nationalite": "Gambienne"
+    },
+    {
+        "libcog": "TANZANIE",
+        "nationalite": "Tanzanienne"
+    },
+    {
+        "libcog": "ZIMBABWE",
+        "nationalite": "Zimbabwéenne"
+    },
+    {
+        "libcog": "NAMIBIE",
+        "nationalite": "Namibienne"
+    },
+    {
+        "libcog": "CONGO (REPUBLIQUE DEMOCRATIQUE)",
+        "nationalite": "Congolaise"
+    },
+    {
+        "libcog": "GUINEE EQUATORIALE",
+        "nationalite": "Équato-Guinéenne"
+    },
+    {
+        "libcog": "ETHIOPIE",
+        "nationalite": "Ethiopienne"
+    },
+    {
+        "libcog": "LIBYE",
+        "nationalite": "Libyenne"
+    },
+    {
+        "libcog": "ERYTHREE",
+        "nationalite": "Érythréenne"
+    },
+    {
+        "libcog": "SOMALIE",
+        "nationalite": "Somalienne"
+    },
+    {
+        "libcog": "BURUNDI",
+        "nationalite": "Burundaise"
+    },
+    {
+        "libcog": "CAMEROUN",
+        "nationalite": "Camerounaise"
+    },
+    {
+        "libcog": "CENTRAFRICAINE (REPUBLIQUE)",
+        "nationalite": "République centrafricaine"
+    },
+    {
+        "libcog": "CONGO",
+        "nationalite": "Congolaise"
+    },
+    {
+        "libcog": "COTE D'IVOIRE",
+        "nationalite": "Ivoirienne"
+    },
+    {
+        "libcog": "BENIN",
+        "nationalite": "Béninoise"
+    },
+    {
+        "libcog": "GABON",
+        "nationalite": "Gabonaise"
+    },
+    {
+        "libcog": "GHANA",
+        "nationalite": "Ghanéenne"
+    },
+    {
+        "libcog": "GUINEE",
+        "nationalite": "Guinéenne"
+    },
+    {
+        "libcog": "BURKINA",
+        "nationalite": "Burkinabé"
+    },
+    {
+        "libcog": "KENYA",
+        "nationalite": "Kenyane"
+    },
+    {
+        "libcog": "MADAGASCAR",
+        "nationalite": "Malgache"
+    },
+    {
+        "libcog": "MALAWI",
+        "nationalite": "Malawienne"
+    },
+    {
+        "libcog": "MALI",
+        "nationalite": "Malienne"
+    },
+    {
+        "libcog": "MAURITANIE",
+        "nationalite": "Mauritanienne"
+    },
+    {
+        "libcog": "NIGER",
+        "nationalite": "Nigérienne"
+    },
+    {
+        "libcog": "NIGERIA",
+        "nationalite": "Nigérianne"
+    },
+    {
+        "libcog": "OUGANDA",
+        "nationalite": "Ougandaise"
+    },
+    {
+        "libcog": "RWANDA",
+        "nationalite": "Rwandaise"
+    },
+    {
+        "libcog": "SENEGAL",
+        "nationalite": "Sénégalaise"
+    },
+    {
+        "libcog": "SIERRA LEONE",
+        "nationalite": "Sierra Leonaise"
+    },
+    {
+        "libcog": "SOUDAN",
+        "nationalite": "Soudanaise"
+    },
+    {
+        "libcog": "TCHAD",
+        "nationalite": "Tchadienne"
+    },
+    {
+        "libcog": "TOGO",
+        "nationalite": "Togolaise"
+    },
+    {
+        "libcog": "ZAMBIE",
+        "nationalite": "Zambienne"
+    },
+    {
+        "libcog": "BOTSWANA",
+        "nationalite": "Botswanaise"
+    },
+    {
+        "libcog": "SOUDAN DU SUD",
+        "nationalite": "Sud-Soudanaise"
+    },
+    {
+        "libcog": "MAROC",
+        "nationalite": "Marocaine"
+    },
+    {
+        "libcog": "TUNISIE",
+        "nationalite": "Tunisienne"
+    },
+    {
+        "libcog": "ALGERIE",
+        "nationalite": "Algérienne"
+    },
+    {
+        "libcog": "SAHARA OCCIDENTAL",
+        "nationalite": "Sahara Occidental"
+    },
+    {
+        "libcog": "MAURICE",
+        "nationalite": "Mauricienne"
+    },
+    {
+        "libcog": "ESWATINI",
+        "nationalite": "Swazie"
+    },
+    {
+        "libcog": "GUINEE-BISSAU",
+        "nationalite": "Bissau-Guinéenne"
+    },
+    {
+        "libcog": "MOZAMBIQUE",
+        "nationalite": "Mozambicaine"
+    },
+    {
+        "libcog": "SAO TOME-ET-PRINCIPE",
+        "nationalite": "São Tomé et Principe"
+    },
+    {
+        "libcog": "ANGOLA",
+        "nationalite": "Angolaise"
+    },
+    {
+        "libcog": "CAP-VERT",
+        "nationalite": "Cap-Verdienne"
+    },
+    {
+        "libcog": "COMORES",
+        "nationalite": "Comorienne"
+    },
+    {
+        "libcog": "SEYCHELLES",
+        "nationalite": "Seychelloise"
+    },
+    {
+        "libcog": "DJIBOUTI",
+        "nationalite": "Djiboutienne"
+    },
+    {
+        "libcog": "CANADA",
+        "nationalite": "Canadienne"
+    },
+    {
+        "libcog": "ETATS-UNIS",
+        "nationalite": "Américaine"
+    },
+    {
+        "libcog": "MEXIQUE",
+        "nationalite": "Méxicaine"
+    },
+    {
+        "libcog": "COSTA RICA",
+        "nationalite": "Costaricienne"
+    },
+    {
+        "libcog": "CUBA",
+        "nationalite": "Cubaine"
+    },
+    {
+        "libcog": "DOMINICAINE (REPUBLIQUE)",
+        "nationalite": "Dominicaine"
+    },
+    {
+        "libcog": "GUATEMALA",
+        "nationalite": "Guatemaltèque"
+    },
+    {
+        "libcog": "HAITI",
+        "nationalite": "Haitienne"
+    },
+    {
+        "libcog": "HONDURAS",
+        "nationalite": "Hondurienne"
+    },
+    {
+        "libcog": "NICARAGUA",
+        "nationalite": "Nicaraguayenne"
+    },
+    {
+        "libcog": "PANAMA",
+        "nationalite": "Panaméenne"
+    },
+    {
+        "libcog": "EL SALVADOR",
+        "nationalite": "Salvadorienne"
+    },
+    {
+        "libcog": "ARGENTINE",
+        "nationalite": "Argentine"
+    },
+    {
+        "libcog": "BRESIL",
+        "nationalite": "Brésilienne"
+    },
+    {
+        "libcog": "CHILI",
+        "nationalite": "Chilienne"
+    },
+    {
+        "libcog": "BOLIVIE",
+        "nationalite": "Bolivienne"
+    },
+    {
+        "libcog": "COLOMBIE",
+        "nationalite": "Colombienne"
+    },
+    {
+        "libcog": "EQUATEUR",
+        "nationalite": "Équatorienne"
+    },
+    {
+        "libcog": "PARAGUAY",
+        "nationalite": "Paraguayenne"
+    },
+    {
+        "libcog": "PEROU",
+        "nationalite": "Péruvienne"
+    },
+    {
+        "libcog": "URUGUAY",
+        "nationalite": "Uruguayenne"
+    },
+    {
+        "libcog": "VENEZUELA",
+        "nationalite": "venezuelienne"
+    },
+    {
+        "libcog": "BERMUDES",
+        "nationalite": "Bermudes"
+    },
+    {
+        "libcog": "ANGUILLA",
+        "nationalite": "Anguillaise"
+    },
+    {
+        "libcog": "JAMAIQUE",
+        "nationalite": "Jamaicaine"
+    },
+    {
+        "libcog": "GUYANA",
+        "nationalite": "Guyanaise"
+    },
+    {
+        "libcog": "BELIZE",
+        "nationalite": "Bélize"
+    },
+    {
+        "libcog": "GROENLAND",
+        "nationalite": "Groenlandaise"
+    },
+    {
+        "libcog": "PORTO RICO",
+        "nationalite": "Portoricaine"
+    },
+    {
+        "libcog": "TRINITE-ET-TOBAGO",
+        "nationalite": "Trinidadienne"
+    },
+    {
+        "libcog": "BARBADE",
+        "nationalite": "Barbadienne"
+    },
+    {
+        "libcog": "SURINAME",
+        "nationalite": "Suriname"
+    },
+    {
+        "libcog": "DOMINIQUE",
+        "nationalite": "Dominicaine"
+    },
+    {
+        "libcog": "SAINTE-LUCIE",
+        "nationalite": "Sainte-Lucie"
+    },
+    {
+        "libcog": "AUSTRALIE",
+        "nationalite": "Australienne"
+    },
+    {
+        "libcog": "NOUVELLE-ZELANDE",
+        "nationalite": "Néo-Zelandaise"
+    },
+    {
+        "libcog": "SAMOA",
+        "nationalite": "Samoane"
+    },
+    {
+        "libcog": "NAURU",
+        "nationalite": "Nauruane"
+    },
+    {
+        "libcog": "FIDJI",
+        "nationalite": "Fidjienne"
+    },
+    {
+        "libcog": "TONGA",
+        "nationalite": "Tongienne"
+    },
+    {
+        "libcog": "PAPOUASIE-NOUVELLE-GUINEE",
+        "nationalite": "Papouasienne"
+    },
+    {
+        "libcog": "TUVALU",
+        "nationalite": "Tuvaluane"
+    },
+    {
+        "libcog": "VANUATU",
+        "nationalite": "Vanuatuane"
+    },
+    {
+        "libcog": "MARSHALL (ILES)",
+        "nationalite": "Marshallaise"
+    },
+    {
+        "libcog": "MICRONESIE (ETATS FEDERES DE)",
+        "nationalite": "Micronésienne"
+    },
+    {
+        "libcog": "PALAOS (ILES)",
+        "nationalite": "Palaos"
+    }
 ]

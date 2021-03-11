@@ -22,234 +22,224 @@ import VisitorGrid from '../styled/visitor';
 import { EMPLOYEE_TYPE } from '../../utils/constants/enums';
 
 const columns = [
-  { id: 'visiteur', label: 'Visiteur', minWidth: 150 },
-  {
-    id: 'unite',
-    label: 'Unité/Société',
-    minWidth: 150,
-  },
-  {
-    id: 'type',
-    label: 'Type',
-    minWidth: 150,
-  },
+    { id: 'visiteur', label: 'Visiteur', minWidth: 150 },
+    {
+        id: 'unite',
+        label: 'Unité/Société',
+        minWidth: 150
+    },
+    {
+        id: 'type',
+        label: 'Type',
+        minWidth: 150
+    }
 ];
 
-function createData({
-  id,
-  vip,
-  vipReason,
-  firstname,
-  birthLastname,
-  rank,
-  company,
-  employeeType,
-}) {
-  return {
-    id,
-    vip,
-    vipReason,
-    visiteur: rank
-      ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
-      : `${birthLastname.toUpperCase()} ${firstname}`,
-    unite: company,
-    type: EMPLOYEE_TYPE[employeeType],
-  };
+function createData({ id, vip, vipReason, firstname, birthLastname, rank, company, employeeType }) {
+    return {
+        id,
+        vip,
+        vipReason,
+        visiteur: rank
+            ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
+            : `${birthLastname.toUpperCase()} ${firstname}`,
+        unite: company,
+        type: EMPLOYEE_TYPE[employeeType]
+    };
 }
 
 const useStyles = makeStyles({
-  container: {
-    maxHeight: 440,
-  },
-  icon: {
-    marginTop: '-20px',
-    marginBottom: '-20px',
-  },
+    container: {
+        maxHeight: 440
+    },
+    icon: {
+        marginTop: '-20px',
+        marginBottom: '-20px'
+    }
 });
 
-export default function TabRecapRequest({
-  visitors, onDelete, handleBack, setSelectVisitor,
-}) {
-  const classes = useStyles();
+export default function TabRecapRequest({ visitors, onDelete, handleBack, setSelectVisitor }) {
+    const classes = useStyles();
 
-  const rows = visitors.reduce((acc, vis) => {
-    acc.push(createData(vis));
-    return acc;
-  }, []);
+    const rows = visitors.reduce((acc, vis) => {
+        acc.push(createData(vis));
+        return acc;
+    }, []);
 
-  const [hover, setHover] = useState({});
-  const [del, setDel] = useState({});
+    const [hover, setHover] = useState({});
+    const [del, setDel] = useState({});
 
-  // const [page, setPage] = React.useState(0);
-  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    // const [page, setPage] = React.useState(0);
+    // const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  // const handleChangePage = (event, newPage) => {
-  //   setPage(newPage);
-  // };
+    // const handleChangePage = (event, newPage) => {
+    //   setPage(newPage);
+    // };
 
-  // const handleChangeRowsPerPage = event => {
-  //   setRowsPerPage(+event.target.value);
-  //   setPage(0);
-  // };
+    // const handleChangeRowsPerPage = event => {
+    //   setRowsPerPage(+event.target.value);
+    //   setPage(0);
+    // };
 
-  const handleAddVisitor = () => {
-    setSelectVisitor({});
-    handleBack();
-  };
+    const handleAddVisitor = () => {
+        setSelectVisitor({});
+        handleBack();
+    };
 
-  const handleMouseEnter = (index) => {
-    setHover((prevState) => ({ ...prevState, [index]: true }));
-  };
+    const handleMouseEnter = (index) => {
+        setHover((prevState) => ({ ...prevState, [index]: true }));
+    };
 
-  const handleUpdate = (index) => {
-    setSelectVisitor(visitors[index]);
-    handleBack();
-  };
+    const handleUpdate = (index) => {
+        setSelectVisitor(visitors[index]);
+        handleBack();
+    };
 
-  const handleDelete = (index) => {
-    setHover({});
-    setDel({ [index]: true });
-  };
+    const handleDelete = (index) => {
+        setHover({});
+        setDel({ [index]: true });
+    };
 
-  const handleDeleteConfirm = (id) => {
-    onDelete(id);
-    setDel({});
-  };
+    const handleDeleteConfirm = (id) => {
+        onDelete(id);
+        setDel({});
+    };
 
-  const handleDeleteAvorted = () => {
-    setDel({});
-  };
+    const handleDeleteAvorted = () => {
+        setDel({});
+    };
 
-  const handleMouseLeave = (index) => {
-    setTimeout(() => { }, 2000);
-    setHover((prevState) => ({ ...prevState, [index]: false }));
-  };
+    const handleMouseLeave = (index) => {
+        setTimeout(() => {}, 2000);
+        setHover((prevState) => ({ ...prevState, [index]: false }));
+    };
 
-  return (
-    <Table stickyHeader aria-label="sticky table">
-      <TableHead>
-        <TableRow>
-          { columns.map((column) => (
-            <CustomTableCell key={column.id} align={column.align}>
-              { column.label }
-            </CustomTableCell>
-          )) }
-          <CustomTableCell>
-            <Button
-              size="small"
-              variant="outlined"
-              color="primary"
-              onClick={handleAddVisitor}
-              startIcon={<AddIcon />}
-              style={{ float: 'right' }}
-            >
-              Ajouter
-            </Button>
-          </CustomTableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        { rows
-          // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((row, index) => {
-            if (del[index]) {
-              return (
-                <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                  <TableCell key="delete" align="justify" colspan={columns.length + 1}>
-                    <Grid container>
-                      <Grid item sm={10}>
-                        <Typography variant="body1">
-                          Êtes-vous sûr de vouloir supprimer
-                          { ' ' }
-                          { row.visiteur }
-                          { ' ' }
-                          de la demande ?
-                        </Typography>
-                        { rows.length === 1 && (
-                          <Typography variant="body1" color="error">
-                            Si il n&apos;y a plus de visiteur, la demande va être supprimée.
-                          </Typography>
-                        ) }
-                      </Grid>
-                      <Grid item sm={2}>
-                        <div style={{ float: 'right' }}>
-                          <IconButton
-                            aria-label="valide"
-                            className={classes.icon}
-                            color="secondary"
-                            onClick={() => handleDeleteConfirm(row.id)}
-                          >
-                            <DoneIcon />
-                          </IconButton>
-
-                          <IconButton
-                            aria-label="cancel"
-                            className={classes.icon}
-                            onClick={() => handleDeleteAvorted(index)}
-                          >
-                            <CloseIcon />
-                          </IconButton>
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </TableCell>
+    return (
+        <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+                <TableRow>
+                    {columns.map((column) => (
+                        <CustomTableCell key={column.id} align={column.align}>
+                            {column.label}
+                        </CustomTableCell>
+                    ))}
+                    <CustomTableCell>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                            onClick={handleAddVisitor}
+                            startIcon={<AddIcon />}
+                            style={{ float: 'right' }}>
+                            Ajouter
+                        </Button>
+                    </CustomTableCell>
                 </TableRow>
-              );
-            }
-            return (
-              <TableRow
-                onMouseOver={() => handleMouseEnter(index)}
-                onFocus={() => handleMouseEnter(index)}
-                onMouseLeave={() => handleMouseLeave(index)}
-                role="checkbox"
-                tabIndex={-1}
-                key={row.id}
-              >
-                { columns.map((column) => {
-                  const value = row[column.id];
-                  return column.id === 'visiteur' ? (
-                    <TableCell key={column.id} align={column.align}>
-                      <VisitorGrid name={value} vip={row.vip} vipReason={row.vipReason} />
-                    </TableCell>
-                  ) : (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.format && typeof value === 'number' ? column.format(value) : value}
-                    </TableCell>
-                  );
-                }) }
-                <TableCell key="actions">
-                  { hover[index] && (
-                    <div style={{ float: 'right' }}>
-                      <IconButton
-                        aria-label="edit"
-                        className={classes.icon}
-                        color="primary"
-                        onClick={() => handleUpdate(index)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="primary"
-                        aria-label="delete"
-                        className={classes.icon}
-                        onClick={() => handleDelete(index)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </div>
-                  ) }
-                </TableCell>
-              </TableRow>
-            );
-          }) }
-      </TableBody>
-    </Table>
-  );
+            </TableHead>
+            <TableBody>
+                {rows
+                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                        if (del[index]) {
+                            return (
+                                <TableRow tabIndex={-1} key={row.emailVisiteur}>
+                                    <TableCell
+                                        key="delete"
+                                        align="justify"
+                                        colspan={columns.length + 1}>
+                                        <Grid container>
+                                            <Grid item sm={10}>
+                                                <Typography variant="body1">
+                                                    Êtes-vous sûr de vouloir supprimer{' '}
+                                                    {row.visiteur} de la demande ?
+                                                </Typography>
+                                                {rows.length === 1 && (
+                                                    <Typography variant="body1" color="error">
+                                                        Si il n&apos;y a plus de visiteur, la
+                                                        demande va être supprimée.
+                                                    </Typography>
+                                                )}
+                                            </Grid>
+                                            <Grid item sm={2}>
+                                                <div style={{ float: 'right' }}>
+                                                    <IconButton
+                                                        aria-label="valide"
+                                                        className={classes.icon}
+                                                        color="secondary"
+                                                        onClick={() => handleDeleteConfirm(row.id)}>
+                                                        <DoneIcon />
+                                                    </IconButton>
+
+                                                    <IconButton
+                                                        aria-label="cancel"
+                                                        className={classes.icon}
+                                                        onClick={() => handleDeleteAvorted(index)}>
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        }
+                        return (
+                            <TableRow
+                                onMouseOver={() => handleMouseEnter(index)}
+                                onFocus={() => handleMouseEnter(index)}
+                                onMouseLeave={() => handleMouseLeave(index)}
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.id}>
+                                {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return column.id === 'visiteur' ? (
+                                        <TableCell key={column.id} align={column.align}>
+                                            <VisitorGrid
+                                                name={value}
+                                                vip={row.vip}
+                                                vipReason={row.vipReason}
+                                            />
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell key={column.id} align={column.align}>
+                                            {column.format && typeof value === 'number'
+                                                ? column.format(value)
+                                                : value}
+                                        </TableCell>
+                                    );
+                                })}
+                                <TableCell key="actions">
+                                    {hover[index] && (
+                                        <div style={{ float: 'right' }}>
+                                            <IconButton
+                                                aria-label="edit"
+                                                className={classes.icon}
+                                                color="primary"
+                                                onClick={() => handleUpdate(index)}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="primary"
+                                                aria-label="delete"
+                                                className={classes.icon}
+                                                onClick={() => handleDelete(index)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </div>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+            </TableBody>
+        </Table>
+    );
 }
 
 TabRecapRequest.propTypes = {
-  visitors: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  onDelete: PropTypes.func.isRequired,
-  handleBack: PropTypes.func.isRequired,
-  setSelectVisitor: PropTypes.func.isRequired,
+    visitors: PropTypes.arrayOf(PropTypes.shape).isRequired,
+    onDelete: PropTypes.func.isRequired,
+    handleBack: PropTypes.func.isRequired,
+    setSelectVisitor: PropTypes.func.isRequired
 };
