@@ -168,8 +168,10 @@ export function LoginContextProvider({ children, clearCache }) {
             getUserData();
         },
         onError: () => {
-            // do something
-        },
+            addAlert({
+                message: 'Identifiants incorrects',
+                severity: 'error'
+            });        },
         fetchPolicy: 'no-cache'
     });
 
