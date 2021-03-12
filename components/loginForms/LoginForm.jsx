@@ -47,8 +47,6 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function LoginForm() {
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
     const { signIn } = useLogin();
@@ -75,7 +73,7 @@ export default function LoginForm() {
                 <CssTextField
                     type="email"
                     name="email"
-                    // inputProps={{ 'data-testid': 'login-form-email' }}
+                    inputProps={{ 'aria-label': 'email' }}
                     label="Email"
                     inputRef={register({
                         required: "L'adresse mail est obligatoire."
@@ -98,16 +96,14 @@ export default function LoginForm() {
                                     {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
-                        ),
+                        )
                     }}
-                    InputLabelProps={{htmlFor: 'password'}}
+                    InputLabelProps={{ htmlFor: 'password' }}
                     label="Mot de passe"
                     name="password"
                     inputRef={register({ required: 'Le mot de passe est obligatoire.' })}
                     error={Object.prototype.hasOwnProperty.call(errors, 'password')}
-                    helperText={
-                        (errors.password && errors.password.message)
-                    }
+                    helperText={errors.password && errors.password.message}
                 />
                 <Button
                     variant="contained"

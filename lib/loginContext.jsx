@@ -171,7 +171,8 @@ export function LoginContextProvider({ children, clearCache }) {
             addAlert({
                 message: 'Identifiants incorrects',
                 severity: 'error'
-            });        },
+            });
+        },
         fetchPolicy: 'no-cache'
     });
 
