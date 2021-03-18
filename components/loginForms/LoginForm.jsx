@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { useLogin } from '../../lib/loginContext';
 import { useForm } from 'react-hook-form';
 
-export const CssTextField = withStyles({
+const CssTextField = withStyles({
     root: {
         '& label.Mui-focused': {
             color: 'white'

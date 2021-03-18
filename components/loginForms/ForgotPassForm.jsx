@@ -1,10 +1,10 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { gql, useMutation } from '@apollo/client';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useSnackBar } from '../../lib/hooks/snackbar';
-import { CssTextField } from './LoginForm';
 
 const useStyles = makeStyles(() => ({
     formPasswordContainer: {
@@ -26,6 +26,30 @@ export const RESET_PASSWORD = gql`
         resetPassword(email: $email)
     }
 `;
+
+const CssTextField = withStyles({
+    root: {
+        '& label.Mui-focused': {
+            color: 'white'
+        },
+        '& .MuiFormLabel-root': {
+            color: 'white'
+        },
+        '& .MuiInput-underline:before': {
+            borderBottomColor: 'grey'
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: 'white'
+        },
+        '& label.Mui-root': {
+            color: 'white'
+        },
+        '& .MuiInputBase-input': {
+            color: 'white'
+        },
+        width: '60%'
+    }
+})(TextField);
 
 export default function ForgotPassForm() {
     const { register, handleSubmit, errors } = useForm();
