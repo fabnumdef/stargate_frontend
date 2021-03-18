@@ -265,9 +265,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                     ...currentRequests.getCampus,
                     listMyRequests: {
                         ...currentRequests.getCampus.listMyRequests,
-                        ...(updatedTotal < 10 && {
-                            list: [...currentRequests.getCampus.listMyRequests.list, createdRequest]
-                        }),
+                        list: [...currentRequests.getCampus.listMyRequests.list, createdRequest],
                         meta: {
                             ...currentRequests.getCampus.listMyRequests.meta,
                             total: updatedTotal
