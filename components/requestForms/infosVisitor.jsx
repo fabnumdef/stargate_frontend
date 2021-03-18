@@ -982,7 +982,7 @@ FormInfoVisitor.propTypes = {
     setForm: PropTypes.func.isRequired,
     handleNext: PropTypes.func.isRequired,
     handleBack: PropTypes.func.isRequired,
-    setSelectVisitor: PropTypes.func.isRequired,
+    setSelectVisitor: PropTypes.func,
     selectVisitor: PropTypes.shape({
         id: PropTypes.string.isRequired,
         nid: PropTypes.string,
@@ -1005,6 +1005,7 @@ FormInfoVisitor.propTypes = {
 };
 
 FormInfoVisitor.defaultProps = {
+    setSelectVisitor: () => {},
     selectVisitor: {
         nid: '',
         usageLastname: '',

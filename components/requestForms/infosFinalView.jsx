@@ -192,12 +192,13 @@ InfosFinalView.propTypes = {
         visitors: PropTypes.arrayOf(PropTypes.object)
     }),
     setForm: PropTypes.func.isRequired,
-    setSelectVisitor: PropTypes.func.isRequired,
+    setSelectVisitor: PropTypes.func,
     handleBack: PropTypes.func.isRequired,
     group: PropTypes.bool
 };
 
 InfosFinalView.defaultProps = {
     formData: {},
-    group: false
+    group: false,
+    setSelectVisitor: () => {}
 };
