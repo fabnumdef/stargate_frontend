@@ -7,6 +7,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import { useLogin } from '../../lib/loginContext';
+import { useForm } from 'react-hook-form';
 
 export const CssTextField = withStyles({
     root: {
@@ -46,16 +47,16 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function LoginForm() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const ctx = useLogin();
+
+    const { signIn } = useLogin();
+
+    const { register, handleSubmit, errors } = useForm();
 
     const classes = useStyles();
 
-    const handleSubmit = (evt) => {
-        evt.preventDefault();
-        ctx.signIn(email, password);
+    const onSubmit = ({ email, password }) => {
+        signIn(email, password);
     };
 
     const handleClickShowPassword = () => {
@@ -68,17 +69,22 @@ export default function LoginForm() {
 
     return (
         <div className={classes.fieldsPosition}>
-            <form onSubmit={handleSubmit} data-testid="login-form">
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <CssTextField
                     type="email"
                     name="email"
-                    inputProps={{ 'data-testid': 'login-form-email' }}
+                    inputProps={{ 'aria-label': 'email' }}
                     label="Email"
-                    value={email}
-                    onChange={(evt) => setEmail(evt.target.value)}
+                    inputRef={register({
+                        required: "L'adresse mail est obligatoire."
+                        // validate: (value) => validator.isEmail(value) || 'Format invalide',
+                    })}
+                    error={Object.prototype.hasOwnProperty.call(errors, 'email')}
+                    helperText={errors.email && errors.email.message}
                 />
                 <CssTextField
                     type={showPassword ? 'text' : 'password'}
+                    id="password"
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -90,12 +96,14 @@ export default function LoginForm() {
                                     {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
-                        ),
-                        inputProps: { 'data-testid': 'login-form-password' }
+                        )
                     }}
+                    InputLabelProps={{ htmlFor: 'password' }}
                     label="Mot de passe"
-                    value={password}
-                    onChange={(evt) => setPassword(evt.target.value)}
+                    name="password"
+                    inputRef={register({ required: 'Le mot de passe est obligatoire.' })}
+                    error={Object.prototype.hasOwnProperty.call(errors, 'password')}
+                    helperText={errors.password && errors.password.message}
                 />
                 <Button
                     variant="contained"
