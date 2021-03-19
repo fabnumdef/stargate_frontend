@@ -194,7 +194,7 @@ TabMyRequestUntreated.propTypes = {
                 rank: PropTypes.string,
                 company: PropTypes.string
             }),
-            places: PropTypes.arrayOf(PropTypes.string),
+            places: PropTypes.arrayOf(PropTypes.object),
             reason: PropTypes.string
         })
     ),
