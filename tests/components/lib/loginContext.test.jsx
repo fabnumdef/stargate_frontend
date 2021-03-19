@@ -4,7 +4,9 @@ import preloadAll from 'jest-next-dynamic';
 
 import { RESET_PASSWORD } from '../../../components/loginForms/ForgotPassForm';
 import { activeRoleCacheVar, isLoggedInVar, typePolicies } from '../../../lib/apollo/cache';
+import { INIT_CACHE } from '../../../lib/apollo/queries';
 import { GET_ME, LOGIN, LoginContextProvider } from '../../../lib/loginContext';
+import { STATE_REQUEST } from '../../../utils/constants/enums';
 import { render, screen, waitFor } from '../../../utils/tests/renderApollo';
 
 jest.mock('../../../utils', () => ({
@@ -45,20 +47,25 @@ const mocks = [
                             campuses: [
                                 {
                                     id: 'NAVAL-BASE',
-                                    label: 'Base Navale'
+                                    label: 'Base Navale',
+                                    __typename: 'Campus'
                                 }
                             ],
                             units: [
                                 {
                                     id: '60111c31878c3e1190920895',
-                                    label: 'CIRI'
+                                    label: 'CIRI',
+                                    __typename: 'Unit'
                                 }
-                            ]
+                            ],
+                            __typename: 'UserRole'
                         }
                     ],
                     email: {
-                        original: 'cu.ciri@localhost'
-                    }
+                        original: 'cu.ciri@localhost',
+                        __typename: 'UserEmail'
+                    },
+                    __typename: 'User'
                 }
             }
         }
@@ -73,6 +80,26 @@ const mocks = [
         result: jest.fn(() => ({
             data: {}
         }))
+    },
+    {
+        request: {
+            query: INIT_CACHE,
+            variables: {
+                campusId: 'NAVAL-BASE',
+                as: { role: 'ROLE_UNIT_CORRESPONDENT', unit: '60111c31878c3e1190920895' },
+                cursor: { offset: 0, first: 30 },
+                filterCreated: { status: STATE_REQUEST.STATE_CREATED.state },
+                filterTreated: {
+                    status: [
+                        STATE_REQUEST.STATE_CANCELED.state,
+                        STATE_REQUEST.STATE_ACCEPTED.state,
+                        STATE_REQUEST.STATE_MIXED.state,
+                        STATE_REQUEST.STATE_REJECTED.state
+                    ]
+                }
+            }
+        },
+        result: jest.fn(() => ({ data: {} }))
     }
 ];
 
@@ -88,7 +115,7 @@ describe('Container: LoginContext', () => {
 
         render(
             <LoginContextProvider clearCache={jest.fn()}>{'LOGGED'}</LoginContextProvider>,
-            { mocks, cache, addTypename: true } // addTypename usefull for fragments
+            { mocks, cache, addTypename: false } // addTypename usefull for fragments
         );
     });
     it('display correctly Login if not logged', async () => {
@@ -127,7 +154,8 @@ describe('Container: LoginContext', () => {
             expect(mockResult).toHaveBeenCalled();
             expect(activeRoleCacheVar()).toEqual({
                 role: 'ROLE_UNIT_CORRESPONDENT',
-                unit: '60111c31878c3e1190920895'
+                unit: '60111c31878c3e1190920895',
+                unitLabel: 'CIRI'
             });
 
             expect(isLoggedInVar()).toBeTruthy();

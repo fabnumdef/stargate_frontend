@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { gql, useMutation } from '@apollo/client';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useSnackBar } from '../../lib/hooks/snackbar';
-import { CssTextField } from './LoginForm';
 
 const useStyles = makeStyles(() => ({
     formPasswordContainer: {
@@ -26,23 +27,42 @@ export const RESET_PASSWORD = gql`
     }
 `;
 
+const CssTextField = withStyles({
+    root: {
+        '& label.Mui-focused': {
+            color: 'white'
+        },
+        '& .MuiFormLabel-root': {
+            color: 'white'
+        },
+        '& .MuiInput-underline:before': {
+            borderBottomColor: 'grey'
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: 'white'
+        },
+        '& label.Mui-root': {
+            color: 'white'
+        },
+        '& .MuiInputBase-input': {
+            color: 'white'
+        },
+        width: '60%'
+    }
+})(TextField);
+
 export default function ForgotPassForm() {
-    const [email, setEmail] = useState();
+    const { register, handleSubmit, errors } = useForm();
+
     const [resetPassword] = useMutation(RESET_PASSWORD);
     const { addAlert } = useSnackBar();
 
     const classes = useStyles();
 
-    const handleSubmit = async (evt) => {
-        evt.preventDefault();
-        if (!email) {
-            addAlert({ message: "Merci d'entrer un identifiant", severity: 'warning' });
-            return;
-        }
+    const onSubmit = ({ email }) => {
         try {
-            await resetPassword({ variables: { email } });
+            resetPassword({ variables: { email } });
             addAlert({ message: 'Demande enregistrée', severity: 'success' });
-            setEmail('');
         } catch (e) {
             addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
         }
@@ -50,12 +70,17 @@ export default function ForgotPassForm() {
 
     return (
         <div className={classes.formPasswordContainer}>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <CssTextField
                     type="email"
                     label="Email"
-                    value={email}
-                    onChange={(evt) => setEmail(evt.target.value)}
+                    name="email"
+                    inputRef={register({
+                        required: "L'adresse mail est obligatoire."
+                        // validate: (value) => validator.isEmail(value) || 'Format invalide',
+                    })}
+                    error={Object.prototype.hasOwnProperty.call(errors, 'email')}
+                    helperText={errors.email && errors.email.message}
                 />
                 <p>
                     Merci d&apos;entrer votre identifiant. S&apos;il est enregistré dans notre base
