@@ -1,58 +1,59 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import { LoginForm, ForgotPassForm } from '../components';
+import Grid from '@material-ui/core/Grid';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import PageTitle from '../components/styled/common/pageTitle';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const useStyles = makeStyles((theme) => ({
-    mainLoginForm: {
-        marginTop: '10vh'
+    root: {
+        height: '100vh'
     },
-    logoContainer: {
-        textAlign: 'center'
+    gateStyle: {
+        backgroundImage: "url('/img/portail.jpg')",
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
     },
-    subLoginForm: {
-        backgroundColor: 'rgba(14, 65, 148, 0.90)',
-        color: 'white',
-        height: '40vh',
-        width: '40vh',
-        minWidth: '450px',
-        minHeight: '450px',
-        margin: '30px auto',
-        borderRadius: '50%',
-        border: '1.2rem solid rgba(255, 255, 255, .2)',
-        boxShadow: '5px 5px 6px 0 rgba(0, 0, 0, 0.16)',
-        position: 'relative',
-        '& form': {
-            marginTop: '20%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }
+    paper: {
+        padding: theme.spacing(9, 12),
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        position: 'relative'
     },
-    switchButton: {
+    appName: {
+        marginBottom: '10vh'
+    },
+    fieldsStyle: {
+        maxWidth: '70%',
+        marginTop: theme.spacing(3)
+    },
+    minArmLogo: {
+        width: '97px',
+        height: '86px'
+    },
+    fabNumLogo: {
+        width: '133px',
+        height: '56px',
+        marginLeft: theme.spacing(4)
+    },
+    gridLogos: {
+        bottom: 40,
         position: 'absolute',
-        marginTop: '5%',
-        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center'
+    },
+    forgotPassword: {
+        color: theme.palette.primary.main,
         cursor: 'pointer',
-        width: '100%',
-        fontSize: '1rem'
-    },
-    star: {
-        fontSize: '2.8em',
-        lineHeight: '1.34',
-        letterSpacing: '0.4px',
-        color: fade(theme.palette.primary.main, 0.65)
-    },
-    gate: {
-        fontSize: '2.8em',
-        lineHeight: '1.34',
-        letterSpacing: '0.4px',
-        color: theme.palette.secondary.main
-    },
-    buttonStyle: {
-        outline: 'none'
+        '&:hover': {
+            color: theme.palette.primary.dark
+        }
     }
 }));
 
@@ -66,34 +67,57 @@ const SubmitButton = ({ text, label }) => {
 };
 
 function LoginPage() {
+    const classes = useStyles();
+
+    return (
+        <Grid container component="main" className={classes.root}>
+            <CssBaseline />
+            <Grid item xs={false} sm={3} md={4} lg={6} className={classes.gateStyle} />
+            <Grid item xs={12} sm={9} md={8} lg={6} component={Paper} elevation={6} square>
+                <div className={classes.paper}>
+                    <Typography component="h1" variant="h2" className={classes.appName}>
+                        STARGATE
+                    </Typography>
+                    <PageTitle className={classes.connection}>Connexion</PageTitle>
+                    <RenderLogin />
+                    <div className={classes.gridLogos}>
+                        <img
+                            className={classes.minArmLogo}
+                            src="/img/logoMinArm.jpg"
+                            alt="Logo du ministère des armées"
+                        />
+                        <img
+                            className={classes.fabNumLogo}
+                            src="/img/logo-fabrique-numerique.png"
+                            alt="Logo de la fabrique numérique"
+                        />
+                    </div>
+                </div>
+            </Grid>
+        </Grid>
+    );
+}
+function RenderLogin() {
     const [forgottenPass, setForgottenPass] = useState(false);
     const classes = useStyles();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('lg'));
 
     const switchForms = () => {
         setForgottenPass(!forgottenPass);
     };
-
     return (
-        <div className={classes.mainLoginForm}>
-            <div className={classes.logoContainer}>
-                <span className={classes.star}>STAR</span>
-                <span className={classes.gate}>GATE</span>
-            </div>
-            <div className={classes.subLoginForm}>
-                {forgottenPass ? <ForgotPassForm switchForms={switchForms} /> : <LoginForm />}
-                <div
-                    className={classes.switchButton}
-                    role="button"
-                    onClick={switchForms}
-                    onKeyDown={switchForms}
-                    aria-hidden>
-                    {forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}
-                </div>
-            </div>
+        <div className={matches ? classes.fieldsStyle : ''}>
+            {forgottenPass ? <ForgotPassForm switchForms={switchForms} /> : <LoginForm />}
+            <Typography
+                onClick={switchForms}
+                onKeyDown={switchForms}
+                className={classes.forgotPassword}>
+                {forgottenPass ? 'Retour' : 'Mot de passe perdu ?'}
+            </Typography>
         </div>
     );
 }
-
 SubmitButton.propTypes = {
     text: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired

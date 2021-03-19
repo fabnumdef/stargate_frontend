@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import Template from '../../containers/template';
-import PageTitle from '../styled/pageTitle';
+import PageTitle from '../styled/common/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 

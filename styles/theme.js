@@ -5,7 +5,9 @@ import red from '@material-ui/core/colors/red';
 
 const palette = {
     primary: {
-        main: '#0f4194'
+        main: '#336CFB',
+        dark: '#0042c7',
+        light: '#799aff'
     },
     secondary: {
         main: '#a51c81'
@@ -28,128 +30,15 @@ const theme = createMuiTheme(
             fontFamily: [
                 '-apple-system',
                 'BlinkMacSystemFont',
-                '"Segoe UI"',
+                '"Lato"',
                 'Roboto',
                 '"Helvetica Neue"',
                 'Arial',
                 'sans-serif',
-                '"Apple Color Emoji"',
-                '"Segoe UI Emoji"',
-                '"Segoe UI Symbol"'
+                '"Apple Color Emoji"'
             ].join(',')
         },
-        palette,
-        overrides: {
-            MuiInputBase: {
-                input: {
-                    height: '0.9em',
-                    fontSize: '0.875rem'
-                }
-            },
-            MuiTypography: {
-                subtitle1: {
-                    fontWeight: 'bold',
-                    fontSize: '1.05rem'
-                },
-                subtitle2: {
-                    fontWeight: '300',
-                    fontSize: '1.05rem',
-                    lineHeight: '1.8',
-                    color: '#0f4194'
-                },
-                body1: {
-                    fontSize: '0.875rem'
-                },
-                body2: {
-                    fontSize: '0.75rem'
-                },
-                h5: {
-                    fontSize: '1.40rem',
-                    fontWeight: 600,
-                    fontStretch: 'normal',
-                    lineHeight: 1.32,
-                    letterSpacing: '0.22px'
-                }
-            },
-            MuiTable: {
-                root: {
-                    overflow: 'auto'
-                }
-            },
-            MuiAppBar: {
-                colorPrimary: {
-                    color: '#000000',
-                    backgroundColor: '#ffffff'
-                }
-            },
-            MuiTablePagination: {
-                root: {
-                    color: palette.primary.main
-                }
-            },
-            MuiFormControlLabel: {
-                label: {
-                    fontSize: '0.875rem'
-                }
-            },
-            MuiExpansionPanelDetails: {
-                root: {
-                    padding: {}
-                }
-            },
-            MuiButton: {
-                root: {
-                    lineHeight: '2.65',
-                    minWidth: '0'
-                },
-                outlinedPrimary: {
-                    backgroundColor: 'white'
-                },
-                outlinedSecondary: {
-                    backgroundColor: 'white'
-                }
-            },
-            MuiTableCell: {
-                body: {
-                    color: '#0d40a0'
-                }
-            },
-            MuiTableRow: {
-                hover: {
-                    padding: '0px'
-                }
-            },
-            MuiRadio: {
-                root: {
-                    color: '#0f4194',
-                    '&$checked': {
-                        color: '#0f4194'
-                    }
-                }
-            },
-            MuiAlert: {
-                root: {
-                    borderRadius: '20px'
-                }
-            },
-            MuiInput: {
-                underline: {
-                    '&:before': {
-                        borderBottom: '1px solid #0f4194'
-                    }
-                }
-            },
-            MuiTab: {
-                textColorInherit: {
-                    opacity: 1
-                }
-            },
-            MuiOutlinedInput: {
-                notchedOutline: {
-                    borderColor: '#0f4194'
-                }
-            }
-        }
+        palette
     },
     frFR
 );

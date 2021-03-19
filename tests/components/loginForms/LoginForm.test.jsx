@@ -36,7 +36,7 @@ describe('Container: LoginForm', () => {
         await waitFor(() =>
             userEvent.click(
                 screen.getByRole('button', {
-                    name: /login/i
+                    name: /Se connecter/i
                 })
             )
         );
@@ -47,7 +47,7 @@ describe('Container: LoginForm', () => {
     it('submit button calls signin method', async () => {
         userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'IAmAnEmail');
         userEvent.type(screen.getByLabelText('Mot de passe'), 'IAmAPassword');
-        userEvent.click(screen.getByRole('button', { name: /login/i }));
+        userEvent.click(screen.getByRole('button', { name: /Se connecter/i }));
         await waitFor(() => {
             expect(mockSignIn).toHaveBeenCalledWith('IAmAnEmail', 'IAmAPassword');
         });

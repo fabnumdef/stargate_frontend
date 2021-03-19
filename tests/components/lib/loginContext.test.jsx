@@ -145,7 +145,7 @@ describe('Container: LoginContext', () => {
         await waitFor(() => {
             userEvent.click(
                 screen.getByRole('button', {
-                    name: /login/i
+                    name: /Se connecter/i
                 })
             );
         });
