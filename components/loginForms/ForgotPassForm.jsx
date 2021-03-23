@@ -45,6 +45,7 @@ export default function ForgotPassForm() {
                 type="email"
                 label="Email"
                 name="email"
+                margin="normal"
                 inputRef={register({
                     required: "L'adresse mail est obligatoire."
                     // validate: (value) => validator.isEmail(value) || 'Format invalide',
@@ -52,7 +53,7 @@ export default function ForgotPassForm() {
                 error={Object.prototype.hasOwnProperty.call(errors, 'email')}
                 helperText={errors.email && errors.email.message}
             />
-            <Typography variant="body1">
+            <Typography className={'MuiFormControl-marginNormal'} variant="body1">
                 Merci d&apos;entrer votre identifiant. S&apos;il est enregistré dans notre base de
                 données, vous recevrez un e-mail pour réinitialiser votre mot de passe.
             </Typography>
