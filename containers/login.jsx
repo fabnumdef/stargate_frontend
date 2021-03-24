@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundImage: "url('/img/portail.jpg')",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
-        backgroundPosition: 'center'
+        backgroundPosition: 'bottom'
     },
     paper: {
         padding: theme.spacing(9, 12),
@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative'
     },
     appName: {
-        marginBottom: '10vh'
+        marginBottom: '10vh',
+        width: 350
     },
     fieldsStyle: {
         maxWidth: '70%',
@@ -75,9 +76,7 @@ function LoginPage() {
             <Grid item xs={false} sm={3} md={4} lg={6} className={classes.gateStyle} />
             <Grid item xs={12} sm={9} md={8} lg={6} component={Paper} elevation={6} square>
                 <div className={classes.paper}>
-                    <Typography component="h1" variant="h2" className={classes.appName}>
-                        STARGATE
-                    </Typography>
+                    <img src="/img/logo.svg" alt="STARGATE" className={classes.appName} />
                     <PageTitle className={classes.connection}>Connexion</PageTitle>
                     <RenderLogin />
                     <div className={classes.gridLogos}>
