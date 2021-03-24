@@ -13,12 +13,8 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import TablePagination from '@material-ui/core/TablePagination';
 import { useSnackBar } from '../lib/hooks/snackbar';
-// import TextField from '@material-ui/core/TextField';
-// import InputAdornment from '@material-ui/core/InputAdornment';
-// import SearchIcon from '@material-ui/icons/Search';
 
 import { TabPanel, TabMesDemandesToTreat, TabMesDemandesTreated } from '../components';
-import Template from './template';
 
 import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
@@ -301,109 +297,107 @@ export default function MyTreatements() {
     }, [toTreat, treated, value]);
 
     return (
-        <Template>
-            <Grid container spacing={2} className={classes.root}>
-                <Grid item sm={12} xs={12}>
-                    <Box display="flex" alignItems="center">
-                        <Typography variant="h5" className={classes.pageTitle}>
-                            Mes Traitements
-                        </Typography>
-                    </Box>
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                    {/** Tabulator  */}
-                    <Tabs
-                        value={value}
-                        onChange={handleChange}
-                        variant="scrollable"
-                        scrollButtons="off"
-                        aria-label="simple tabs example">
-                        {tabList.map(
-                            (tab) =>
-                                tab.access && (
-                                    <AntTab
-                                        label={tab.label}
-                                        value={tab.index}
-                                        id={tab.index}
-                                        aria-controls={tab.index}
-                                        key={tab.label}
-                                    />
-                                )
-                        )}
-                    </Tabs>
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                    {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
-                        <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                            <TabMesDemandesToTreat
-                                requests={toTreat ? mapRequestData(toTreat) : []}
-                                detailLink="a-traiter"
-                                emptyLabel="à traiter"
-                            />
-                        </TabPanel>
+        <Grid container spacing={2} className={classes.root}>
+            <Grid item sm={12} xs={12}>
+                <Box display="flex" alignItems="center">
+                    <Typography variant="h5" className={classes.pageTitle}>
+                        Mes Traitements
+                    </Typography>
+                </Box>
+            </Grid>
+            <Grid item sm={12} xs={12}>
+                {/** Tabulator  */}
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons="off"
+                    aria-label="simple tabs example">
+                    {tabList.map(
+                        (tab) =>
+                            tab.access && (
+                                <AntTab
+                                    label={tab.label}
+                                    value={tab.index}
+                                    id={tab.index}
+                                    aria-controls={tab.index}
+                                    key={tab.label}
+                                />
+                            )
                     )}
-                    <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-                        {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
-                            <TabMesDemandesTreated
-                                requests={
-                                    treated ? treated.getCampus.listRequestByVisitorStatus.list : []
-                                }
-                                detailLink="traitees"
-                                emptyLabel="traitée"
-                                ref={childRef}
-                            />
-                        ) : (
-                            <TabMesDemandesToTreat
-                                requests={treated ? mapRequestData(treated) : []}
-                                detailLink="traitees"
-                                emptyLabel="traitée"
-                            />
-                        )}
+                </Tabs>
+            </Grid>
+            <Grid item sm={12} xs={12}>
+                {urlAuthorization('/demandes/a-traiter', activeRole.role) && (
+                    <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
+                        <TabMesDemandesToTreat
+                            requests={toTreat ? mapRequestData(toTreat) : []}
+                            detailLink="a-traiter"
+                            emptyLabel="à traiter"
+                        />
                     </TabPanel>
-                </Grid>
-                <Grid item sm={6} xs={12} md={8} lg={8}>
-                    {handlePageSize > 0 && (
-                        <TablePagination
-                            rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                            component="div"
-                            count={handlePageSize}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onChangePage={handleChangePage}
-                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                )}
+                <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
+                    {activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role ? (
+                        <TabMesDemandesTreated
+                            requests={
+                                treated ? treated.getCampus.listRequestByVisitorStatus.list : []
+                            }
+                            detailLink="traitees"
+                            emptyLabel="traitée"
+                            ref={childRef}
+                        />
+                    ) : (
+                        <TabMesDemandesToTreat
+                            requests={treated ? mapRequestData(treated) : []}
+                            detailLink="traitees"
+                            emptyLabel="traitée"
                         />
                     )}
-                </Grid>
-                {value === 1 &&
-                    activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role &&
-                    treated &&
-                    treated.getCampus.listRequestByVisitorStatus.meta.total > 0 && (
-                        <Grid item sm={2} xs={12} md={4} lg={4}>
-                            <Button
-                                size="small"
-                                variant="contained"
-                                color="primary"
-                                onClick={() => {
-                                    const chosen = childRef.current.chosen.splice(0);
-                                    if (chosen.length > 0) {
-                                        exportCsv({
-                                            variables: {
-                                                isDone: { role: activeRole.role, value: true },
-                                                requestsId: chosen
-                                            }
-                                        });
-                                    } else {
-                                        addAlert({
-                                            message: 'Aucune visite selectionée',
-                                            severity: 'error'
-                                        });
-                                    }
-                                }}>
-                                Exporter
-                            </Button>
-                        </Grid>
-                    )}
+                </TabPanel>
             </Grid>
-        </Template>
+            <Grid item sm={6} xs={12} md={8} lg={8}>
+                {handlePageSize > 0 && (
+                    <TablePagination
+                        rowsPerPageOptions={[10, 20, 30, 40, 50]}
+                        component="div"
+                        count={handlePageSize}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
+                )}
+            </Grid>
+            {value === 1 &&
+                activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role &&
+                treated &&
+                treated.getCampus.listRequestByVisitorStatus.meta.total > 0 && (
+                    <Grid item sm={2} xs={12} md={4} lg={4}>
+                        <Button
+                            size="small"
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                const chosen = childRef.current.chosen.splice(0);
+                                if (chosen.length > 0) {
+                                    exportCsv({
+                                        variables: {
+                                            isDone: { role: activeRole.role, value: true },
+                                            requestsId: chosen
+                                        }
+                                    });
+                                } else {
+                                    addAlert({
+                                        message: 'Aucune visite selectionée',
+                                        severity: 'error'
+                                    });
+                                }
+                            }}>
+                            Exporter
+                        </Button>
+                    </Grid>
+                )}
+        </Grid>
     );
 }

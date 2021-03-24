@@ -36,8 +36,8 @@ export const VISITOR_STATUS = {
 };
 
 export const ROLES = {
-    ROLE_SUPERADMIN: { role: 'ROLE_SUPERADMIN', label: 'Super Administrateur' },
-    ROLE_ADMIN: { role: 'ROLE_ADMIN', label: 'Administrateur' },
+    ROLE_SUPERADMIN: { role: 'ROLE_SUPERADMIN', label: 'Super Administrateur', shortLabel: 'SA' },
+    ROLE_ADMIN: { role: 'ROLE_ADMIN', label: 'Administrateur', shortLabel: 'A' },
     ROLE_UNIT_CORRESPONDENT: {
         role: 'ROLE_UNIT_CORRESPONDENT',
         label: "Correspondant d'unité",
