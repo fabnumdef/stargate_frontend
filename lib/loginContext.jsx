@@ -6,7 +6,7 @@ import { createContext, useCallback, useContext } from 'react';
 import { tokenDuration } from '../utils';
 import { STATE_REQUEST } from '../utils/constants/enums';
 import { activeRoleCacheVar, campusIdVar, isLoggedInVar } from './apollo/cache';
-import { INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
+import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
 
 export const LOGIN = gql`
@@ -25,30 +25,6 @@ const AUTH_RENEW = gql`
     }
 `;
 
-export const GET_ME = gql`
-    query getMe {
-        me {
-            id
-            firstname
-            lastname
-            roles {
-                role
-                campuses {
-                    id
-                    label
-                }
-                units {
-                    id
-                    label
-                }
-            }
-            email {
-                original
-            }
-        }
-    }
-`;
-
 export const LoginContext = createContext();
 export const useLogin = () => useContext(LoginContext);
 
@@ -60,7 +36,7 @@ const Login = dynamic(() => import('../containers/login'));
  * @param {*} children components to display if logged
  * @param {*} clearCache handler to purge cache
  */
-export function LoginContextProvider({ children, clearCache }) {
+export function LoginContextProvider({ children }) {
     const client = useApolloClient();
 
     const {
@@ -73,12 +49,20 @@ export function LoginContextProvider({ children, clearCache }) {
      * Disconnect and clear the cache
      * @param alert message to display
      */
-    const signOut = useCallback(async (alert = false) => {
+    const signOut = (alert = false) => {
+        client.resetStore().then(() => {
+            client.cache.evict({ fieldName: 'me' });
+            client.cache.gc();
+
+            localStorage.removeItem('token');
+            localStorage.removeItem('campusId');
+            localStorage.removeItem('activeRole');
+        });
+
         isLoggedInVar(false);
-        clearCache();
-        localStorage.clear();
+
         if (alert) addAlert(alert);
-    }, []);
+    };
 
     const [getUserData] = useLazyQuery(GET_ME, {
         onCompleted: (d) => {
@@ -96,38 +80,39 @@ export function LoginContextProvider({ children, clearCache }) {
                     ? 0
                     : localStorage.getItem('activeRoleNumber');
 
-            const campusId = d.me.roles[activeRoleNumber].campuses[0].id;
+            const campusId = d.me.roles[activeRoleNumber]?.campuses[0]?.id ?? null;
 
             const newRole = d.me.roles[activeRoleNumber].units[0]
                 ? {
                       role: d.me.roles[activeRoleNumber].role,
-                      unit: d.me.roles[activeRoleNumber].units[0].id,
-                      unitLabel: d.me.roles[activeRoleNumber].units[0].label
+                      unit: d.me.roles[activeRoleNumber]?.units[0]?.id ?? null,
+                      unitLabel: d.me.roles[activeRoleNumber]?.units[0]?.label ?? null
                   }
                 : { role: d.me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
 
             // PrefetchData for the cache
-            client.query({
-                query: INIT_CACHE,
-                variables: {
-                    campusId,
-                    as: { role: newRole.role, unit: newRole.unit },
-                    cursor: { offset: 0, first: 30 },
-                    filterCreated: { status: STATE_REQUEST.STATE_CREATED.state },
-                    filterTreated: {
-                        status: [
-                            STATE_REQUEST.STATE_CANCELED.state,
-                            STATE_REQUEST.STATE_ACCEPTED.state,
-                            STATE_REQUEST.STATE_MIXED.state,
-                            STATE_REQUEST.STATE_REJECTED.state
-                        ]
+            if (campusId) {
+                client.query({
+                    query: INIT_CACHE,
+                    variables: {
+                        campusId,
+                        as: { role: newRole.role, unit: newRole.unit },
+                        cursor: { offset: 0, first: 30 },
+                        filterCreated: { status: STATE_REQUEST.STATE_CREATED.state },
+                        filterTreated: {
+                            status: [
+                                STATE_REQUEST.STATE_CANCELED.state,
+                                STATE_REQUEST.STATE_ACCEPTED.state,
+                                STATE_REQUEST.STATE_MIXED.state,
+                                STATE_REQUEST.STATE_REJECTED.state
+                            ]
+                        }
                     }
-                }
-            });
-
-            isLoggedInVar(!tokenDuration().expiredToken);
+                });
+            }
             activeRoleCacheVar({ ...newRole });
             campusIdVar(campusId);
+            isLoggedInVar(true);
         },
         onError: () => {
             signOut({
@@ -207,17 +192,15 @@ export function LoginContextProvider({ children, clearCache }) {
      * @param password
      * @param resetToken
      */
-    const signIn = useCallback((email, password, resetToken = null) => {
+    const signIn = (email, password, resetToken = null) => {
         return new Promise((resolve, reject) => {
             try {
-                client
-                    .resetStore()
-                    .then(() => login({ variables: { email, password, token: resetToken } }));
+                login({ variables: { email, password, token: resetToken } });
             } catch {
                 reject();
             }
         });
-    });
+    };
 
     return (
         <LoginContext.Provider
@@ -235,5 +218,9 @@ export function LoginContextProvider({ children, clearCache }) {
 
 LoginContextProvider.propTypes = {
     children: PropTypes.node.isRequired,
-    clearCache: PropTypes.func.isRequired
+    clearCache: PropTypes.func
+};
+
+LoginContextProvider.defaultProps = {
+    clearCache: () => {}
 };

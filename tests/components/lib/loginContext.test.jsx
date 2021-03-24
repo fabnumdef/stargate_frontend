@@ -5,7 +5,8 @@ import preloadAll from 'jest-next-dynamic';
 import { RESET_PASSWORD } from '../../../components/loginForms/ForgotPassForm';
 import { activeRoleCacheVar, isLoggedInVar, typePolicies } from '../../../lib/apollo/cache';
 import { INIT_CACHE } from '../../../lib/apollo/queries';
-import { GET_ME, LOGIN, LoginContextProvider } from '../../../lib/loginContext';
+import { LOGIN, LoginContextProvider } from '../../../lib/loginContext';
+import { GET_ME } from '../../../lib/apollo/queries';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 import { render, screen, waitFor } from '../../../utils/tests/renderApollo';
 
