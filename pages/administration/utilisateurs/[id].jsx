@@ -74,7 +74,7 @@ function EditUser() {
             } = await editUser({ variables: { user, id } });
             if (userId) {
                 addAlert({ message: "L'utilisateur a bien été modifié", severity: 'success' });
-                router.push('/administration/utilisateurs');
+                router.push('/index');
             }
             return null;
         } catch (e) {

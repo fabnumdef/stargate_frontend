@@ -126,7 +126,7 @@ function CreateUser() {
             } = await createUser({ variables: { user } });
             if (id) {
                 addAlert({ message: "L'utilisateur a bien été créé", severity: 'success' });
-                router.push('/administration/utilisateurs');
+                router.push('/index');
             }
             return null;
         } catch (e) {
