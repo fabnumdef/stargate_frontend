@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
-import PageTitle from '../../../components/styled/pageTitle';
+import PageTitle from '../../../components/styled/common/pageTitle';
 import Template from '../../../containers/template';
 import UnitForm from '../../../components/administrationForms/unitForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';

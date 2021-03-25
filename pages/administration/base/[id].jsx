@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import PageTitle from '../../../components/styled/pageTitle';
+import PageTitle from '../../../components/styled/common/pageTitle';
 import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
 import PlaceForm from '../../../components/administrationForms/placeForm';
