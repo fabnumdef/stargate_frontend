@@ -36,42 +36,98 @@ export const VISITOR_STATUS = {
 };
 
 export const ROLES = {
-    ROLE_SUPERADMIN: { role: 'ROLE_SUPERADMIN', label: 'Super Administrateur', shortLabel: 'SA' },
-    ROLE_ADMIN: { role: 'ROLE_ADMIN', label: 'Administrateur', shortLabel: 'A' },
+    ROLE_SUPERADMIN: {
+        role: 'ROLE_SUPERADMIN',
+        label: 'Super Administrateur',
+        shortLabel: 'SA',
+        permission: [
+            '/',
+            '/compte',
+            '/administration',
+            '/administration/base',
+            '/administration/unites',
+            '/administration/utilisateurs'
+        ]
+    },
+    ROLE_ADMIN: {
+        role: 'ROLE_ADMIN',
+        label: 'Administrateur',
+        shortLabel: 'A',
+        permission: [
+            '/',
+            '/compte',
+            '/administration',
+            '/administration/base',
+            '/administration/unites',
+            '/administration/utilisateurs'
+        ]
+    },
     ROLE_UNIT_CORRESPONDENT: {
         role: 'ROLE_UNIT_CORRESPONDENT',
         label: "Correspondant d'unité",
         shortLabel: 'CU',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.VALIDATION.value
+        behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
+        permission: [
+            '/',
+            '/compte',
+            '/mes-demandes',
+            '/nouvelle-demande',
+            '/nouvelle-demande-groupe',
+            '/administration',
+            '/administration/unites',
+            '/administration/utilisateurs'
+        ]
     },
     ROLE_SECURITY_OFFICER: {
         role: 'ROLE_SECURITY_OFFICER',
         label: 'Officier de sécurité',
         shortLabel: 'OS',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.VALIDATION.value
+        behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
+        permission: [
+            '/',
+            '/compte',
+            '/mes-demandes',
+            '/nouvelle-demande',
+            '/nouvelle-demande-groupe',
+            '/administration',
+            '/administration/unites',
+            '/administration/utilisateurs'
+        ]
     },
     ROLE_ACCESS_OFFICE: {
         role: 'ROLE_ACCESS_OFFICE',
         label: 'Bureau des accès',
         shortLabel: 'BA',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.VALIDATION.value
+        behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
+        permission: [
+            '/',
+            '/compte',
+            '/mes-demandes',
+            '/nouvelle-demande',
+            '/nouvelle-demande-groupe',
+            '/administration',
+            '/administration/unites',
+            '/administration/utilisateurs'
+        ]
     },
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
         label: 'Criblage',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value
+        behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
+        permission: ['/', '/compte']
     },
-    ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte' },
-    ROLE_GATEKEEPER: { role: 'ROLE_GATEKEEPER', label: 'Gardien' },
+    ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte', permission: ['/', '/compte'] },
+    ROLE_GATEKEEPER: { role: 'ROLE_GATEKEEPER', label: 'Gardien', permission: ['/', '/compte'] },
     ROLE_OBSERVER: {
         role: 'ROLE_OBSERVER',
         label: 'Observateur',
         workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.INFORMATION.value
+        behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
+        permission: ['/', '/compte']
     }
 };
 

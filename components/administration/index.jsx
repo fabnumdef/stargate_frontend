@@ -92,7 +92,7 @@ function IndexAdministration({
 
     return (
         <>
-            <PageTitle title="Administration" subtitles={subtitles} />
+            <PageTitle subtitles={subtitles}>Administration</PageTitle>
             <Grid container spacing={1} justify="space-between" style={{ margin: '20px 0' }}>
                 <Grid item sm={12} xs={12} md={12} lg={12}>
                     <TextField
