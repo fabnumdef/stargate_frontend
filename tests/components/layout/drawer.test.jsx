@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 
-import Drawer from '../../../components/layout/drawer';
+import Drawer from '../../../components/layout/Drawer';
 import { render, screen, waitFor } from '../../../utils/tests/renderApollo';
 
 import { InMemoryCache } from '@apollo/client/core';
