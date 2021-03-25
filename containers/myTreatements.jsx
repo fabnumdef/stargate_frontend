@@ -8,6 +8,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import { useRouter } from 'next/router';
 
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
@@ -130,9 +131,14 @@ export const LIST_MY_VISITORS = gql`
 
 export default function MyTreatements() {
     const classes = useStyles();
+    const router = useRouter();
 
     const { addAlert } = useSnackBar();
     const { activeRole } = useLogin();
+
+    React.useEffect(() => {
+        router.replace(router.pathname, '/mes-traitements', { shallow: true });
+    }, []);
 
     const [value, setValue] = React.useState(() => {
         try {
