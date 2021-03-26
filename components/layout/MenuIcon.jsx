@@ -13,11 +13,8 @@ import MenuArrow from './MenuArrow';
 import MenuRole from './MenuRole';
 
 const useStyles = makeStyles((theme) => ({
-    yellow: {
+    avatar: {
         backgroundColor: theme.palette.secondary.main
-    },
-    userInfos: {
-        fontWeight: 700
     },
     iconButtonStyle: {
         marginTop: 8
@@ -45,7 +42,7 @@ export default function MenuIcon() {
         <Card elevation={0}>
             <CardHeader
                 avatar={
-                    <Avatar className={classes.yellow}>
+                    <Avatar className={classes.avatar}>
                         {ROLES[activeRoleCache.role].shortLabel}
                     </Avatar>
                 }

@@ -65,6 +65,7 @@ export function LoginContextProvider({ children }) {
     };
 
     const [getUserData] = useLazyQuery(GET_ME, {
+        fetchPolicy: 'network-only',
         onCompleted: (d) => {
             if (!d.me.roles.length) {
                 return signOut({

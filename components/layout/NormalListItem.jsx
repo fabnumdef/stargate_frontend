@@ -25,7 +25,12 @@ const useStyles = makeStyles((theme) => ({
         color: 'inherit'
     },
     nested: {
-        paddingLeft: theme.spacing(4)
+        paddingLeft: theme.spacing(6),
+        paddingRight: theme.spacing(4)
+    },
+    gutters: {
+        paddingLeft: theme.spacing(4),
+        paddingRight: theme.spacing(4)
     }
 }));
 
@@ -49,7 +54,8 @@ export default function NormalListItem({ item, action, pathname, label, child })
         <>
             <ListItem
                 button
-                className={`${isSelected ? classes.selected : ''} ${child ? classes.nested : ''}`}
+                classes={child ? { gutters: classes.nested } : { gutters: classes.gutters }}
+                className={`${isSelected ? classes.selected : ''}`}
                 onClick={handleClick}>
                 <ListItemIcon classes={{ root: classes.icon }}>
                     {React.createElement(item.icon)}

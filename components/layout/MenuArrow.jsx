@@ -5,7 +5,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import BuildIcon from '@material-ui/icons/Build';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import LinkOffOutlinedIcon from '@material-ui/icons/LinkOffOutlined';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -85,7 +85,7 @@ export default function MenuArrow() {
 
                 <MenuItem onClick={() => handleSignOut()}>
                     <ListItemIcon>
-                        <LinkOffOutlinedIcon fontSize="default" />
+                        <ExitToAppIcon fontSize="default" />
                     </ListItemIcon>
                     <ListItemText primary="Déconnexion" />
                 </MenuItem>

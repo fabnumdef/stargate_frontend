@@ -1,0 +1,10 @@
+import React from 'react';
+import SvgIcon from '@material-ui/core/SvgIcon';
+
+export default function MyTreatmentsIcon(props) {
+    return (
+        <SvgIcon {...props}>
+            <path d="M2.16675 0.369995H16.1667C17.2667 0.369995 18.1667 1.27 18.1667 2.37V12.37L12.1667 18.37H2.16675C1.06675 18.37 0.166748 17.47 0.166748 16.37V2.37C0.166748 1.27 1.06675 0.369995 2.16675 0.369995ZM16.1667 11.37V2.37H2.16675V16.37H11.1667V11.37H16.1667ZM9.16675 11.37H4.16675V9.37H9.16675V11.37ZM4.16675 7.37H14.1667V5.37H4.16675V7.37Z" />
+        </SvgIcon>
+    );
+}

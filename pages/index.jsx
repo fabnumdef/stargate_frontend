@@ -21,7 +21,6 @@ function selectLandingComponent(role) {
         case ROLES.ROLE_HOST.role:
             return <MyAccesRequest />;
         case ROLES.ROLE_ADMIN.role:
-            return <UserAdministration />;
         case ROLES.ROLE_SUPERADMIN.role:
             return <UserAdministration />;
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:

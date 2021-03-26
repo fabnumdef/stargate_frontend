@@ -7,16 +7,20 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import DescriptionIcon from '@material-ui/icons/Description';
-import ContactSupportIcon from '@material-ui/icons/ContactSupport';
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
-import PeopleIcon from '@material-ui/icons/People';
+
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { ROLES } from '../../utils/constants/enums';
 import { GET_ACTIVE_ROLE } from '../../lib/apollo/queries';
 import NormalListItem from './NormalListItem';
+
+import DescriptionIcon from '@material-ui/icons/Description';
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import PeopleIcon from '@material-ui/icons/People';
+import TreatmentsIcon from '../icons/MyTreatmentsIcon';
+import MyRequestsIcon from '../icons/MyRequestsIcon';
+import ContactUsIcon from '../icons/ContactUsIcon';
 
 const useStyles = (drawerWidth) =>
     makeStyles((theme) => ({
@@ -30,6 +34,10 @@ const useStyles = (drawerWidth) =>
         },
         appName: {
             width: 200
+        },
+        gutter: {
+            paddingLeft: theme.spacing(4),
+            paddingRight: theme.spacing(4)
         },
         toolBar: {
             minHeight: 64,
@@ -51,11 +59,11 @@ const useStyles = (drawerWidth) =>
     }))();
 
 const menu = [
-    { label: 'index', permission: '/', icon: DescriptionIcon },
+    { label: 'index', permission: '/', icon: TreatmentsIcon },
     {
         label: 'Mes demandes',
         permission: '/mes-demandes',
-        icon: DescriptionIcon
+        icon: MyRequestsIcon
     },
     {
         label: 'Administration',
@@ -75,18 +83,14 @@ const menu = [
 
 function rootNameByRole(role) {
     switch (role) {
-        case ROLES.ROLE_SCREENING.role:
-            return 'Mes traitements';
-        case ROLES.ROLE_GATEKEEPER.role:
-            return 'Mes traitements';
         case ROLES.ROLE_HOST.role:
             return 'Mes demandes';
         case ROLES.ROLE_ADMIN.role:
-            return 'Acceuil';
         case ROLES.ROLE_SUPERADMIN.role:
-            return 'Acceuil';
+            return 'Accueil';
+        case ROLES.ROLE_SCREENING.role:
+        case ROLES.ROLE_GATEKEEPER.role:
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
-            return 'Mes traitements';
         default:
             return 'Mes traitements';
     }
@@ -129,15 +133,15 @@ export default function DrawerTemplate({ drawerWidth }) {
                         )
                 )}
                 <Divider />
-                <ListItem button>
+                <ListItem classes={{ gutters: classes.gutter }} button>
                     <ListItemIcon>
                         <ThumbUpAltIcon />
                     </ListItemIcon>
                     <ListItemText primary="À propos" />
                 </ListItem>
-                <ListItem button>
+                <ListItem classes={{ gutters: classes.gutter }} button>
                     <ListItemIcon>
-                        <ContactSupportIcon />
+                        <ContactUsIcon />
                     </ListItemIcon>
                     <ListItemText primary="Contactez-nous" />
                 </ListItem>

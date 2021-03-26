@@ -116,15 +116,22 @@ export const ROLES = {
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
         label: 'Criblage',
+        shortLabel: 'G',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
         permission: ['/', '/compte']
     },
-    ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte', permission: ['/', '/compte'] },
-    ROLE_GATEKEEPER: { role: 'ROLE_GATEKEEPER', label: 'Gardien', permission: ['/', '/compte'] },
+    ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte', shortLabel: 'H', permission: ['/', '/compte'] },
+    ROLE_GATEKEEPER: {
+        role: 'ROLE_GATEKEEPER',
+        label: 'Gardien',
+        shortLabel: 'G',
+        permission: ['/', '/compte']
+    },
     ROLE_OBSERVER: {
         role: 'ROLE_OBSERVER',
         label: 'Observateur',
+        shortLabel: 'O',
         workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
         permission: ['/', '/compte']
