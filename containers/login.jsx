@@ -31,8 +31,7 @@ const useStyles = makeStyles((theme) => ({
         width: 350
     },
     fieldsStyle: {
-        maxWidth: '70%',
-        marginTop: theme.spacing(3)
+        maxWidth: '70%'
     },
     minArmLogo: {
         width: '97px',
