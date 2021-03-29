@@ -9,7 +9,8 @@ const useStyles = makeStyles(() => ({
     },
     pageTitle: {
         fontSize: '1.75rem',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginBottom: 70
     }
 }));
 
