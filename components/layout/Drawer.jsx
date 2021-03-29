@@ -4,9 +4,6 @@ import { useQuery } from '@apollo/client';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
@@ -132,19 +129,21 @@ export default function DrawerTemplate({ drawerWidth }) {
                             />
                         )
                 )}
-                <Divider />
-                <ListItem classes={{ gutters: classes.gutter }} button>
-                    <ListItemIcon>
-                        <ThumbUpAltIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="À propos" />
-                </ListItem>
-                <ListItem classes={{ gutters: classes.gutter }} button>
-                    <ListItemIcon>
-                        <ContactUsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Contactez-nous" />
-                </ListItem>
+                <Divider variant="middle" />
+                <NormalListItem
+                    item={{ label: 'À propos', permission: '/about', icon: ThumbUpAltIcon }}
+                    action={(permission) => router.push(permission)}
+                    pathname={router.pathname}
+                />
+                <NormalListItem
+                    item={{
+                        label: 'Contactez-nous',
+                        permission: '/contactez-nous',
+                        icon: ContactUsIcon
+                    }}
+                    action={(permission) => router.push(permission)}
+                    pathname={router.pathname}
+                />
             </List>
         </Drawer>
     );

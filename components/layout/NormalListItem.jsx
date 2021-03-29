@@ -54,6 +54,7 @@ export default function NormalListItem({ item, action, pathname, label, child })
         <>
             <ListItem
                 button
+                disableRipple
                 classes={child ? { gutters: classes.nested } : { gutters: classes.gutters }}
                 className={`${isSelected ? classes.selected : ''}`}
                 onClick={handleClick}>

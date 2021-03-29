@@ -20,6 +20,9 @@ const palette = {
     },
     background: {
         default: '#ffffff'
+    },
+    common: {
+        white: '#ffffff'
     }
 };
 

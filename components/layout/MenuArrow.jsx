@@ -10,6 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import { useLogin } from '../../lib/loginContext';
+import Divider from '@material-ui/core/Divider';
 
 export const StyledMenu = withStyles({
     paper: {
@@ -75,14 +76,14 @@ export default function MenuArrow() {
                     </ListItemIcon>
                     <ListItemText title="myAccount" primary="Mon compte" />
                 </MenuItem>
-
+                <Divider variant="middle" />
                 <MenuItem>
                     <ListItemIcon>
                         <BuildIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Paramétrer" />
                 </MenuItem>
-
+                <Divider variant="middle" />
                 <MenuItem onClick={() => handleSignOut()}>
                     <ListItemIcon>
                         <ExitToAppIcon fontSize="default" />
