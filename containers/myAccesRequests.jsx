@@ -6,7 +6,9 @@ import SelectedBadge from '../components/styled/common/TabBadge';
 import Tabs from '@material-ui/core/Tabs';
 import AntTab from '../components/styled/common/Tab';
 
-import { TabPanel, TabMesDemandesToTreat, TabDemandesProgress } from '../components';
+import { TabPanel, TabMesDemandesToTreat } from '../components';
+import TableRequestsProgress from '../components/tables/TableRequestsProgress';
+
 import PageTitle from '../components/styled/common/pageTitle';
 import RoundButton from '../components/styled/common/roundButton';
 
@@ -15,6 +17,9 @@ import { STATE_REQUEST } from '../utils/constants/enums';
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%'
+    },
+    tabs: {
+        marginBottom: '30px'
     },
     tab: {
         '& .MuiBox-root': {
@@ -158,9 +163,10 @@ export default function MyRequestAcces() {
                 indicatorColor="primary"
                 value={value}
                 onChange={handleChange}
+                className={classes.tabs}
                 variant="scrollable"
                 scrollButtons="off"
-                aria-label="simple tabs example">
+                aria-label="tabs my requests">
                 {tabList.map((tab) => (
                     <AntTab
                         label={
@@ -180,7 +186,10 @@ export default function MyRequestAcces() {
             </Tabs>
 
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                <TabDemandesProgress request={data.getCampus.progress.list} emptyLabel="en cours" />
+                <TableRequestsProgress
+                    request={data.getCampus.progress.list}
+                    emptyLabel="en cours"
+                />
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
