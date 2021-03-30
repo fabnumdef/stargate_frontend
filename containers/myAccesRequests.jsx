@@ -13,6 +13,7 @@ import PageTitle from '../components/styled/common/pageTitle';
 import RoundButton from '../components/styled/common/roundButton';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
+import useRequest from '../lib/hooks/useRequest';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -105,7 +106,6 @@ export const LIST_MY_REQUESTS = gql`
 
 export default function MyRequestAcces() {
     const classes = useStyles();
-    const [value, setValue] = useState(0);
 
     const { data, loading } = useQuery(LIST_MY_REQUESTS, {
         variables: {
@@ -125,6 +125,8 @@ export default function MyRequestAcces() {
         }
     });
 
+    const { deleteRequest } = useRequest();
+
     const tabList = [
         {
             index: 0,
@@ -138,8 +140,14 @@ export default function MyRequestAcces() {
         }
     ];
 
+    const [value, setValue] = useState(0);
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
+    };
+
+    const handleDelete = (id) => {
+        deleteRequest(id);
     };
 
     if (loading) {
@@ -189,6 +197,7 @@ export default function MyRequestAcces() {
                 <TableRequestsProgress
                     request={data.getCampus.progress.list}
                     emptyLabel="en cours"
+                    onDelete={handleDelete}
                 />
             </TabPanel>
 
