@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 import WarningIcon from '@material-ui/icons/Warning';
 import TableContainer from '@material-ui/core/TableContainer';
 
-import CustomTableHeader from '../../styled/customTableCellHeader';
+import CustomTableHeader from '../../tables/cells/TableCellHeader';
 import CustomCheckbox from '../../styled/customCheckbox';
 import { useLogin } from '../../../lib/loginContext';
 import { EMPLOYEE_TYPE, ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
