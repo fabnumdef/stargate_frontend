@@ -24,7 +24,7 @@ export default function CustomBadge({ select, children }) {
 
 CustomBadge.propTypes = {
     select: PropTypes.bool,
-    children: PropTypes.element.isRequired
+    children: PropTypes.number.isRequired
 };
 CustomBadge.defaultProps = {
     select: false
