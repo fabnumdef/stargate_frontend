@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 
+import { useRouter } from 'next/router';
 import TableCell from '@material-ui/core/TableCell';
+
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-
-import IconButton from '@material-ui/core/IconButton';
-
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import SquareButton from '../../styled/common/squareButton';
+import DeleteRequestCell from '../cells/DeleteCell';
 
 const StyledRow = withStyles((theme) => ({
     root: {
@@ -22,15 +23,6 @@ const StyledRow = withStyles((theme) => ({
         }
     }
 }))(TableRow);
-
-const SquireButton = withStyles(() => ({
-    root: {
-        color: 'inherit',
-        lineBreak: 'pre-line',
-        borderRadius: '15%',
-        padding: '8px'
-    }
-}))(IconButton);
 
 const useStyles = makeStyles((theme) => ({
     cells: {
@@ -56,9 +48,28 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function RowTreatments({ columns, row }) {
+function RowTreatments({ columns, row, onDelete }) {
+    const router = useRouter();
     const classes = useStyles();
+
     const [hover, setHover] = useState(false);
+    const [deletion, setDeletion] = useState(false);
+
+    if (deletion)
+        return (
+            <StyledRow
+                hover
+                onMouseOver={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}>
+                <DeleteRequestCell
+                    id={row.id}
+                    length={columns.length}
+                    abort={() => setDeletion(false)}
+                    onDelete={onDelete}
+                />
+            </StyledRow>
+        );
+
     return (
         <StyledRow hover onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             {columns.map((column) => {
@@ -67,16 +78,18 @@ function RowTreatments({ columns, row }) {
                     case 'action':
                         return (
                             <TableCell className={classes.cells} key={column.id}>
-                                <SquireButton
+                                <SquareButton
+                                    onClick={() => router.push(`/demandes/en-cours/${row.id}`)}
                                     classes={{ root: classes.icon }}
                                     className={hover ? '' : classes.actionNotHover}>
                                     <DescriptionOutlinedIcon />
-                                </SquireButton>
-                                <SquireButton
+                                </SquareButton>
+                                <SquareButton
+                                    onClick={() => setDeletion(true)}
                                     classes={{ root: classes.icon }}
                                     className={hover ? '' : classes.actionNotHover}>
                                     <DeleteOutlineIcon />
-                                </SquireButton>
+                                </SquareButton>
                             </TableCell>
                         );
                     default:
@@ -97,5 +110,6 @@ export default RowTreatments;
 
 RowTreatments.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-    row: PropTypes.object.isRequired
+    row: PropTypes.object.isRequired,
+    onDelete: PropTypes.func.isRequired
 };

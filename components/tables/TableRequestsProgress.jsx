@@ -52,7 +52,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function TabMyRequestToTreat({ request, emptyLabel }) {
+export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
     const classes = useStyles();
 
     const rows = React.useMemo(
@@ -65,7 +65,6 @@ export default function TabMyRequestToTreat({ request, emptyLabel }) {
     );
 
     return request.length > 0 ? (
-        // <div style={{ overflow: 'hidden' }}>
         <Table aria-label="sticky table" size="small" className={classes.table}>
             <TableHead>
                 <TableRow>
@@ -79,17 +78,22 @@ export default function TabMyRequestToTreat({ request, emptyLabel }) {
 
             <TableBody>
                 {rows.map((row) => (
-                    <RowRequests key={row.id} row={row} columns={columns} />
+                    <RowRequests
+                        key={row.id}
+                        row={row}
+                        columns={columns}
+                        onDelete={() => onDelete(row.id)}
+                    />
                 ))}
             </TableBody>
         </Table>
     ) : (
-        // </div>
         <EmptyArray type={emptyLabel} />
     );
 }
 
 TabMyRequestToTreat.propTypes = {
     request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    emptyLabel: PropTypes.string.isRequired
+    emptyLabel: PropTypes.string.isRequired,
+    onDelete: PropTypes.func.isRequired
 };
