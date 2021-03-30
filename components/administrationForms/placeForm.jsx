@@ -15,7 +15,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import CustomTableHeader from '../styled/customTableCellHeader';
+import CustomTableHeader from '../tables/cells/TableCellHeader';
 
 const useStyles = makeStyles((theme) => ({
     placesContainer: {

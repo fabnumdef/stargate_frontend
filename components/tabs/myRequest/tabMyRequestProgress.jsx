@@ -21,7 +21,7 @@ import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import TableContainer from '@material-ui/core/TableContainer';
 import EmptyArray from '../../styled/emptyArray';
-import CustomTableCellHeader from '../../styled/customTableCellHeader';
+import CustomTableCellHeader from '../../tables/cells/TableCellHeader';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 
 const CANCEL_REQUEST = gql`

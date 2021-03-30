@@ -17,7 +17,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import { useRouter } from 'next/router';
 import TableContainer from '@material-ui/core/TableContainer';
 import { useLogin } from '../../../lib/loginContext';
-import CustomTableHeader from '../../styled/customTableCellHeader';
+import CustomTableHeader from '../../tables/cells/TableCellHeader';
 import VisitorGrid from '../../styled/visitor';
 
 import { EMPLOYEE_TYPE, ROLES } from '../../../utils/constants/enums';
