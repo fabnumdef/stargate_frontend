@@ -17,7 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import classNames from 'classnames';
-import CustomTableHeader from '../styled/customTableCellHeader';
+import CustomTableHeader from '../tables/cells/TableCellHeader';
 
 import { tableSort, getComparator } from '../../utils/mappers/sortArrays';
 

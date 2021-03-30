@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
-import CustomTableCell from '../../styled/customTableCellHeader';
+import CustomTableCell from '../../tables/cells/TableCellHeader';
 import VisitorGrid from '../../styled/visitor';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';

@@ -15,7 +15,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import TableContainer from '@material-ui/core/TableContainer';
 
-import CustomTableCell from '../../styled/customTableCellHeader';
+import CustomTableCell from '../../tables/cells/TableCellHeader';
 import VisitorGrid from '../../styled/visitor';
 
 import { EMPLOYEE_TYPE, STATE_REQUEST, VISITOR_STATUS } from '../../../utils/constants/enums';

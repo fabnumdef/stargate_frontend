@@ -16,7 +16,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
-import CustomTableCellHeader from '../../styled/customTableCellHeader';
+import CustomTableCellHeader from '../../tables/cells/TableCellHeader';
 
 import EmptyArray from '../../styled/emptyArray';
 
