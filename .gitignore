@@ -10,3 +10,4 @@ flow-typed/
 .vscode/
 
 .DS_Store
+.idea

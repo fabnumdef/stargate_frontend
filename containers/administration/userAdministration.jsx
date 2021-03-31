@@ -18,9 +18,17 @@ const GET_USERS_LIST = gql`
         $cursor: OffsetCursor
         $filters: UserFilters
         $hasRole: HasRoleInput
+        $campus: String
         $search: String
     ) {
-        listUsers(cursor: $cursor, filters: $filters, hasRole: $hasRole, search: $search) {
+        campusId @client @export(as: "campus")
+        listUsers(
+            cursor: $cursor
+            filters: $filters
+            hasRole: $hasRole
+            campus: $campus
+            search: $search
+        ) {
             meta {
                 offset
                 first
