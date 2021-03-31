@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ApolloProvider } from '@apollo/client';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import { isLoggedInVar, restoreActiveRoleCacheVar, restoreCampusIdVar } from '..
 import { SnackBarProvider } from '../lib/hooks/snackbar';
 import theme from '../styles/theme';
 import { tokenDuration } from '../utils';
+import Layout from '../components/layout';
 
 /**
  * @component
@@ -25,7 +26,7 @@ export default function App({ Component, pageProps }) {
 
     const [ready, setReady] = useState(false);
 
-    const persister = useApolloPersist();
+    useApolloPersist();
 
     useEffect(() => {
         /** Remove the server-side injected CSS. */
@@ -44,32 +45,24 @@ export default function App({ Component, pageProps }) {
         restoreReactiveVars();
     }, []);
 
-    /** handler to clear the application's cache */
-    const clearCache = useCallback(() => {
-        if (!persister) {
-            return;
-        }
-        persister.purge();
-    }, [persister]);
-
-    if (!ready) {
-        return '';
-    }
+    if (!ready) return '';
 
     return (
         <ApolloProvider client={apolloClient}>
+            <Head>
+                <title>Stargate</title>
+                <meta
+                    name="viewport"
+                    content="minimum-scale=1, initial-scale=1, width=device-width"
+                />
+            </Head>
             <ThemeProvider theme={theme}>
                 <SnackBarProvider>
-                    <LoginContextProvider clearCache={clearCache}>
-                        <Head>
-                            <title>Stargate</title>
-                            <meta
-                                name="viewport"
-                                content="minimum-scale=1, initial-scale=1, width=device-width"
-                            />
-                        </Head>
+                    <LoginContextProvider>
                         <CssBaseline />
-                        <Component {...pageProps} />
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
                     </LoginContextProvider>
                 </SnackBarProvider>
             </ThemeProvider>

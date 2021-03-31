@@ -7,7 +7,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import Template from '../../containers/template';
 import PageTitle from '../styled/common/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
@@ -92,8 +91,8 @@ function IndexAdministration({
     };
 
     return (
-        <Template>
-            <PageTitle title="Administration" subtitles={subtitles} />
+        <>
+            <PageTitle subtitles={subtitles}>Administration</PageTitle>
             <Grid container spacing={1} justify="space-between" style={{ margin: '20px 0' }}>
                 <Grid item sm={12} xs={12} md={12} lg={12}>
                     <TextField
@@ -132,7 +131,7 @@ function IndexAdministration({
                     />
                 </Grid>
             </Grid>
-        </Template>
+        </>
     );
 }
 

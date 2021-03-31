@@ -1,14 +1,37 @@
 import React from 'react';
-import { Home } from '../containers';
+import dynamic from 'next/dynamic';
 
-function MyRequestsPage() {
-    // TODO check profile and load the good container
+import { ROLES } from '../utils/constants/enums';
+import { useLogin } from '../lib/loginContext';
 
-    return (
-        <>
-            <Home />
-        </>
-    );
+const MyTreatements = dynamic(() => import('../containers/myTreatements'));
+const MyAccesRequest = dynamic(() => import('../containers/myAccesRequests'));
+const ScreeningManagement = dynamic(() => import('../containers/screeningManagement'));
+const UserAdministration = dynamic(() => import('../containers/administration/userAdministration'));
+const GatekeeperManagement = dynamic(() => import('../containers/gatekeeperManagement'));
+
+// @todo : dynamic import
+
+function selectLandingComponent(role) {
+    switch (role) {
+        case ROLES.ROLE_SCREENING.role:
+            return <ScreeningManagement />;
+        case ROLES.ROLE_GATEKEEPER.role:
+            return <GatekeeperManagement />;
+        case ROLES.ROLE_HOST.role:
+            return <MyAccesRequest />;
+        case ROLES.ROLE_ADMIN.role:
+        case ROLES.ROLE_SUPERADMIN.role:
+            return <UserAdministration />;
+        case ROLES.ROLE_UNIT_CORRESPONDENT.role:
+            return <MyTreatements />;
+        default:
+            return 'NO ACCESS';
+    }
 }
 
-export default MyRequestsPage;
+export default function Home() {
+    const { activeRole } = useLogin();
+
+    return selectLandingComponent(activeRole.role);
+}
