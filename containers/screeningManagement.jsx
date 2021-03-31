@@ -55,6 +55,8 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
+const CSV_REGEX = /[êëîïç\- ]/gi;
+
 function csvName() {
     const date = new Date(Date.now());
     const options = {
@@ -62,17 +64,8 @@ function csvName() {
         month: '2-digit',
         day: '2-digit'
     };
-    const titleCsv = `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
-    return titleCsv;
+    return `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
 }
-
-const csvHeaders = [
-    { label: 'Nom de N.', key: 'vBirthName', fullLabel: 'Nom de Naissance' },
-    { label: 'Prénom', key: 'vFirstName' },
-    { label: 'Date de N.', key: 'vBirthDate', fullLabel: 'Date de Naissance' },
-    { label: 'Lieu de N.', key: 'vBirthPlace', fullLabel: 'Lieu de Naissance' },
-    { label: 'Nationalité', key: 'vNationality' }
-];
 
 function createData(
     {
@@ -191,10 +184,7 @@ export default function ScreeningManagement() {
         setVisitors(
             data.getCampus.listVisitorsToValidate.list.reduce((acc, dem) => {
                 acc.push(createData(dem, activeRole));
-                const activeVisitors = acc.filter(
-                    (visitor) => visitor.screening.step === ACTIVE_STEP_STATUS
-                );
-                return activeVisitors;
+                return acc.filter((visitor) => visitor.screening.step === ACTIVE_STEP_STATUS);
             }, [])
         );
     }, [data]);
@@ -248,16 +238,29 @@ export default function ScreeningManagement() {
         handleFetchMore();
     }, [page, rowsPerPage]);
 
+    const formatCsvData = (value) => {
+        switch (value) {
+            case 'ê':
+            case 'ë':
+                return 'e';
+            case 'î':
+            case 'ï':
+                return 'i';
+            case 'ç':
+                return 'c';
+            default:
+                return '';
+        }
+    };
+
     const csvData = () =>
         visitors
             .filter((visitor) => visitor.screening.step === 'activeSteps')
-            .map((visitor) => ({
-                vBirthName: visitor.birthLastname.toUpperCase(),
-                vBirthDate: visitor.birthday,
-                vBirthPlace: visitor.birthplace.toUpperCase(),
-                vFirstName: visitor.firstname.toUpperCase(),
-                vNationality: visitor.nationality.toUpperCase()
-            }));
+            .map((visitor) => [
+                visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+                visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+                visitor.birthday.trim()
+            ]);
 
     const submitForm = async () => {
         await Promise.all(
@@ -325,7 +328,6 @@ export default function ScreeningManagement() {
                                                 className={classes.linkCsv}
                                                 data={csvData()}
                                                 separator=";"
-                                                headers={csvHeaders}
                                                 filename={csvName()}>
                                                 <Button
                                                     size="small"
