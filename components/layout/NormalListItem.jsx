@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 import { ROLES } from '../../utils/constants/enums';
@@ -14,12 +13,31 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        color: theme.palette.common.grey,
+        '&:hover': {
+            color: theme.palette.primary.main,
+            backgroundColor: theme.palette.common.white
+        }
+    },
+    font: {
+        fontWeight: '500'
+    },
     selected: {
         color: theme.palette.primary.main,
+        backgroundColor: theme.palette.common.white,
         '&:hover': {
             color: theme.palette.primary.dark,
-            backgroundColor: fade(theme.palette.primary.light, 0.15)
+            backgroundColor: theme.palette.common.white
         }
+    },
+    selectItem: {
+        marginLeft: '-19px',
+        marginRight: '19px'
+    },
+    selectIcon: {
+        borderLeft: `3px solid ${theme.palette.primary.main}`,
+        marginRight: '17px'
     },
     icon: {
         color: 'inherit'
@@ -55,13 +73,23 @@ export default function NormalListItem({ item, action, pathname, label, child })
             <ListItem
                 button
                 disableRipple
-                classes={child ? { gutters: classes.nested } : { gutters: classes.gutters }}
+                classes={{
+                    root: classes.root,
+                    gutters: child ? classes.nested : classes.gutters
+                }}
                 className={`${isSelected ? classes.selected : ''}`}
                 onClick={handleClick}>
-                <ListItemIcon classes={{ root: classes.icon }}>
+                <ListItemIcon
+                    classes={{ root: classes.icon }}
+                    className={isSelected && !child ? classes.selectItem : ''}>
+                    {isSelected && !child && <div className={classes.selectIcon} />}
                     {React.createElement(item.icon)}
                 </ListItemIcon>
-                <ListItemText primary={label || item.label} />
+                <ListItemText
+                    disableTypography
+                    classes={{ root: classes.font }}
+                    primary={label || item.label}
+                />
                 {(() => {
                     if (!item?.subItems?.length > 0) return;
                     return open ? <ExpandLess /> : <ExpandMore />;
@@ -78,6 +106,7 @@ export default function NormalListItem({ item, action, pathname, label, child })
                                     <NormalListItem
                                         key={subItem.label}
                                         item={subItem}
+                                        pathname={pathname}
                                         action={(permission) => action(permission)}
                                         child
                                     />
