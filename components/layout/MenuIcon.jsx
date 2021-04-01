@@ -2,8 +2,7 @@ import React from 'react';
 // Import Material
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useQuery } from '@apollo/client';
-import { GET_ACTIVE_ROLE, GET_ME } from '../../lib/apollo/queries';
+import { gql, useQuery } from '@apollo/client';
 import Avatar from '@material-ui/core/Avatar';
 import { ROLES } from '../../utils/constants/enums/index';
 import Card from '@material-ui/core/Card';
@@ -14,27 +13,49 @@ import MenuRole from './MenuRole';
 
 const useStyles = makeStyles((theme) => ({
     avatar: {
-        backgroundColor: theme.palette.secondary.main
+        backgroundColor: theme.palette.common.yellow,
+        color: 'inherit'
     },
     iconButtonStyle: {
-        marginTop: 8
+        margin: '5px 4px 0 4px'
     }
 }));
+
+export const GET_MENU_ICON = gql`
+    query getMenu {
+        activeRoleCache @client {
+            role
+            unit
+            unitLabel
+        }
+        me {
+            id
+            firstname
+            lastname
+            roles {
+                role
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
+            email {
+                original
+            }
+        }
+    }
+`;
 
 export default function MenuIcon() {
     const classes = useStyles();
 
-    const {
-        loading: l1,
-        data: { me }
-    } = useQuery(GET_ME);
+    const { loading, data } = useQuery(GET_MENU_ICON);
 
-    const {
-        loading: l2,
-        data: { activeRoleCache }
-    } = useQuery(GET_ACTIVE_ROLE);
-
-    if (l1 || l2) {
+    if (loading) {
         return '';
     }
 
@@ -43,19 +64,22 @@ export default function MenuIcon() {
             <CardHeader
                 avatar={
                     <Avatar className={classes.avatar}>
-                        {ROLES[activeRoleCache.role].shortLabel}
+                        <Typography component="h6" variant="subtitle2">
+                            {ROLES[data.activeRoleCache.role].shortLabel}
+                        </Typography>
                     </Avatar>
                 }
                 action={
                     <>
                         <MenuArrow />
-                        {me.roles.length > 1 && <MenuRole roles={me.roles} />}
+                        {data.me.roles.length > 1 && <MenuRole roles={data.me.roles} />}
                     </>
                 }
                 title={
-                    <Typography component="h6" variant="h6">
-                        {`${me.rank ? me.rank + ' ' : ''}${me.firstname} ${me.lastname}
-                        ${activeRoleCache.unitLabel ? ` - ${activeRoleCache.unitLabel}` : ''}`}
+                    <Typography component="h6" variant="subtitle2">
+                        {`${data.me.rank ? data.me.rank + ' ' : ''}${data.me.firstname} ${
+                            data.me.lastname
+                        }`}
                     </Typography>
                 }
             />

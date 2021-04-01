@@ -34,9 +34,19 @@ export const StyledMenu = withStyles({
     />
 ));
 
+const StyledMenuItem = withStyles((theme) => ({
+    root: {
+        '&:focus': {
+            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+                color: theme.palette.primary.main
+            }
+        }
+    }
+}))(MenuItem);
+
 const useStyles = makeStyles(() => ({
     iconButtonStyle: {
-        marginTop: 8
+        margin: '14px 4px 0 4px'
     }
 }));
 
@@ -58,38 +68,37 @@ export default function MenuArrow() {
 
     return (
         <>
-            <IconButton
-                className={classes.iconButtonStyle}
-                aria-label="settings"
-                onClick={handleOpenMenu}>
-                <ExpandMoreIcon />
-            </IconButton>
+            <div className={classes.iconButtonStyle}>
+                <IconButton aria-label="settings" size="small" onClick={handleOpenMenu}>
+                    <ExpandMoreIcon />
+                </IconButton>
+            </div>
             <StyledMenu
                 id="customized-menu"
                 anchorEl={anchorEl}
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}>
-                <MenuItem>
+                <StyledMenuItem>
                     <ListItemIcon>
                         <AccountCircleIcon fontSize="default" />
                     </ListItemIcon>
                     <ListItemText title="myAccount" primary="Mon compte" />
-                </MenuItem>
+                </StyledMenuItem>
                 <Divider variant="middle" />
-                <MenuItem>
+                <StyledMenuItem>
                     <ListItemIcon>
                         <BuildIcon fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Paramétrer" />
-                </MenuItem>
+                </StyledMenuItem>
                 <Divider variant="middle" />
-                <MenuItem onClick={() => handleSignOut()}>
+                <StyledMenuItem onClick={() => handleSignOut()}>
                     <ListItemIcon>
                         <ExitToAppIcon fontSize="default" />
                     </ListItemIcon>
                     <ListItemText primary="Déconnexion" />
-                </MenuItem>
+                </StyledMenuItem>
             </StyledMenu>
         </>
     );

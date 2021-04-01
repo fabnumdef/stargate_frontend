@@ -15,7 +15,7 @@ import { ROLES } from '../../utils/constants/enums/index';
 
 const useStyles = makeStyles(() => ({
     iconButtonStyle: {
-        marginTop: 8
+        margin: '14px 4px 0 4px'
     }
 }));
 
@@ -48,6 +48,7 @@ export default function MenuRole({ roles }) {
     return (
         <>
             <IconButton
+                size="small"
                 className={classes.iconButtonStyle}
                 aria-label="roles"
                 onClick={handleOpenMenu}>
