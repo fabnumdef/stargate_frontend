@@ -105,20 +105,6 @@ const menu = [
         ],
         permission: '/administration',
         icon: DescriptionIcon
-    },
-    {
-        label: 'Administration',
-        subItems: [
-            { label: 'Unité', permission: '/administration/unites', icon: DescriptionIcon },
-            { label: 'Base', permission: '/administration/base', icon: DescriptionIcon },
-            {
-                label: 'Utilisateurs',
-                permission: '/administration/utilisateurs',
-                icon: PeopleIcon
-            }
-        ],
-        permission: '/administration',
-        icon: DescriptionIcon
     }
 ];
 

@@ -36,7 +36,7 @@ export default function useRequest() {
                     }
                 });
 
-                const newList = campus.listMyRequest.list.filter((r) => r.id !== id);
+                const newList = campus.listMyRequests.list.filter((r) => r.id !== id);
 
                 const updatedList = {
                     ...campus,

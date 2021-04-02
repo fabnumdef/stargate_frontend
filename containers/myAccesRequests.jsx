@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
 import SelectedBadge from '../components/styled/common/TabBadge';
 import Tabs from '@material-ui/core/Tabs';
 import AntTab from '../components/styled/common/Tab';
 
-import { TabPanel, TabMesDemandesToTreat } from '../components';
+import TabPanel from '../components/styled/tabpanel';
 import TableRequestsProgress from '../components/tables/TableRequestsProgress';
 
 import PageTitle from '../components/styled/common/pageTitle';
-import RoundButton from '../components/styled/common/roundButton';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
 import useRequest from '../lib/hooks/useRequest';
+import { LIST_MY_REQUESTS } from '../lib/apollo/queries';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,66 +43,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 20
     }
 }));
-
-export const LIST_MY_REQUESTS = gql`
-    query listMyRequests(
-        $campusId: String!
-        $cursor: OffsetCursor!
-        $filtersP: RequestFilters!
-        $filtersT: RequestFilters!
-    ) {
-        campusId @client @export(as: "campusId")
-        getCampus(id: $campusId) {
-            id
-            progress: listMyRequests(filters: $filtersP, cursor: $cursor) {
-                list {
-                    id
-                    from
-                    to
-                    reason
-                    status
-                    places {
-                        id
-                        label
-                    }
-                    owner {
-                        firstname
-                        lastname
-                        unit {
-                            label
-                        }
-                    }
-                }
-                meta {
-                    total
-                }
-            }
-            treated: listMyRequests(filters: $filtersT, cursor: $cursor) {
-                list {
-                    id
-                    from
-                    to
-                    reason
-                    status
-                    places {
-                        id
-                        label
-                    }
-                    owner {
-                        firstname
-                        lastname
-                        unit {
-                            label
-                        }
-                    }
-                }
-                meta {
-                    total
-                }
-            }
-        }
-    }
-`;
 
 export default function MyRequestAcces() {
     const classes = useStyles();
@@ -158,13 +98,6 @@ export default function MyRequestAcces() {
         <div className={classes.paper}>
             <div className={classes.title}>
                 <PageTitle>Mes demandes</PageTitle>
-                <RoundButton
-                    size="large"
-                    color="primary"
-                    variant="outlined"
-                    className={classes.buttonNew}>
-                    Créer une nouvelle demande
-                </RoundButton>
             </div>
             {/** Tabulator  */}
             <Tabs
@@ -202,10 +135,11 @@ export default function MyRequestAcces() {
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-                <TabMesDemandesToTreat
-                    requests={data.getCampus.treated.list}
-                    detailLink="traitees"
-                    emptyLabel="finalisée"
+                {/* @todo to replace by treated */}
+                <TableRequestsProgress
+                    request={data.getCampus.progress.list}
+                    emptyLabel="en cours"
+                    onDelete={handleDelete}
                 />
             </TabPanel>
         </div>
