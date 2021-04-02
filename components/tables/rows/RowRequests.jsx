@@ -53,7 +53,6 @@ function RowTreatments({ columns, row, onDelete }) {
 
     const [hover, setHover] = useState(false);
 
-    console.log(hover);
     return (
         <>
             <StyledRow
