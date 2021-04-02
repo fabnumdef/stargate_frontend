@@ -38,11 +38,6 @@ const useStyles = makeStyles((theme) => ({
         width: '97px',
         height: '86px'
     },
-    fabNumLogo: {
-        width: '133px',
-        height: '56px',
-        marginLeft: theme.spacing(4)
-    },
     gridLogos: {
         bottom: 40,
         position: 'absolute',
@@ -81,13 +76,7 @@ function LoginPage() {
                     <RenderLogin />
                     <div className={classes.gridLogos}>
                         <img
-                            className={classes.minArmLogo}
-                            src="/img/logoMinArm.jpg"
-                            alt="Logo du ministère des armées"
-                        />
-                        <img
-                            className={classes.fabNumLogo}
-                            src="/img/logo-fabrique-numerique.png"
+                            src="/img/logo-fabrique-numerique.svg"
                             alt="Logo de la fabrique numérique"
                         />
                     </div>

@@ -22,7 +22,9 @@ const palette = {
         default: '#ffffff'
     },
     common: {
-        white: '#ffffff'
+        white: '#ffffff',
+        yellow: '#FDD835',
+        grey: 'rgba(0, 0, 0,0.25)'
     }
 };
 
@@ -31,6 +33,7 @@ const theme = createMuiTheme(
     {
         typography: {
             fontFamily: [
+                'Marianne',
                 '-apple-system',
                 'BlinkMacSystemFont',
                 '"Lato"',
