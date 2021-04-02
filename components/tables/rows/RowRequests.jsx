@@ -7,9 +7,8 @@ import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import SquareButton from '../../styled/common/squareButton';
-import DeleteRequestCell from '../cells/DeleteCell';
+import DeleteModal from '../../styled/common/DeleteDialogs';
 
 const StyledRow = withStyles((theme) => ({
     root: {
@@ -53,56 +52,47 @@ function RowTreatments({ columns, row, onDelete }) {
     const classes = useStyles();
 
     const [hover, setHover] = useState(false);
-    const [deletion, setDeletion] = useState(false);
 
-    if (deletion)
-        return (
+    console.log(hover);
+    return (
+        <>
             <StyledRow
                 hover
+                key={row.id}
                 onMouseOver={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}>
-                <DeleteRequestCell
-                    id={row.id}
-                    length={columns.length}
-                    abort={() => setDeletion(false)}
-                    onDelete={onDelete}
-                />
+                {columns.map((column) => {
+                    const value = row[column.id];
+                    switch (column.id) {
+                        case 'action':
+                            return (
+                                <TableCell className={classes.cells} key={`${row.id} action`}>
+                                    <SquareButton
+                                        onClick={() => router.push(`/demandes/en-cours/${row.id}`)}
+                                        classes={{ root: classes.icon }}
+                                        className={hover ? '' : classes.actionNotHover}>
+                                        <DescriptionOutlinedIcon />
+                                    </SquareButton>
+                                    <DeleteModal
+                                        hover={hover}
+                                        id={row.id}
+                                        onDelete={onDelete}
+                                        title="Suppression d'une demande"
+                                    />
+                                </TableCell>
+                            );
+                        default:
+                            return (
+                                <TableCell className={classes.cells} key={`${row.id} ${value}`}>
+                                    {column.format && typeof value === 'number'
+                                        ? column.format(value)
+                                        : value}
+                                </TableCell>
+                            );
+                    }
+                })}
             </StyledRow>
-        );
-
-    return (
-        <StyledRow hover onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-            {columns.map((column) => {
-                const value = row[column.id];
-                switch (column.id) {
-                    case 'action':
-                        return (
-                            <TableCell className={classes.cells} key={column.id}>
-                                <SquareButton
-                                    onClick={() => router.push(`/demandes/en-cours/${row.id}`)}
-                                    classes={{ root: classes.icon }}
-                                    className={hover ? '' : classes.actionNotHover}>
-                                    <DescriptionOutlinedIcon />
-                                </SquareButton>
-                                <SquareButton
-                                    onClick={() => setDeletion(true)}
-                                    classes={{ root: classes.icon }}
-                                    className={hover ? '' : classes.actionNotHover}>
-                                    <DeleteOutlineIcon />
-                                </SquareButton>
-                            </TableCell>
-                        );
-                    default:
-                        return (
-                            <TableCell className={classes.cells} key={column.id}>
-                                {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                            </TableCell>
-                        );
-                }
-            })}
-        </StyledRow>
+        </>
     );
 }
 
