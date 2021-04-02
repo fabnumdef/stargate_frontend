@@ -19,11 +19,14 @@ const palette = {
         main: red.A400
     },
     background: {
-        default: '#ffffff'
+        default: '#ffffff',
+        layout: '#F7F8FF',
+        layoutDark: '#E1E7FC'
     },
     common: {
         white: '#ffffff',
         yellow: '#FDD835',
+        purple: '#A4ABFF',
         grey: 'rgba(0, 0, 0,0.25)'
     }
 };
@@ -43,6 +46,16 @@ const theme = createMuiTheme(
                 'sans-serif',
                 '"Apple Color Emoji"'
             ].join(',')
+        },
+        overrides: {
+            MuiCssBaseline: {
+                '@global': {
+                    ul: {
+                        padding: 0,
+                        margin: 0
+                    }
+                }
+            }
         },
         palette
     },
