@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import EmptyArray from '../styled/emptyArray';
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowRequests from './rows/RowRequests';
+import DeleteModal from '../styled/common/DeleteDialogs';
 
 const columns = [
     { id: 'id', label: '#N°' },
@@ -22,8 +23,13 @@ const columns = [
         }
     },
     { id: 'reason', label: 'Motif' },
-    { id: 'places', label: 'Lieu' },
-    { id: 'action', label: '' }
+    {
+        id: 'action',
+        label: '',
+        style: {
+            width: 140
+        }
+    }
 ];
 
 function createData({ id, from, to, places, reason }) {
@@ -36,7 +42,7 @@ function createData({ id, from, to, places, reason }) {
             if (index === places.length - 1) return `${place.label}.`;
             return `${place.label}, `;
         }),
-        reason
+        reason: reason.repeat(40)
     };
 }
 
@@ -45,7 +51,7 @@ const useStyles = makeStyles({
         // marginTop: '-19px',
         // borderSpacing: ' 0 19px',
         // borderCollapse: 'separate',
-        backgroundColor: '#F3F3F3'
+        // backgroundColor: '#F3F3F3'
     },
     head: {
         padding: '12px 12px 12px 12px;'
@@ -54,6 +60,8 @@ const useStyles = makeStyles({
 
 export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
     const classes = useStyles();
+
+    const [toDeleteID, setToDeleteID] = useState();
 
     const rows = React.useMemo(
         () =>
@@ -65,28 +73,38 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
     );
 
     return request.length > 0 ? (
-        <Table aria-label="sticky table" size="small" className={classes.table}>
-            <TableHead>
-                <TableRow>
-                    {columns.map((column) => (
-                        <CustomTableCellHeader key={column.id} style={column.style}>
-                            {column.label}
-                        </CustomTableCellHeader>
-                    ))}
-                </TableRow>
-            </TableHead>
+        <>
+            <Table aria-label="sticky table" size="small" className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        {columns.map((column) => (
+                            <CustomTableCellHeader key={column.id} style={column.style}>
+                                {column.label}
+                            </CustomTableCellHeader>
+                        ))}
+                    </TableRow>
+                </TableHead>
 
-            <TableBody>
-                {rows.map((row) => (
-                    <RowRequests
-                        key={row.id}
-                        row={row}
-                        columns={columns}
-                        onDelete={() => onDelete(row.id)}
-                    />
-                ))}
-            </TableBody>
-        </Table>
+                <TableBody>
+                    {rows.map((row) => (
+                        <RowRequests
+                            key={row.id}
+                            row={row}
+                            columns={columns}
+                            onDelete={() => setToDeleteID(row.id)}
+                        />
+                    ))}
+                </TableBody>
+            </Table>
+            <DeleteModal
+                isOpen={toDeleteID}
+                title="Supression demande"
+                onClose={(confirm) => {
+                    if (confirm) onDelete(toDeleteID);
+                    setToDeleteID(null);
+                }}
+            />
+        </>
     ) : (
         <EmptyArray type={emptyLabel} />
     );
