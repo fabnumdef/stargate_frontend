@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { useRouter } from 'next/router';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,17 +8,19 @@ import PropTypes from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import SquareButton from '../../styled/common/squareButton';
-import DeleteModal from '../../styled/common/DeleteDialogs';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import ReasonCell from '../cells/ReasonCell';
 
+/** @todo Put layout Dark et main to hover and border effect */
 const StyledRow = withStyles((theme) => ({
     root: {
-        border: '19px solid #F9F9F9',
-        backgroundColor: `${theme.palette.common.white} !important`
+        border: '19px solid #F6F7FE'
     },
     hover: {
         '&:hover': {
-            color: `${theme.palette.common.white} !important`,
-            backgroundColor: `${theme.palette.primary.main} !important`
+            boxShadow: `inset -10px -10px 0px ${theme.palette.primary.dark}
+            , inset 11px 11px 0px ${theme.palette.primary.dark}`,
+            backgroundColor: `${theme.palette.common.white} !important`
         }
     }
 }))(TableRow);
@@ -36,10 +38,8 @@ const useStyles = makeStyles((theme) => ({
             borderBottomRightRadius: 10
         }
     },
-    actionNotHover: {
-        color: 'rgba(0, 0, 0, 0.25)'
-    },
     icon: {
+        color: 'rgba(0, 0, 0, 0.25)',
         '&:hover': {
             backgroundColor: theme.palette.common.white,
             color: theme.palette.primary.main
@@ -51,15 +51,9 @@ function RowTreatments({ columns, row, onDelete }) {
     const router = useRouter();
     const classes = useStyles();
 
-    const [hover, setHover] = useState(false);
-
     return (
         <>
-            <StyledRow
-                hover
-                key={row.id}
-                onMouseOver={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}>
+            <StyledRow hover key={row.id}>
                 {columns.map((column) => {
                     const value = row[column.id];
                     switch (column.id) {
@@ -68,17 +62,24 @@ function RowTreatments({ columns, row, onDelete }) {
                                 <TableCell className={classes.cells} key={`${row.id} action`}>
                                     <SquareButton
                                         onClick={() => router.push(`/demandes/en-cours/${row.id}`)}
-                                        classes={{ root: classes.icon }}
-                                        className={hover ? '' : classes.actionNotHover}>
+                                        classes={{ root: classes.icon }}>
                                         <DescriptionOutlinedIcon />
                                     </SquareButton>
-                                    <DeleteModal
-                                        hover={hover}
-                                        id={row.id}
-                                        onDelete={onDelete}
-                                        title="Suppression d'une demande"
-                                    />
+                                    <SquareButton
+                                        aria-label="delete"
+                                        onClick={onDelete}
+                                        classes={{ root: classes.icon }}>
+                                        <DeleteOutlineIcon />
+                                    </SquareButton>
                                 </TableCell>
+                            );
+                        case 'reason':
+                            return (
+                                <ReasonCell className={classes.cells} key={`${row.id} ${value}`}>
+                                    {column.format && typeof value === 'number'
+                                        ? column.format(value)
+                                        : value}
+                                </ReasonCell>
                             );
                         default:
                             return (

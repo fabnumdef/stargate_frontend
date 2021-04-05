@@ -4,11 +4,27 @@ import { useMutation } from '@apollo/client';
 import { campusIdVar } from '../apollo/cache';
 import { CANCEL_REQUEST } from '../apollo/mutations';
 import { LIST_MY_REQUESTS } from '../apollo/fragments';
+import { useSnackBar } from './snackbar';
 
 import { STATE_REQUEST } from '../../utils/constants/enums';
 
 export default function useRequest() {
-    const [cancelRequest] = useMutation(CANCEL_REQUEST);
+    const { addAlert } = useSnackBar();
+
+    const [cancelRequest] = useMutation(CANCEL_REQUEST, {
+        onCompleted: () => {
+            addAlert({
+                message: 'Supression réussi !',
+                severity: 'success'
+            });
+        },
+        onError: () => {
+            addAlert({
+                message: 'Érreur lors de la supression .',
+                severity: 'error'
+            });
+        }
+    });
 
     /**
      * @todo parameters to switch filters or fragments
