@@ -130,7 +130,7 @@ export const GET_MENU_DRAWER = gql`
             unit
             unitLabel
         }
-        getCampus(campusId: $campusId) {
+        getCampus(id: $campusId) {
             label
         }
     }
