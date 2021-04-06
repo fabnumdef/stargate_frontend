@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { createContext, useCallback, useContext } from 'react';
 
 import { tokenDuration } from '../utils';
-import { STATE_REQUEST } from '../utils/constants/enums';
+import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { activeRoleCacheVar, campusIdVar, isLoggedInVar } from './apollo/cache';
 import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
@@ -75,29 +75,32 @@ export function LoginContextProvider({ children }) {
                 });
             }
 
-            const activeRoleNumber =
-                !localStorage.getItem('activeRoleNumber') ||
-                localStorage.getItem('activeRoleNumber') > d.me.roles.length - 1
-                    ? 0
-                    : localStorage.getItem('activeRoleNumber');
+            const activeRole =
+                localStorage.getItem('activeRole') || d.me.roles[0]
+                    ? {
+                          role: d.me.roles[0].role,
+                          unit: d.me.roles[0]?.units[0]?.id ?? null,
+                          unitLabel: d.me.roles[0]?.units[0]?.label ?? null
+                      }
+                    : { role: d.me.roles[0].role, unit: null, unitLabel: null };
 
-            const campusId = d.me.roles[activeRoleNumber]?.campuses[0]?.id ?? null;
-
-            const newRole = d.me.roles[activeRoleNumber].units[0]
-                ? {
-                      role: d.me.roles[activeRoleNumber].role,
-                      unit: d.me.roles[activeRoleNumber]?.units[0]?.id ?? null,
-                      unitLabel: d.me.roles[activeRoleNumber]?.units[0]?.label ?? null
-                  }
-                : { role: d.me.roles[activeRoleNumber].role, unit: null, unitLabel: null };
+            const campusId =
+                d.me.roles.find((r) => r.role === activeRole.role).campuses[0]?.id ?? null;
 
             // PrefetchData for the cache
-            if (campusId) {
+            if (
+                [
+                    ROLES.ROLE_SCREENING.role,
+                    ROLES.ROLE_UNIT_CORRESPONDENT.role,
+                    ROLES.ROLE_SECURITY_OFFICER.role,
+                    ROLES.ROLE_ACCESS_OFFICE.role
+                ].includes(activeRole.role)
+            ) {
                 client.query({
                     query: INIT_CACHE,
                     variables: {
                         campusId,
-                        as: { role: newRole.role, unit: newRole.unit },
+                        as: { role: activeRole.role, unit: activeRole.unit },
                         cursor: { offset: 0, first: 30 },
                         filterCreated: { status: STATE_REQUEST.STATE_CREATED.state },
                         filterTreated: {
@@ -111,7 +114,7 @@ export function LoginContextProvider({ children }) {
                     }
                 });
             }
-            activeRoleCacheVar({ ...newRole });
+            activeRoleCacheVar({ ...activeRole });
             campusIdVar(campusId);
             isLoggedInVar(true);
         },
@@ -174,7 +177,6 @@ export function LoginContextProvider({ children }) {
              *  Get user data
              */
             setToken(d.login.jwt);
-            localStorage.setItem('activeRoleNumber', 0);
             authRenew();
             getUserData();
         },

@@ -10,7 +10,7 @@ import CheckBox from '@material-ui/icons/CheckBox';
 import IconButton from '@material-ui/core/IconButton';
 import { StyledMenu } from './MenuArrow';
 import Person from '@material-ui/icons/Person';
-import { activeRoleCacheVar } from '../../lib/apollo/cache';
+import { activeRoleCacheVar, campusIdVar } from '../../lib/apollo/cache';
 import { ROLES } from '../../utils/constants/enums/index';
 
 const useStyles = makeStyles(() => ({
@@ -37,11 +37,8 @@ export default function MenuRole({ roles }) {
             unit: chosenRole?.units[0]?.id ?? null,
             unitLabel: chosenRole?.units[0]?.label ?? null
         });
+        campusIdVar(chosenRole.campuses[0]?.id ?? null);
 
-        localStorage.setItem(
-            'activeRoleNumber',
-            roles.findIndex((role) => role === chosenRole)
-        );
         handleCloseMenu();
     };
 

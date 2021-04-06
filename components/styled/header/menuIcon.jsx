@@ -17,6 +17,7 @@ import { Select } from '@material-ui/core';
 import { useLogin } from '../../../lib/loginContext';
 import Avatar from './icon';
 import { ROLES } from '../../../utils/constants/enums/index';
+import { activeRoleCacheVar, campusIdVar } from '../../../lib/apollo/cache';
 
 const GET_ME = gql`
     query getMe {
@@ -126,10 +127,8 @@ export default function MenuIcon() {
                     campusId: selectedRole.campuses[0] ? selectedRole.campuses[0].id : null
                 }
             });
-            localStorage.setItem(
-                'activeRoleNumber',
-                data.me.roles.findIndex((role) => role.role === evt.target.value)
-            );
+            activeRoleCacheVar(...newRole);
+            campusIdVar(newRole.campuses[0]?.id ?? null);
             setActiveRole(newRole);
             handleCloseMenu();
         }

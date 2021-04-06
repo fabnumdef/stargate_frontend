@@ -45,7 +45,6 @@ export const ROLES = {
             '/compte',
             '/administration',
             '/administration/base',
-            '/administration/unites',
             '/administration/utilisateurs'
         ]
     },
@@ -75,7 +74,6 @@ export const ROLES = {
             '/nouvelle-demande',
             '/nouvelle-demande-groupe',
             '/administration',
-            '/administration/unites',
             '/administration/utilisateurs'
         ]
     },
@@ -90,10 +88,7 @@ export const ROLES = {
             '/compte',
             '/mes-demandes',
             '/nouvelle-demande',
-            '/nouvelle-demande-groupe',
-            '/administration',
-            '/administration/unites',
-            '/administration/utilisateurs'
+            '/nouvelle-demande-groupe'
         ]
     },
     ROLE_ACCESS_OFFICE: {
@@ -107,10 +102,7 @@ export const ROLES = {
             '/compte',
             '/mes-demandes',
             '/nouvelle-demande',
-            '/nouvelle-demande-groupe',
-            '/administration',
-            '/administration/unites',
-            '/administration/utilisateurs'
+            '/nouvelle-demande-groupe'
         ]
     },
     ROLE_SCREENING: {
