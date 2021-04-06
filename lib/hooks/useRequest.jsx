@@ -14,7 +14,7 @@ export default function useRequest() {
     const [cancelRequest] = useMutation(CANCEL_REQUEST, {
         onCompleted: () => {
             addAlert({
-                message: 'Supression réussi !',
+                message: 'Supression confirmée !',
                 severity: 'success'
             });
         },

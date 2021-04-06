@@ -24,6 +24,8 @@ function selectLandingComponent(role) {
         case ROLES.ROLE_SUPERADMIN.role:
             return <UserAdministration />;
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
+        case ROLES.ROLE_SECURITY_OFFICER.role:
+        case ROLES.ROLE_ACCESS_OFFICE.role:
             return <MyTreatements />;
         default:
             return 'NO ACCESS';

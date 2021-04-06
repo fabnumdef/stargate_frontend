@@ -19,7 +19,8 @@ const palette = {
         main: red.A400
     },
     background: {
-        default: '#ffffff'
+        default: '#ffffff',
+        table: '#F6F7FE'
     },
     common: {
         white: '#ffffff',

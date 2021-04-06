@@ -7,6 +7,14 @@ import { LIST_MY_REQUESTS } from '../../lib/apollo/queries';
 import { CANCEL_REQUEST } from '../../lib/apollo/mutations';
 import userEvent from '@testing-library/user-event';
 
+const mockedPush = jest.fn();
+
+jest.mock('next/router', () => ({
+    useRouter: () => ({
+        push: mockedPush
+    })
+}));
+
 describe('Container: MyAccesRequests', () => {
     let cache;
 
@@ -144,5 +152,28 @@ describe('Container: MyAccesRequests', () => {
             );
         });
         expect(mockMutation).toHaveBeenCalled();
+    });
+
+    it('change of table', async () => {
+        render(<MyAccesRequests />, { mocks, cache, resolvers: {}, addTypename: false });
+
+        await waitFor(() => {
+            userEvent.click(
+                screen.getByRole('tab', {
+                    name: /finalisées 1/i
+                })
+            );
+        });
+
+        expect(screen.getByText(/NAVAL-BASE20210316-21/i)).toBeInTheDocument();
+    });
+
+    it('call the detail of a request', async () => {
+        render(<MyAccesRequests />, { mocks, cache, resolvers: {}, addTypename: false });
+
+        await waitFor(() => {
+            userEvent.click(screen.getByLabelText(/details/i));
+        });
+        expect(mockedPush).toHaveBeenCalled();
     });
 });
