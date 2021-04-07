@@ -12,13 +12,15 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import ReasonCell from '../cells/ReasonCell';
 
 /** @todo Put layout Dark et main to hover and border effect */
-const StyledRow = withStyles(() => ({
+const StyledRow = withStyles((theme) => ({
     root: {
-        border: '19px solid #F9F9F9'
+        border: '19px solid #F6F7FE'
     },
     hover: {
         '&:hover': {
-            //backgroundColor: `${theme.palette.common.purple} !important`
+            boxShadow: `inset -10px -10px 0px ${theme.palette.primary.dark}
+            , inset 11px 11px 0px ${theme.palette.primary.dark}`,
+            backgroundColor: `${theme.palette.common.white} !important`
         }
     }
 }))(TableRow);
