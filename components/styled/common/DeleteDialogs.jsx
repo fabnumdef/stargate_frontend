@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,8 +9,6 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import RoundButton from './roundButton';
-import SquareButton from './squareButton';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,31 +59,16 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function DeleteDialogs({ title, id, onDelete, hover }) {
+function DeleteDialogs({ title, isOpen, onClose }) {
     const classes = useStyles();
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleOpen = () => {
-        setIsOpen(true);
-    };
-    const handleClose = () => {
-        setIsOpen(false);
-    };
 
     return (
         <>
-            <SquareButton
-                aria-label="delete"
-                onClick={() => handleOpen()}
-                classes={{ root: classes.icon }}
-                className={hover ? '' : classes.actionNotHover}>
-                <DeleteOutlineIcon />
-            </SquareButton>
             <Dialog
                 classes={{ paper: classes.dialog }}
-                onClose={handleClose}
+                onClose={() => onClose(false)}
                 aria-labelledby="Suppression dialog"
-                open={isOpen}>
+                open={!!isOpen}>
                 <MuiDialogTitle disableTypography className={classes.title}>
                     <Typography align="center" variant="h3" className={classes.sizeTypo}>
                         {title}
@@ -93,21 +76,23 @@ function DeleteDialogs({ title, id, onDelete, hover }) {
                     <IconButton
                         aria-label="close"
                         className={classes.closeButton}
-                        onClick={handleClose}>
+                        onClick={() => onClose(false)}>
                         <CloseIcon />
                     </IconButton>
                 </MuiDialogTitle>
                 <Divider variant="middle" />
                 <MuiDialogContent className={classes.content}>
-                    <Typography align="center">Vous êtes sur le point de supprimer {id}</Typography>
+                    <Typography align="center">
+                        Vous êtes sur le point de supprimer {isOpen}
+                    </Typography>
                 </MuiDialogContent>
                 <MuiDialogActions className={classes.actionButtons}>
-                    <RoundButton variant="outlined" onClick={handleClose}>
+                    <RoundButton variant="outlined" onClick={() => onClose(false)}>
                         Annuler
                     </RoundButton>
                     <RoundButton
                         variant="outlined"
-                        onClick={onDelete}
+                        onClick={() => onClose(true)}
                         className={classes.deleteButton}>
                         Confirmer
                     </RoundButton>
@@ -118,10 +103,9 @@ function DeleteDialogs({ title, id, onDelete, hover }) {
 }
 
 DeleteDialogs.propTypes = {
-    id: PropTypes.string.isRequired,
+    isOpen: PropTypes.string,
     title: PropTypes.string.isRequired,
-    hover: PropTypes.bool.isRequired,
-    onDelete: PropTypes.func.isRequired
+    onClose: PropTypes.func.isRequired
 };
 
 export default DeleteDialogs;
