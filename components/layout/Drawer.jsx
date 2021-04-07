@@ -96,7 +96,11 @@ const menu = [
         label: 'Administration',
         subItems: [
             { label: 'Unité', permission: '/administration/unites', icon: DescriptionIcon },
-            { label: 'Base', permission: '/administration/base', icon: DescriptionIcon },
+            {
+                label: 'Base',
+                permission: '/administration/base',
+                icon: DescriptionIcon
+            },
             {
                 label: 'Utilisateurs',
                 permission: '/administration/utilisateurs',
@@ -130,7 +134,7 @@ export const GET_MENU_DRAWER = gql`
             unit
             unitLabel
         }
-        getCampus(campusId: $campusId) {
+        getCampus(id: $campusId) {
             label
         }
     }
@@ -149,7 +153,6 @@ export default function DrawerTemplate({ drawerWidth }) {
     if (loading) {
         return '';
     }
-
     return (
         <Drawer
             className={classes.drawer}

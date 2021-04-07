@@ -75,7 +75,7 @@ const GET_CAMPUS = gql`
 `;
 
 const EDIT_CAMPUS = gql`
-    mutation editCampus($campus: CampusInput!, $id: String!) {
+    mutation editCampus($campus: EditCampusInput!, $id: String!) {
         editCampus(campus: $campus, id: $id) {
             id
             label
@@ -362,7 +362,7 @@ function EditCampus() {
 
     return (
         <Template>
-            <PageTitle title="Administration" subtitles={['Base']} />
+            <PageTitle subtitles={['Base', 'Edition']}>Administration</PageTitle>
             {defaultValues && usersList && placesList && (
                 <>
                     <Grid container>
