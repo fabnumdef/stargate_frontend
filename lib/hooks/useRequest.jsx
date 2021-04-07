@@ -14,13 +14,13 @@ export default function useRequest() {
     const [cancelRequest] = useMutation(CANCEL_REQUEST, {
         onCompleted: () => {
             addAlert({
-                message: 'Supression réussi !',
+                message: 'Suppression confirmée !',
                 severity: 'success'
             });
         },
         onError: () => {
             addAlert({
-                message: 'Érreur lors de la supression .',
+                message: 'Erreur lors de la suppression .',
                 severity: 'error'
             });
         }

@@ -7,7 +7,7 @@ import Tabs from '@material-ui/core/Tabs';
 import AntTab from '../components/styled/common/Tab';
 
 import TabPanel from '../components/styled/tabpanel';
-import TableRequestsProgress from '../components/tables/TableRequestsProgress';
+import TableMyRequests from '../components/tables/TableMyRequests';
 
 import PageTitle from '../components/styled/common/pageTitle';
 
@@ -127,7 +127,7 @@ export default function MyRequestAcces() {
             </Tabs>
 
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                <TableRequestsProgress
+                <TableMyRequests
                     request={data.getCampus.progress.list}
                     emptyLabel="en cours"
                     onDelete={handleDelete}
@@ -136,9 +136,9 @@ export default function MyRequestAcces() {
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
                 {/* @todo to replace by treated */}
-                <TableRequestsProgress
-                    request={data.getCampus.progress.list}
-                    emptyLabel="en cours"
+                <TableMyRequests
+                    request={data.getCampus.treated.list}
+                    emptyLabel="terminée"
                     onDelete={handleDelete}
                 />
             </TabPanel>

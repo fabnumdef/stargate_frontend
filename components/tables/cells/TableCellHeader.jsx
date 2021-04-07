@@ -9,7 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.white,
-        borderTop: '1px solid #F3F3F3'
+        borderTop: `1px solid ${theme.palette.background.table}`
     }
 }))(TableCell);
 

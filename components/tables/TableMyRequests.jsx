@@ -14,12 +14,18 @@ import RowRequests from './rows/RowRequests';
 import DeleteModal from '../styled/common/DeleteDialogs';
 
 const columns = [
-    { id: 'id', label: '#N°' },
+    {
+        id: 'id',
+        label: '#N°',
+        style: {
+            width: 230
+        }
+    },
     {
         id: 'periode',
         label: 'Période',
         style: {
-            width: 180
+            width: 115
         }
     },
     { id: 'reason', label: 'Motif' },
@@ -27,12 +33,12 @@ const columns = [
         id: 'action',
         label: '',
         style: {
-            width: 140
+            width: 125
         }
     }
 ];
 
-function createData({ id, from, to, places, reason }) {
+function createData({ id, from, to, places, reason, status }) {
     return {
         id,
         periode: `${format(new Date(from), 'dd/MM/yyyy')}
@@ -42,7 +48,8 @@ function createData({ id, from, to, places, reason }) {
             if (index === places.length - 1) return `${place.label}.`;
             return `${place.label}, `;
         }),
-        reason: reason.repeat(40)
+        reason,
+        status
     };
 }
 
@@ -90,6 +97,7 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
                         <RowRequests
                             key={row.id}
                             row={row}
+                            emptyLabel={emptyLabel}
                             columns={columns}
                             onDelete={() => setToDeleteID(row.id)}
                         />
