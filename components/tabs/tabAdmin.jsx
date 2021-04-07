@@ -18,7 +18,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
-import CustomTableCellHeader from '../styled/customTableCellHeader';
+import CustomTableCellHeader from '../tables/cells/TableCellHeader';
 import { useLogin } from '../../lib/loginContext';
 import { ROLES } from '../../utils/constants/enums';
 

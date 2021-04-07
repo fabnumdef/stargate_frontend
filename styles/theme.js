@@ -21,7 +21,8 @@ const palette = {
     background: {
         default: '#ffffff',
         layout: '#F7F8FF',
-        layoutDark: '#E1E7FC'
+        layoutDark: '#E1E7FC',
+        table: '#F6F7FE'
     },
     common: {
         white: '#ffffff',
