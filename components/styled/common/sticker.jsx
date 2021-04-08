@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.common.white,
         textAlign: 'left'
     },
+    title: {
+        fontWeight: '700'
+    },
     infoAlert: {
         borderLeft: `3px solid ${theme.palette.primary.light}`
     },
@@ -43,7 +46,9 @@ export default function AlertMessage({ severity, title, subtitle }) {
         <div className={`${classes.alert} ${classes.infoAlert}`}>
             {React.createElement(icon, { className: classes.infoIcon })}
             <div>
-                <Typography variant="subtitle2">{title}</Typography>
+                <Typography variant="subtitle2" className={classes.title}>
+                    {title}
+                </Typography>
                 {subtitle}
             </div>
         </div>

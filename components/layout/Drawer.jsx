@@ -21,7 +21,6 @@ import MyRequestsIcon from '../icons/MyRequestsIcon';
 import ContactUsIcon from '../icons/ContactUsIcon';
 import NewDemandIcon from '../icons/NewDemandIcon';
 import RoomOutlinedIcon from '@material-ui/icons/RoomOutlined';
-import { campusIdVar } from '../../lib/apollo/cache';
 
 const useStyles = (drawerWidth) =>
     makeStyles((theme) => ({
@@ -125,6 +124,7 @@ function rootNameByRole(role) {
 
 export const GET_MENU_DRAWER = gql`
     query getMenuDrawer($campusId: String!) {
+        campusId @client @export(as: "campusId")
         activeRoleCache @client {
             role
             unit
@@ -140,11 +140,7 @@ export default function DrawerTemplate({ drawerWidth }) {
     const classes = useStyles(drawerWidth);
     const router = useRouter();
 
-    const { data, loading } = useQuery(GET_MENU_DRAWER, {
-        variables: {
-            campusId: campusIdVar()
-        }
-    });
+    const { data, loading } = useQuery(GET_MENU_DRAWER);
 
     if (loading) {
         return '';

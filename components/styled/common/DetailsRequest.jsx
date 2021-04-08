@@ -11,6 +11,9 @@ const useStyles = makeStyles(() => ({
     },
     categorie: {
         fontWeight: 'bold'
+    },
+    row: {
+        display: 'block'
     }
 }));
 
@@ -26,23 +29,29 @@ export default function DetailsInfosRequest({ request }) {
             <Typography variant="subtitle2" color="primary" className={classes.categorie}>
                 {request.id}
             </Typography>
-            <Typography variant="body1" className={classes.categorie}>
-                Demandeur :{' '}
+            <div className={classes.row}>
+                <Typography variant="body1" display="inline" className={classes.categorie}>
+                    Demandeur :{' '}
+                </Typography>
                 <Typography variant="body2" display="inline">
                     {request?.owner?.lastname ?? ''} {request.owner?.firstname ?? ''}
                 </Typography>
-            </Typography>
+            </div>
 
-            <Typography variant="body1" className={classes.categorie}>
-                Période :{' '}
+            <div className={classes.row}>
+                <Typography variant="body1" display="inline" className={classes.categorie}>
+                    Période :{' '}
+                </Typography>
                 <Typography variant="body2" display="inline">
                     {format(new Date(request.from), 'dd/MM/yyyy')} au{' '}
                     {format(new Date(request.to), 'dd/MM/yyyy')}
                 </Typography>
-            </Typography>
+            </div>
 
-            <Typography variant="body1" className={classes.categorie}>
-                Lieux :{' '}
+            <div className={classes.row}>
+                <Typography variant="body1" display="inline" className={classes.categorie}>
+                    Lieux :{' '}
+                </Typography>
                 <Typography variant="body2" display="inline">
                     {' '}
                     {request.places.map((lieu, index) => {
@@ -50,14 +59,16 @@ export default function DetailsInfosRequest({ request }) {
                         return `${lieu.label}, `;
                     })}
                 </Typography>
-            </Typography>
+            </div>
 
-            <Typography variant="body1" className={classes.categorie}>
-                Motif :{' '}
+            <div className={classes.row}>
+                <Typography variant="body1" display="inline" className={classes.categorie}>
+                    Motif :{' '}
+                </Typography>
                 <Typography variant="body2" display="inline">
                     {request.reason}
                 </Typography>
-            </Typography>
+            </div>
         </div>
     );
 }
