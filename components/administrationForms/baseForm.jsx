@@ -27,8 +27,9 @@ const useStyles = makeStyles((theme) => ({
     baseForm: {
         padding: '20px'
     },
-    nameInput: {
-        width: '300px'
+    mainInput: {
+        width: '300px',
+        marginBottom: '20px'
     },
     formSelect: {
         width: '300px',
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
         borderRight: '2px solid'
     },
     marginAdministrator: {
-        marginTop: '10%'
+        marginTop: '50px'
     },
     tableContainer: {
         maxHeight: '140px'
@@ -128,7 +129,7 @@ PaginationButton.propTypes = {
     setSelectList: PropTypes.func.isRequired
 };
 
-const BaseForm = ({ submitForm, defaultValues, setDefaultValues, usersList, fetchMore }) => {
+const BaseForm = ({ submitForm, defaultValues, setDefaultValues, usersList, fetchMore, type }) => {
     const classes = useStyles();
     const { handleSubmit, errors, control, watch, setValue } = useForm();
 
@@ -202,8 +203,8 @@ const BaseForm = ({ submitForm, defaultValues, setDefaultValues, usersList, fetc
         setUpdated(false);
     };
 
-    const editName = (campusName) => {
-        setValue('name', campusName);
+    const editLabel = (campusLabel) => {
+        setValue('labrl', campusLabel);
         setUpdated(true);
     };
 
@@ -217,6 +218,31 @@ const BaseForm = ({ submitForm, defaultValues, setDefaultValues, usersList, fetc
             <Grid container item sm={12} xs={12} md={12}>
                 <Grid container>
                     <Grid item sm={12} xs={12} md={3}>
+                        <Typography variant="subtitle2">Identifiant&nbsp;:</Typography>
+                    </Grid>
+                    <Grid item sm={12} xs={12} md={12} lg={6}>
+                        <Controller
+                            as={
+                                <TextField
+                                    inputProps={{ 'data-testid': 'campus-id' }}
+                                    error={Object.prototype.hasOwnProperty.call(errors, 'id')}
+                                    helperText={errors.id && errors.id.message}
+                                    className={classes.mainInput}
+                                />
+                            }
+                            rules={{
+                                validate: (value) =>
+                                    value.trim() !== '' || "L'identifiant est obligatoire"
+                            }}
+                            control={control}
+                            name="id"
+                            defaultValue={defaultValues.id}
+                            disabled={type === 'edit'}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container>
+                    <Grid item sm={12} xs={12} md={3}>
                         <Typography variant="subtitle2">Nom&nbsp;:</Typography>
                     </Grid>
                     <Grid item sm={12} xs={12} md={12} lg={6}>
@@ -224,22 +250,57 @@ const BaseForm = ({ submitForm, defaultValues, setDefaultValues, usersList, fetc
                             as={
                                 <TextField
                                     inputProps={{ 'data-testid': 'campus-name' }}
-                                    error={Object.prototype.hasOwnProperty.call(errors, 'name')}
-                                    helperText={errors.name && errors.name.message}
-                                    className={classes.nameInput}
+                                    error={Object.prototype.hasOwnProperty.call(errors, 'label')}
+                                    helperText={errors.label && errors.label.message}
+                                    className={classes.mainInput}
                                 />
                             }
                             rules={{
                                 validate: (value) => value.trim() !== '' || 'Le nom est obligatoire'
                             }}
                             control={control}
-                            name="name"
-                            defaultValue={defaultValues.name}
+                            name="label"
+                            defaultValue={defaultValues.label}
                             onChange={([event]) => {
-                                editName(event.target.value);
+                                editLabel(event.target.value);
                                 return event.target.value;
                             }}
                         />
+                    </Grid>
+                </Grid>
+                <Grid container>
+                    <Grid item sm={12} xs={12} md={3}>
+                        <Typography variant="subtitle2">Trigramme&nbsp;:</Typography>
+                    </Grid>
+                    <Grid item sm={12} xs={12} md={12} lg={6}>
+                        <Controller
+                            as={
+                                <TextField
+                                    inputProps={{ 'data-testid': 'campus-trigram' }}
+                                    error={Object.prototype.hasOwnProperty.call(errors, 'trigram')}
+                                    helperText={errors.trigram && errors.trigram.message}
+                                    className={classes.mainInput}
+                                />
+                            }
+                            rules={{
+                                validate: {
+                                    valide: (value) =>
+                                        value.trim() !== '' || 'Le trigramme est obligatoire',
+                                    format: (value) =>
+                                        (value.length >= 2 && value.length <= 3) ||
+                                        'Le trigramme doit avoir 2 ou 3 caractères'
+                                }
+                            }}
+                            control={control}
+                            name="trigram"
+                            defaultValue={defaultValues.trigram ? defaultValues.trigram : ''}
+                            disabled={type === 'edit'}
+                        />
+                    </Grid>
+                    <Grid>
+                        <Typography style={{ fontStyle: 'italic' }}>
+                            Trigramme de la base, 2 à 3 lettres uniques et non editable par la suite
+                        </Typography>
                     </Grid>
                 </Grid>
                 <Grid container className={classes.marginAdministrator}>
@@ -295,7 +356,7 @@ const BaseForm = ({ submitForm, defaultValues, setDefaultValues, usersList, fetc
                 </Grid>
                 <Grid container>
                     <Grid item sm={12} xs={12} md={12} lg={3} className={classes.titleUserSelect}>
-                        <Typography>Adjoint(s) :</Typography>
+                        <Typography variant="subtitle2">Adjoint(s) :</Typography>
                     </Grid>
                     <Grid item sm={12} xs={12} md={12} lg={6} className={classes.userSelect}>
                         <FormControl className={classes.assistantSelect}>
@@ -410,7 +471,8 @@ BaseForm.propTypes = {
     defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
     setDefaultValues: PropTypes.func.isRequired,
     usersList: PropTypes.objectOf(PropTypes.object).isRequired,
-    fetchMore: PropTypes.func.isRequired
+    fetchMore: PropTypes.func.isRequired,
+    type: PropTypes.string.isRequired
 };
 
 export default BaseForm;

@@ -85,6 +85,7 @@ function BaseAdministration() {
     };
 
     const { data, refetch, fetchMore } = useQuery(GET_CAMPUSES_LIST, {
+        fetchPolicy: 'no-cache',
         variables: {
             cursor: { first: 10, offset: 0 },
             search: searchInput

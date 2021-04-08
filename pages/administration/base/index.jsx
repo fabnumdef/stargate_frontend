@@ -7,7 +7,8 @@ import { ROLES } from '../../../utils/constants/enums';
 function CampusAdministrationIndex() {
     const router = useRouter();
     if (activeRoleCacheVar().role === ROLES.ROLE_ADMIN.role) {
-        return router.push(`/administration/base/${campusIdVar()}`);
+        router.push(`/administration/base/${campusIdVar()}`);
+        return <></>;
     }
     return <CampusAdministration />;
 }

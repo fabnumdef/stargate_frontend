@@ -108,15 +108,24 @@ export const mapUnitsList = (unitsList, usersList) =>
         };
     });
 
-export const mapEditCampus = (campusName, adminsList) => {
+export const mapEditCampus = (campus, adminsList) => {
     const admin = adminsList.find((user) =>
-        user.roles.find((role) => role.userInCharge === user.id)
+        user.roles.find(
+            (role) => role.userInCharge === user.id && role.campuses.find((c) => c.id === campus.id)
+        )
     );
     const assistants = adminsList.filter((user) =>
-        user.roles.find((role) => role.userInCharge && role.userInCharge !== user.id)
+        user.roles.find(
+            (role) =>
+                role.userInCharge &&
+                role.userInCharge !== user.id &&
+                role.campuses.find((c) => c.id === campus.id)
+        )
     );
     return {
-        name: campusName,
+        id: campus.id,
+        label: campus.label,
+        trigram: campus.trigram,
         admin: admin || null,
         assistants
     };
