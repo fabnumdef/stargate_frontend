@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
-import TableCell from '@material-ui/core/TableCell';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 
@@ -15,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MAX_LENGTH = 250;
 
-export default function ReasonCell({ children, ...others }) {
+export default function SeeMoreOrLess({ children }) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
 
@@ -47,9 +46,9 @@ export default function ReasonCell({ children, ...others }) {
         );
     }, [children, open]);
 
-    return <TableCell {...others}>{render}</TableCell>;
+    return render;
 }
 
-ReasonCell.propTypes = {
+SeeMoreOrLess.propTypes = {
     children: PropTypes.string.isRequired
 };
