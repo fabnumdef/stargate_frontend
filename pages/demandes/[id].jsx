@@ -67,7 +67,7 @@ function RequestDetailPageProgress() {
                 <ArrowPath className={classes.arrow} /> RETOUR
             </div>
             <PageTitle className={classes.connection}>
-                {data.getCampus?.getRequest?.status === STATE_REQUEST.STATE_CREATED.state
+                {data?.getCampus?.getRequest?.status === STATE_REQUEST.STATE_CREATED.state
                     ? 'Demande en cours'
                     : 'Demande finalisée'}
             </PageTitle>
@@ -90,7 +90,11 @@ function RequestDetailPageProgress() {
                     }
                 />
             </div>
-            <RequestVisitors id={data?.getCampus?.getRequest?.id} />
+            <RequestVisitors
+                id={data?.getCampus?.getRequest?.id}
+                list={data?.getCampus?.getRequest?.listVisitors?.list}
+                status={data?.getCampus?.getRequest?.status}
+            />
         </div>
     );
 }

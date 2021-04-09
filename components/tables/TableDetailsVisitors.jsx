@@ -86,11 +86,20 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
             <Table aria-label="sticky table" size="small" className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        {columnStatus.map((column) => (
-                            <CustomTableCellHeader key={column.id} style={column.style}>
-                                {column.label}
-                            </CustomTableCellHeader>
-                        ))}
+                        {columnStatus.map((column) => {
+                            if (column.id === 'visitor') {
+                                return (
+                                    <CustomTableCellHeader key={column.id} style={column.style}>
+                                        {column.label} ({list.length})
+                                    </CustomTableCellHeader>
+                                );
+                            }
+                            return (
+                                <CustomTableCellHeader key={column.id} style={column.style}>
+                                    {column.label}
+                                </CustomTableCellHeader>
+                            );
+                        })}
                     </TableRow>
                 </TableHead>
 
@@ -106,7 +115,7 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
                 </TableBody>
             </Table>
             <DeleteModal
-                isOpen={toDeleteID ? 'ce visiteur !' : null}
+                isOpen={toDeleteID ? 'ce visiteur' : null}
                 title="Supression visiteur"
                 onClose={(confirm) => {
                     if (confirm) onDelete(toDeleteID);

@@ -28,8 +28,7 @@ const useStyles = makeStyles((theme) => ({
         '&:last-child': {
             borderTopRightRadius: 10,
             borderBottomRightRadius: 10,
-            display: 'flex',
-            justifyContent: 'flex-end'
+            display: 'flex'
         }
     },
     icon: {
@@ -62,6 +61,7 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
             case 'CREATED':
                 return (
                     <PlayCircleFilledIcon
+                        title="createdIcon"
                         fontSize="small"
                         className={`${classes.iconStatus} ${classes.iconInfo}`}
                     />
@@ -69,13 +69,16 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
             case 'ACCEPTED':
                 return (
                     <CheckCircleIcon
+                        title="acceptedIcon"
                         fontSize="small"
                         className={`${classes.iconStatus} ${classes.iconSuccess}`}
                     />
                 );
             case 'REFUSED':
+            case 'CANCELED':
                 return (
                     <ErrorIcon
+                        title="canceledIcon"
                         fontSize="small"
                         className={`${classes.iconStatus} ${classes.iconError}`}
                     />
@@ -91,12 +94,14 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
                     case 'action':
                         return (
                             <TableCell className={classes.cells} key={`${row.id} action`}>
-                                <SquareButton
-                                    aria-label="delete"
-                                    onClick={onDelete}
-                                    classes={{ root: classes.icon }}>
-                                    <DeleteOutlineIcon />
-                                </SquareButton>
+                                {row.status === 'CREATED' && (
+                                    <SquareButton
+                                        aria-label="delete"
+                                        onClick={onDelete}
+                                        classes={{ root: classes.icon }}>
+                                        <DeleteOutlineIcon />
+                                    </SquareButton>
+                                )}
                             </TableCell>
                         );
                     case 'status':
