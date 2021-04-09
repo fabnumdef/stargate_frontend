@@ -85,7 +85,7 @@ export function LoginContextProvider({ children }) {
                     : { role: d.me.roles[0].role, unit: null, unitLabel: null };
 
             const campusId =
-                d.me.roles.find((r) => r.role === activeRole.role).campuses[0]?.id ?? null;
+                d.me.roles.find((r) => r.role === activeRole.role).campuses[0]?.id ?? '';
 
             // PrefetchData for the cache
             if (

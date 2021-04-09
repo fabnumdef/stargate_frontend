@@ -128,7 +128,7 @@ export default function MenuIcon() {
                 }
             });
             activeRoleCacheVar(...newRole);
-            campusIdVar(newRole.campuses[0]?.id ?? null);
+            campusIdVar(newRole.campuses[0]?.id ?? '');
             setActiveRole(newRole);
             handleCloseMenu();
         }
