@@ -2,7 +2,6 @@ import React from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/common/pageTitle';
-import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
@@ -162,7 +161,7 @@ function CreateUser() {
     }
 
     return (
-        <Template>
+        <>
             <PageTitle title="Administration" subtitles={['Utilisateur', 'Nouvel utilisateur']} />
             {userData && (
                 <UserForm
@@ -172,7 +171,7 @@ function CreateUser() {
                     type="create"
                 />
             )}
-        </Template>
+        </>
     );
 }
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/common/pageTitle';
-import Template from '../../../containers/template';
 import UserForm from '../../../components/administrationForms/userForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
@@ -115,7 +114,7 @@ function EditUser() {
     }, [editUserData]);
 
     return (
-        <Template>
+        <>
             <PageTitle title="Administration" subtitles={['Utilisateur', 'Modifier utilisateur']} />
             {defaultValues && (
                 <UserForm
@@ -125,7 +124,7 @@ function EditUser() {
                     type="edit"
                 />
             )}
-        </Template>
+        </>
     );
 }
 

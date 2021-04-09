@@ -13,7 +13,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
 import { useSnackBar } from '../lib/hooks/snackbar';
-import Template from './template';
 
 const useStyles = makeStyles(() => ({
     account: {
@@ -131,7 +130,7 @@ export default function Account() {
     };
 
     return (
-        <Template>
+        <>
             <Grid container spacing={2} className={classes.account}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
@@ -242,6 +241,6 @@ export default function Account() {
                     </Button>
                 </form>
             </Grid>
-        </Template>
+        </>
     );
 }

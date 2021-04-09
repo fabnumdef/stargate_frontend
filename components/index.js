@@ -1,6 +1,4 @@
-export { default as Header } from './styled/header';
 export { default as TabPanel } from './styled/tabpanel';
-export { default as Footer } from './styled/footer';
 export { default as DetailsInfosRequest } from './styled/detailsInfosRequest';
 // Forms
 export { default as FormInfosRequest } from './requestForms/infosRequest';
