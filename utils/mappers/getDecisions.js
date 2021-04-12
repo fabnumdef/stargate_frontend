@@ -1,4 +1,4 @@
-import { ROLES, WORKFLOW_BEHAVIOR } from '../constants/enums';
+import { ROLES } from '../constants/enums';
 
 export default function getDecisions(units) {
     const steps = [];
@@ -8,31 +8,22 @@ export default function getDecisions(units) {
     );
     if (screeningValue.length) {
         steps.push({
-            label: 'Criblage',
+            label: ROLES.ROLE_SCREENING.label,
             value: screeningValue[0].state
         });
     }
 
     // for each unit get os decision
     units.forEach((u) => {
-        const isRejected = u.steps.find(
-            (s) => s.behavior === WORKFLOW_BEHAVIOR.VALIDATION.value && s.state.isOK === false
-        );
-        if (isRejected) {
-            steps.push({
-                label: `Décision ${ROLES.ROLE_SECURITY_OFFICER.shortLabel} ${u.label}`,
-                value: isRejected.state
-            });
-        } else {
-            u.steps.forEach((step) => {
-                if (step.role === ROLES.ROLE_SECURITY_OFFICER.role) {
-                    steps.push({
-                        label: `Décision ${ROLES[step.role].shortLabel} ${u.label}`,
-                        value: step.state
-                    });
-                }
-            });
-        }
+        u.steps.forEach((step) => {
+            if (step.role === ROLES.ROLE_SECURITY_OFFICER.role) {
+                steps.push({
+                    label: ROLES.ROLE_SECURITY_OFFICER.label,
+                    unit: u.label,
+                    value: step.state
+                });
+            }
+        });
     });
     return steps;
 }
