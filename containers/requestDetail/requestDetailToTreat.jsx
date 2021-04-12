@@ -18,11 +18,10 @@ import {
     TabRequestVisitorsToTreatAcces
 } from '../../components';
 
-import Template from '../template';
-
 import { useLogin } from '../../lib/loginContext';
 
 import { ROLES, STATE_REQUEST, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
+import Loading from '../loading';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -230,8 +229,10 @@ export default function RequestDetails({ requestId }) {
 
     if (error) return <p>page 404</p>;
 
-    return (
-        <Template loading={loading}>
+    return loading ? (
+        <Loading />
+    ) : (
+        <>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
@@ -303,7 +304,7 @@ export default function RequestDetails({ requestId }) {
                     </Grid>
                 </Grid>
             </Grid>
-        </Template>
+        </>
     );
 }
 

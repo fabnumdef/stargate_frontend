@@ -19,8 +19,6 @@ import { CSVLink } from 'react-csv';
 
 import { TabPanel, TabScreeningVisitors } from '../components';
 
-import Template from './template';
-
 import { AntTab } from './myTreatements';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
@@ -289,7 +287,7 @@ export default function ScreeningManagement() {
     };
 
     return (
-        <Template>
+        <>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
@@ -403,6 +401,6 @@ export default function ScreeningManagement() {
                     </Grid>
                 )}
             </Grid>
-        </Template>
+        </>
     );
 }

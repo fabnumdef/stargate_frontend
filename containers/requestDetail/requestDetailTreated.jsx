@@ -12,10 +12,9 @@ import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
 import { DetailsInfosRequest, TabRequestVisitorsTreated } from '../../components';
 
-import Template from '../template';
-
 import { useLogin } from '../../lib/loginContext';
 import { checkRequestDetailAuth } from '../../utils/permissions';
+import Loading from '../loading';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -127,8 +126,10 @@ export default function RequestDetailsTreated({ requestId }) {
 
     // @todo error Page 404
 
-    return (
-        <Template loading={loading}>
+    return loading ? (
+        <Loading />
+    ) : (
+        <>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
@@ -161,7 +162,7 @@ export default function RequestDetailsTreated({ requestId }) {
                     </Grid>
                 </Grid>
             </Grid>
-        </Template>
+        </>
     );
 }
 

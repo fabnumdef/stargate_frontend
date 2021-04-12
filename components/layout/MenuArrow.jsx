@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -52,6 +53,7 @@ const useStyles = makeStyles(() => ({
 
 export default function MenuArrow() {
     const classes = useStyles();
+    const router = useRouter();
     const { signOut } = useLogin();
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -62,8 +64,14 @@ export default function MenuArrow() {
     const handleCloseMenu = () => {
         setAnchorEl(null);
     };
+
     const handleSignOut = () => {
         signOut({ message: 'Vous avez bien été déconnecté', severity: 'success' });
+    };
+
+    const handlePush = (to) => {
+        router.push(to);
+        handleCloseMenu();
     };
 
     return (
@@ -79,7 +87,7 @@ export default function MenuArrow() {
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}>
-                <StyledMenuItem>
+                <StyledMenuItem onClick={() => handlePush('/compte')}>
                     <ListItemIcon>
                         <AccountCircleIcon fontSize="default" />
                     </ListItemIcon>

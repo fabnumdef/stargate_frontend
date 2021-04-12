@@ -29,7 +29,7 @@ const useStyles = (drawerWidth) =>
         },
         drawerPaper: {
             width: drawerWidth,
-            background: '#F7F8FF',
+            background: theme.palette.background.layout,
             borderRight: 'none'
         },
         appName: {
@@ -45,7 +45,7 @@ const useStyles = (drawerWidth) =>
             borderRadius: '4px',
             margin: '0 20px 20px 20px',
             padding: 6,
-            backgroundColor: '#E1E7FC'
+            backgroundColor: theme.palette.background.layoutDark
         },
         baseLabelIcon: {
             minWidth: '56px'
