@@ -69,6 +69,11 @@ const tabList = [
         index: 0,
         value: 'progress',
         label: `À traiter`
+    },
+    {
+        index: 1,
+        value: 'treated',
+        label: `Traitées`
     }
 ];
 
