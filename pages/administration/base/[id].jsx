@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import PageTitle from '../../../components/styled/common/pageTitle';
-import Template from '../../../containers/template';
 import BaseForm from '../../../components/administrationForms/baseForm';
 import PlaceForm from '../../../components/administrationForms/placeForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
@@ -361,7 +360,7 @@ function EditCampus() {
     }, [editCampusData, usersList, adminsList]);
 
     return (
-        <Template>
+        <>
             <PageTitle title="Administration" subtitles={['Base']} />
             {defaultValues && usersList && placesList && (
                 <>
@@ -389,7 +388,7 @@ function EditCampus() {
                     </Grid>
                 </>
             )}
-        </Template>
+        </>
     );
 }
 

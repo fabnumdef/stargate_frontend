@@ -12,7 +12,6 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import NoSsr from '../lib/nossr';
 
-import Template from './template';
 import {
     FormInfosRequest,
     FormInfosVisitor,
@@ -112,7 +111,7 @@ export default function RequestAccesForm({ group }) {
     });
 
     return (
-        <Template>
+        <>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
@@ -187,7 +186,7 @@ export default function RequestAccesForm({ group }) {
                     </TabPanel>
                 </Grid>
             </Grid>
-        </Template>
+        </>
     );
 }
 

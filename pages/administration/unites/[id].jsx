@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../components/styled/common/pageTitle';
-import Template from '../../../containers/template';
 import UnitForm from '../../../components/administrationForms/unitForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
@@ -344,7 +343,7 @@ function CreateUnit() {
     }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);
 
     return (
-        <Template>
+        <>
             <PageTitle title="Administration" subtitles={['Unité', 'Editer unité']} />
             {defaultValues && (
                 <UnitForm
@@ -354,7 +353,7 @@ function CreateUnit() {
                     type="edit"
                 />
             )}
-        </Template>
+        </>
     );
 }
 

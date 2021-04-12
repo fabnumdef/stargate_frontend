@@ -14,8 +14,6 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
-import Template from './template';
-
 const useStyles = makeStyles(() => ({
     root: {
         width: '100%'
@@ -125,7 +123,7 @@ export default function GatekeeperManagement() {
     };
 
     return (
-        <Template>
+        <>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
@@ -176,6 +174,6 @@ export default function GatekeeperManagement() {
                     />
                 </Grid>
             </Grid>
-        </Template>
+        </>
     );
 }
