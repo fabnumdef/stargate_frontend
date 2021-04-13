@@ -8,10 +8,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { format } from 'date-fns';
-import EmptyArray from '../styled/emptyArray';
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowRequests from './rows/RowRequests';
 import DeleteModal from '../styled/common/DeleteDialogs';
+import LoadMore from '../styled/common/LoadMore';
 
 const columns = [
     {
@@ -65,7 +65,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
+export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMore }) {
     const classes = useStyles();
 
     const [toDeleteID, setToDeleteID] = useState();
@@ -79,7 +79,7 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
         [request]
     );
 
-    return request.length > 0 ? (
+    return (
         <>
             <Table aria-label="sticky table" size="small" className={classes.table}>
                 <TableHead>
@@ -97,13 +97,13 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
                         <RowRequests
                             key={row.id}
                             row={row}
-                            emptyLabel={emptyLabel}
                             columns={columns}
                             onDelete={() => setToDeleteID(row.id)}
                         />
                     ))}
                 </TableBody>
             </Table>
+            {load && <LoadMore onLoadMore={onLoadMore} />}
             <DeleteModal
                 isOpen={toDeleteID}
                 title="Supression demande"
@@ -113,13 +113,12 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
                 }}
             />
         </>
-    ) : (
-        <EmptyArray type={emptyLabel} />
     );
 }
 
 TabMyRequestToTreat.propTypes = {
     request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    emptyLabel: PropTypes.string.isRequired,
-    onDelete: PropTypes.func.isRequired
+    load: PropTypes.bool.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onLoadMore: PropTypes.func.isRequired
 };

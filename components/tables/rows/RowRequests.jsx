@@ -117,6 +117,5 @@ export default RowTreatments;
 RowTreatments.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     row: PropTypes.object.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    emptyLabel: PropTypes.string.isRequired
+    onDelete: PropTypes.func.isRequired
 };
