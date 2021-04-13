@@ -10,14 +10,16 @@ const AntTab = withStyles((theme) => ({
         minWidth: 150,
         marginRight: theme.spacing(5),
         '&:hover': {
-            opacity: 1
+            opacity: 1,
+            color: theme.palette.primary.main,
+            backgroundColor: fade(theme.palette.primary.main, 0.05)
         },
         '&$selected': {
             color: theme.palette.primary.main,
             fontWeight: 'bold',
             backgroundColor: fade(theme.palette.primary.main, 0)
         },
-        backgroundColor: 'rgba(0, 0, 0, 0.025)',
+        borderColor: theme.palette.primary.main,
         borderRadius: '5%'
     },
     selected: {},
