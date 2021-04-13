@@ -6,12 +6,7 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: theme.palette.common.white,
-        borderTop: `1px solid ${theme.palette.background.table}`
-    }
-}))(TableCell);
+const StyledTableCell = withStyles(() => ({}))(TableCell);
 
 export default function CustomTableCell({ children, style, ...others }) {
     return (

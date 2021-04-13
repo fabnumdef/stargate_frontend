@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Table from '@material-ui/core/Table';
+import TableContainer from '@material-ui/core/TableContainer';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -54,14 +55,9 @@ function createData({ id, from, to, places, reason, status }) {
 }
 
 const useStyles = makeStyles({
-    table: {
-        // marginTop: '-19px',
-        // borderSpacing: ' 0 19px',
-        // borderCollapse: 'separate',
-        // backgroundColor: '#F3F3F3'
-    },
-    head: {
-        padding: '12px 12px 12px 12px;'
+    root: {
+        border: '1px solid #F3F3F3',
+        maxHeight: '440px'
     }
 });
 
@@ -80,8 +76,8 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
     );
 
     return request.length > 0 ? (
-        <>
-            <Table aria-label="sticky table" size="small" className={classes.table}>
+        <TableContainer className={classes.root}>
+            <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
@@ -112,7 +108,7 @@ export default function TabMyRequestToTreat({ request, emptyLabel, onDelete }) {
                     setToDeleteID(null);
                 }}
             />
-        </>
+        </TableContainer>
     ) : (
         <EmptyArray type={emptyLabel} />
     );

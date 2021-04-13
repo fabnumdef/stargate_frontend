@@ -56,6 +56,11 @@ const theme = createMuiTheme(
                         margin: 0
                     }
                 }
+            },
+            MuiTable: {
+                stickyHeader: {
+                    borderCollapse: 'ihnerit'
+                }
             }
         },
         palette
