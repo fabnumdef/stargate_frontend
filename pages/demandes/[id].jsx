@@ -4,12 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import PageTitle from '../../components/styled/common/pageTitle';
 import { useQuery } from '@apollo/client';
 import { GET_REQUEST } from '../../lib/apollo/queries';
-import ArrowPath from '../../components/icons/ArrowPath';
 import DetailsRequest from '../../components/styled/common/DetailsRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';
 import AlertMessage from '../../components/styled/common/sticker';
 import { Typography } from '@material-ui/core';
 import RequestVisitors from '../../containers/requestDetail/RequestVisitors';
+import LinkBack from '../../components/styled/common/Link';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -18,14 +18,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         height: '100%',
         position: 'relative'
-    },
-    link: {
-        fontSize: '1em',
-        color: theme.palette.primary.dark,
-        cursor: 'pointer'
-    },
-    arrow: {
-        fontSize: '1em'
     },
     header: {
         display: 'flex',
@@ -59,13 +51,7 @@ function RequestDetailPageProgress() {
 
     return (
         <div className={classes.paper}>
-            <div
-                role="link"
-                className={classes.link}
-                aria-hidden="true"
-                onClick={() => router.back()}>
-                <ArrowPath className={classes.arrow} /> RETOUR
-            </div>
+            <LinkBack onClick={() => router.back()} />
             <PageTitle className={classes.connection}>
                 {data?.getCampus?.getRequest?.status === STATE_REQUEST.STATE_CREATED.state
                     ? 'Demande en cours'

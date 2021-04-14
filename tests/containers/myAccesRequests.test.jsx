@@ -147,7 +147,7 @@ describe('Container: MyAccesRequests', () => {
         await waitFor(() => {
             userEvent.click(
                 screen.getByRole('button', {
-                    name: /confirmer/i
+                    name: /supprimer/i
                 })
             );
         });

@@ -104,16 +104,16 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
                             key={row.id}
                             row={row}
                             columns={columnStatus}
-                            onDelete={() => setToDeleteID(row.id)}
+                            onDelete={() => setToDeleteID({ id: row.id, visitor: row.visitor })}
                         />
                     ))}
                 </TableBody>
             </Table>
             <DeleteModal
-                isOpen={toDeleteID ? 'ce visiteur' : null}
+                isOpen={toDeleteID ? toDeleteID.visitor : null}
                 title="Supression visiteur"
                 onClose={(confirm) => {
-                    if (confirm) onDelete(toDeleteID);
+                    if (confirm) onDelete(toDeleteID.id);
                     setToDeleteID(null);
                 }}
             />
