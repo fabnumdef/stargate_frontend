@@ -114,7 +114,6 @@ const menu = [
 function rootNameByRole(role) {
     switch (role) {
         case ROLES.ROLE_HOST.role:
-            return 'Mes demandes';
         case ROLES.ROLE_ADMIN.role:
         case ROLES.ROLE_SUPERADMIN.role:
             return 'Accueil';

@@ -113,7 +113,12 @@ export const ROLES = {
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
         permission: ['/', '/compte']
     },
-    ROLE_HOST: { role: 'ROLE_HOST', label: 'Hôte', shortLabel: 'H', permission: ['/', '/compte'] },
+    ROLE_HOST: {
+        role: 'ROLE_HOST',
+        label: 'Hôte',
+        shortLabel: 'H',
+        permission: ['/', '/compte', '/mes-demandes', '/nouvelle-demande']
+    },
     ROLE_GATEKEEPER: {
         role: 'ROLE_GATEKEEPER',
         label: 'Gardien',
