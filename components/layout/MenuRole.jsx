@@ -37,7 +37,7 @@ export default function MenuRole({ roles }) {
             unit: chosenRole?.units[0]?.id ?? null,
             unitLabel: chosenRole?.units[0]?.label ?? null
         });
-        campusIdVar(chosenRole.campuses[0]?.id ?? null);
+        campusIdVar(chosenRole.campuses[0]?.id ?? '');
 
         handleCloseMenu();
     };

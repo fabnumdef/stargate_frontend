@@ -115,7 +115,9 @@ function EditUser() {
 
     return (
         <>
-            <PageTitle title="Administration" subtitles={['Utilisateur', 'Modifier utilisateur']} />
+            <PageTitle subtitles={['Utilisateur', 'Modifier utilisateur']}>
+                Administration
+            </PageTitle>
             {defaultValues && (
                 <UserForm
                     submitForm={submitEditUser}
