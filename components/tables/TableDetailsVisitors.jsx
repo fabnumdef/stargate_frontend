@@ -21,10 +21,7 @@ const columns = [
     },
     {
         id: 'company',
-        label: 'Unité / Société',
-        style: {
-            width: 115
-        }
+        label: 'Unité / Société'
     },
     { id: 'type', label: 'Type de visiteurs' },
     {
@@ -81,7 +78,7 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
 
     return (
         <TableContainer className={classes.root}>
-            <Table stickyHeader aria-label="sticky table" size="small" className={classes.table}>
+            <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
                         {columnStatus.map((column) => {

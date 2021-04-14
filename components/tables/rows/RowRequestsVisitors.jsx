@@ -50,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
     },
     iconError: {
         color: theme.palette.error.main
+    },
+    flexEnd: {
+        display: 'flex',
+        justifyContent: 'flex-end'
     }
 }));
 
@@ -93,7 +97,9 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
                 switch (column.id) {
                     case 'action':
                         return (
-                            <TableCell className={classes.cells} key={`${row.id} action`}>
+                            <TableCell
+                                className={`${classes.cells} ${classes.flexEnd}`}
+                                key={`${row.id} action`}>
                                 {row.status === 'CREATED' && (
                                     <SquareButton
                                         aria-label="delete"
