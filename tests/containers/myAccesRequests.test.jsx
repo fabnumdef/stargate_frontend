@@ -23,7 +23,7 @@ describe('Container: MyAccesRequests', () => {
             request: {
                 query: LIST_MY_REQUESTS,
                 variables: {
-                    cursor: { first: 30, offset: 0 },
+                    cursor: { first: 10, offset: 0 },
                     campusId: 'NAVAL-BASE',
                     filtersP: { status: 'CREATED' },
                     filtersT: {
