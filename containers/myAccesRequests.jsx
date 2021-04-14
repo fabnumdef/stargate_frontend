@@ -85,7 +85,6 @@ export default function MyRequestAccess() {
     });
 
     const { deleteRequest } = useRequest();
-
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {

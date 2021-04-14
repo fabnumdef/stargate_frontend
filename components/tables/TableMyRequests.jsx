@@ -100,7 +100,7 @@ export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMor
                     ))}
                 </TableBody>
             </Table>
-            {load && <LoadMore onLoadMore={onLoadMore} />}
+            <LoadMore onLoadMore={onLoadMore} display={load} />
             <DeleteModal
                 isOpen={toDeleteID}
                 title="Supression demande"
