@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
-// Material Import
+
 import { makeStyles } from '@material-ui/core/styles';
 import SelectedBadge from '../components/styled/common/TabBadge';
 import Tabs from '@material-ui/core/Tabs';
@@ -68,10 +68,12 @@ const tabList = [
     }
 ];
 
+const FIRST_INIT = 10;
+
 export default function MyRequestAccess() {
     const classes = useStyles();
 
-    const [first, setFirst] = useState(10);
+    const [first, setFirst] = useState(FIRST_INIT);
 
     const { data, loading, fetchMore } = useQuery(LIST_MY_REQUESTS, {
         variables: {
@@ -88,6 +90,19 @@ export default function MyRequestAccess() {
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
+        if (first !== FIRST_INIT) {
+            fetchMore({
+                variables: {
+                    filtersP,
+                    filtersT,
+                    cursor: {
+                        first: FIRST_INIT,
+                        offset: 0
+                    }
+                }
+            });
+            setFirst(FIRST_INIT);
+        }
         setValue(newValue);
     };
 
@@ -113,7 +128,7 @@ export default function MyRequestAccess() {
         deleteRequest(id);
     };
 
-    if (loading) {
+    if (loading || !data) {
         return '';
     }
 
