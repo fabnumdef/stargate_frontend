@@ -18,7 +18,7 @@ const columns = [
         label: 'Unité'
     },
     {
-        id: 'state',
+        id: 'steps',
         label: 'Workflow de validation'
     }
 ];

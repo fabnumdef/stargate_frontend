@@ -28,7 +28,7 @@ export default function ReasonCell({ steps, ...others }) {
 
     useEffect(() => {
         let activeIndex = 0;
-        while (steps[activeIndex].isOK !== null) {
+        while (steps[activeIndex].state.isOK !== null) {
             activeIndex++;
         }
         setActiveStep(activeIndex);
@@ -41,17 +41,28 @@ export default function ReasonCell({ steps, ...others }) {
                     <Step key={step.role}>
                         <StepLabel
                             error={
-                                step.value === WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative ||
-                                WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.externally
+                                !!step.state.value &&
+                                (step.state.value ===
+                                    WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative ||
+                                    WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.externally)
                             }
                             StepIconProps={(() => {
-                                switch (step.value) {
+                                switch (step.state.value) {
                                     case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.positive:
-                                        return { className: classes.success };
+                                        return {
+                                            classes: { root: classes.success },
+                                            title: 'successIcon'
+                                        };
                                     case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative:
-                                        return { className: classes.error };
+                                        return {
+                                            classes: { root: classes.error },
+                                            title: 'errorIcon'
+                                        };
                                     case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.externally:
-                                        return { className: classes.warning };
+                                        return {
+                                            classes: { root: classes.warning },
+                                            title: 'warningIcon'
+                                        };
                                 }
                             })()}>
                             {ROLES[step.role].shortLabel}
