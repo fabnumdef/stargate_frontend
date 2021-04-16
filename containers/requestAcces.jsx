@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -116,57 +115,55 @@ export default function RequestAccesForm({ group }) {
                     ))}
                 </Grid>
                 <Grid item sm={12} xs={12} elevation={2}>
-                    <Paper elevation={2}>
-                        <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
-                            <NoSsr>
-                                <FormInfosRequest
-                                    formData={formData}
-                                    setForm={setForm}
-                                    handleNext={handleNext}
-                                    group={group}
-                                    setSelectVisitor={setSelectVisitor}
-                                    handleBack={handleBack}
-                                />
-                            </NoSsr>
-                        </TabPanel>
-                        <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
-                            <NoSsr>
-                                {(() => {
-                                    if (group && !selectVisitor) {
-                                        return (
-                                            <FormInfosImport
-                                                formData={formData}
-                                                setForm={setForm}
-                                                handleNext={handleNext}
-                                                handleBack={handleBack}
-                                            />
-                                        );
-                                    }
+                    <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
+                        <NoSsr>
+                            <FormInfosRequest
+                                formData={formData}
+                                setForm={setForm}
+                                handleNext={handleNext}
+                                group={group}
+                                setSelectVisitor={setSelectVisitor}
+                                handleBack={handleBack}
+                            />
+                        </NoSsr>
+                    </TabPanel>
+                    <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
+                        <NoSsr>
+                            {(() => {
+                                if (group && !selectVisitor) {
                                     return (
-                                        <FormInfosVisitor
+                                        <FormInfosImport
                                             formData={formData}
                                             setForm={setForm}
-                                            selectVisitor={selectVisitor}
                                             handleNext={handleNext}
                                             handleBack={handleBack}
                                         />
                                     );
-                                })()}
-                            </NoSsr>
-                        </TabPanel>
-                        <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>
-                            <NoSsr>
-                                <FormInfosRecapDemande
-                                    formData={formData}
-                                    setForm={setForm}
-                                    handleNext={handleNext}
-                                    handleBack={handleBack}
-                                    setSelectVisitor={setSelectVisitor}
-                                    group={group}
-                                />
-                            </NoSsr>
-                        </TabPanel>
-                    </Paper>
+                                }
+                                return (
+                                    <FormInfosVisitor
+                                        formData={formData}
+                                        setForm={setForm}
+                                        selectVisitor={selectVisitor}
+                                        handleNext={handleNext}
+                                        handleBack={handleBack}
+                                    />
+                                );
+                            })()}
+                        </NoSsr>
+                    </TabPanel>
+                    <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>
+                        <NoSsr>
+                            <FormInfosRecapDemande
+                                formData={formData}
+                                setForm={setForm}
+                                handleNext={handleNext}
+                                handleBack={handleBack}
+                                setSelectVisitor={setSelectVisitor}
+                                group={group}
+                            />
+                        </NoSsr>
+                    </TabPanel>
                 </Grid>
             </Grid>
         </>
