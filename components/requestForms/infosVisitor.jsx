@@ -37,7 +37,10 @@ import InputFile from '../styled/inputFile';
 
 const useStyles = makeStyles((theme) => ({
     radioGroup: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        '&> label': {
+            marginRight: '60px'
+        }
     },
     formControl: {
         margin: theme.spacing(2)
@@ -50,9 +53,6 @@ const useStyles = makeStyles((theme) => ({
     },
     checkPos: {
         marginBottom: '5px'
-    },
-    comps: {
-        marginLeft: '3vw'
     },
     fixedButton: {
         position: 'fixed',
@@ -68,8 +68,13 @@ const useStyles = makeStyles((theme) => ({
     formVip: {
         width: '100%'
     },
-    subTitle: {
-        marginTop: '20px'
+    fieldLabel: {
+        marginTop: '10px',
+        fontWeight: 'bold'
+    },
+    disabled: {
+        opacity: 0.2,
+        color: 'red'
     }
 }));
 
@@ -352,118 +357,112 @@ export default function FormInfoVisitor({
     return (
         <div>
             <form data-testid="form-visiteur" onSubmit={handleSubmit(onSubmit)}>
-                <Grid container spacing={6}>
-                    <Grid item sm={12} xs={12} md={6}>
-                        <Grid container justify="space-between" spacing={2}>
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Origine visiteurs :
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={12} className={classes.comps}>
-                                <FormControl
-                                    error={Object.prototype.hasOwnProperty.call(
-                                        errors,
-                                        'isInternal'
-                                    )}
-                                    component="div">
-                                    <Controller
-                                        as={
-                                            <RadioGroup
-                                                className={classes.radioGroup}
-                                                aria-label="origine">
-                                                <FormControlLabel
-                                                    value="MINARM"
-                                                    control={
-                                                        <Radio
-                                                            color="primary"
-                                                            data-testid="minarm-button"
-                                                        />
-                                                    }
-                                                    label="MINARM"
-                                                />
-                                                <FormControlLabel
-                                                    color="primary"
-                                                    value="HORS MINARM"
-                                                    control={<Radio color="primary" />}
-                                                    label="HORS MINARM"
-                                                />
-                                            </RadioGroup>
-                                        }
-                                        control={control}
-                                        name="isInternal"
-                                        rules={{ required: "L'origine est obligatoire." }}
-                                        defaultValue=""
-                                    />
-                                    {errors.isInternal && (
-                                        <FormHelperText>{errors.isInternal.message}</FormHelperText>
-                                    )}
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={12} className={classes.comps}>
-                                <FormControl
-                                    data-testid="test-employe"
-                                    variant="outlined"
-                                    error={Object.prototype.hasOwnProperty.call(
-                                        errors,
-                                        'employeeType'
-                                    )}
-                                    fullWidth>
-                                    <InputLabel ref={inputLabel} id="select-outlined-label">
-                                        Type d&apos;employé
-                                    </InputLabel>
-                                    <Controller
-                                        as={
-                                            <Select
-                                                SelectDisplayProps={{
-                                                    'data-testid': 'list-employe'
-                                                }}
-                                                fullWidth
-                                                labelId="typeEmployeDemande"
-                                                id="simple-select-outlined"
-                                                labelWidth={labelWidth}>
-                                                {Object.entries(EMPLOYEE_TYPE).map(
-                                                    ([value, label]) => (
-                                                        <MenuItem key={value} value={value}>
-                                                            {label}
-                                                        </MenuItem>
-                                                    )
-                                                )}
-                                            </Select>
-                                        }
-                                        control={control}
-                                        name="employeeType"
-                                        rules={{
-                                            required: 'Le type du visiteur est obligatoire.'
-                                        }}
-                                        defaultValue=""
-                                    />
-                                    {errors.typevisitors && (
-                                        <FormHelperText>
-                                            {errors.typevisitors.message}
-                                        </FormHelperText>
-                                    )}
-                                </FormControl>
-                            </Grid>
+                <Grid container spacing={8}>
+                    <Grid container item sm={12} xs={12} md={12}>
+                        <Grid item md={2} xs={12} sm={12}>
+                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                                Origine visiteurs* :
+                            </Typography>
                         </Grid>
+                        <Grid item md={10} xs={12} sm={12}>
+                            <FormControl
+                                error={Object.prototype.hasOwnProperty.call(errors, 'isInternal')}
+                                component="div">
+                                <Controller
+                                    as={
+                                        <RadioGroup
+                                            className={classes.radioGroup}
+                                            aria-label="origine">
+                                            <FormControlLabel
+                                                value="MINARM"
+                                                control={
+                                                    <Radio
+                                                        color="primary"
+                                                        data-testid="minarm-button"
+                                                    />
+                                                }
+                                                label="MINARM"
+                                            />
+                                            <FormControlLabel
+                                                color="primary"
+                                                value="HORS MINARM"
+                                                control={<Radio color="primary" />}
+                                                label="HORS MINARM"
+                                            />
+                                        </RadioGroup>
+                                    }
+                                    control={control}
+                                    name="isInternal"
+                                    rules={{ required: "L'origine est obligatoire." }}
+                                    defaultValue=""
+                                />
+                                {errors.isInternal && (
+                                    <FormHelperText>{errors.isInternal.message}</FormHelperText>
+                                )}
+                            </FormControl>
+                        </Grid>
+                    </Grid>
 
-                        <Grid
-                            container
-                            spacing={1}
-                            alignItems="flex-end"
-                            className={classes.subTitle}>
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Civilité du visiteur :
-                                </Typography>
-                            </Grid>
+                    <Grid container item sm={12} xs={12} md={12}>
+                        <Grid item md={2} xs={12} sm={12}>
+                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                                Type d&apos;employé* :
+                            </Typography>
+                        </Grid>
+                        <Grid item md={10} xs={12} sm={12}>
+                            <FormControl
+                                data-testid="test-employe"
+                                variant="outlined"
+                                error={Object.prototype.hasOwnProperty.call(errors, 'employeeType')}
+                                fullWidth>
+                                <InputLabel ref={inputLabel} id="select-outlined-label">
+                                    Type
+                                </InputLabel>
+                                <Controller
+                                    as={
+                                        <Select
+                                            SelectDisplayProps={{
+                                                'data-testid': 'list-employe'
+                                            }}
+                                            fullWidth
+                                            labelId="typeEmployeDemande"
+                                            id="simple-select-outlined"
+                                            labelWidth={labelWidth}>
+                                            {Object.entries(EMPLOYEE_TYPE).map(([value, label]) => (
+                                                <MenuItem key={value} value={value}>
+                                                    {label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    }
+                                    control={control}
+                                    name="employeeType"
+                                    rules={{
+                                        required: 'Le type du visiteur est obligatoire.'
+                                    }}
+                                    defaultValue=""
+                                />
+                                {errors.typevisitors && (
+                                    <FormHelperText>{errors.typevisitors.message}</FormHelperText>
+                                )}
+                            </FormControl>
+                        </Grid>
+                    </Grid>
 
-                            <Grid container className={classes.comps} spacing={2}>
+                    <Grid container item sm={12} xs={12} md={12}>
+                        <Grid item md={2} xs={12} sm={12}>
+                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                                Civilité du visiteur* :
+                            </Typography>
+                        </Grid>
+                        <Grid container md={10} xs={12} sm={12} justify="space-between">
+                            <Grid item container spacing={3} md={6} sm={12} xs={12}>
                                 <Grid item md={12} sm={12} xs={12}>
                                     <Controller
                                         as={
                                             <TextField
                                                 label="Email"
+                                                variant="filled"
                                                 error={Object.prototype.hasOwnProperty.call(
                                                     errors,
                                                     'email'
@@ -503,68 +502,10 @@ export default function FormInfoVisitor({
                                         }}
                                     />
                                 </Grid>
-
-                                {watch('isInternal') !== 'HORS MINARM' &&
-                                    formData.object === REQUEST_OBJECT.PROFESSIONAL && (
-                                        <>
-                                            <Grid item md={6} sm={6} xs={12}>
-                                                <Controller
-                                                    as={
-                                                        <TextField
-                                                            label="NID"
-                                                            inputProps={{
-                                                                'data-testid': 'visiteur-nid'
-                                                            }}
-                                                            error={Object.prototype.hasOwnProperty.call(
-                                                                errors,
-                                                                'nid'
-                                                            )}
-                                                            helperText={
-                                                                errors.nid && errors.nid.message
-                                                            }
-                                                            fullWidth
-                                                        />
-                                                    }
-                                                    control={control}
-                                                    name="nid"
-                                                    defaultValue=""
-                                                />
-                                                <FormHelperText className={classes.instruction}>
-                                                    optionnel
-                                                </FormHelperText>
-                                            </Grid>
-                                            <Grid item md={6} sm={6} xs={12}>
-                                                <Controller
-                                                    as={
-                                                        <TextField
-                                                            label="Grade"
-                                                            inputProps={{
-                                                                'data-testid': 'visiteur-grade'
-                                                            }}
-                                                            error={Object.prototype.hasOwnProperty.call(
-                                                                errors,
-                                                                'rank'
-                                                            )}
-                                                            helperText={
-                                                                errors.rank && errors.rank.message
-                                                            }
-                                                            fullWidth
-                                                        />
-                                                    }
-                                                    control={control}
-                                                    name="rank"
-                                                    defaultValue=""
-                                                />
-                                                <FormHelperText className={classes.instruction}>
-                                                    optionnel
-                                                </FormHelperText>
-                                            </Grid>
-                                        </>
-                                    )}
-
                                 <Grid item md={12} sm={12} xs={12}>
                                     <TextField
                                         label="Nom de naissance"
+                                        variant="filled"
                                         fullWidth
                                         name="birthLastname"
                                         error={Object.prototype.hasOwnProperty.call(
@@ -585,30 +526,9 @@ export default function FormInfoVisitor({
                                     <Controller
                                         as={
                                             <TextField
-                                                inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
-                                                label="Nom d'usage"
-                                                error={Object.prototype.hasOwnProperty.call(
-                                                    errors,
-                                                    'usageLastname'
-                                                )}
-                                                fullWidth
-                                            />
-                                        }
-                                        control={control}
-                                        name="usageLastname"
-                                        defaultValue=""
-                                    />
-                                    <FormHelperText className={classes.instruction}>
-                                        optionnel
-                                    </FormHelperText>
-                                </Grid>
-
-                                <Grid item md={12} sm={12} xs={12}>
-                                    <Controller
-                                        as={
-                                            <TextField
                                                 inputProps={{ 'data-testid': 'visiteur-prenom' }}
                                                 label="Prénom"
+                                                variant="filled"
                                                 error={Object.prototype.hasOwnProperty.call(
                                                     errors,
                                                     'firstname'
@@ -628,12 +548,82 @@ export default function FormInfoVisitor({
                                         defaultValue=""
                                     />
                                 </Grid>
+                            </Grid>
+                            <Grid item container spacing={3} md={6} sm={12} xs={12}>
+                                <Grid item md={6} sm={6} xs={12}>
+                                    <Controller
+                                        as={
+                                            <TextField
+                                                label="NID (optionnel)"
+                                                disabled={watch('isInternal') !== 'MINARM'}
+                                                variant="filled"
+                                                inputProps={{
+                                                    'data-testid': 'visiteur-nid'
+                                                }}
+                                                error={Object.prototype.hasOwnProperty.call(
+                                                    errors,
+                                                    'nid'
+                                                )}
+                                                helperText={errors.nid && errors.nid.message}
+                                                fullWidth
+                                                disable={watch('isInternal') !== 'MINARM'}
+                                            />
+                                        }
+                                        control={control}
+                                        name="nid"
+                                        defaultValue=""
+                                    />
+                                </Grid>
+                                <Grid item md={6} sm={6} xs={12}>
+                                    <Controller
+                                        as={
+                                            <TextField
+                                                label="Grade (optionnel)"
+                                                variant="filled"
+                                                disabled={watch('isInternal') !== 'MINARM'}
+                                                inputProps={{
+                                                    'data-testid': 'visiteur-grade'
+                                                }}
+                                                error={Object.prototype.hasOwnProperty.call(
+                                                    errors,
+                                                    'rank'
+                                                )}
+                                                helperText={errors.rank && errors.rank.message}
+                                                fullWidth
+                                            />
+                                        }
+                                        control={control}
+                                        name="rank"
+                                        defaultValue=""
+                                        disable={watch('isInternal') !== 'MINARM'}
+                                    />
+                                </Grid>
+                                <Grid item md={12} sm={12} xs={12}>
+                                    <Controller
+                                        as={
+                                            <TextField
+                                                inputProps={{ 'data-testid': 'visiteur-nomUsage' }}
+                                                label="Nom d'usage (optionnel)"
+                                                variant="filled"
+                                                error={Object.prototype.hasOwnProperty.call(
+                                                    errors,
+                                                    'usageLastname'
+                                                )}
+                                                fullWidth
+                                            />
+                                        }
+                                        control={control}
+                                        name="usageLastname"
+                                        defaultValue=""
+                                    />
+                                </Grid>
                                 <Grid item md={12} sm={12} xs={12}>
                                     <Controller
                                         as={
                                             <TextField
                                                 inputProps={{ 'data-testid': 'visiteur-unite' }}
                                                 label="Unité/Société"
+                                                variant="filled"
                                                 error={Object.prototype.hasOwnProperty.call(
                                                     errors,
                                                     'company'
@@ -656,79 +646,16 @@ export default function FormInfoVisitor({
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} className={classes.subTitle}>
-                            <Typography variant="subtitle2" gutterBottom>
-                                VIP :
+                    </Grid>
+
+                    <Grid container item sm={12} xs={12} md={12}>
+                        <Grid item xs={12} sm={12} md={2}>
+                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                                Identité* :
                             </Typography>
                         </Grid>
-                        <Grid className={classes.comps} item xs={12} sm={12}>
-                            <FormControl
-                                error={Object.prototype.hasOwnProperty.call(errors, 'vip')}
-                                component="div"
-                                className={classes.formVip}>
-                                <Controller
-                                    as={
-                                        <RadioGroup className={classes.radioGroup} aria-label="vip">
-                                            <FormControlLabel
-                                                value="TRUE"
-                                                control={<Radio color="primary" />}
-                                                label="OUI"
-                                                labelPlacement="start"
-                                            />
-                                            <FormControlLabel
-                                                value="FALSE"
-                                                control={<Radio color="primary" />}
-                                                label="NON"
-                                                labelPlacement="start"
-                                            />
-                                        </RadioGroup>
-                                    }
-                                    control={control}
-                                    name="vip"
-                                    defaultValue="FALSE"
-                                />
-                                {((selectVisitor && selectVisitor.vip) ||
-                                    watch('vip') === 'TRUE') && (
-                                    <Grid item xs={12} sm={12}>
-                                        <Controller
-                                            as={
-                                                <TextField
-                                                    label="Veuillez justifier"
-                                                    multiline
-                                                    rowsMax="4"
-                                                    error={Object.prototype.hasOwnProperty.call(
-                                                        errors,
-                                                        'vipReason'
-                                                    )}
-                                                    helperText={
-                                                        errors.vipReason &&
-                                                        errors.vipReason.type === 'required' &&
-                                                        'La justification est obligatoire.'
-                                                    }
-                                                    fullWidth
-                                                    inputProps={{ maxLength: 50 }}
-                                                />
-                                            }
-                                            control={control}
-                                            name="vipReason"
-                                            rules={{
-                                                required: watch('vip') || '' === 'OUI'
-                                            }}
-                                            defaultValue=""
-                                        />
-                                    </Grid>
-                                )}
-                            </FormControl>
-                        </Grid>
-                    </Grid>
-                    <Grid item sm={12} xs={12} md={6}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Identité :
-                                </Typography>
-                            </Grid>
-                            <Grid container spacing={2} className={classes.comps}>
+                        <Grid item container xs={12} sm={12} md={10} justify="space-between">
+                            <Grid item container spacing={3} xs={12} sm={12} md={6}>
                                 <Grid item xs={12} sm={12} md={12}>
                                     <Autocomplete
                                         id="combo-box-naissance"
@@ -759,82 +686,11 @@ export default function FormInfoVisitor({
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={12}>
-                                    <FormControl
-                                        variant="outlined"
-                                        error={Object.prototype.hasOwnProperty.call(errors, 'kind')}
-                                        fullWidth>
-                                        <InputLabel ref={inputLabel} id="select-outlined-label">
-                                            Type Document
-                                        </InputLabel>
-                                        <Controller
-                                            as={
-                                                <Select
-                                                    disabled={watch('nationality') === ''}
-                                                    fullWidth
-                                                    labelId="kind"
-                                                    id="typeDocument"
-                                                    labelWidth={labelWidth}>
-                                                    {getTypeDocument(watch('isInternal')).map(
-                                                        (doc) => (
-                                                            <MenuItem
-                                                                key={doc.value}
-                                                                value={doc.value}>
-                                                                {doc.label}
-                                                            </MenuItem>
-                                                        )
-                                                    )}
-                                                </Select>
-                                            }
-                                            control={control}
-                                            name="kind"
-                                            defaultValue=""
-                                            rules={{
-                                                required: 'Le type de document est obligatoire'
-                                            }}
-                                        />
-                                        {errors.kind && errors.kind.type === 'required' && (
-                                            <FormHelperText>{errors.kind.message}</FormHelperText>
-                                        )}
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12}>
-                                    <Controller
-                                        as={
-                                            <TextField
-                                                disabled={watch('kind') === ''}
-                                                label="Numéro"
-                                                error={Object.prototype.hasOwnProperty.call(
-                                                    errors,
-                                                    'reference'
-                                                )}
-                                                helperText={
-                                                    errors.reference && errors.reference.message
-                                                }
-                                                fullWidth
-                                            />
-                                        }
-                                        control={control}
-                                        name="reference"
-                                        defaultValue=""
-                                        rules={{
-                                            required: 'Le numéro de document est obligatoire',
-
-                                            validate: (value) =>
-                                                validator.matches(
-                                                    value,
-                                                    getKindControl(
-                                                        watch('nationality'),
-                                                        watch('kind')
-                                                    )
-                                                ) || 'format invalide'
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12}>
                                     <Controller
                                         as={
                                             <DatePicker
                                                 label="Date de naissance"
+                                                variant="filled"
                                                 error={Object.prototype.hasOwnProperty.call(
                                                     errors,
                                                     'birthday'
@@ -876,12 +732,12 @@ export default function FormInfoVisitor({
                                         defaultValue={null}
                                     />
                                 </Grid>
-
                                 <Grid item xs={12} sm={12} md={12}>
                                     <Controller
                                         as={
                                             <TextField
                                                 label="Lieu de naissance"
+                                                variant="filled"
                                                 error={Object.prototype.hasOwnProperty.call(
                                                     errors,
                                                     'birthplace'
@@ -904,47 +760,194 @@ export default function FormInfoVisitor({
                                     />
                                 </Grid>
                             </Grid>
-                        </Grid>
-                        {inputFile && (
-                            <Grid
-                                container
-                                spacing={2}
-                                className={classes.subTitle}
-                                justify="space-between">
-                                <Grid item xs={12} sm={12}>
-                                    <Typography variant="subtitle2" gutterBottom>
-                                        Scan papier identité : (obligatoire pour étranger)
-                                    </Typography>
+                            <Grid item xs={12} sm={12} md={6}>
+                                <Grid xs={12} sm={12} md={12} style={{ marginBottom: 20 }}>
+                                    <FormControl
+                                        variant="outlined"
+                                        error={Object.prototype.hasOwnProperty.call(errors, 'kind')}
+                                        fullWidth>
+                                        <InputLabel ref={inputLabel} id="select-outlined-label">
+                                            Type Document
+                                        </InputLabel>
+                                        <Controller
+                                            as={
+                                                <Select
+                                                    disabled={watch('nationality') === ''}
+                                                    classes={{ disabled: classes.disabled }}
+                                                    fullWidth
+                                                    labelId="kind"
+                                                    id="typeDocument"
+                                                    labelWidth={labelWidth}>
+                                                    {getTypeDocument(watch('isInternal')).map(
+                                                        (doc) => (
+                                                            <MenuItem
+                                                                key={doc.value}
+                                                                value={doc.value}>
+                                                                {doc.label}
+                                                            </MenuItem>
+                                                        )
+                                                    )}
+                                                </Select>
+                                            }
+                                            control={control}
+                                            name="kind"
+                                            defaultValue=""
+                                            rules={{
+                                                required: 'Le type de document est obligatoire'
+                                            }}
+                                        />
+                                        {errors.kind && errors.kind.type === 'required' && (
+                                            <FormHelperText>{errors.kind.message}</FormHelperText>
+                                        )}
+                                    </FormControl>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} className={classes.comps}>
+                                <Grid xs={12} sm={12} md={12}>
                                     <Controller
-                                        as={InputFile}
-                                        rules={{
-                                            required:
-                                                watch('nationality') !== 'Française' &&
-                                                !selectVisitor,
-                                            validate: (value) =>
-                                                !selectVisitor ||
-                                                (selectVisitor &&
-                                                    (selectVisitor.fileDefaultValue !== '' ||
-                                                        value))
-                                        }}
-                                        control={control}
-                                        defaultValue=""
-                                        name="file"
-                                        editValue={
-                                            selectVisitor && selectVisitor.fileDefaultValue
-                                                ? selectVisitor.fileDefaultValue
-                                                : ''
+                                        as={
+                                            <TextField
+                                                disabled={watch('kind') === ''}
+                                                label="Numéro"
+                                                variant="filled"
+                                                error={Object.prototype.hasOwnProperty.call(
+                                                    errors,
+                                                    'reference'
+                                                )}
+                                                helperText={
+                                                    errors.reference && errors.reference.message
+                                                }
+                                                fullWidth
+                                            />
                                         }
-                                        onChange={(file) => file}
-                                        label="Fichier"
-                                        error={Object.prototype.hasOwnProperty.call(errors, 'file')}
+                                        control={control}
+                                        name="reference"
+                                        defaultValue=""
+                                        rules={{
+                                            required: 'Le numéro de document est obligatoire',
+
+                                            validate: (value) =>
+                                                validator.matches(
+                                                    value,
+                                                    getKindControl(
+                                                        watch('nationality'),
+                                                        watch('kind')
+                                                    )
+                                                ) || 'format invalide'
+                                        }}
                                     />
                                 </Grid>
                             </Grid>
-                        )}
+                            {inputFile && (
+                                <Grid xs={12} sm={12} md={12} spacing={2}>
+                                    <Grid item xs={12} sm={12}>
+                                        <Typography
+                                            variant="subtitle2"
+                                            gutterBottom
+                                            className={classes.fieldLabel}>
+                                            Scan papier identité : (obligatoire pour étranger)
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12}>
+                                        <Controller
+                                            as={InputFile}
+                                            rules={{
+                                                required:
+                                                    watch('nationality') !== 'Française' &&
+                                                    !selectVisitor,
+                                                validate: (value) =>
+                                                    !selectVisitor ||
+                                                    (selectVisitor &&
+                                                        (selectVisitor.fileDefaultValue !== '' ||
+                                                            value))
+                                            }}
+                                            control={control}
+                                            defaultValue=""
+                                            name="file"
+                                            editValue={
+                                                selectVisitor && selectVisitor.fileDefaultValue
+                                                    ? selectVisitor.fileDefaultValue
+                                                    : ''
+                                            }
+                                            onChange={(file) => file}
+                                            label="Fichier"
+                                            error={Object.prototype.hasOwnProperty.call(
+                                                errors,
+                                                'file'
+                                            )}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            )}
+                        </Grid>
                     </Grid>
+
+                    <Grid container item sm={12} xs={12} md={12}>
+                        <Grid item md={2} xs={12} sm={12}>
+                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                                VIP* :
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={10}>
+                            <FormControl
+                                error={Object.prototype.hasOwnProperty.call(errors, 'vip')}
+                                component="div"
+                                className={classes.formVip}>
+                                <Controller
+                                    as={
+                                        <RadioGroup className={classes.radioGroup} aria-label="vip">
+                                            <FormControlLabel
+                                                value="TRUE"
+                                                control={<Radio color="primary" />}
+                                                label="OUI"
+                                                labelPlacement="start"
+                                            />
+                                            <FormControlLabel
+                                                value="FALSE"
+                                                control={<Radio color="primary" />}
+                                                label="NON"
+                                                labelPlacement="start"
+                                            />
+                                        </RadioGroup>
+                                    }
+                                    control={control}
+                                    name="vip"
+                                    defaultValue="FALSE"
+                                />
+                                {((selectVisitor && selectVisitor.vip) ||
+                                    watch('vip') === 'TRUE') && (
+                                    <Grid item xs={12} sm={12} md={12}>
+                                        <Controller
+                                            as={
+                                                <TextField
+                                                    label="Veuillez justifier"
+                                                    variant="filled"
+                                                    multiline
+                                                    rowsMax="4"
+                                                    error={Object.prototype.hasOwnProperty.call(
+                                                        errors,
+                                                        'vipReason'
+                                                    )}
+                                                    helperText={
+                                                        errors.vipReason &&
+                                                        errors.vipReason.type === 'required' &&
+                                                        'La justification est obligatoire.'
+                                                    }
+                                                    fullWidth
+                                                    inputProps={{ maxLength: 50 }}
+                                                />
+                                            }
+                                            control={control}
+                                            name="vipReason"
+                                            rules={{
+                                                required: watch('vip') || '' === 'OUI'
+                                            }}
+                                            defaultValue=""
+                                        />
+                                    </Grid>
+                                )}
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+
                     <Grid item sm={12}>
                         <Grid container justify="flex-end">
                             <div>
