@@ -23,7 +23,7 @@ const columns = [
         }
     },
     {
-        id: 'periode',
+        id: 'period',
         label: 'Période',
         style: {
             width: 115
@@ -42,7 +42,7 @@ const columns = [
 function createData({ id, from, to, places, reason, status }) {
     return {
         id,
-        periode: `${format(new Date(from), 'dd/MM/yyyy')}
+        period: `${format(new Date(from), 'dd/MM/yyyy')}
         \n
         ${format(new Date(to), 'dd/MM/yyyy')}`,
         places: places.map((place, index) => {

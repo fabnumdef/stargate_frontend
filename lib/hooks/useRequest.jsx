@@ -2,11 +2,12 @@ import { useCallback } from 'react';
 import { useMutation } from '@apollo/client';
 
 import { campusIdVar } from '../apollo/cache';
-import { CANCEL_REQUEST } from '../apollo/mutations';
-import { LIST_MY_REQUESTS } from '../apollo/fragments';
+import { CANCEL_REQUEST, CANCEL_VISITOR } from '../apollo/mutations';
+import { GET_REQUEST, LIST_MY_REQUESTS } from '../apollo/queries';
+import { LIST_MY_REQUESTS as FRAGMENT_LIST_MY_REQUESTS } from '../apollo/fragments';
 import { useSnackBar } from './snackbar';
 
-import { STATE_REQUEST } from '../../utils/constants/enums';
+import { STATE_REQUEST, VISITOR_STATUS } from '../../utils/constants/enums';
 
 export default function useRequest() {
     const { addAlert } = useSnackBar();
@@ -20,7 +21,22 @@ export default function useRequest() {
         },
         onError: () => {
             addAlert({
-                message: 'Erreur lors de la suppression .',
+                message: 'Erreur lors de la suppression.',
+                severity: 'error'
+            });
+        }
+    });
+
+    const [cancelVisitor] = useMutation(CANCEL_VISITOR, {
+        onCompleted: () => {
+            addAlert({
+                message: 'Suppression confirmée !',
+                severity: 'success'
+            });
+        },
+        onError: () => {
+            addAlert({
+                message: 'Erreur lors de la suppression.',
                 severity: 'error'
             });
         }
@@ -45,7 +61,7 @@ export default function useRequest() {
             update: (cache) => {
                 const campus = cache.readFragment({
                     id: `Campus:${campusIdVar()}`,
-                    fragment: LIST_MY_REQUESTS,
+                    fragment: FRAGMENT_LIST_MY_REQUESTS,
                     fragmentName: 'listMyRequests',
                     variables: {
                         filters: { status: STATE_REQUEST.STATE_CREATED.state }
@@ -68,7 +84,7 @@ export default function useRequest() {
 
                 cache.writeFragment({
                     id: `Campus:${campusIdVar()}`,
-                    fragment: LIST_MY_REQUESTS,
+                    fragment: FRAGMENT_LIST_MY_REQUESTS,
                     fragmentName: 'listMyRequests',
                     variables: {
                         filters: { status: STATE_REQUEST.STATE_CREATED.state }
@@ -79,5 +95,46 @@ export default function useRequest() {
         });
     }, []);
 
-    return { deleteRequest };
+    const deleteRequestVisitor = useCallback((requestId, visitorId) => {
+        cancelVisitor({
+            variables: { requestId, visitorId },
+            optimisticResponse: {
+                __typename: 'Mutation',
+                mutateCampus: {
+                    __typename: 'CampusMutation',
+                    mutateRequest: {
+                        __typename: 'Request',
+                        cancelVisitor: {
+                            __typename: 'RequestVisitor',
+                            id: visitorId,
+                            status: VISITOR_STATUS.CANCELED
+                        }
+                    }
+                }
+            },
+            refetchQueries: [
+                {
+                    query: GET_REQUEST,
+                    variables: { requestId }
+                },
+                {
+                    query: LIST_MY_REQUESTS,
+                    /** Dont put any cursor if u want that cache replace old value */
+                    variables: {
+                        filtersP: { status: STATE_REQUEST.STATE_CREATED.state },
+                        filtersT: {
+                            status: [
+                                STATE_REQUEST.STATE_CANCELED.state,
+                                STATE_REQUEST.STATE_ACCEPTED.state,
+                                STATE_REQUEST.STATE_MIXED.state,
+                                STATE_REQUEST.STATE_REJECTED.state
+                            ]
+                        }
+                    }
+                }
+            ]
+        });
+    }, []);
+
+    return { deleteRequest, deleteRequestVisitor };
 }

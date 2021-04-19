@@ -34,3 +34,10 @@ export function checkScreenedVisitor(units) {
         ? isScreeningDone.steps.find((s) => s.role === ROLES.ROLE_SCREENING.role).state.value
         : PROGRESS_STEP_STATUS;
 }
+
+export function findVisitorStatus(units) {
+    const status = units
+        .find((u) => u.steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role))
+        .steps.find((s) => s.role === ROLES.ROLE_ACCESS_OFFICE.role).state.tags;
+    return status ? status.join(', ').toString() : '';
+}

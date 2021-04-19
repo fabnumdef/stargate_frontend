@@ -94,7 +94,7 @@ function DeleteDialogs({ title, isOpen, onClose }) {
                         variant="outlined"
                         onClick={() => onClose(true)}
                         className={classes.deleteButton}>
-                        Confirmer
+                        Supprimer
                     </RoundButton>
                 </MuiDialogActions>
             </Dialog>
