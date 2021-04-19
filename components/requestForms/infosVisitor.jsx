@@ -801,7 +801,7 @@ export default function FormInfoVisitor({
                                         )}
                                     </FormControl>
                                 </Grid>
-                                <Grid xs={12} sm={12} md={12}>
+                                <Grid xs={12} sm={12} md={12} style={{ marginBottom: 10 }}>
                                     <Controller
                                         as={
                                             <TextField
@@ -835,17 +835,7 @@ export default function FormInfoVisitor({
                                         }}
                                     />
                                 </Grid>
-                            </Grid>
-                            {inputFile && (
-                                <Grid xs={12} sm={12} md={12} spacing={2}>
-                                    <Grid item xs={12} sm={12}>
-                                        <Typography
-                                            variant="subtitle2"
-                                            gutterBottom
-                                            className={classes.fieldLabel}>
-                                            Scan papier identité : (obligatoire pour étranger)
-                                        </Typography>
-                                    </Grid>
+                                {inputFile && (
                                     <Grid item xs={12} sm={12} md={12}>
                                         <Controller
                                             as={InputFile}
@@ -868,15 +858,16 @@ export default function FormInfoVisitor({
                                                     : ''
                                             }
                                             onChange={(file) => file}
-                                            label="Fichier"
+                                            type="Fichier"
+                                            label="Scan papier identité (obligatoire pour étranger)"
                                             error={Object.prototype.hasOwnProperty.call(
                                                 errors,
                                                 'file'
                                             )}
                                         />
                                     </Grid>
-                                </Grid>
-                            )}
+                                )}
+                            </Grid>
                         </Grid>
                     </Grid>
 
