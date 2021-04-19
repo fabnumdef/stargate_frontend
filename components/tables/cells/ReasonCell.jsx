@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const MAX_LENGTH = 140;
+const MAX_LENGTH = 250;
 
 export default function ReasonCell({ children, ...others }) {
     const classes = useStyles();
