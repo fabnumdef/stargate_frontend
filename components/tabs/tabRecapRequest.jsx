@@ -1,45 +1,44 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 
 import Table from '@material-ui/core/Table';
-import Grid from '@material-ui/core/Grid';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 
-import CustomTableCell from '../tables/cells/TableCellHeader';
-import VisitorGrid from '../styled/visitor';
 import { EMPLOYEE_TYPE } from '../../utils/constants/enums';
+import TableContainer from '@material-ui/core/TableContainer';
+import SquareButton from '../styled/common/squareButton';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import DeleteModal from '../styled/common/DeleteDialogs';
 
-const columns = [
-    { id: 'visiteur', label: 'Visiteur', minWidth: 150 },
+const createColumns = (visitors) => [
+    {
+        id: 'visiteur',
+        label: `Visiteur(s) (${visitors.length})`
+    },
     {
         id: 'unite',
-        label: 'Unité/Société',
-        minWidth: 150
+        label: 'Unité / Société'
     },
     {
         id: 'type',
-        label: 'Type',
-        minWidth: 150
+        label: 'Type'
+    },
+    {
+        id: 'action',
+        label: ''
     }
 ];
 
-function createData({ id, vip, vipReason, firstname, birthLastname, rank, company, employeeType }) {
+function createData({ id, firstname, birthLastname, rank, company, employeeType }) {
     return {
         id,
-        vip,
-        vipReason,
         visiteur: rank
             ? `${rank} ${birthLastname.toUpperCase()} ${firstname}`
             : `${birthLastname.toUpperCase()} ${firstname}`,
@@ -48,15 +47,42 @@ function createData({ id, vip, vipReason, firstname, birthLastname, rank, compan
     };
 }
 
-const useStyles = makeStyles({
-    container: {
-        maxHeight: 440
+const useStyles = makeStyles((theme) => ({
+    root: {
+        border: '1px solid #F3F3F3',
+        maxHeight: '440px',
+        overflowX: 'hidden'
+    },
+    header: {
+        border: `1px solid ${theme.palette.background.layout}`,
+        '&:first-child': { paddingLeft: '30px' }
+    },
+    headerContent: {
+        fontWeight: 'bold',
+        width: 330
+    },
+    row: {
+        '& > td': {
+            borderTop: `20px solid ${theme.palette.background.layout}`,
+            borderBottom: `20px solid ${theme.palette.background.layout}`
+        },
+        width: 330
+    },
+    firstCell: {
+        borderLeft: `30px solid ${theme.palette.background.layout}`
+    },
+    lastCell: {
+        borderRight: `30px solid ${theme.palette.background.layout}`,
+        textAlign: 'right'
     },
     icon: {
-        marginTop: '-20px',
-        marginBottom: '-20px'
+        color: 'rgba(0, 0, 0, 0.25)',
+        '&:hover': {
+            backgroundColor: theme.palette.common.white,
+            color: theme.palette.primary.main
+        }
     }
-});
+}));
 
 export default function TabRecapRequest({ visitors, onDelete, handleBack, setSelectVisitor }) {
     const classes = useStyles();
@@ -65,9 +91,9 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
         acc.push(createData(vis));
         return acc;
     }, []);
+    const columns = createColumns(visitors);
 
-    const [hover, setHover] = useState({});
-    const [del, setDel] = useState({});
+    const [toDeleteID, setToDeleteID] = useState();
 
     // const [page, setPage] = React.useState(0);
     // const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -86,154 +112,72 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
         handleBack();
     };
 
-    const handleMouseEnter = (index) => {
-        setHover((prevState) => ({ ...prevState, [index]: true }));
-    };
-
     const handleUpdate = (index) => {
         setSelectVisitor(visitors[index]);
         handleBack();
     };
 
-    const handleDelete = (index) => {
-        setHover({});
-        setDel({ [index]: true });
-    };
-
     const handleDeleteConfirm = (id) => {
         onDelete(id);
-        setDel({});
-    };
-
-    const handleDeleteAvorted = () => {
-        setDel({});
-    };
-
-    const handleMouseLeave = (index) => {
-        setTimeout(() => {}, 2000);
-        setHover((prevState) => ({ ...prevState, [index]: false }));
     };
 
     return (
-        <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-                <TableRow>
-                    {columns.map((column) => (
-                        <CustomTableCell key={column.id} align={column.align}>
-                            {column.label}
-                        </CustomTableCell>
+        <TableContainer className={classes.root}>
+            <Table>
+                <TableHead>
+                    <TableRow className={classes.header}>
+                        {columns.map((column) => (
+                            <TableCell key={column.id} className={classes.headerContent}>
+                                {column.id === 'action' ? (
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={handleAddVisitor}
+                                        startIcon={<AddIcon />}
+                                        style={{ float: 'right' }}>
+                                        Ajouter
+                                    </Button>
+                                ) : (
+                                    column.label
+                                )}
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows.map((row, index) => (
+                        <TableRow key={row.id} className={classes.row}>
+                            <TableCell className={classes.firstCell}>{row.visiteur}</TableCell>
+                            <TableCell>{row.unite}</TableCell>
+                            <TableCell>{row.type}</TableCell>
+                            <TableCell className={classes.lastCell}>
+                                <SquareButton
+                                    aria-label="details"
+                                    onClick={() => handleUpdate(index)}
+                                    classes={{ root: classes.icon }}>
+                                    <DescriptionOutlinedIcon />
+                                </SquareButton>
+                                <SquareButton
+                                    aria-label="delete"
+                                    onClick={() => setToDeleteID(row.id)}
+                                    classes={{ root: classes.icon }}>
+                                    <DeleteOutlineIcon />
+                                </SquareButton>
+                            </TableCell>
+                        </TableRow>
                     ))}
-                    <CustomTableCell>
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            color="primary"
-                            onClick={handleAddVisitor}
-                            startIcon={<AddIcon />}
-                            style={{ float: 'right' }}>
-                            Ajouter
-                        </Button>
-                    </CustomTableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {rows
-                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                        if (del[index]) {
-                            return (
-                                <TableRow tabIndex={-1} key={row.emailVisiteur}>
-                                    <TableCell
-                                        key="delete"
-                                        align="justify"
-                                        colspan={columns.length + 1}>
-                                        <Grid container>
-                                            <Grid item sm={10}>
-                                                <Typography variant="body1">
-                                                    Êtes-vous sûr de vouloir supprimer{' '}
-                                                    {row.visiteur} de la demande ?
-                                                </Typography>
-                                                {rows.length === 1 && (
-                                                    <Typography variant="body1" color="error">
-                                                        Si il n&apos;y a plus de visiteur, la
-                                                        demande va être supprimée.
-                                                    </Typography>
-                                                )}
-                                            </Grid>
-                                            <Grid item sm={2}>
-                                                <div style={{ float: 'right' }}>
-                                                    <IconButton
-                                                        aria-label="valide"
-                                                        className={classes.icon}
-                                                        color="secondary"
-                                                        onClick={() => handleDeleteConfirm(row.id)}>
-                                                        <DoneIcon />
-                                                    </IconButton>
-
-                                                    <IconButton
-                                                        aria-label="cancel"
-                                                        className={classes.icon}
-                                                        onClick={() => handleDeleteAvorted(index)}>
-                                                        <CloseIcon />
-                                                    </IconButton>
-                                                </div>
-                                            </Grid>
-                                        </Grid>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        }
-                        return (
-                            <TableRow
-                                onMouseOver={() => handleMouseEnter(index)}
-                                onFocus={() => handleMouseEnter(index)}
-                                onMouseLeave={() => handleMouseLeave(index)}
-                                role="checkbox"
-                                tabIndex={-1}
-                                key={row.id}>
-                                {columns.map((column) => {
-                                    const value = row[column.id];
-                                    return column.id === 'visiteur' ? (
-                                        <TableCell key={column.id} align={column.align}>
-                                            <VisitorGrid
-                                                name={value}
-                                                vip={row.vip}
-                                                vipReason={row.vipReason}
-                                            />
-                                        </TableCell>
-                                    ) : (
-                                        <TableCell key={column.id} align={column.align}>
-                                            {column.format && typeof value === 'number'
-                                                ? column.format(value)
-                                                : value}
-                                        </TableCell>
-                                    );
-                                })}
-                                <TableCell key="actions">
-                                    {hover[index] && (
-                                        <div style={{ float: 'right' }}>
-                                            <IconButton
-                                                aria-label="edit"
-                                                className={classes.icon}
-                                                color="primary"
-                                                onClick={() => handleUpdate(index)}>
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                color="primary"
-                                                aria-label="delete"
-                                                className={classes.icon}
-                                                onClick={() => handleDelete(index)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </div>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
-            </TableBody>
-        </Table>
+                </TableBody>
+            </Table>
+            <DeleteModal
+                isOpen={toDeleteID}
+                title="Supression Visiteur"
+                onClose={(confirm) => {
+                    if (confirm) handleDeleteConfirm(toDeleteID);
+                    setToDeleteID(null);
+                }}
+            />
+        </TableContainer>
     );
 }
 

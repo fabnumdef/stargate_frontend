@@ -4,7 +4,7 @@ import AttachFileIcon from '@material-ui/icons/AttachFile';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 
-export default function InputFile({ label, onChange, error, editValue }) {
+export default function InputFile({ type, label, onChange, error, editValue }) {
     const [formValue, setValue] = useState(editValue);
 
     const handleChange = (event) => {
@@ -17,7 +17,6 @@ export default function InputFile({ label, onChange, error, editValue }) {
         <>
             <label htmlFor="icon-button-file">
                 <input
-                    label={label}
                     id="icon-button-file"
                     type="file"
                     name="fileVisiteur"
@@ -27,7 +26,8 @@ export default function InputFile({ label, onChange, error, editValue }) {
                 <TextField
                     value={formValue}
                     error={error || false}
-                    helperText={error && `Le ${label} est obligatoire`}
+                    label={label}
+                    helperText={error && `Le ${type} est obligatoire`}
                     InputProps={{
                         endAdornment: (
                             <IconButton aria-label="upload" component="span">
@@ -44,6 +44,7 @@ export default function InputFile({ label, onChange, error, editValue }) {
 
 InputFile.propTypes = {
     label: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     error: PropTypes.bool.isRequired,
     editValue: PropTypes.string.isRequired

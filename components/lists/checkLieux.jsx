@@ -13,8 +13,6 @@ import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { fade } from '@material-ui/core/styles/colorManipulator';
-
 const useStyles = makeStyles((theme) => ({
     heading: {
         fontSize: theme.typography.pxToRem(14),
@@ -27,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto'
     },
     listItem: {
-        backgroundColor: fade(theme.palette.primary.main, 0.02)
+        borderBottom: '0.25px solid rgba(0, 0, 0, 0.4)'
     }
 }));
 
@@ -47,14 +45,17 @@ const AccordionStyled = withStyles(() => ({
     expanded: {}
 }))(Accordion);
 
-const AccordionSummaryStyled = withStyles((theme) => ({
+const AccordionSummaryStyled = withStyles(() => ({
     root: {
-        backgroundColor: fade(theme.palette.primary.main, 0.1),
-        borderBottom: `1px solid ${theme.palette.primary.main}`,
+        border: `1px solid rgba(0, 0, 0, 0.2)`,
+        borderRadius: '4px',
         marginBottom: -1,
         minHeight: 56,
         '&$expanded': {
             minHeight: 56
+        },
+        '&:hover': {
+            border: `1px solid rgba(0, 0, 0, 0.8)`
         }
     },
     content: {
@@ -116,10 +117,13 @@ export default function ListLieux({
                 aria-controls="panel1a-content"
                 id="panel1a-header">
                 <div>
-                    <Typography className={classes.heading}>{label}</Typography>
+                    {!checked.length && (
+                        <Typography className={classes.heading}>{label}</Typography>
+                    )}
                     {checked.map((place, i) => (
                         <Chip
                             color="primary"
+                            variant="outlined"
                             style={{ margin: '2px' }}
                             key={place.id}
                             label={place.label}

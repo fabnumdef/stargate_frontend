@@ -22,6 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 import { isValid, differenceInDays, isBefore, isThursday, isFriday } from 'date-fns';
 import validator from 'validator';
@@ -57,9 +58,6 @@ const useStyles = makeStyles((theme) => ({
     spacingComps: {
         marginBottom: '5vh'
     },
-    comps: {
-        marginLeft: '3vw'
-    },
     buttonNext: {
         marginTop: '4vh'
     },
@@ -75,23 +73,40 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '2%'
     },
     infoTime: {
+        backgroundColor: theme.palette.background.layout,
+        borderLeft: `3px solid ${theme.palette.primary.light}`,
+        paddingTop: '15px'
+    },
+    infoTimeTitle: {
+        fontWeight: 'bold',
+        paddingLeft: '16px'
+    },
+    infoTimeItem: {
         paddingTop: '0px',
         paddingBottom: '0px',
         marginTop: '0px',
         marginBottom: '0px'
     },
+    infoIcon: {
+        color: theme.palette.primary.light
+    },
     error: {
         color: theme.palette.error.main
     },
     radioNature: {
-        flexDirection: 'row',
-        marginLeft: '-7%'
+        flexDirection: 'row'
+    },
+    radioLabel: {
+        marginRight: '70px'
     },
     buttonCancel: {
         marginRight: '5px'
     },
     checkPos: {
         marginBottom: '5px'
+    },
+    fieldLabel: {
+        fontWeight: 'bold'
     }
 }));
 
@@ -352,129 +367,149 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                 <Grid container spacing={6}>
                     {group && (
                         <Grid item sm={12} xs={12} md={12}>
-                            <Grid container direction="column">
+                            <Grid container>
                                 {/* Item 1 */}
-                                <Grid item md={12} sm={12}>
-                                    <Typography variant="subtitle2">Référent groupe :</Typography>
+                                <Grid item md={2} sm={12}>
+                                    <Typography variant="body1" className={classes.fieldLabel}>
+                                        Responsable visite :
+                                    </Typography>
                                 </Grid>
-                                <Grid item sm={6} xs={6}>
-                                    <Controller
-                                        as={
-                                            <TextField
-                                                label="Email"
-                                                error={Object.prototype.hasOwnProperty.call(
-                                                    errors,
-                                                    'refEmail'
-                                                )}
-                                                InputProps={
-                                                    watch('refEmail') &&
-                                                    validator.isEmail(watch('refEmail'))
-                                                        ? {
-                                                              endAdornment: (
-                                                                  <InputAdornment
-                                                                      position="end"
-                                                                      className={classes.checkPos}>
-                                                                      <CheckAnimation />
-                                                                  </InputAdornment>
-                                                              ),
-                                                              inputProps: {
-                                                                  'data-testid': 'visiteur-email'
+                                <Grid container md={10} sm={12} xs={12} spacing={3}>
+                                    <Grid item md={6} sm={6} xs={6}>
+                                        <Controller
+                                            as={
+                                                <TextField
+                                                    label="Email"
+                                                    variant="outlined"
+                                                    error={Object.prototype.hasOwnProperty.call(
+                                                        errors,
+                                                        'refEmail'
+                                                    )}
+                                                    InputProps={
+                                                        watch('refEmail') &&
+                                                        validator.isEmail(watch('refEmail'))
+                                                            ? {
+                                                                  endAdornment: (
+                                                                      <InputAdornment
+                                                                          position="end"
+                                                                          className={
+                                                                              classes.checkPos
+                                                                          }>
+                                                                          <CheckAnimation />
+                                                                      </InputAdornment>
+                                                                  ),
+                                                                  inputProps: {
+                                                                      'data-testid':
+                                                                          'visiteur-email'
+                                                                  }
                                                               }
-                                                          }
-                                                        : {
-                                                              inputProps: {
-                                                                  'data-testid': 'visiteur-email'
+                                                            : {
+                                                                  inputProps: {
+                                                                      'data-testid':
+                                                                          'visiteur-email'
+                                                                  }
                                                               }
-                                                          }
-                                                }
-                                                helperText={
-                                                    errors.refEmail && errors.refEmail.message
-                                                }
-                                                fullWidth
-                                            />
-                                        }
-                                        control={control}
-                                        name="refEmail"
-                                        defaultValue=""
-                                        rules={{
-                                            required: "L'email du référent est obligatoire",
-                                            validate: (value) =>
-                                                validator.isEmail(value) || 'Format invalide'
-                                        }}
-                                    />
-                                </Grid>
-
-                                <Grid item sm={6} xs={6}>
-                                    <TextField
-                                        label="Nom"
-                                        fullWidth
-                                        name="refName"
-                                        error={Object.prototype.hasOwnProperty.call(
-                                            errors,
-                                            'refName'
-                                        )}
-                                        helperText={errors.refName && errors.refName.message}
-                                        inputRef={register({
-                                            validate: (value) =>
-                                                value.trim() !== '' || 'Le nom est obligatoire'
-                                        })}
-                                    />
-                                </Grid>
-                                <Grid item sm={6} xs={6}>
-                                    <TextField
-                                        label="Prénom"
-                                        fullWidth
-                                        name="refFirstName"
-                                        error={Object.prototype.hasOwnProperty.call(
-                                            errors,
-                                            'refFirstName'
-                                        )}
-                                        helperText={
-                                            errors.refFirstName && errors.refFirstName.message
-                                        }
-                                        inputRef={register({
-                                            validate: (value) =>
-                                                value.trim() !== '' || 'Le prénom est obligatoire'
-                                        })}
-                                    />
-                                </Grid>
-                                <Grid item sm={6} xs={6}>
-                                    <Controller
-                                        as={
-                                            <TextField
-                                                label="Téléphone"
-                                                type="tel"
-                                                fullWidth
-                                                error={Object.prototype.hasOwnProperty.call(
-                                                    errors,
-                                                    'refPhone'
-                                                )}
-                                                helperText={
-                                                    errors.refPhone && errors.refPhone.message
-                                                }
-                                                inputRef={register()}
-                                            />
-                                        }
-                                        control={control}
-                                        name="refPhone"
-                                        defaultValue=""
-                                    />
-                                    <FormHelperText className={classes.instruction}>
-                                        optionnel
-                                    </FormHelperText>
+                                                    }
+                                                    helperText={
+                                                        errors.refEmail && errors.refEmail.message
+                                                    }
+                                                    fullWidth
+                                                />
+                                            }
+                                            control={control}
+                                            name="refEmail"
+                                            defaultValue=""
+                                            rules={{
+                                                required: "L'email du référent est obligatoire",
+                                                validate: (value) =>
+                                                    validator.isEmail(value) || 'Format invalide'
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item md={6} sm={6} xs={6}>
+                                        <TextField
+                                            label="Nom"
+                                            fullWidth
+                                            variant="outlined"
+                                            name="refName"
+                                            error={Object.prototype.hasOwnProperty.call(
+                                                errors,
+                                                'refName'
+                                            )}
+                                            helperText={errors.refName && errors.refName.message}
+                                            inputRef={register({
+                                                validate: (value) =>
+                                                    value.trim() !== '' || 'Le nom est obligatoire'
+                                            })}
+                                        />
+                                    </Grid>
+                                    <Grid item md={6} sm={6} xs={6}>
+                                        <TextField
+                                            label="Prénom"
+                                            fullWidth
+                                            variant="outlined"
+                                            name="refFirstName"
+                                            error={Object.prototype.hasOwnProperty.call(
+                                                errors,
+                                                'refFirstName'
+                                            )}
+                                            helperText={
+                                                errors.refFirstName && errors.refFirstName.message
+                                            }
+                                            inputRef={register({
+                                                validate: (value) =>
+                                                    value.trim() !== '' ||
+                                                    'Le prénom est obligatoire'
+                                            })}
+                                        />
+                                    </Grid>
+                                    <Grid item md={6} sm={6} xs={6}>
+                                        <Controller
+                                            as={
+                                                <TextField
+                                                    label="Téléphone"
+                                                    type="tel"
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    error={Object.prototype.hasOwnProperty.call(
+                                                        errors,
+                                                        'refPhone'
+                                                    )}
+                                                    helperText={
+                                                        errors.refPhone && errors.refPhone.message
+                                                    }
+                                                    inputRef={register()}
+                                                />
+                                            }
+                                            control={control}
+                                            name="refPhone"
+                                            defaultValue=""
+                                        />
+                                        <FormHelperText className={classes.instruction}>
+                                            optionnel
+                                        </FormHelperText>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
                     )}
 
-                    <Grid item sm={12} xs={12} md={6}>
-                        <Grid container direction="row" spacing={2}>
+                    <Grid container item>
+                        <Grid
+                            sm={12}
+                            xs={12}
+                            md={8}
+                            container
+                            direction="row"
+                            alignItems="center"
+                            spacing={2}>
                             {/* Item 1 */}
-
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2">Nature visite :</Typography>
+                            <Grid item xs={12} sm={12} md={3}>
+                                <Typography variant="body1" className={classes.fieldLabel}>
+                                    Nature de la visite* :
+                                </Typography>
                             </Grid>
-                            <Grid className={classes.comps} item xs={12} sm={12}>
+                            <Grid item xs={12} sm={12} md={9}>
                                 <FormControl
                                     error={Object.prototype.hasOwnProperty.call(errors, 'object')}
                                     component="div">
@@ -487,13 +522,14 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                                     value={REQUEST_OBJECT.PROFESSIONAL}
                                                     control={<Radio color="primary" />}
                                                     label="Professionnelle"
-                                                    labelPlacement="start"
+                                                    labelPlacement="end"
+                                                    className={classes.radioLabel}
                                                 />
                                                 <FormControlLabel
                                                     value={REQUEST_OBJECT.PRIVATE}
                                                     control={<Radio color="primary" />}
                                                     label="Privée"
-                                                    labelPlacement="start"
+                                                    labelPlacement="end"
                                                 />
                                             </RadioGroup>
                                         }
@@ -509,15 +545,16 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                     )}
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Période d&apos;accès :
-                                </Typography>
-                            </Grid>
 
                             {/* Item 4: Selections des dates */}
-                            <Grid className={classes.comps} item xs={12} sm={12}>
-                                <Grid container justify="space-between">
+
+                            <Grid item xs={12} sm={12} md={3}>
+                                <Typography variant="body1" className={classes.fieldLabel}>
+                                    Période d&apos;accès* :
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={9}>
+                                <Grid container spacing={6}>
                                     <Grid item sm={5} xs={5}>
                                         <Controller
                                             as={
@@ -587,99 +624,108 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                     </Grid>
                                 </Grid>
                             </Grid>
+                        </Grid>
 
+                        {/* Column 2 */}
+                        <Grid item md={4} sm={12} xs={12}>
                             {/* Item 5: Période d'acces */}
-                            <Grid className={classes.comps} item xs={12} sm={12}>
-                                <Grid container spacing={1} style={{ color: '#c78005' }}>
-                                    <Grid item xs={12} md={12}>
-                                        <Typography variant="body1">
-                                            Délais de traitement avant la date de visite :
-                                        </Typography>
-                                        <List>
-                                            <ListItem className={classes.infoTime}>
-                                                <ListItemText primary="• Français: 2 jours ouvrés" />
-                                            </ListItem>
-                                            <ListItem className={classes.infoTime}>
-                                                <ListItemText primary="• UE: 15 jours ouvrés" />
-                                            </ListItem>
-                                            <ListItem className={classes.infoTime}>
-                                                <ListItemText primary="• Hors UE: 30 jours ouvrés" />
-                                            </ListItem>
-                                        </List>
-                                    </Grid>
+                            <Grid container className={classes.infoTime}>
+                                <Grid md={1} style={{ textAlign: 'end' }}>
+                                    <ErrorOutlineIcon className={classes.infoIcon} />
                                 </Grid>
-                            </Grid>
-
-                            {/* Item 6: Motif */}
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2">Motif de la visite :</Typography>
-                            </Grid>
-                            <Grid className={classes.comps} item sm={12} xs={12}>
-                                <TextField
-                                    className={classes.testBlue}
-                                    name="reason"
-                                    error={Object.prototype.hasOwnProperty.call(errors, 'reason')}
-                                    helperText={errors.reason && errors.reason.message}
-                                    variant="outlined"
-                                    fullWidth
-                                    multiline
-                                    inputRef={register({
-                                        validate: (value) =>
-                                            value.trim() !== '' || 'Le motif est obligatoire'
-                                    })}
-                                    inputProps={{
-                                        'data-testid': 'motif-visite'
-                                    }}
-                                />
+                                <Grid md={11}>
+                                    <Typography variant="body2" className={classes.infoTimeTitle}>
+                                        Informations délais de traitement avant la date de visite
+                                    </Typography>
+                                    <List>
+                                        <ListItem className={classes.infoTimeItem}>
+                                            <ListItemText
+                                                primary="• Français: 2 jours ouvrés"
+                                                primaryTypographyProps={{ variant: 'body2' }}
+                                            />
+                                        </ListItem>
+                                        <ListItem className={classes.infoTimeItem}>
+                                            <ListItemText
+                                                primary="• UE: 15 jours ouvrés"
+                                                primaryTypographyProps={{ variant: 'body2' }}
+                                            />
+                                        </ListItem>
+                                        <ListItem className={classes.infoTimeItem}>
+                                            <ListItemText
+                                                primary="• Hors UE: 30 jours ouvrés"
+                                                primaryTypographyProps={{ variant: 'body2' }}
+                                            />
+                                        </ListItem>
+                                    </List>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
 
-                    {/* Column 2 */}
-                    <Grid item md={6} sm={12} xs={12}>
-                        <Grid container spacing={2}>
-                            {/* Item 1: Liste des lieux */}
+                    {/* Item 6: Motif */}
+                    <Grid item container>
+                        <Grid container alignItems="center" xs={12} sm={12} md={2}>
+                            <Typography variant="body1" className={classes.fieldLabel}>
+                                Motif de la visite* :
+                            </Typography>
+                        </Grid>
+                        <Grid item sm={12} xs={12} md={10}>
+                            <TextField
+                                name="reason"
+                                error={Object.prototype.hasOwnProperty.call(errors, 'reason')}
+                                helperText={errors.reason && errors.reason.message}
+                                variant="filled"
+                                fullWidth
+                                multiline
+                                inputRef={register({
+                                    validate: (value) =>
+                                        value.trim() !== '' || 'Le motif est obligatoire'
+                                })}
+                                inputProps={{
+                                    'data-testid': 'motif-visite'
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
 
-                            <Grid item xs={12} sm={12}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Accès lieux :
-                                </Typography>
-                            </Grid>
-
-                            <Grid className={classes.comps} item md={12} xs={12} sm={12}>
-                                <Controller
-                                    as={
-                                        <ListLieux
-                                            options={
-                                                placesList
-                                                    ? placesList.getCampus.listPlaces.list
-                                                    : []
-                                            }
-                                            expanded={expanded}
-                                            setExpanded={setExpanded}
-                                            defaultChecked={formData.places}
-                                            onChange={(checked) => checked}
-                                            label="Lieux"
-                                        />
-                                    }
-                                    rules={{
-                                        validate: {
-                                            valide: (value) =>
-                                                (value && value.length > 0) ||
-                                                "Le choix d'un lieu est obligatoire",
-                                            acceptedSelection: (value) => checkSelection(value)
+                    {/* Item 1: Liste des lieux */}
+                    <Grid item container>
+                        <Grid container alignItems="center" item xs={12} sm={12} md={2}>
+                            <Typography variant="body1" className={classes.fieldLabel} gutterBottom>
+                                Accès lieux* :
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={10}>
+                            <Controller
+                                as={
+                                    <ListLieux
+                                        options={
+                                            placesList ? placesList.getCampus.listPlaces.list : []
                                         }
-                                    }}
-                                    control={control}
-                                    name="places"
-                                    defaultValue={formData.places}
-                                />
-                                {errors.places && (
-                                    <FormHelperText className={classes.error}>
-                                        {errors.places.message}
-                                    </FormHelperText>
-                                )}
-                            </Grid>
+                                        expanded={expanded}
+                                        setExpanded={setExpanded}
+                                        defaultChecked={formData.places}
+                                        onChange={(checked) => checked}
+                                        label="Lieux"
+                                    />
+                                }
+                                rules={{
+                                    validate: {
+                                        valide: (value) =>
+                                            (value && value.length > 0) ||
+                                            "Le choix d'un lieu est obligatoire",
+                                        acceptedSelection: (value) => checkSelection(value)
+                                    }
+                                }}
+                                control={control}
+                                name="places"
+                                defaultValue={formData.places}
+                            />
+                            {errors.places && (
+                                <FormHelperText className={classes.error}>
+                                    {errors.places.message}
+                                </FormHelperText>
+                            )}
                         </Grid>
                     </Grid>
 

@@ -15,6 +15,18 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    requestTitle: {
+        color: theme.palette.primary.main,
+        fontWeight: 'bold',
+        marginBottom: 15
+    },
+    requestLabel: {
+        fontWeight: 'bold'
+    }
+}));
 
 const DELETE_VISITOR = gql`
     mutation deleteVisitor($idRequest: String!, $idVisitor: ObjectID!, $campusId: String!) {
@@ -58,7 +70,7 @@ const CREATE_REQUEST = gql`
 
 export default function InfosFinalView({ formData, setForm, handleBack, setSelectVisitor, group }) {
     const router = useRouter();
-
+    const classes = useStyles();
     const { addAlert } = useSnackBar();
 
     const [deleteVisitor] = useMutation(DELETE_VISITOR, {
@@ -127,19 +139,26 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
     return (
         <Grid container spacing={4}>
             <Grid item sm={11}>
+                <Typography variant={'subtitle1'} className={classes.requestTitle}>
+                    {formData.id}
+                </Typography>
                 <Typography variant="body1">
-                    Visite du {formData.from && format(new Date(formData.from), 'dd/MM/yyyy')} au{' '}
+                    <span className={classes.requestLabel}>Visite du :</span>{' '}
+                    {formData.from && format(new Date(formData.from), 'dd/MM/yyyy')} au{' '}
                     {formData.to && format(new Date(formData.to), 'dd/MM/yyyy')}
                 </Typography>
                 <Typography variant="body1">
-                    à :{' '}
+                    <span className={classes.requestLabel}>Lieu(x) :</span>{' '}
                     {formData.places &&
                         formData.places.map((lieu, index) => {
-                            if (index === formData.places.length - 1) return `${lieu.label}.`;
+                            if (index === formData.places.length - 1) return lieu.label;
                             return `${lieu.label}, `;
                         })}
                 </Typography>
-                <Typography variant="body1">Motif:{formData.reason && formData.reason}</Typography>
+                <Typography variant="body1">
+                    <span className={classes.requestLabel}>Motif :</span>{' '}
+                    {formData.reason && formData.reason}
+                </Typography>
             </Grid>
             <Grid item sm={12}>
                 <TabRecapRequest
