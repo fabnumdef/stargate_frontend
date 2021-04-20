@@ -1,5 +1,4 @@
 import TableCell from '@material-ui/core/TableCell';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
@@ -7,48 +6,46 @@ import PropTypes from 'prop-types';
 const useStyle = makeStyles(() => ({
     subtitles: {
         fontWeight: 'bold'
+    },
+    divBlock: {
+        display: 'block'
     }
 }));
 
 export default function VisitorCell({ visitor }) {
     const classes = useStyle();
-
     return (
         <TableCell>
-            <Grid container>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Visiteur :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {`${visitor.firstname} ${visitor.lastname}`}
-                    </Typography>
-                </Grid>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Origine :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {visitor.isInternal}
-                    </Typography>
-                </Grid>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Unité / Société :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {visitor.compagny}
-                    </Typography>
-                </Grid>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Type d&apos;employé :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {visitor.employeeType}
-                    </Typography>
-                </Grid>
-            </Grid>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Visiteur :
+                </Typography>
+                <Typography display="inline" variant="body1">
+                    {` ${visitor.firstname} ${visitor.lastname}`}
+                </Typography>
+            </div>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Origine :
+                </Typography>
+                <Typography display="inline" variant="body1">
+                    {` ${visitor.isInternal}`}
+                </Typography>
+            </div>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Unité / Société :
+                </Typography>
+                <Typography display="inline" variant="body1">{` ${visitor.company}`}</Typography>
+            </div>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Type d&apos;employé :
+                </Typography>
+                <Typography
+                    display="inline"
+                    variant="body1">{` ${visitor.employeeType}`}</Typography>
+            </div>
         </TableCell>
     );
 }
@@ -58,7 +55,7 @@ VisitorCell.propTypes = {
         firstname: PropTypes.string,
         isInternal: PropTypes.string,
         lastname: PropTypes.string,
-        compagny: PropTypes.string,
+        company: PropTypes.string,
         employeeType: PropTypes.string
     }).isRequired
 };

@@ -12,7 +12,14 @@ const mockVisitor = {
         {
             label: 'centerParks',
             steps: [
-                {},
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_UNIT_CORRESPONDENT',
+                    state: {
+                        isOK: true,
+                        value: 'ACCEPTED'
+                    }
+                },
                 {
                     behavior: 'ADVISEMENT',
                     role: 'ROLE_SCREENING',
@@ -26,29 +33,15 @@ const mockVisitor = {
                     role: 'ROLE_SECURITY_OFFICER',
                     state: {
                         isOK: true,
-                        value: 'ACCEPTED'
-                    }
-                }
-            ]
-        },
-        {
-            label: 'ParcAsterix',
-            steps: [
-                {},
-                {
-                    behavior: 'ADVISEMENT',
-                    role: 'ROLE_SCREENING',
-                    state: {
-                        isOK: true,
-                        value: 'NEGATIVE'
+                        value: 'REJECTED'
                     }
                 },
                 {
                     behavior: 'VALIDATION',
-                    role: 'ROLE_SECURITY_OFFICER',
+                    role: 'ROLE_ACCESS_OFFICE',
                     state: {
-                        isOK: true,
-                        value: 'REJECTED'
+                        isOK: null,
+                        value: null
                     }
                 }
             ]

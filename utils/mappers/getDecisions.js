@@ -1,29 +1,24 @@
 import { ROLES } from '../constants/enums';
+import { activeRoleCacheVar } from '../../lib/apollo/cache';
 
 export default function getDecisions(units) {
     const steps = [];
-    // search screening in workflow and add screening status
-    const screeningValue = units.map((u) =>
-        u.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role)
-    );
-    if (screeningValue.length) {
-        steps.push({
-            label: ROLES.ROLE_SCREENING.label,
-            value: screeningValue[0].state
-        });
-    }
 
-    // for each unit get os decision
+    const indexPreviousStep = units.map(
+        (u) => u.steps.findIndex((step) => step.role === activeRoleCacheVar().role) - 1
+    );
+
     units.forEach((u) => {
-        u.steps.forEach((step) => {
-            if (step.role === ROLES.ROLE_SECURITY_OFFICER.role) {
-                steps.push({
-                    label: ROLES.ROLE_SECURITY_OFFICER.label,
-                    unit: u.label,
-                    value: step.state
-                });
-            }
-        });
+        u.steps[indexPreviousStep]?.role !== ROLES.ROLE_SCREENING.role
+            ? steps.push({
+                  label: u.steps[indexPreviousStep]?.role,
+                  unit: u.label,
+                  value: u.steps[indexPreviousStep]?.state
+              })
+            : steps.push({
+                  label: u.steps[indexPreviousStep]?.role,
+                  value: u.steps[indexPreviousStep]?.state
+              });
     });
     return steps;
 }

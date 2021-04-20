@@ -1,5 +1,4 @@
 import TableCell from '@material-ui/core/TableCell';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
@@ -11,56 +10,52 @@ import SeeMoreOrLess from '../../styled/common/SeeMoreOrLess';
 const useStyles = makeStyles(() => ({
     subtitles: {
         fontWeight: 'bold'
+    },
+    widthCell: {
+        maxWidth: '200px',
+        minWidth: '200px'
     }
 }));
 
 export default function RequestCell({ request }) {
     const classes = useStyles();
-
     return (
-        <TableCell>
-            <Grid container>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Demande :
+        <TableCell className={classes.widthCell}>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Demande :
+                </Typography>
+                <Typography display="inline" variant="body1">{` ${request.id}`}</Typography>
+            </div>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Période :
+                </Typography>
+                <Typography display="inline" variant="body1">{` ${request.period}`}</Typography>
+            </div>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Demandeur :
+                </Typography>
+                <Typography display="inline" variant="body1">{` ${request.owner}`}</Typography>
+            </div>
+            <div>
+                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    Lieux :
+                </Typography>
+
+                <Typography display="inline" variant="body1">{` ${request.places}`}</Typography>
+            </div>
+            {!ROLES[activeRoleCacheVar().role].role.includes(
+                ROLES.ROLE_UNIT_CORRESPONDENT.role
+            ) && (
+                <div>
+                    <Typography display="inline" variant="body1" className={classes.subtitles}>
+                        Motif :
                     </Typography>
-                    <Typography variant="body1" color="primary">
-                        {request.id}
-                    </Typography>
-                </Grid>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Période :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {request.period}
-                    </Typography>
-                </Grid>
-                <Grid item sm={12}>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Demandeur :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {request.owner}
-                    </Typography>
-                    <Typography variant="body1" color="primary" className={classes.subtitles}>
-                        Lieux :
-                    </Typography>
-                    <Typography variant="body1" color="primary">
-                        {request.places}
-                    </Typography>
-                </Grid>
-                {!ROLES[activeRoleCacheVar().role].role.includes(
-                    ROLES.ROLE_UNIT_CORRESPONDENT.role
-                ) && (
-                    <Grid item sm={12}>
-                        <Typography variant="body1" color="primary" className={classes.subtitles}>
-                            Motif :
-                        </Typography>
-                        <SeeMoreOrLess>{request.reason}</SeeMoreOrLess>
-                    </Grid>
-                )}
-            </Grid>
+                    <SeeMoreOrLess>{` ${request.reason}`}</SeeMoreOrLess>
+                </div>
+            )}
         </TableCell>
     );
 }
