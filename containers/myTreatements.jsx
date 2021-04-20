@@ -13,12 +13,11 @@ import TableTreatmentsToTreat from '../components/tables/TableTreatmentsToTreat'
 
 import { useRouter } from 'next/router';
 import { LIST_TREATMENTS } from '../lib/apollo/queries';
-import useDecisions from '../lib/hooks/useDecision';
+import { useDecisions, withDecisionsProvider } from '../lib/hooks/useDecisions';
 import useVisitors from '../lib/hooks/useVisitors';
 import RoundButton from '../components/styled/common/roundButton';
 import { STATE_REQUEST } from '../utils/constants/enums';
 import LoadingCircle from '../components/styled/animations/loadingCircle';
-import EmptyArray from '../components/styled/emptyArray';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -68,12 +67,6 @@ const useStyles = makeStyles((theme) => ({
 //     }
 // `;
 
-/**
- * Mapper to transform query response
- * @param {Object} requestData data
- */
-const mapRequestData = (requestData) => requestData.getCampus.progress?.list ?? [];
-
 const tabList = [
     {
         index: 0,
@@ -87,7 +80,7 @@ const tabList = [
     }
 ];
 
-export default function MyTreatements() {
+function MyTreatements() {
     const classes = useStyles();
     const router = useRouter();
 
@@ -112,11 +105,23 @@ export default function MyTreatements() {
                 first: 10,
                 offset: 0
             }
-        }
+        },
+        onCompleted: (d) =>
+            d.getCampus.progress.list.forEach((visitor) =>
+                addDecision({
+                    id: visitor.id,
+                    request: { id: visitor.request.id },
+                    choice: {
+                        label: '',
+                        validation: '',
+                        tags: []
+                    }
+                })
+            )
     });
 
     const handleSubmit = () => {
-        const visitors = Object.values(decisions).filter((visitor) => !!visitor.decision);
+        const visitors = Object.values(decisions).filter((visitor) => !!visitor.choice.validation);
         shiftVisitors(visitors);
         resetDecision();
     };
@@ -174,32 +179,25 @@ export default function MyTreatements() {
             </Tabs>
 
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                {data ? (
-                    <>
-                        <TableTreatmentsToTreat
-                            requests={mapRequestData(data)}
-                            updateAdd={addDecision}
-                        />
-                        <RoundButton variant="outlined" color="primary" type="reset">
-                            Annuler
-                        </RoundButton>
-                        <RoundButton
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={
-                                !Object.values(decisions).find((visitor) => !!visitor.decision)
-                            }>
-                            {`Soumettre (${Object.values(decisions).length})`}
-                        </RoundButton>
-                    </>
-                ) : (
-                    <EmptyArray type="à traiter" />
-                )}
+                <>
+                    <TableTreatmentsToTreat requests={data.getCampus.progress?.list} />
+                    <RoundButton variant="outlined" color="primary" type="reset">
+                        Annuler
+                    </RoundButton>
+                    <RoundButton
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        onClick={handleSubmit}
+                        disabled={!Object.values(decisions).find((visitor) => !!visitor.decision)}>
+                        {`Soumettre (${Object.values(decisions).length})`}
+                    </RoundButton>
+                </>
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }} />
         </div>
     );
 }
+
+export default withDecisionsProvider(MyTreatements);

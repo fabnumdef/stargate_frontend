@@ -180,12 +180,12 @@ export const choicesArray = (role) => {
     return choices;
 };
 
-const TableTreatmentsToTreat = ({ requests, updateAdd, decisions }) => {
+const TableTreatmentsToTreat = ({ requests }) => {
     const classes = useStyles();
     const rows = useMemo(
         () =>
             requests.reduce((acc, dem) => {
-                acc.push(mapCreateRow(dem, decisions));
+                acc.push(mapCreateRow(dem));
                 return acc;
             }, []),
         [requests]
@@ -213,7 +213,6 @@ const TableTreatmentsToTreat = ({ requests, updateAdd, decisions }) => {
                             choices={choices}
                             row={row}
                             columns={columns}
-                            updateAdd={(state) => updateAdd(state)}
                         />
                     ))}
                 </TableBody>
@@ -253,7 +252,5 @@ TableTreatmentsToTreat.propTypes = {
                 )
             })
         })
-    ).isRequired,
-    decisions: PropTypes.object.isRequired,
-    updateAdd: RowTreatment.propTypes.updateAdd
+    ).isRequired
 };

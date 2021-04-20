@@ -2,13 +2,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
+import { useDecisions } from '../../../lib/hooks/useDecisions';
 
 const useStyles = makeStyles((theme) => ({
     divGrid: {
@@ -50,43 +51,75 @@ const CustomInput = withStyles((theme) => ({
     }
 }))(InputBase);
 
-export default function ActionCell({ choices, updateAdd }) {
+const initChoice = {
+    label: '',
+    decision: '',
+    tags: []
+};
+export default function ActionCell({ choices, decision }) {
     const classes = useStyles();
 
-    const [otherChoice, setOtherChoice] = useState({
-        choice: {
-            label: ''
-        }
-    });
+    const { addDecision } = useDecisions();
 
-    const [state, setState] = useState({
-        choice: {
-            label: ''
-        }
-    });
+    const decisionChoice = React.useMemo(() => {
+        const choice = choices.find((choice) => {
+            if (choice.label === decision.choice.label) return true;
+
+            if (choice.subChoice) {
+                let exist = false;
+                choice.subChoices.forEach((subChoice) => {
+                    if (subChoice.label === decision.choice.label) exist = true;
+                });
+                return exist;
+            }
+        });
+
+        if (!choice) return initChoice;
+        return choice;
+    }, [decision]);
+
+    const [otherChoice, setOtherChoice] = useState(initChoice);
 
     const handleRadioClick = (choice) => {
-        setState(
-            state.choice.label === choice.label
-                ? { ...state, choice: { label: '' } }
-                : { ...state, choice }
-        );
+        if (decisionChoice === choice) {
+            addDecision({
+                choice: initChoice,
+                request: { id: decision.request.id },
+                id: decision.id
+            });
+            return;
+        }
+        if (choice.label === 'Autre choix') {
+            addDecision({
+                choice: otherChoice,
+                request: { id: decision.request.id },
+                id: decision.id
+            });
+            return;
+        }
+        addDecision({
+            choice,
+            request: { id: decision.request.id },
+            id: decision.id
+        });
     };
 
     const handleChangeOtherChoice = (event, choice) => {
-        setState({ choice: { label: 'Autre choix' } });
-        setOtherChoice({ ...otherChoice, choice });
-    };
-
-    useEffect(() => {
-        if (state.choice.label === '' && otherChoice.choice.label === '') return;
-
-        if (state.choice.label === 'Autre choix') {
-            updateAdd(otherChoice);
+        if (choice === otherChoice) {
+            addDecision({
+                choice: initChoice,
+                request: { id: decision.request.id },
+                id: decision.id
+            });
             return;
         }
-        updateAdd(state);
-    }, [state, otherChoice]);
+        setOtherChoice(choice);
+        addDecision({
+            choice,
+            request: { id: decision.request.id },
+            id: decision.id
+        });
+    };
 
     return (
         <TableCell>
@@ -104,8 +137,8 @@ export default function ActionCell({ choices, updateAdd }) {
                                                 root: classes.radio,
                                                 checked: classes.checked
                                             }}
-                                            disabled={otherChoice.choice.label === ''}
-                                            checked={choice.label === state.choice.label}
+                                            disabled={otherChoice.label === ''}
+                                            checked={choice.label === decisionChoice.label}
                                             onClick={() => handleRadioClick(choice)}
                                         />
                                     }
@@ -149,7 +182,7 @@ export default function ActionCell({ choices, updateAdd }) {
                                                 : classes.radioRejected,
                                         checked: classes.checked
                                     }}
-                                    checked={choice.label === state.choice.label}
+                                    checked={choice.label === decisionChoice.label}
                                     onClick={() => handleRadioClick(choice)}
                                 />
                             }
@@ -169,5 +202,5 @@ ActionCell.propTypes = {
             tags: PropTypes.arrayOf(PropTypes.string)
         })
     ).isRequired,
-    updateAdd: PropTypes.func.isRequired
+    decision: PropTypes.object.isRequired
 };

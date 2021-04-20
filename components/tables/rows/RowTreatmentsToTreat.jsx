@@ -7,6 +7,7 @@ import VisitorCell from '../cells/VisitorCell';
 import DecisionsCell from '../cells/DecisionsCell';
 import ReasonCell from '../cells/ReasonCell';
 import TableRow from '@material-ui/core/TableRow';
+import { useDecisions } from '../../../lib/hooks/useDecisions';
 
 const StyledRow = withStyles((theme) => ({
     root: {
@@ -21,7 +22,9 @@ const StyledRow = withStyles((theme) => ({
     }
 }))(TableRow);
 
-function RowTreatments({ columns, choices, row, updateAdd }) {
+function RowTreatments({ columns, choices, row }) {
+    const { getDecision } = useDecisions();
+
     return (
         <StyledRow hover key={row.visitor.id}>
             {columns.map((column) => {
@@ -40,19 +43,7 @@ function RowTreatments({ columns, choices, row, updateAdd }) {
                         return (
                             <ActionCell
                                 key={column.id}
-                                updateAdd={(state) => {
-                                    const { validation, tags } =
-                                        state.choice.label === 'Autre choix'
-                                            ? state.choice.subChoices
-                                            : state.choice;
-                                    updateAdd({
-                                        request: { id: row.request.id },
-                                        id: row.visitor.id,
-                                        decision: validation,
-                                        tags
-                                    });
-                                }}
-                                decision={row.decision}
+                                decision={getDecision(`${row.request.id}_${row.visitor.id}`)}
                                 choices={choices}
                             />
                         );
@@ -76,9 +67,7 @@ RowTreatments.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     row: PropTypes.shape({
         visitor: PropTypes.shape(VisitorCell.propTypes.visitor),
-        request: PropTypes.shape(RequestCell.propTypes.request),
-        decision: PropTypes.object.isRequired
+        request: PropTypes.shape(RequestCell.propTypes.request)
     }).isRequired,
-    choices: ActionCell.propTypes.choices,
-    updateAdd: ActionCell.propTypes.updateAdd
+    choices: ActionCell.propTypes.choices
 };

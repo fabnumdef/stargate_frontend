@@ -22,8 +22,8 @@ export default function useVisitors() {
                     variables: {
                         requestId: visitor.request.id,
                         visitorId: visitor.id,
-                        decision: visitor.decision,
-                        tags: visitor.tags
+                        decision: visitor.choice.validation,
+                        tags: visitor.choice.tags
                     },
                     optimisticResponse: {
                         __typename: 'Mutation',

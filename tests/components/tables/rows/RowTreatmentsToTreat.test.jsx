@@ -11,8 +11,15 @@ import { ACCEPTED_STATUS } from '../../../../utils';
 import { ROLES } from '../../../../utils/constants/enums';
 import { render, screen } from '../../../../utils/tests/renderApollo';
 
-const mockedUpdate = jest.fn();
+const mockUpdate = jest.fn();
 const mockColumns = [{ id: 'request' }, { id: 'visitor' }, { id: 'decision' }, { id: 'action' }];
+
+jest.mock('../../../../lib/hooks/useDecisions', () => ({
+    useDecisions: () => ({
+        getDecision: jest.fn(() => ({ id: 1, request: { id: 1 }, choice: { label: '' } })),
+        addDecision: mockUpdate
+    })
+}));
 
 const mocks = [
     {
@@ -61,7 +68,6 @@ describe('Component: rowTreatment', () => {
             <Table>
                 <TableBody>
                     <RowTreatments
-                        updateAdd={mockedUpdate}
                         columns={mockColumns}
                         row={mockRow}
                         choices={choicesArray(ROLES.ROLE_UNIT_CORRESPONDENT.role)}
@@ -82,7 +88,6 @@ describe('Component: rowTreatment', () => {
             <Table>
                 <TableBody>
                     <RowTreatments
-                        updateAdd={mockedUpdate}
                         columns={mockColumns}
                         row={mockRow}
                         choices={choicesArray(ROLES.ROLE_UNIT_CORRESPONDENT.role)}
@@ -92,11 +97,6 @@ describe('Component: rowTreatment', () => {
             { mocks, cache }
         );
         userEvent.click(screen.getByLabelText('ACCEPTER'));
-        expect(mockedUpdate).toHaveBeenCalledWith({
-            request: { id: mockRow.request.id },
-            id: mockRow.visitor.id,
-            decision: ROLES.ROLE_UNIT_CORRESPONDENT.workflow.positive,
-            tags: []
-        });
+        expect(mockUpdate).toHaveBeenCalled();
     });
 });
