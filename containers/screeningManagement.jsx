@@ -19,7 +19,7 @@ import { CSVLink } from 'react-csv';
 
 import { TabPanel, TabScreeningVisitors } from '../components';
 
-import { AntTab } from './myTreatements';
+import AntTab from '../components/styled/common/Tab';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
