@@ -10,7 +10,7 @@ import { render, screen } from '../../../../utils/tests/renderApollo';
 const mockVisitor = {
     units: [
         {
-            label: 'centerParks',
+            label: 'centerPark',
             steps: [
                 {
                     behavior: 'VALIDATION',
@@ -45,6 +45,80 @@ const mockVisitor = {
                     }
                 }
             ]
+        },
+        {
+            label: 'JurassicPark',
+            steps: [
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_UNIT_CORRESPONDENT',
+                    state: {
+                        isOK: true,
+                        value: 'ACCEPTED'
+                    }
+                },
+                {
+                    behavior: 'ADVISEMENT',
+                    role: 'ROLE_SCREENING',
+                    state: {
+                        isOK: true,
+                        value: 'POSITIVE'
+                    }
+                },
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_SECURITY_OFFICER',
+                    state: {
+                        isOK: true,
+                        value: 'ACCEPTED'
+                    }
+                },
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_ACCESS_OFFICE',
+                    state: {
+                        isOK: null,
+                        value: null
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Ogasawara National Park',
+            steps: [
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_UNIT_CORRESPONDENT',
+                    state: {
+                        isOK: true,
+                        value: 'ACCEPTED'
+                    }
+                },
+                {
+                    behavior: 'ADVISEMENT',
+                    role: 'ROLE_SCREENING',
+                    state: {
+                        isOK: true,
+                        value: 'POSITIVE'
+                    }
+                },
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_SECURITY_OFFICER',
+                    state: {
+                        isOK: null,
+                        value: null
+                    }
+                },
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_ACCESS_OFFICE',
+                    state: {
+                        isOK: null,
+                        value: null
+                    }
+                }
+            ]
         }
     ]
 };
@@ -65,7 +139,10 @@ describe('Component: DecisionsCell', () => {
                 </TableBody>
             </Table>
         );
+        //check the display of 2 icons (1 accepted / 1 rejected)
         expect(screen.getByTitle(/icone refusée/i)).toBeInTheDocument();
+        expect(screen.getByTitle(/icone validée/i)).toBeInTheDocument();
+        expect(screen.getByTitle(/icone en attente/i)).toBeInTheDocument();
     });
 
     it('display correctly for Security officer', () => {
