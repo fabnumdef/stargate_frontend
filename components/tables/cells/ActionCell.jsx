@@ -53,22 +53,26 @@ const CustomInput = withStyles((theme) => ({
 
 const initChoice = {
     label: '',
-    decision: '',
+    validation: '',
     tags: []
 };
-export default function ActionCell({ choices, decision }) {
+export function ActionCell({ choices, decision }) {
     const classes = useStyles();
 
-    const { addDecision } = useDecisions();
+    const { decisions, addDecision } = useDecisions();
 
     const decisionChoice = React.useMemo(() => {
-        const choice = choices.find((choice) => {
-            if (choice.label === decision.choice.label) return true;
+        const decisionQuery = decisions[`${decision.request.id}_${decision.id}`];
 
-            if (choice.subChoice) {
+        if (!decisionQuery) return initChoice;
+
+        const choice = choices.find((choice) => {
+            if (choice.label === decisionQuery?.choice?.label) return true;
+
+            if (choice.subChoices) {
                 let exist = false;
                 choice.subChoices.forEach((subChoice) => {
-                    if (subChoice.label === decision.choice.label) exist = true;
+                    if (subChoice.label === decisionQuery?.choice?.label) exist = true;
                 });
                 return exist;
             }
@@ -76,7 +80,7 @@ export default function ActionCell({ choices, decision }) {
 
         if (!choice) return initChoice;
         return choice;
-    }, [decision]);
+    }, [decisions[`${decision.request.id}_${decision.id}`]]);
 
     const [otherChoice, setOtherChoice] = useState(initChoice);
 
@@ -121,78 +125,83 @@ export default function ActionCell({ choices, decision }) {
         });
     };
 
-    return (
-        <TableCell>
-            <div className={classes.divGrid}>
-                {choices.map((choice) => {
-                    if (choice.label === 'Autre choix') {
-                        return (
-                            <div className={classes.divRelative} key={choice.label}>
-                                <FormControlLabel
-                                    label=""
-                                    value={choice.label}
-                                    control={
-                                        <Radio
-                                            classes={{
-                                                root: classes.radio,
-                                                checked: classes.checked
-                                            }}
-                                            disabled={otherChoice.label === ''}
-                                            checked={choice.label === decisionChoice.label}
-                                            onClick={() => handleRadioClick(choice)}
-                                        />
-                                    }
-                                />
-                                <FormControl className={classes.noLabel}>
-                                    <Select
-                                        displayEmpty
-                                        labelId="select-label"
-                                        id="select"
-                                        value={otherChoice.choice.label}
-                                        input={<CustomInput />}>
-                                        <MenuItem key="other choice" disabled value="">
-                                            Autre choix
-                                        </MenuItem>
-                                        {choice.subChoices.map((ch) => (
-                                            <MenuItem
-                                                onClick={(event) =>
-                                                    handleChangeOtherChoice(event, ch)
-                                                }
-                                                key={ch.label}
-                                                value={ch.label}>
-                                                {ch.label}
+    return React.useMemo(
+        () => (
+            <TableCell>
+                <div className={classes.divGrid}>
+                    {choices.map((choice) => {
+                        if (choice.label === 'Autre choix') {
+                            return (
+                                <div className={classes.divRelative} key={choice.label}>
+                                    <FormControlLabel
+                                        label=""
+                                        value={choice.label}
+                                        control={
+                                            <Radio
+                                                classes={{
+                                                    root: classes.radio,
+                                                    checked: classes.checked
+                                                }}
+                                                disabled={otherChoice.label === ''}
+                                                checked={choice.label === decisionChoice.label}
+                                                onClick={() => handleRadioClick(choice)}
+                                            />
+                                        }
+                                    />
+                                    <FormControl className={classes.noLabel}>
+                                        <Select
+                                            displayEmpty
+                                            labelId="select-label"
+                                            id="select"
+                                            value={otherChoice.label}
+                                            input={<CustomInput />}>
+                                            <MenuItem key="other choice" disabled value="">
+                                                Autre choix
                                             </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </div>
+                                            {choice.subChoices.map((ch) => (
+                                                <MenuItem
+                                                    onClick={(event) =>
+                                                        handleChangeOtherChoice(event, ch)
+                                                    }
+                                                    key={ch.label}
+                                                    value={ch.label}>
+                                                    {ch.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            );
+                        }
+                        return (
+                            <FormControlLabel
+                                key={choice.label}
+                                label={choice.label}
+                                value={choice.label}
+                                control={
+                                    <Radio
+                                        classes={{
+                                            root:
+                                                choice.label !== 'REFUSER'
+                                                    ? classes.radio
+                                                    : classes.radioRejected,
+                                            checked: classes.checked
+                                        }}
+                                        checked={choice.label === decisionChoice.label}
+                                        onClick={() => handleRadioClick(choice)}
+                                    />
+                                }
+                            />
                         );
-                    }
-                    return (
-                        <FormControlLabel
-                            key={choice.label}
-                            label={choice.label}
-                            value={choice.label}
-                            control={
-                                <Radio
-                                    classes={{
-                                        root:
-                                            choice.label !== 'REFUSER'
-                                                ? classes.radio
-                                                : classes.radioRejected,
-                                        checked: classes.checked
-                                    }}
-                                    checked={choice.label === decisionChoice.label}
-                                    onClick={() => handleRadioClick(choice)}
-                                />
-                            }
-                        />
-                    );
-                })}
-            </div>
-        </TableCell>
+                    })}
+                </div>
+            </TableCell>
+        ),
+        [decisions[`${decision.request.id}_${decision.id}`]]
     );
 }
+
+export default ActionCell;
 
 ActionCell.propTypes = {
     choices: PropTypes.arrayOf(

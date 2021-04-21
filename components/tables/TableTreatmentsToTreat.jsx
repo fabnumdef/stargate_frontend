@@ -151,7 +151,7 @@ export const choicesArray = (role) => {
                 {
                     label: 'Autre choix',
                     validation: null,
-                    tags: ['VIP'],
+                    tags: [],
                     subChoices: [
                         {
                             label: 'Enfant -13 ans',

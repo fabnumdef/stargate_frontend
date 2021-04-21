@@ -16,7 +16,17 @@ const mockColumns = [{ id: 'request' }, { id: 'visitor' }, { id: 'decision' }, {
 
 jest.mock('../../../../lib/hooks/useDecisions', () => ({
     useDecisions: () => ({
-        getDecision: jest.fn(() => ({ id: 1, request: { id: 1 }, choice: { label: '' } })),
+        decisions: {
+            '000_0001_000_00V1': {
+                id: '000_00V1',
+                request: { id: '000_0001' },
+                choice: {
+                    label: '',
+                    validation: '',
+                    tags: []
+                }
+            }
+        },
         addDecision: mockUpdate
     })
 }));

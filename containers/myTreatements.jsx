@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import PageTitle from '../components/styled/common/pageTitle';
 
 import Tabs from '@material-ui/core/Tabs';
@@ -18,6 +19,10 @@ import useVisitors from '../lib/hooks/useVisitors';
 import RoundButton from '../components/styled/common/roundButton';
 import { STATE_REQUEST } from '../utils/constants/enums';
 import LoadingCircle from '../components/styled/animations/loadingCircle';
+import EmptyArray from '../components/styled/common/emptyArray';
+import AlertMessage from '../components/styled/common/sticker';
+import { activeRoleCacheVar } from '../lib/apollo/cache';
+import { ROLES } from '../utils/constants/enums/index';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,13 +43,18 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         position: 'relative'
     },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '250px',
+        right: '6vw',
+        position: 'absolute'
+    },
     title: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'baseline'
-    },
-    buttonNew: {
-        marginLeft: 20
     }
 }));
 
@@ -80,11 +90,17 @@ const tabList = [
     }
 ];
 
+const STATUS = [
+    { shortLabel: 'VA', label: 'Visiteur Accompagné' },
+    { shortLabel: 'VL', label: 'Visiteur Libre' },
+    { shortLabel: 'VIP', label: 'Autorité' }
+];
+
 function MyTreatements() {
     const classes = useStyles();
     const router = useRouter();
 
-    const { decisions, addDecision, resetDecision } = useDecisions();
+    const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
     const { shiftVisitors } = useVisitors();
 
     React.useEffect(() => {
@@ -121,7 +137,9 @@ function MyTreatements() {
     });
 
     const handleSubmit = () => {
-        const visitors = Object.values(decisions).filter((visitor) => !!visitor.choice.validation);
+        const visitors = Object.values(decisions).filter(
+            (visitor) => visitor.choice.validation !== ''
+        );
         shiftVisitors(visitors);
         resetDecision();
     };
@@ -151,6 +169,26 @@ function MyTreatements() {
             <div className={classes.title}>
                 <PageTitle>Mes traitements</PageTitle>
             </div>
+            {activeRoleCacheVar().role === ROLES.ROLE_SECURITY_OFFICER.role && (
+                <div className={classes.header}>
+                    <AlertMessage
+                        severity="info"
+                        title="Information status"
+                        subtitle={
+                            <ul>
+                                {STATUS.map((status) => (
+                                    <li key={status.shortLabel}>
+                                        <Typography variant="subtitle2" display="inline">
+                                            {status.shortLabel}
+                                        </Typography>{' '}
+                                        : {status.label}
+                                    </li>
+                                ))}
+                            </ul>
+                        }
+                    />
+                </div>
+            )}
             {/** Tabulator  */}
             <Tabs
                 indicatorColor="primary"
@@ -179,20 +217,28 @@ function MyTreatements() {
             </Tabs>
 
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                <>
-                    <TableTreatmentsToTreat requests={data.getCampus.progress?.list} />
-                    <RoundButton variant="outlined" color="primary" type="reset">
-                        Annuler
-                    </RoundButton>
-                    <RoundButton
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        onClick={handleSubmit}
-                        disabled={!Object.values(decisions).find((visitor) => !!visitor.decision)}>
-                        {`Soumettre (${Object.values(decisions).length})`}
-                    </RoundButton>
-                </>
+                {data.getCampus.progress.meta.total > 0 ? (
+                    <>
+                        <TableTreatmentsToTreat requests={data.getCampus.progress?.list} />
+                        <RoundButton
+                            variant="outlined"
+                            color="primary"
+                            type="reset"
+                            onClick={resetDecision}>
+                            Annuler
+                        </RoundButton>
+                        <RoundButton
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            onClick={handleSubmit}
+                            disabled={submitDecisionNumber === 0}>
+                            {`Soumettre (${submitDecisionNumber})`}
+                        </RoundButton>
+                    </>
+                ) : (
+                    <EmptyArray type={'à traiter'} />
+                )}
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }} />

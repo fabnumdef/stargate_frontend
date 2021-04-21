@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from 'react';
+import React, { useState, useCallback, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 export const DecisionContext = React.createContext();
@@ -13,16 +13,24 @@ export function DecisionsProvider({ children }) {
         }));
     }, []);
 
-    const getDecision = useCallback(
-        (decision) => decisions[`${decision.request.id}_${decision.id}`],
-        []
-    );
+    const submitDecisionNumber = useMemo(() => {
+        return Object.values(decisions).filter((des) => des.choice.validation !== '').length;
+    }, [decisions]);
 
     const resetDecision = useCallback(() => {
-        setDecisions({});
+        const reset = { ...decisions };
+        Object.values(reset).map((v) => ({
+            ...v,
+            choice: {
+                label: '',
+                validation: '',
+                tags: []
+            }
+        }));
+        setDecisions(reset);
     }, []);
 
-    const value = { decisions, addDecision, resetDecision, getDecision };
+    const value = { decisions, addDecision, resetDecision, submitDecisionNumber };
 
     return <DecisionContext.Provider value={value}>{children}</DecisionContext.Provider>;
 }
