@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
-import EmptyArrayLogo from './animations/empty';
+import EmptyArrayLogo from '../animations/empty';
 
 const useStyles = makeStyles({
     svgContent: {

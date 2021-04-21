@@ -29,7 +29,7 @@ import { useLogin } from '../lib/loginContext';
 import checkStatus, { ACTIVE_STEP_STATUS } from '../utils/mappers/checkStatusVisitor';
 import Loading from './loading';
 
-import EmptyArray from '../components/styled/emptyArray';
+import EmptyArray from '../components/styled/common/emptyArray';
 
 const useStyles = makeStyles(() => ({
     root: {

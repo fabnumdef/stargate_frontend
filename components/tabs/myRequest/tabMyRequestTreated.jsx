@@ -22,7 +22,7 @@ import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCellHeader from '../../tables/cells/TableCellHeader';
 
-import EmptyArray from '../../styled/emptyArray';
+import EmptyArray from '../../styled/common/emptyArray';
 
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 
