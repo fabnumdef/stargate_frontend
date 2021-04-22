@@ -4,8 +4,7 @@ import dynamic from 'next/dynamic';
 import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 
-import MyTreatements from '../containers/myTreatements';
-
+const MyTreatements = dynamic(() => import('../containers/myTreatements'));
 const MyAccesRequest = dynamic(() => import('../containers/myAccesRequests'));
 const ScreeningManagement = dynamic(() => import('../containers/screeningManagement'));
 const UserAdministration = dynamic(() => import('../containers/administration/userAdministration'));

@@ -7,6 +7,7 @@ import RequestCell from '../cells/RequestCell';
 import VisitorCell from '../cells/VisitorCell';
 import DecisionsCell from '../cells/DecisionsCell';
 import ReasonCell from '../cells/ReasonCell';
+import StatusCell from '../cells/StatusCell';
 import TableRow from '@material-ui/core/TableRow';
 
 const StyledRow = withStyles((theme) => ({
@@ -22,7 +23,7 @@ const StyledRow = withStyles((theme) => ({
     }
 }))(TableRow);
 
-function RowTreatments({ columns, choices, row }) {
+function RowTreatments({ columns, choices, row, treated }) {
     return (
         <StyledRow hover key={row.visitor.id}>
             {columns.map((column) => {
@@ -38,8 +39,11 @@ function RowTreatments({ columns, choices, row }) {
                     case 'reason':
                         return <ReasonCell key={column.id} request={row.request} />;
                     case 'action':
-                        return (
+                        return treated ? (
+                            <StatusCell key={column.id} visitor={row.visitor} />
+                        ) : (
                             <ActionCell
+                                treated={treated}
                                 key={column.id}
                                 decision={{
                                     request: { id: row.request.id },
@@ -48,6 +52,7 @@ function RowTreatments({ columns, choices, row }) {
                                 choices={choices}
                             />
                         );
+
                     default:
                         return (
                             <TableCell key={column.id}>
@@ -65,6 +70,7 @@ function RowTreatments({ columns, choices, row }) {
 export default React.memo(RowTreatments);
 
 RowTreatments.propTypes = {
+    treated: PropTypes.bool.isRequired,
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     row: PropTypes.shape({
         visitor: PropTypes.shape(VisitorCell.propTypes.visitor),

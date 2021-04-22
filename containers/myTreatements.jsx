@@ -219,7 +219,10 @@ function MyTreatements() {
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
                 {data.getCampus.progress.meta.total > 0 ? (
                     <>
-                        <TableTreatmentsToTreat requests={data.getCampus.progress?.list} />
+                        <TableTreatmentsToTreat
+                            requests={data.getCampus.progress?.list}
+                            treated={false}
+                        />
                         <RoundButton
                             variant="outlined"
                             color="primary"
@@ -241,7 +244,16 @@ function MyTreatements() {
                 )}
             </TabPanel>
 
-            <TabPanel value={value} index={1} classes={{ root: classes.tab }} />
+            <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
+                {data.getCampus.progress.meta.total > 0 ? (
+                    <TableTreatmentsToTreat
+                        requests={data.getCampus.treated?.list}
+                        treated={true}
+                    />
+                ) : (
+                    <EmptyArray type={'traitée'} />
+                )}
+            </TabPanel>
         </div>
     );
 }

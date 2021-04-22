@@ -59,11 +59,12 @@ const initChoice = {
 export function ActionCell({ choices, decision }) {
     const classes = useStyles();
 
-    const { decisions, addDecision } = useDecisions();
+    const {
+        decisions: { [`${decision.request.id}_${decision.id}`]: decisionQuery },
+        addDecision
+    } = useDecisions();
 
     const decisionChoice = React.useMemo(() => {
-        const decisionQuery = decisions[`${decision.request.id}_${decision.id}`];
-
         if (!decisionQuery) return initChoice;
 
         const choice = choices.find((choice) => {
@@ -80,7 +81,7 @@ export function ActionCell({ choices, decision }) {
 
         if (!choice) return initChoice;
         return choice;
-    }, [decisions[`${decision.request.id}_${decision.id}`]]);
+    }, [decisionQuery]);
 
     const [otherChoice, setOtherChoice] = useState(initChoice);
 
@@ -197,7 +198,7 @@ export function ActionCell({ choices, decision }) {
                 </div>
             </TableCell>
         ),
-        [decisions[`${decision.request.id}_${decision.id}`]]
+        [decisionQuery]
     );
 }
 

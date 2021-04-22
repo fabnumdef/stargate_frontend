@@ -7,7 +7,6 @@ import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
 import { activeRoleCacheVar } from '../../lib/apollo/cache';
 import { EMPLOYEE_TYPE, ROLES } from '../../utils/constants/enums';
 import CustomTableCellHeader from './cells/TableCellHeader';
@@ -24,7 +23,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export const columnsArray = (role) => {
+export const columnsArray = (role, treated) => {
     const columns = [];
     switch (role) {
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
@@ -34,18 +33,20 @@ export const columnsArray = (role) => {
             columns.push({ id: 'screening', label: 'Criblage', position: 3 });
             break;
         case ROLES.ROLE_ACCESS_OFFICE.role:
-            columns.push({ id: 'decisions', label: 'Décisions', position: 3 });
+            treated === true
+                ? columns.push({ id: 'export', label: 'Exporté le', position: 5 })
+                : columns.push({ id: 'decisions', label: 'Décisions', position: 3 });
             break;
 
         default:
             return null;
     }
-
     columns.push(
         { id: 'request', label: 'Infos demande', position: 1 },
         { id: 'visitor', label: 'Infos visiteur', position: 2 },
         { id: 'action', label: 'Status', position: 4 }
     );
+
     function compare(a, b) {
         const posA = a.position;
         const posB = b.position;
@@ -180,7 +181,7 @@ export const choicesArray = (role) => {
     return choices;
 };
 
-const TableTreatmentsToTreat = ({ requests }) => {
+const TableTreatmentsToTreat = ({ requests, treated }) => {
     const classes = useStyles();
     const rows = useMemo(
         () =>
@@ -191,8 +192,12 @@ const TableTreatmentsToTreat = ({ requests }) => {
         [requests]
     );
 
-    const choices = useMemo(() => choicesArray(activeRoleCacheVar().role), [activeRoleCacheVar()]);
-    const columns = useMemo(() => columnsArray(activeRoleCacheVar().role), [activeRoleCacheVar()]);
+    const choices = useMemo(() => choicesArray(activeRoleCacheVar().role, treated), [
+        activeRoleCacheVar()
+    ]);
+    const columns = useMemo(() => columnsArray(activeRoleCacheVar().role, treated), [
+        activeRoleCacheVar()
+    ]);
 
     return (
         <TableContainer className={classes.root}>
@@ -213,6 +218,7 @@ const TableTreatmentsToTreat = ({ requests }) => {
                             choices={choices}
                             row={row}
                             columns={columns}
+                            treated={treated}
                         />
                     ))}
                 </TableBody>
@@ -223,6 +229,7 @@ const TableTreatmentsToTreat = ({ requests }) => {
 export default memo(TableTreatmentsToTreat);
 
 TableTreatmentsToTreat.propTypes = {
+    treated: PropTypes.bool.isRequired,
     requests: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string,

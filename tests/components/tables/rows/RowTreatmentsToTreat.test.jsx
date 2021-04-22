@@ -80,6 +80,7 @@ describe('Component: rowTreatment', () => {
                     <RowTreatments
                         columns={mockColumns}
                         row={mockRow}
+                        treated={false}
                         choices={choicesArray(ROLES.ROLE_UNIT_CORRESPONDENT.role)}
                     />
                 </TableBody>
@@ -98,6 +99,7 @@ describe('Component: rowTreatment', () => {
             <Table>
                 <TableBody>
                     <RowTreatments
+                        treated={false}
                         columns={mockColumns}
                         row={mockRow}
                         choices={choicesArray(ROLES.ROLE_UNIT_CORRESPONDENT.role)}

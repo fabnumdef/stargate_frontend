@@ -21,13 +21,14 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         backgroundColor: '#F8F8F8',
         padding: theme.spacing(1),
-        borderRadius: '4px'
+        borderRadius: '4px',
+        marginBottom: '10px'
     }
 }));
 export default function DecisionsCell({ visitor }) {
     const classes = useStyles();
-
-    const stepValue = getDecisions(visitor.units);
+    const { getPreviousStep } = getDecisions();
+    const stepValue = getPreviousStep(visitor.units);
     function GetRightDisplay() {
         switch (stepValue[0].label) {
             case ROLES.ROLE_SCREENING.role: {

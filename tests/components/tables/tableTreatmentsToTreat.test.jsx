@@ -82,7 +82,7 @@ describe('Component: tableTreatmentsToTreat', () => {
             }
         ];
 
-        render(<TableTreatments requests={mockRequest} />, { mocks, cache });
+        render(<TableTreatments requests={mockRequest} treated={false} />, { mocks, cache });
         expect(screen.getByText(/Michel Jospin/)).toBeInTheDocument();
         expect(screen.getByText(/000_0001/)).toBeInTheDocument();
         expect(screen.getByText(/ACCEPTER/)).toBeInTheDocument();
@@ -167,7 +167,7 @@ describe('Component: tableTreatmentsToTreat', () => {
             }
         ];
 
-        render(<TableTreatments requests={mockRequest} />, { mocks, cache });
+        render(<TableTreatments requests={mockRequest} treated={false} />, { mocks, cache });
 
         //check if column's name is correct for SECURITY OFFICER
         expect(

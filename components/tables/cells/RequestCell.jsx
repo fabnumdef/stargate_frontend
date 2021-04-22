@@ -12,8 +12,8 @@ const useStyles = makeStyles(() => ({
         fontWeight: 'bold'
     },
     widthCell: {
-        maxWidth: '200px',
-        minWidth: '200px'
+        maxWidth: '210px',
+        minWidth: '210px'
     }
 }));
 
