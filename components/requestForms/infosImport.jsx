@@ -4,15 +4,30 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { Publish, GetApp } from '@material-ui/icons';
+import SelectedBadge from '../../components/styled/common/TabBadge';
 
 import red from '@material-ui/core/colors/red';
 
 // Apollo
-import { gql, useMutation } from '@apollo/client';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import { VISITOR_INFOS, ERROR_TYPE } from '../../utils/constants/enums';
+import { makeStyles } from '@material-ui/core/styles';
+
+export const GET_TEMPLATE_LINK = gql`
+    query GetTemplateLink($campusId: String!) {
+        campusId @client @export(as: "campusId")
+        getCampus(id: $campusId) {
+            id
+            getVisitorsTemplate {
+                link
+            }
+        }
+    }
+`;
 
 const IMPORT_VISITOR = gql`
     mutation importFile(
@@ -60,10 +75,39 @@ const IMPORT_VISITOR = gql`
     }
 `;
 
+const useStyles = makeStyles((theme) => ({
+    importInformations: {
+        backgroundColor: theme.palette.background.table,
+        padding: 15,
+        borderRadius: 4
+    },
+    importSection: {
+        paddingBottom: '0 !important'
+    },
+    successMessage: {
+        marginLeft: 30,
+        color: theme.palette.success.main
+    }
+}));
+
 export default function InfosImport({ formData, setForm, handleNext, handleBack }) {
     const { addAlert } = useSnackBar();
+    const classes = useStyles();
 
     const [errorStatement, setErrorStatement] = useState(false);
+    const [fileName, setFileName] = useState(null);
+
+    const [getTemplate] = useLazyQuery(GET_TEMPLATE_LINK, {
+        onCompleted: (d) => {
+            const link = document.createElement('a');
+            link.href = d.getCampus.getVisitorsTemplate.link;
+            link.setAttribute('download', 'template.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        },
+        fetchPolicy: 'no-cache'
+    });
 
     const [importFile, { data }] = useMutation(IMPORT_VISITOR, {
         onCompleted: (dataCallback) => {
@@ -79,6 +123,8 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
             });
             if (errors === false) {
                 addAlert({ message: 'Import réussi', severity: 'success' });
+            } else {
+                setErrorStatement(true);
             }
             setForm({ ...formData, visitors });
         },
@@ -103,7 +149,15 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
         }
     }) => {
         setErrorStatement(false);
-        if (validity.valid) importFile({ variables: { idRequest: formData.id, file } });
+        if (validity.valid) {
+            setFileName(file.name);
+            importFile({
+                variables: {
+                    idRequest: formData.id,
+                    file
+                }
+            });
+        }
     };
 
     const handleClickCancel = () => {
@@ -111,60 +165,104 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
         else handleBack();
     };
 
-    const displayIcon = (visitor) => {
+    const displayIcon = () => {
         if (!data) return '';
         let render = <CheckCircleIcon style={{ color: '#28a745' }} />;
 
-        if (visitor.errors) {
-            if (errorStatement === false) {
-                setErrorStatement(true);
-            }
+        if (errorStatement) {
             render = <ErrorIcon style={{ color: red.A400 }} />;
         }
         return render;
     };
 
     return (
-        <Grid container spacing={2} justify="center">
-            <Grid item sm={3}>
-                <Typography variant="subtitle2">Importer le fichier visiteurs</Typography>
+        <Grid container spacing={4}>
+            <Grid container item justify="start">
+                <Grid container item sm={2} justify="space-around" alignItems="center">
+                    <SelectedBadge>1</SelectedBadge>
+                    <Typography variant="subtitle2">Remplir la fiche visiteur : </Typography>
+                </Grid>
+                <Grid item sm={2}>
+                    <Button
+                        variant="text"
+                        color="primary"
+                        style={{ textTransform: 'none' }}
+                        onClick={getTemplate}>
+                        <GetApp color="primary" style={{ marginRight: 8 }} />
+                        Télécharger
+                    </Button>
+                </Grid>
             </Grid>
-            <Grid item sm={3}>
-                <Button variant="contained" color="primary" component="label">
-                    Import
-                    <input
-                        type="file"
-                        accept=".csv"
-                        onChange={(event) => {
-                            handleChange(event || null);
-                        }}
-                        style={{ display: 'none' }}
-                    />
-                </Button>
+            <Grid container item justify="start" className={classes.importSection}>
+                <Grid container item sm={2} justify="space-around" alignItems="center">
+                    <SelectedBadge>2</SelectedBadge>
+                    <Typography variant="subtitle2">Charger la fiche visiteur : </Typography>
+                </Grid>
+                <Grid container item sm={2} alignItems="center">
+                    <Button
+                        variant="text"
+                        color="primary"
+                        style={{ textTransform: 'none' }}
+                        component="label">
+                        <Publish color="primary" style={{ marginRight: 8 }} />
+                        Importer
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={(event) => {
+                                handleChange(event || null);
+                            }}
+                            style={{ display: 'none' }}
+                        />
+                    </Button>
+                </Grid>
+                {data?.mutateCampus.mutateRequest.createGroupVisitors && (
+                    <Grid
+                        container
+                        sm={12}
+                        md={8}
+                        justify="space-between"
+                        className={classes.importInformations}>
+                        <Grid container alignItems="center" xs={8}>
+                            {displayIcon()}
+                            <Typography style={{ marginLeft: 15 }}>{fileName}</Typography>
+                        </Grid>
+                    </Grid>
+                )}
             </Grid>
-            <Grid item sm={12}>
-                <div>
-                    <Grid container spacing={0}>
-                        {data &&
-                            data.mutateCampus.mutateRequest.createGroupVisitors.map((visitor) => (
-                                <>
-                                    <Grid item sm={1} style={{ textAlign: 'center' }}>
-                                        {/* display if first visitor */}
-                                        {displayIcon(visitor)}
-                                    </Grid>
-                                    <Grid item sm={1}>
-                                        <Typography
-                                            variant="body1"
-                                            color="error"
-                                            style={{ fontWeight: 'bold' }}>
-                                            {visitor.errors &&
-                                                visitor.errors.length > 0 &&
-                                                `Ligne ${visitor.errors[0].lineNumber}:`}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item sm={10}>
-                                        {visitor.errors && visitor.errors.length > 0 ? (
-                                            visitor.errors.map((error) => (
+            <Grid container justify="flex-end">
+                <Grid container item spacing={0} sm={12} md={8}>
+                    {data && !errorStatement && (
+                        <Typography variant="subtitle2" className={classes.successMessage}>
+                            Les visiteurs (
+                            {data.mutateCampus.mutateRequest.createGroupVisitors.length}) ont été
+                            importés avec succès.
+                        </Typography>
+                    )}
+                    {data &&
+                        errorStatement &&
+                        data.mutateCampus.mutateRequest.createGroupVisitors.map(
+                            (visitor) =>
+                                visitor.errors &&
+                                visitor.errors.length > 0 && (
+                                    <>
+                                        <Grid item sm={1} style={{ textAlign: 'center' }}>
+                                            {/* display if first visitor */}
+                                            {displayIcon()}
+                                        </Grid>
+                                        <Grid item sm={1}>
+                                            <Typography
+                                                display="inline"
+                                                variant="body2"
+                                                color="error"
+                                                style={{ fontWeight: 'bold' }}>
+                                                {visitor.errors &&
+                                                    visitor.errors.length > 0 &&
+                                                    `Ligne ${visitor.errors[0].lineNumber}:`}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item sm={10}>
+                                            {visitor.errors.map((error) => (
                                                 <>
                                                     <Typography
                                                         display="inline"
@@ -181,32 +279,12 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
                                                     </Typography>
                                                     {'\n'}
                                                 </>
-                                            ))
-                                        ) : (
-                                            <>
-                                                <Typography
-                                                    display="inline"
-                                                    variant="body2"
-                                                    style={{
-                                                        fontWeight: 'bold',
-                                                        color: '#28a745'
-                                                    }}>
-                                                    {`${visitor.visitor.birthLastname} `}
-                                                </Typography>
-                                                <Typography
-                                                    display="inline"
-                                                    variant="body2"
-                                                    style={{ color: '#28a745' }}>
-                                                    {`${visitor.visitor.firstname} a bien été importé(e).`}
-                                                </Typography>
-                                                <br />
-                                            </>
-                                        )}
-                                    </Grid>
-                                </>
-                            ))}
-                    </Grid>
-                </div>
+                                            ))}
+                                        </Grid>
+                                    </>
+                                )
+                        )}
+                </Grid>
             </Grid>
             <Grid item sm={12}>
                 <Grid container justify="flex-end">
@@ -226,7 +304,7 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
                             color="primary"
                             disabled={formData.visitors.length <= 0 || errorStatement === true}
                             onClick={handleNext}>
-                            Envoyer
+                            Valider
                         </Button>
                     </div>
                 </Grid>
