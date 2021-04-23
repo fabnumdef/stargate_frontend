@@ -28,11 +28,48 @@ const useStyles = makeStyles((theme) => ({
 export default function DecisionsCell({ visitor }) {
     const classes = useStyles();
     const { getPreviousStep } = getDecisions();
-    const stepValue = getPreviousStep(visitor.units);
+    const previousStepValue = getPreviousStep(visitor.units);
+
+    /**
+     * Check the value of the response for the security officer to send the right icon.
+     * @param {*} unit
+     * @returns Icon
+     */
+    function getRightDisplayForOS(unit) {
+        //if positive return checkCircleIcon
+        if (unit.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive)
+            return (
+                <CheckCircleIcon
+                    key={unit.unit}
+                    className={classes.iconSuccess}
+                    alt="Validé"
+                    title="icone validée"
+                />
+            );
+
+        //if negative return errorIcon
+        if (unit.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
+            return <ErrorIcon key={unit.unit} color="error" alt="Refusée" title="icone refusée" />;
+        //if no response yet return timerIcon
+        else
+            return (
+                <TimerIcon
+                    key={unit.unit}
+                    className={classes.iconWarning}
+                    alt="En attente"
+                    title="icone en attente"
+                />
+            );
+    }
+    /**
+     * Check the role of the previous actor to get the right display.
+     * @returns unit label + icon
+     */
     function GetRightDisplay() {
-        switch (stepValue[0].label) {
+        switch (previousStepValue[0].label) {
             case ROLES.ROLE_SCREENING.role: {
-                return stepValue[0].value.value ===
+                //if screening response is 'positive icon' checkCircle otherwise 'warning icon'
+                return previousStepValue[0].value.value ===
                     WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.positive ? (
                     <CheckCircleIcon className={classes.iconSuccess} alt="RAS" title="icone RAS" />
                 ) : (
@@ -40,49 +77,14 @@ export default function DecisionsCell({ visitor }) {
                 );
             }
             case ROLES.ROLE_SECURITY_OFFICER.role: {
-                return stepValue.map((e) => {
-                    //if positive return checkIcon
-                    if (e.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive) {
-                        return (
-                            <Typography key={e.unit} className={classes.typoContent}>
-                                {e.unit}
-                                <CheckCircleIcon
-                                    className={classes.iconSuccess}
-                                    alt="Validé"
-                                    title="icone validée"
-                                />
-                            </Typography>
-                        );
-                    }
-                    //if negative return errorIcon
-                    if (e.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative) {
-                        return (
-                            <Typography key={e.unit} className={classes.typoContent}>
-                                {e.unit}
-                                <ErrorIcon
-                                    key={e.unit}
-                                    color="error"
-                                    alt="Refusée"
-                                    title="icone refusée"
-                                />
-                            </Typography>
-                        );
-                    }
-                    //if no response yet return timerIcon
-                    else {
-                        return (
-                            <Typography key={e.unit} className={classes.typoContent}>
-                                {e.unit}
-                                <TimerIcon
-                                    key={e.unit}
-                                    color="error"
-                                    alt="En attente"
-                                    title="icone en attente"
-                                />
-                            </Typography>
-                        );
-                    }
-                });
+                //if positive return checkIcon
+
+                return previousStepValue.map((step) => (
+                    <Typography key={step.unit} className={classes.typoContent}>
+                        {step.unit}
+                        {getRightDisplayForOS(step)}
+                    </Typography>
+                ));
             }
             default:
                 return null;

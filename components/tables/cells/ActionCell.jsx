@@ -51,6 +51,7 @@ const CustomInput = withStyles((theme) => ({
     }
 }))(InputBase);
 
+// use to reset the choice
 const initChoice = {
     label: '',
     validation: '',
@@ -85,6 +86,15 @@ export function ActionCell({ choices, decision }) {
 
     const [otherChoice, setOtherChoice] = useState(initChoice);
 
+    /**
+     * If the actual value of decisionChoice is equal to the value of
+     * the clicked element => reset the choice (deselect).
+     * If the clicked element is equal to
+     * 'Autre choix' (select menu) => set choice to the value of otherChoice.
+     * else set the decision to the values of the clicked element
+     * @param {*} choice
+     * @returns
+     */
     const handleRadioClick = (choice) => {
         if (decisionChoice === choice) {
             addDecision({
@@ -109,6 +119,12 @@ export function ActionCell({ choices, decision }) {
         });
     };
 
+    /**
+     * Management fo the select change.
+     * If the actual value of decisionChoice is equal to the value of
+     * the clicked element => reset the choice (deselect).
+     * Else set the value of choice to the clicked element.
+     */
     const handleChangeOtherChoice = (event, choice) => {
         if (choice === otherChoice) {
             addDecision({

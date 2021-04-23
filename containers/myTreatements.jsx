@@ -17,7 +17,6 @@ import { LIST_TREATMENTS } from '../lib/apollo/queries';
 import { useDecisions, withDecisionsProvider } from '../lib/hooks/useDecisions';
 import useVisitors from '../lib/hooks/useVisitors';
 import RoundButton from '../components/styled/common/roundButton';
-import { STATE_REQUEST } from '../utils/constants/enums';
 import LoadingCircle from '../components/styled/animations/loadingCircle';
 import EmptyArray from '../components/styled/common/emptyArray';
 import AlertMessage from '../components/styled/common/sticker';
@@ -40,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(9, 12),
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        height: '85vh',
         position: 'relative'
     },
     header: {
@@ -55,6 +54,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'baseline'
+    },
+    buttons: {
+        position: 'absolute',
+        right: '10%',
+        bottom: '0%'
     }
 }));
 
@@ -116,7 +120,6 @@ function MyTreatements() {
 
     const { data, loading } = useQuery(LIST_TREATMENTS, {
         variables: {
-            filtersP: { status: STATE_REQUEST.STATE_CREATED.state },
             cursor: {
                 first: 10,
                 offset: 0
@@ -223,21 +226,23 @@ function MyTreatements() {
                             requests={data.getCampus.progress?.list}
                             treated={false}
                         />
-                        <RoundButton
-                            variant="outlined"
-                            color="primary"
-                            type="reset"
-                            onClick={resetDecision}>
-                            Annuler
-                        </RoundButton>
-                        <RoundButton
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={submitDecisionNumber === 0}>
-                            {`Soumettre (${submitDecisionNumber})`}
-                        </RoundButton>
+                        <div className={classes.buttons}>
+                            <RoundButton
+                                variant="outlined"
+                                color="primary"
+                                type="reset"
+                                onClick={resetDecision}>
+                                Annuler
+                            </RoundButton>
+                            <RoundButton
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                onClick={handleSubmit}
+                                disabled={submitDecisionNumber === 0}>
+                                {`Soumettre (${submitDecisionNumber})`}
+                            </RoundButton>
+                        </div>
                     </>
                 ) : (
                     <EmptyArray type={'à traiter'} />
