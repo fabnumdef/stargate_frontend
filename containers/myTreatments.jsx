@@ -97,7 +97,7 @@ const STATUS = [
     { shortLabel: 'VIP', label: 'Autorité' }
 ];
 
-function MyTreatements() {
+function MyTreatments() {
     const classes = useStyles();
     const router = useRouter();
 
@@ -261,4 +261,4 @@ function MyTreatements() {
     );
 }
 
-export default withDecisionsProvider(MyTreatements);
+export default withDecisionsProvider(MyTreatments);

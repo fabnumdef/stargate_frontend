@@ -175,7 +175,7 @@ const StyledFormLabel = withStyles({
     }
 })(FormControlLabel);
 
-export default function TabRequestVisitorsAcces({ visitors, onChange }) {
+export default function TabRequestVisitorsAccess({ visitors, onChange }) {
     const { activeRole } = useLogin();
     const router = useRouter();
 
@@ -466,7 +466,7 @@ export default function TabRequestVisitorsAcces({ visitors, onChange }) {
     );
 }
 
-TabRequestVisitorsAcces.propTypes = {
+TabRequestVisitorsAccess.propTypes = {
     visitors: PropTypes.arrayOf(
         PropTypes.shape({
             firstname: PropTypes.string

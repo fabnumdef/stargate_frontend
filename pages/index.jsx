@@ -4,8 +4,8 @@ import dynamic from 'next/dynamic';
 import { ROLES } from '../utils/constants/enums';
 import { useLogin } from '../lib/loginContext';
 
-const MyTreatements = dynamic(() => import('../containers/myTreatements'));
-const MyAccesRequest = dynamic(() => import('../containers/myAccesRequests'));
+const MyTreatments = dynamic(() => import('../containers/myTreatments'));
+const MyAccessRequest = dynamic(() => import('../containers/myAccessRequests'));
 const ScreeningManagement = dynamic(() => import('../containers/screeningManagement'));
 const UserAdministration = dynamic(() => import('../containers/administration/userAdministration'));
 const GatekeeperManagement = dynamic(() => import('../containers/gatekeeperManagement'));
@@ -19,14 +19,14 @@ function selectLandingComponent(role) {
         case ROLES.ROLE_GATEKEEPER.role:
             return <GatekeeperManagement />;
         case ROLES.ROLE_HOST.role:
-            return <MyAccesRequest />;
+            return <MyAccessRequest />;
         case ROLES.ROLE_ADMIN.role:
         case ROLES.ROLE_SUPERADMIN.role:
             return <UserAdministration />;
         case ROLES.ROLE_ACCESS_OFFICE.role:
         case ROLES.ROLE_SECURITY_OFFICER.role:
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
-            return <MyTreatements />;
+            return <MyTreatments />;
         default:
             return 'NO ACCESS';
     }

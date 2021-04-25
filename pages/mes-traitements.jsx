@@ -1,8 +1,8 @@
 import React from 'react';
-import { MyTreatements } from '../containers';
+import { MyTreatments } from '../containers';
 
-function MyTreatement() {
-    return <MyTreatements />;
+function MyTreatment() {
+    return <MyTreatments />;
 }
 
-export default MyTreatement;
+export default MyTreatment;
