@@ -22,6 +22,8 @@ import EmptyArray from '../components/styled/common/emptyArray';
 import AlertMessage from '../components/styled/common/sticker';
 import { activeRoleCacheVar } from '../lib/apollo/cache';
 import { ROLES } from '../utils/constants/enums/index';
+import { STATE_REQUEST } from '../utils/constants/enums';
+import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(9, 12),
         display: 'flex',
         flexDirection: 'column',
-        height: '85vh',
+        height: '100%',
         position: 'relative'
     },
     header: {
@@ -54,11 +56,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'baseline'
-    },
-    buttons: {
-        position: 'absolute',
-        right: '10%',
-        bottom: '0%'
     }
 }));
 
@@ -119,6 +116,7 @@ function MyTreatements() {
     };
 
     const { data, loading } = useQuery(LIST_TREATMENTS, {
+        filtersP: { status: STATE_REQUEST.STATE_CREATED.state },
         variables: {
             cursor: {
                 first: 10,
@@ -226,7 +224,7 @@ function MyTreatements() {
                             requests={data.getCampus.progress?.list}
                             treated={false}
                         />
-                        <div className={classes.buttons}>
+                        <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
                                 color="primary"
@@ -242,7 +240,7 @@ function MyTreatements() {
                                 disabled={submitDecisionNumber === 0}>
                                 {`Soumettre (${submitDecisionNumber})`}
                             </RoundButton>
-                        </div>
+                        </ButtonsFooterContainer>
                     </>
                 ) : (
                     <EmptyArray type={'à traiter'} />
@@ -250,13 +248,13 @@ function MyTreatements() {
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-                {data.getCampus.progress.meta.total > 0 ? (
+                {data.getCampus.treated.meta.total > 0 ? (
                     <TableTreatmentsToTreat
                         requests={data.getCampus.treated?.list}
                         treated={true}
                     />
                 ) : (
-                    <EmptyArray type={'traitée'} />
+                    <EmptyArray type={'finalisé'} />
                 )}
             </TabPanel>
         </div>

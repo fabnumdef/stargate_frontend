@@ -3,7 +3,7 @@ import { activeRoleCacheVar } from '../../lib/apollo/cache';
 
 export default function getDecisions() {
     /**
-     * Get the index of the logged user in the unit workflow
+     * Get the index of the logged user in the unit workflow.
      * @param {*} unit
      * @returns index
      */
@@ -12,7 +12,7 @@ export default function getDecisions() {
     };
 
     /**
-     * get the decision of the logged user.
+     * Get the decision of the logged user.
      * @param {*} units
      * @returns array of my decision
      */
@@ -29,12 +29,11 @@ export default function getDecisions() {
             unit: unit.label,
             value: unit.steps[myStepIndex]?.state
         };
-
         return myStep;
     };
 
     /**
-     * get the decision(s) of the previous step for each unit
+     * Get the decision(s) of the previous step for each unit.
      * @returns array of steps
      */
     const getPreviousStep = (units) => {
