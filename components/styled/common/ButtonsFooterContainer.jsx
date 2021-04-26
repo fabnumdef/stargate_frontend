@@ -1,9 +1,10 @@
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     buttonsFooter: {
-        position: 'absolute',
+        backgroundColor: theme.palette.background.default,
+        position: 'fixed',
         boxShadow: '0px -10px 20px #E7E7E7',
         width: '100%',
         height: '80px',
@@ -12,13 +13,13 @@ const useStyles = makeStyles({
     },
     divButtons: {
         position: 'absolute',
-        right: '20%',
+        right: '15%',
         display: 'flex',
         justifyContent: 'space-between',
         marginTop: '20px',
         width: '270px'
     }
-});
+}));
 
 export default function ButtonsFooterContainer({ children }) {
     const classes = useStyles();

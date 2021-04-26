@@ -43,7 +43,6 @@ function RowTreatments({ columns, choices, row, treated }) {
                             <StatusCell key={column.id} visitor={row.visitor} />
                         ) : (
                             <ActionCell
-                                treated={treated}
                                 key={column.id}
                                 decision={{
                                     request: { id: row.request.id },
@@ -70,11 +69,15 @@ function RowTreatments({ columns, choices, row, treated }) {
 export default React.memo(RowTreatments);
 
 RowTreatments.propTypes = {
-    treated: PropTypes.bool.isRequired,
+    treated: PropTypes.bool,
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     row: PropTypes.shape({
         visitor: PropTypes.shape(VisitorCell.propTypes.visitor),
         request: PropTypes.shape(RequestCell.propTypes.request)
     }).isRequired,
     choices: ActionCell.propTypes.choices
+};
+
+RowTreatments.defaultProps = {
+    treated: false
 };

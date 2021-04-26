@@ -57,7 +57,7 @@ function createData({ id, from, to, places, reason, status }) {
 const useStyles = makeStyles({
     root: {
         border: '1px solid #F3F3F3',
-        maxHeight: '440px',
+        maxHeight: '500px',
         overflowX: 'hidden'
     }
 });

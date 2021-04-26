@@ -11,9 +11,7 @@ const useStyles = makeStyles((theme) => ({
     content: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
-        paddingTop: theme.spacing(3),
-        maxWidth: 1380,
-        margin: 'auto'
+        paddingTop: theme.spacing(3)
     },
     toolBar: {
         minHeight: 64

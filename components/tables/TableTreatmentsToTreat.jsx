@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
     },
     root: {
         border: '1px solid #F3F3F3',
-        maxHeight: '440px',
+        maxHeight: '500px',
         overflowX: 'hidden'
     }
 }));
@@ -229,7 +229,7 @@ const TableTreatmentsToTreat = ({ requests, treated }) => {
 export default memo(TableTreatmentsToTreat);
 
 TableTreatmentsToTreat.propTypes = {
-    treated: PropTypes.bool.isRequired,
+    treated: PropTypes.bool,
     requests: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string,
@@ -261,3 +261,5 @@ TableTreatmentsToTreat.propTypes = {
         })
     ).isRequired
 };
+
+TableTreatmentsToTreat.defaultProps = { treated: false };

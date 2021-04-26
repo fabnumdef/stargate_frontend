@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     paper: {
-        padding: theme.spacing(9, 12),
+        padding: theme.spacing(1, 12),
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
