@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import PageTitle from '../components/styled/common/pageTitle';
+import PageTitle from '../../components/styled/common/pageTitle';
 import Paper from '@material-ui/core/Paper';
 import { Typography } from '@material-ui/core';
 import Link from 'next/link';
 
-import AlertMessage from '../components/styled/common/sticker';
-import RoundedButton from '../components/styled/common/roundButton';
-import AddVisitorIcon from '../components/icons/AddVisitorIcon';
-import GroupVisitorsIcon from '../components/icons/GroupVisitorsIcon';
-import PermanentIcon from '../components/icons/PermanentIcon';
+import AlertMessage from '../../components/styled/common/sticker';
+import RoundedButton from '../../components/styled/common/roundButton';
+import AddVisitorIcon from '../../components/icons/AddVisitorIcon';
+import GroupVisitorsIcon from '../../components/icons/GroupVisitorsIcon';
+import PermanentIcon from '../../components/icons/PermanentIcon';
 import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme) => ({
@@ -143,14 +143,14 @@ const demands = [
         title: "Demande d'accès temporaire",
         subtitle: 'Un ou plusieurs visiteurs',
         icon: AddVisitorIcon,
-        link: ''
+        link: '/nouvelle-demande/simple'
     },
     {
         id: 'GroupTempAcces',
         title: "Demande d'accès temporaire",
         subtitle: 'Groupe important',
         icon: GroupVisitorsIcon,
-        link: ''
+        link: '/nouvelle-demande/groupe'
     },
     {
         id: 'IndPermAcces',

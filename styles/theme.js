@@ -61,6 +61,20 @@ const theme = createMuiTheme(
                 stickyHeader: {
                     borderCollapse: 'ihnerit'
                 }
+            },
+            MuiFilledInput: {
+                root: {
+                    borderRadius: '4px',
+                    backgroundColor: '#F9F9F9'
+                },
+                multiline: {
+                    padding: '20px 12px 20px'
+                }
+            }
+        },
+        props: {
+            MuiFilledInput: {
+                disableUnderline: true
             }
         },
         palette
