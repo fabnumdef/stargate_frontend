@@ -8,6 +8,7 @@ import { WORKFLOW_BEHAVIOR, ROLES } from '../../../utils/constants/enums';
 import getDecisions from '../../../utils/mappers/getDecisions';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import { activeRoleCacheVar } from '../../../lib/apollo/cache';
 
 const useStyles = makeStyles((theme) => ({
     iconSuccess: {
@@ -23,9 +24,14 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         borderRadius: '4px',
         marginBottom: '10px'
+    },
+    more: {
+        marginLeft: theme.spacing(2),
+        color: theme.palette.primary.dark,
+        cursor: 'pointer'
     }
 }));
-export default function DecisionsCell({ visitor }) {
+export default function DecisionsCell({ visitor, modalOpen }) {
     const classes = useStyles();
     const { getPreviousStep } = getDecisions();
     const previousStepValue = getPreviousStep(visitor.units);
@@ -94,11 +100,23 @@ export default function DecisionsCell({ visitor }) {
     return (
         <TableCell>
             <div style={{ display: 'block' }}>{GetRightDisplay()}</div>
+            <>
+                {activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role && (
+                    <Typography
+                        variant="body2"
+                        display="inline"
+                        onClick={modalOpen}
+                        className={classes.more}>
+                        Voir traitement
+                    </Typography>
+                )}
+            </>
         </TableCell>
     );
 }
 
 DecisionsCell.propTypes = {
+    modalOpen: PropTypes.func.isRequired,
     visitor: PropTypes.shape({
         units: PropTypes.array
     }).isRequired

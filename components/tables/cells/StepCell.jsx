@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import PropTypes from 'prop-types';
 import TableCell from '@material-ui/core/TableCell';
@@ -6,6 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import WarningIcon from '@material-ui/icons/Warning';
 
 import { ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
 
@@ -24,47 +27,45 @@ const useStyles = makeStyles((theme) => ({
 export default function ReasonCell({ steps, ...others }) {
     const classes = useStyles();
 
-    const [activeStep, setActiveStep] = useState(0);
-
-    useEffect(() => {
-        let activeIndex = 0;
-        while (steps[activeIndex].state.isOK !== null) {
-            activeIndex++;
+    function getIcon(step) {
+        switch (step.state.value) {
+            case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.positive:
+                return CheckCircleIcon;
+            case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative:
+                return WarningIcon;
+            case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative:
+                return ErrorIcon;
         }
-        setActiveStep(activeIndex);
-    }, [steps]);
+    }
+
+    function getIconProps(step) {
+        switch (step.state.value) {
+            case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.positive:
+                return {
+                    classes: { root: classes.success },
+                    title: 'successIcon'
+                };
+            case WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative:
+                return {
+                    classes: { root: classes.warning },
+                    title: 'warningIcon'
+                };
+            case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative:
+                return {
+                    classes: { root: classes.error },
+                    title: 'errorIcon'
+                };
+        }
+    }
 
     return (
         <TableCell {...others}>
-            <Stepper alternativeLabel activeStep={activeStep}>
+            <Stepper alternativeLabel activeStep={-1}>
                 {steps.map((step) => (
                     <Step key={step.role}>
                         <StepLabel
-                            error={
-                                !!step.state.value &&
-                                (step.state.value ===
-                                    WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative ||
-                                    WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.externally)
-                            }
-                            StepIconProps={(() => {
-                                switch (step.state.value) {
-                                    case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.positive:
-                                        return {
-                                            classes: { root: classes.success },
-                                            title: 'successIcon'
-                                        };
-                                    case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.negative:
-                                        return {
-                                            classes: { root: classes.error },
-                                            title: 'errorIcon'
-                                        };
-                                    case WORKFLOW_BEHAVIOR[step.behavior].RESPONSE.externally:
-                                        return {
-                                            classes: { root: classes.warning },
-                                            title: 'warningIcon'
-                                        };
-                                }
-                            })()}>
+                            StepIconComponent={getIcon(step)}
+                            StepIconProps={getIconProps(step)}>
                             {ROLES[step.role].shortLabel}
                         </StepLabel>
                     </Step>

@@ -15,6 +15,9 @@ const palette = {
     success: {
         main: '#28a745'
     },
+    warning: {
+        main: '#FF9700'
+    },
     error: {
         main: red.A400
     },

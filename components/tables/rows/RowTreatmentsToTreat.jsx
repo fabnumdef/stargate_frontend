@@ -23,7 +23,7 @@ const StyledRow = withStyles((theme) => ({
     }
 }))(TableRow);
 
-function RowTreatments({ columns, choices, row, treated }) {
+function RowTreatments({ columns, choices, row, treated, modalOpen }) {
     return (
         <StyledRow hover key={row.visitor.id}>
             {columns.map((column) => {
@@ -35,7 +35,13 @@ function RowTreatments({ columns, choices, row, treated }) {
                         return <VisitorCell key={column.id} visitor={row.visitor} />;
                     case 'decisions':
                     case 'screening':
-                        return <DecisionsCell key={column.id} visitor={row.visitor} />;
+                        return (
+                            <DecisionsCell
+                                key={column.id}
+                                visitor={row.visitor}
+                                modalOpen={modalOpen}
+                            />
+                        );
                     case 'reason':
                         return <ReasonCell key={column.id} request={row.request} />;
                     case 'action':
@@ -70,6 +76,7 @@ export default React.memo(RowTreatments);
 
 RowTreatments.propTypes = {
     treated: PropTypes.bool,
+    modalOpen: PropTypes.bool.isRequired,
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     row: PropTypes.shape({
         visitor: PropTypes.shape(VisitorCell.propTypes.visitor),

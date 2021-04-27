@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
     dialog: {
         borderRadius: '10px',
         padding: theme.spacing(4),
-        minWidth: '500px'
+        minHeight: '500px',
+        minWidth: '900px'
     },
     title: {
         fontSize: '1.125rem',
@@ -58,9 +59,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function ProcessDialogs({ units, isOpen }) {
+function ProcessDialogs({ units, isOpen, onClose }) {
     const classes = useStyles();
-
     return (
         <Dialog
             classes={{ paper: classes.dialog }}
@@ -71,7 +71,7 @@ function ProcessDialogs({ units, isOpen }) {
                     Processus traitement
                 </Typography>
                 <IconButton aria-label="close" className={classes.closeButton}>
-                    <CloseIcon />
+                    <CloseIcon onClick={onClose} />
                 </IconButton>
             </MuiDialogTitle>
             <MuiDialogContent className={classes.content}>
@@ -83,7 +83,8 @@ function ProcessDialogs({ units, isOpen }) {
 
 ProcessDialogs.propTypes = {
     units: PropTypes.array.isRequired,
-    isOpen: PropTypes.bool.isRequired
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired
 };
 
 export default ProcessDialogs;

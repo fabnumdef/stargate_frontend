@@ -33,9 +33,7 @@ const useStyles = makeStyles((theme) => ({
         },
         '&:last-child': {
             borderTopRightRadius: 10,
-            borderBottomRightRadius: 10,
-            display: 'flex',
-            justifyContent: 'flex-end'
+            borderBottomRightRadius: 10
         }
     },
     icon: {
@@ -49,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 
 function RowTreatments({ columns, row }) {
     const classes = useStyles();
-
     return (
         <StyledRow hover key={row.id}>
             {columns.map((column) => {

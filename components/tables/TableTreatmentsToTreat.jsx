@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Table from '@material-ui/core/Table';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,6 +12,7 @@ import { activeRoleCacheVar } from '../../lib/apollo/cache';
 import { EMPLOYEE_TYPE, ROLES } from '../../utils/constants/enums';
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowTreatment from './rows/RowTreatmentsToTreat';
+import ProcessDialog from '../styled/common/ProcessDialogs';
 
 const useStyles = makeStyles(() => ({
     tableCollapes: {
@@ -182,6 +184,8 @@ export const choicesArray = (role) => {
 };
 
 const TableTreatmentsToTreat = ({ requests, treated }) => {
+    const [toViewVisitor, setToViewVisitor] = useState();
+
     const classes = useStyles();
     const rows = useMemo(
         () =>
@@ -217,12 +221,18 @@ const TableTreatmentsToTreat = ({ requests, treated }) => {
                             key={`${row.request.id}_${row.visitor.id}`}
                             choices={choices}
                             row={row}
+                            modalOpen={() => setToViewVisitor(row.visitor)}
                             columns={columns}
                             treated={treated}
                         />
                     ))}
                 </TableBody>
             </Table>
+            <ProcessDialog
+                isOpen={toViewVisitor}
+                units={toViewVisitor?.units}
+                onClose={() => setToViewVisitor(null)}
+            />
         </TableContainer>
     );
 };
