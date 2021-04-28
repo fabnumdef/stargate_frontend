@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.success.main
     },
     iconWarning: {
-        color: '#FF9700'
+        color: theme.palette.warning.main
     },
     typoContent: {
         display: 'flex',
@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#F8F8F8',
         padding: theme.spacing(1),
         borderRadius: '4px',
-        marginBottom: '10px'
+        marginBottom: '10px',
+        maxWidth: '175px'
     },
     more: {
         marginLeft: theme.spacing(2),
@@ -33,16 +34,34 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function DecisionsCell({ visitor, modalOpen }) {
     const classes = useStyles();
-    const { getPreviousStep } = getDecisions();
-    const previousStepValue = getPreviousStep(visitor.units);
+    const { getPreviousStep, isRejected, getScreeningDecision } = getDecisions();
+    const screeningDecision = getScreeningDecision(visitor.units);
+    function screeningDisplay() {
+        if (screeningDecision === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative)
+            return (
+                <WarningIcon
+                    key="negative"
+                    className={classes.iconWarning}
+                    alt="RES"
+                    title="icone RES"
+                />
+            );
+        if (screeningDecision === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.positive)
+            return (
+                <CheckCircleIcon
+                    key="positive"
+                    className={classes.iconSuccess}
+                    alt="Validé"
+                    title="icone validée"
+                />
+            );
+    }
 
     /**
-     * Check the value of the response for the security officer to send the right icon.
-     * @param {*} unit
-     * @returns Icon
+     * Check decision of the previous actor to get the right display.
+     * @returns icon.
      */
-    function getRightDisplayForOS(unit) {
-        //if positive return checkCircleIcon
+    function GetRightDisplay(unit) {
         if (unit.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive)
             return (
                 <CheckCircleIcon
@@ -52,11 +71,8 @@ export default function DecisionsCell({ visitor, modalOpen }) {
                     title="icone validée"
                 />
             );
-
-        //if negative return errorIcon
-        if (unit.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative)
-            return <ErrorIcon key={unit.unit} color="error" alt="Refusée" title="icone refusée" />;
-        //if no response yet return timerIcon
+        if (unit.value.value === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative)
+            return <WarningIcon className={classes.iconWarning} alt="RES" title="icone RES" />;
         else
             return (
                 <TimerIcon
@@ -67,41 +83,30 @@ export default function DecisionsCell({ visitor, modalOpen }) {
                 />
             );
     }
-    /**
-     * Check the role of the previous actor to get the right display.
-     * @returns unit label + icon
-     */
-    function GetRightDisplay() {
-        switch (previousStepValue[0].label) {
-            case ROLES.ROLE_SCREENING.role: {
-                //if screening response is 'positive icon' checkCircle otherwise 'warning icon'
-                return previousStepValue[0].value.value ===
-                    WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.positive ? (
-                    <CheckCircleIcon className={classes.iconSuccess} alt="RAS" title="icone RAS" />
-                ) : (
-                    <WarningIcon className={classes.iconWarning} alt="RES" title="icone RES" />
-                );
-            }
-            case ROLES.ROLE_SECURITY_OFFICER.role: {
-                //if positive return checkIcon
-
-                return previousStepValue.map((step) => (
-                    <Typography key={step.unit} className={classes.typoContent}>
-                        {step.unit}
-                        {getRightDisplayForOS(step)}
-                    </Typography>
-                ));
-            }
-            default:
-                return null;
-        }
-    }
-
     return (
         <TableCell>
-            <div style={{ display: 'block' }}>{GetRightDisplay()}</div>
-            <>
-                {activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role && (
+            {activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role ? (
+                <>
+                    <div style={{ display: 'block' }}>
+                        {visitor.units.map((unit) =>
+                            unit.label === isRejected(unit) ? (
+                                <Typography key={unit.label} className={classes.typoContent}>
+                                    {unit.label}
+                                    <ErrorIcon
+                                        key={unit.label}
+                                        color="error"
+                                        alt="Refusée"
+                                        title="icone refusée"
+                                    />
+                                </Typography>
+                            ) : (
+                                <Typography key={unit.label} className={classes.typoContent}>
+                                    {unit.label}
+                                    {GetRightDisplay(getPreviousStep(unit))}
+                                </Typography>
+                            )
+                        )}
+                    </div>
                     <Typography
                         variant="body2"
                         display="inline"
@@ -109,8 +114,10 @@ export default function DecisionsCell({ visitor, modalOpen }) {
                         className={classes.more}>
                         Voir traitement
                     </Typography>
-                )}
-            </>
+                </>
+            ) : (
+                screeningDisplay()
+            )}
         </TableCell>
     );
 }
