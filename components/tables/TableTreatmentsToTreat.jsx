@@ -184,7 +184,7 @@ export const choicesArray = (role) => {
 };
 
 const TableTreatmentsToTreat = ({ requests, treated }) => {
-    const [toViewVisitor, setToViewVisitor] = useState();
+    const [toViewVisitor, setToViewVisitor] = useState(null);
 
     const classes = useStyles();
     const rows = useMemo(
@@ -229,7 +229,7 @@ const TableTreatmentsToTreat = ({ requests, treated }) => {
                 </TableBody>
             </Table>
             <ProcessDialog
-                isOpen={toViewVisitor}
+                isOpen={toViewVisitor !== null}
                 units={toViewVisitor?.units}
                 onClose={() => setToViewVisitor(null)}
             />

@@ -76,5 +76,5 @@ export default function ReasonCell({ steps, ...others }) {
 }
 
 ReasonCell.propTypes = {
-    steps: PropTypes.object.isRequired
+    steps: PropTypes.array.isRequired
 };

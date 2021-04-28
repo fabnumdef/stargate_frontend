@@ -7,6 +7,8 @@ import { activeRoleCacheVar } from '../../../../lib/apollo/cache';
 import { ROLES } from '../../../../utils/constants/enums';
 import { render, screen } from '../../../../utils/tests/renderApollo';
 
+const modalOpen = jest.fn();
+
 const mockVisitor = {
     units: [
         {
@@ -24,8 +26,8 @@ const mockVisitor = {
                     behavior: 'ADVISEMENT',
                     role: 'ROLE_SCREENING',
                     state: {
-                        isOK: true,
-                        value: 'POSITIVE'
+                        isOK: false,
+                        value: 'NEGATIVE'
                     }
                 },
                 {
@@ -61,8 +63,8 @@ const mockVisitor = {
                     behavior: 'ADVISEMENT',
                     role: 'ROLE_SCREENING',
                     state: {
-                        isOK: true,
-                        value: 'POSITIVE'
+                        isOK: false,
+                        value: 'NEGATIVE'
                     }
                 },
                 {
@@ -98,8 +100,8 @@ const mockVisitor = {
                     behavior: 'ADVISEMENT',
                     role: 'ROLE_SCREENING',
                     state: {
-                        isOK: true,
-                        value: 'POSITIVE'
+                        isOK: false,
+                        value: 'NEGATIVE'
                     }
                 },
                 {
@@ -134,7 +136,7 @@ describe('Component: DecisionsCell', () => {
             <Table>
                 <TableBody>
                     <TableRow>
-                        <DecisionsCell visitor={mockVisitor} />
+                        <DecisionsCell visitor={mockVisitor} modalOpen={modalOpen} />
                     </TableRow>
                 </TableBody>
             </Table>
@@ -155,11 +157,11 @@ describe('Component: DecisionsCell', () => {
             <Table>
                 <TableBody>
                     <TableRow>
-                        <DecisionsCell visitor={mockVisitor} />
+                        <DecisionsCell visitor={mockVisitor} modalOpen={modalOpen} />
                     </TableRow>
                 </TableBody>
             </Table>
         );
-        expect(screen.getByTitle(/icone RAS/i)).toBeInTheDocument();
+        expect(screen.getByTitle(/icone RES/i)).toBeInTheDocument();
     });
 });

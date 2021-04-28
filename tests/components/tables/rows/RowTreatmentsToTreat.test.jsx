@@ -11,6 +11,7 @@ import { ACCEPTED_STATUS } from '../../../../utils';
 import { ROLES } from '../../../../utils/constants/enums';
 import { render, screen } from '../../../../utils/tests/renderApollo';
 
+const mockOpen = jest.fn();
 const mockUpdate = jest.fn();
 const mockColumns = [{ id: 'request' }, { id: 'visitor' }, { id: 'decision' }, { id: 'action' }];
 
@@ -82,6 +83,7 @@ describe('Component: rowTreatment', () => {
                         row={mockRow}
                         treated={false}
                         choices={choicesArray(ROLES.ROLE_UNIT_CORRESPONDENT.role)}
+                        modalOpen={mockOpen}
                     />
                 </TableBody>
             </Table>,
@@ -103,6 +105,7 @@ describe('Component: rowTreatment', () => {
                         columns={mockColumns}
                         row={mockRow}
                         choices={choicesArray(ROLES.ROLE_UNIT_CORRESPONDENT.role)}
+                        modalOpen={mockOpen}
                     />
                 </TableBody>
             </Table>,

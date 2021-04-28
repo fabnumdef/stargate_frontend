@@ -65,7 +65,7 @@ export default function TabProcess({ units }) {
 
                 <TableBody>
                     {rows?.map((row) => (
-                        <RowProcess key={row.id} row={row} columns={columns} />
+                        <RowProcess key={row.unit} row={row} columns={columns} />
                     ))}
                 </TableBody>
             </Table>

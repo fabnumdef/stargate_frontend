@@ -70,8 +70,8 @@ function ProcessDialogs({ units, isOpen, onClose }) {
                 <Typography align="center" variant="h3" className={classes.sizeTypo}>
                     Processus traitement
                 </Typography>
-                <IconButton aria-label="close" className={classes.closeButton}>
-                    <CloseIcon onClick={onClose} />
+                <IconButton aria-label="close" onClick={onClose} className={classes.closeButton}>
+                    <CloseIcon />
                 </IconButton>
             </MuiDialogTitle>
             <MuiDialogContent className={classes.content}>
@@ -82,9 +82,11 @@ function ProcessDialogs({ units, isOpen, onClose }) {
 }
 
 ProcessDialogs.propTypes = {
-    units: PropTypes.array.isRequired,
+    units: PropTypes.array,
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired
 };
+
+ProcessDialogs.defaultProps = { units: [] };
 
 export default ProcessDialogs;

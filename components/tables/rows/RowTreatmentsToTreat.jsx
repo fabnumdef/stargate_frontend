@@ -76,7 +76,7 @@ export default React.memo(RowTreatments);
 
 RowTreatments.propTypes = {
     treated: PropTypes.bool,
-    modalOpen: PropTypes.bool.isRequired,
+    modalOpen: PropTypes.func.isRequired,
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     row: PropTypes.shape({
         visitor: PropTypes.shape(VisitorCell.propTypes.visitor),
