@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import PageTitle from '../../../components/styled/common/pageTitle';
-import BaseForm from '../../../components/administrationForms/baseForm';
+import CampusForm from '../../../components/administrationForms/campusForm';
 import PlaceForm from '../../../components/administrationForms/placeForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 
@@ -81,7 +81,7 @@ const DELETE_PLACE = gql`
     }
 `;
 
-function CampusFormContainer({ onSubmit, defaultValues, setDefaultValues, campusId, type }) {
+function BaseFormContainer({ onSubmit, defaultValues, setDefaultValues, campusId, type }) {
     const widthBreak = 1030;
     const matches = useMediaQuery(`(min-width:${widthBreak}px)`);
     const { addAlert } = useSnackBar();
@@ -234,7 +234,7 @@ function CampusFormContainer({ onSubmit, defaultValues, setDefaultValues, campus
                             xs={10}
                             md={6}
                             className={`${matches && type === 'edit' ? classes.rightBorder : ''}`}>
-                            <BaseForm
+                            <CampusForm
                                 submitForm={onSubmit}
                                 defaultValues={defaultValues}
                                 setDefaultValues={setDefaultValues}
@@ -255,7 +255,7 @@ function CampusFormContainer({ onSubmit, defaultValues, setDefaultValues, campus
     );
 }
 
-CampusFormContainer.propTypes = {
+BaseFormContainer.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     defaultValues: PropTypes.shape,
     setDefaultValues: PropTypes.func,
@@ -263,4 +263,4 @@ CampusFormContainer.propTypes = {
     type: PropTypes.string.isRequired
 };
 
-export default CampusFormContainer;
+export default BaseFormContainer;
