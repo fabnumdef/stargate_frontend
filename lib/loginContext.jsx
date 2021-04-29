@@ -1,7 +1,7 @@
 import { gql, useApolloClient, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
-import { createContext, useCallback, useContext } from 'react';
+import { createContext, useCallback, useContext, useEffect } from 'react';
 
 import { tokenDuration } from '../utils';
 import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
@@ -52,6 +52,7 @@ export function LoginContextProvider({ children }) {
     const signOut = (alert = false) => {
         client.resetStore().then(() => {
             client.cache.evict({ fieldName: 'me' });
+            client.cache.evict({ id: campusIdVar() });
             client.cache.gc();
 
             localStorage.removeItem('token');
@@ -177,7 +178,6 @@ export function LoginContextProvider({ children }) {
              *  Get user data
              */
             setToken(d.login.jwt);
-            authRenew();
             getUserData();
         },
         onError: () => {
@@ -204,6 +204,12 @@ export function LoginContextProvider({ children }) {
             }
         });
     };
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            authRenew();
+        }
+    }, [isLoggedIn]);
 
     return (
         <LoginContext.Provider

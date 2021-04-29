@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
-// Material Import
+
 import { makeStyles } from '@material-ui/core/styles';
 import SelectedBadge from '../components/styled/common/TabBadge';
 import Tabs from '@material-ui/core/Tabs';
@@ -10,6 +10,7 @@ import TabPanel from '../components/styled/tabpanel';
 import TableMyRequests from '../components/tables/TableMyRequests';
 
 import PageTitle from '../components/styled/common/pageTitle';
+import EmptyArray from '../components/styled/emptyArray';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
 import useRequest from '../lib/hooks/useRequest';
@@ -44,53 +45,90 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function MyRequestAcces() {
+const filtersP = { status: STATE_REQUEST.STATE_CREATED.state };
+const filtersT = {
+    status: [
+        STATE_REQUEST.STATE_CANCELED.state,
+        STATE_REQUEST.STATE_ACCEPTED.state,
+        STATE_REQUEST.STATE_MIXED.state,
+        STATE_REQUEST.STATE_REJECTED.state
+    ]
+};
+
+const tabList = [
+    {
+        index: 0,
+        value: 'progress',
+        label: `En cours`
+    },
+    {
+        index: 1,
+        value: 'treated',
+        label: 'Finalisées'
+    }
+];
+
+const FIRST_INIT = 10;
+
+export default function MyRequestAccess() {
     const classes = useStyles();
 
-    const { data, loading } = useQuery(LIST_MY_REQUESTS, {
+    const [first, setFirst] = useState(FIRST_INIT);
+
+    const { data, loading, fetchMore } = useQuery(LIST_MY_REQUESTS, {
         variables: {
-            filtersP: { status: STATE_REQUEST.STATE_CREATED.state },
-            filtersT: {
-                status: [
-                    STATE_REQUEST.STATE_CANCELED.state,
-                    STATE_REQUEST.STATE_ACCEPTED.state,
-                    STATE_REQUEST.STATE_MIXED.state,
-                    STATE_REQUEST.STATE_REJECTED.state
-                ]
-            },
+            filtersP,
+            filtersT,
             cursor: {
-                first: 30,
+                first,
                 offset: 0
             }
         }
     });
 
     const { deleteRequest } = useRequest();
-
-    const tabList = [
-        {
-            index: 0,
-            value: 'progress',
-            label: `En cours`
-        },
-        {
-            index: 1,
-            value: 'treated',
-            label: 'Finalisées'
-        }
-    ];
-
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
+        if (first !== FIRST_INIT) {
+            fetchMore({
+                variables: {
+                    filtersP,
+                    filtersT,
+                    cursor: {
+                        first: FIRST_INIT,
+                        offset: 0
+                    }
+                }
+            });
+            setFirst(FIRST_INIT);
+        }
         setValue(newValue);
+    };
+
+    const load = React.useMemo(() => {
+        return first < data?.getCampus[tabList[value].value]?.meta?.total;
+    }, [data, value]);
+
+    const handleFetchMore = async () => {
+        await fetchMore({
+            variables: {
+                filtersP,
+                filtersT,
+                cursor: {
+                    first: first + 10,
+                    offset: 0
+                }
+            }
+        });
+        setFirst(first + 10);
     };
 
     const handleDelete = (id) => {
         deleteRequest(id);
     };
 
-    if (loading) {
+    if (loading || !data) {
         return '';
     }
 
@@ -127,20 +165,29 @@ export default function MyRequestAcces() {
             </Tabs>
 
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                <TableMyRequests
-                    request={data.getCampus.progress.list}
-                    emptyLabel="en cours"
-                    onDelete={handleDelete}
-                />
+                {data.getCampus.progress.meta.total > 0 ? (
+                    <TableMyRequests
+                        request={data.getCampus.progress.list}
+                        onDelete={handleDelete}
+                        onLoadMore={handleFetchMore}
+                        load={load}
+                    />
+                ) : (
+                    <EmptyArray type="en cours" />
+                )}
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-                {/* @todo to replace by treated */}
-                <TableMyRequests
-                    request={data.getCampus.treated.list}
-                    emptyLabel="terminée"
-                    onDelete={handleDelete}
-                />
+                {data.getCampus.treated.meta.total > 0 ? (
+                    <TableMyRequests
+                        request={data.getCampus.treated.list}
+                        onDelete={handleDelete}
+                        onLoadMore={handleFetchMore}
+                        load={load}
+                    />
+                ) : (
+                    <EmptyArray type="finalisées" />
+                )}
             </TabPanel>
         </div>
     );

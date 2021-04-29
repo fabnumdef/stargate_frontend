@@ -32,7 +32,6 @@
         "@wry/equality": "^0.3.4",
         "@zeit/next-css": "^1.0.1",
         "apollo-upload-client": "^14.1.2",
-        "apollo3-cache-persist": "^0.9.1",
         "classnames": "^2.2.6",
         "cross-env": "^7.0.2",
         "date-fns": "^2.16.1",

@@ -6,7 +6,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
 
-import { useApollo, useApolloPersist } from '../lib/apollo';
+import { useApollo } from '../lib/apollo';
 import { LoginContextProvider } from '../lib/loginContext';
 import { isLoggedInVar, restoreActiveRoleCacheVar, restoreCampusIdVar } from '../lib/apollo/cache';
 import { SnackBarProvider } from '../lib/hooks/snackbar';
@@ -25,8 +25,6 @@ export default function App({ Component, pageProps }) {
     const apolloClient = useApollo(pageProps);
 
     const [ready, setReady] = useState(false);
-
-    useApolloPersist();
 
     useEffect(() => {
         /** Remove the server-side injected CSS. */
