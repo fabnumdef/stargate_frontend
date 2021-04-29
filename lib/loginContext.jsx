@@ -2,6 +2,7 @@ import { gql, useApolloClient, useLazyQuery, useMutation, useQuery } from '@apol
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
 import { createContext, useCallback, useContext, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import { tokenDuration } from '../utils';
 import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
@@ -38,6 +39,7 @@ const Login = dynamic(() => import('../containers/login'));
  */
 export function LoginContextProvider({ children }) {
     const client = useApolloClient();
+    const router = useRouter();
 
     const {
         data: { isLoggedIn }
@@ -61,6 +63,7 @@ export function LoginContextProvider({ children }) {
         });
 
         isLoggedInVar(false);
+        router.push('/');
 
         if (alert) addAlert(alert);
     };
