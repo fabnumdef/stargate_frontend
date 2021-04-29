@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     iconWarning: {
         color: theme.palette.warning.main
     },
+    decisionPart: {
+        display: 'flex'
+    },
     typoContent: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -34,8 +37,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function DecisionsCell({ visitor, modalOpen }) {
     const classes = useStyles();
-    const { getPreviousStep, isRejected, getScreeningDecision } = getDecisions();
+    const { isRejected, getScreeningDecision, getOSDecision } = getDecisions();
     const screeningDecision = getScreeningDecision(visitor.units);
+
     function screeningDisplay() {
         if (screeningDecision === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative)
             return (
@@ -52,7 +56,7 @@ export default function DecisionsCell({ visitor, modalOpen }) {
                     key="positive"
                     className={classes.iconSuccess}
                     alt="Validé"
-                    title="icone validée"
+                    title="icone RAS"
                 />
             );
     }
@@ -61,26 +65,25 @@ export default function DecisionsCell({ visitor, modalOpen }) {
      * Check decision of the previous actor to get the right display.
      * @returns icon.
      */
-    function GetRightDisplay(unit) {
-        if (unit.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive)
-            return (
-                <CheckCircleIcon
-                    key={unit.unit}
-                    className={classes.iconSuccess}
-                    alt="Validé"
-                    title="icone validée"
-                />
-            );
-        if (unit.value.value === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative)
-            return <WarningIcon className={classes.iconWarning} alt="RES" title="icone RES" />;
-        else
+    function GetRightDisplay(decision) {
+        if (decision === 'WAITING')
             return (
                 <TimerIcon
-                    key={unit.unit}
                     className={classes.iconWarning}
                     alt="En attente"
                     title="icone en attente"
                 />
+            );
+        else
+            return (
+                <div className={classes.decisionPart}>
+                    {decision}
+                    <CheckCircleIcon
+                        className={classes.iconSuccess}
+                        alt="Validé"
+                        title="icone validée"
+                    />
+                </div>
             );
     }
     return (
@@ -102,7 +105,9 @@ export default function DecisionsCell({ visitor, modalOpen }) {
                             ) : (
                                 <Typography key={unit.label} className={classes.typoContent}>
                                     {unit.label}
-                                    {GetRightDisplay(getPreviousStep(unit))}
+                                    {getOSDecision(unit)
+                                        ? GetRightDisplay(getOSDecision(unit))
+                                        : screeningDisplay()}
                                 </Typography>
                             )
                         )}

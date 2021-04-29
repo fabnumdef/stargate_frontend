@@ -32,14 +32,6 @@ const mockVisitor = {
                 },
                 {
                     behavior: 'VALIDATION',
-                    role: 'ROLE_SECURITY_OFFICER',
-                    state: {
-                        isOK: true,
-                        value: 'REJECTED'
-                    }
-                },
-                {
-                    behavior: 'VALIDATION',
                     role: 'ROLE_ACCESS_OFFICE',
                     state: {
                         isOK: null,
@@ -72,6 +64,7 @@ const mockVisitor = {
                     role: 'ROLE_SECURITY_OFFICER',
                     state: {
                         isOK: true,
+                        tags: ['VL'],
                         value: 'ACCEPTED'
                     }
                 },
@@ -109,7 +102,46 @@ const mockVisitor = {
                     role: 'ROLE_SECURITY_OFFICER',
                     state: {
                         isOK: null,
+                        tags: [],
                         value: null
+                    }
+                },
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_ACCESS_OFFICE',
+                    state: {
+                        isOK: null,
+                        value: null
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Grand Canyon',
+            steps: [
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_UNIT_CORRESPONDENT',
+                    state: {
+                        isOK: true,
+                        value: 'ACCEPTED'
+                    }
+                },
+                {
+                    behavior: 'ADVISEMENT',
+                    role: 'ROLE_SCREENING',
+                    state: {
+                        isOK: false,
+                        value: 'NEGATIVE'
+                    }
+                },
+                {
+                    behavior: 'VALIDATION',
+                    role: 'ROLE_SECURITY_OFFICER',
+                    state: {
+                        isOK: false,
+                        tags: [],
+                        value: 'REJECTED'
                     }
                 },
                 {
@@ -141,10 +173,11 @@ describe('Component: DecisionsCell', () => {
                 </TableBody>
             </Table>
         );
-        //check the display of 2 icons (1 accepted / 1 rejected)
-        expect(screen.getByTitle(/icone refusée/i)).toBeInTheDocument();
+        //check the display of 4 icons (1 accepted / 1 rejected / 1 waiting / 1 RES)
+        expect(screen.getByTitle(/icone RES/i)).toBeInTheDocument();
         expect(screen.getByTitle(/icone validée/i)).toBeInTheDocument();
         expect(screen.getByTitle(/icone en attente/i)).toBeInTheDocument();
+        expect(screen.getByTitle(/icone refusée/i)).toBeInTheDocument();
     });
 
     it('display correctly for Security officer', () => {

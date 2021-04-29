@@ -62,19 +62,25 @@ export default function getDecisions() {
     };
 
     /**
-     * Get the decision of the previous step.
+     * Get the decision of the SECURITY OFFICER
      * @param {*} unit
-     * @returns role and value of the previous step
+     * @returns POSITIVE/NEGATIVE or WAITING if no decision yet.
      */
-    const getPreviousStep = (unit) => {
-        //for each unit check what is the previous step before the logged user
-        const indexPreviousStep = getMyStepIndex(unit) - 1;
-
-        const myStep = {
-            role: unit.steps[indexPreviousStep]?.role,
-            value: unit.steps[indexPreviousStep]?.state
-        };
-        return myStep;
+    const getOSDecision = (unit) => {
+        let OSDecision;
+        unit.steps.find(
+            (step) =>
+                step.role === ROLES.ROLE_SECURITY_OFFICER.role &&
+                step.state.isOK !== false &&
+                (OSDecision = step.state.tags[0] ?? 'WAITING')
+        );
+        return OSDecision;
     };
-    return { getPreviousStep, getMyDecision, isRejected, getScreeningDecision };
+
+    return {
+        getMyDecision,
+        isRejected,
+        getScreeningDecision,
+        getOSDecision
+    };
 }
