@@ -123,7 +123,7 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
             if (data.mutateCampus.shiftRequest.status === STATE_REQUEST.STATE_CREATED.state) {
                 router.push('/mes-demandes');
                 addAlert({
-                    message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créé`,
+                    message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créée`,
                     severity: 'success'
                 });
             }
