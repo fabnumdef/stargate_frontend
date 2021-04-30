@@ -20,12 +20,12 @@ const useStyles = makeStyles(() => ({
     },
     root: {
         border: '1px solid #F3F3F3',
-        maxHeight: '500px',
+        maxHeight: '63vh',
         overflowX: 'hidden'
     }
 }));
 
-export const columnsArray = (role, treated) => {
+export const columnsArray = (role, treated, exported) => {
     const columns = [];
     switch (role) {
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
@@ -35,9 +35,9 @@ export const columnsArray = (role, treated) => {
             columns.push({ id: 'screening', label: 'Criblage', position: 3 });
             break;
         case ROLES.ROLE_ACCESS_OFFICE.role:
-            treated === true
-                ? columns.push({ id: 'export', label: 'Exporté le', position: 5 })
-                : columns.push({ id: 'decisions', label: 'Décisions', position: 3 });
+            if (!treated) columns.push({ id: 'decisions', label: 'Décisions', position: 3 });
+            if (exported) columns.push({ id: 'export', label: 'Exporté le', position: 5 });
+
             break;
 
         default:
@@ -240,6 +240,7 @@ export default memo(TableTreatmentsToTreat);
 
 TableTreatmentsToTreat.propTypes = {
     treated: PropTypes.bool,
+    exported: PropTypes.bool,
     requests: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string,
@@ -272,4 +273,4 @@ TableTreatmentsToTreat.propTypes = {
     ).isRequired
 };
 
-TableTreatmentsToTreat.defaultProps = { treated: false };
+TableTreatmentsToTreat.defaultProps = { treated: false, exported: false };

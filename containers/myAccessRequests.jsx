@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     tabs: {
-        marginBottom: '30px'
+        marginBottom: '20px'
     },
     tab: {
         '& .MuiBox-root': {
@@ -134,9 +134,7 @@ export default function MyRequestAccess() {
 
     return (
         <div className={classes.paper}>
-            <div className={classes.title}>
-                <PageTitle>Mes demandes</PageTitle>
-            </div>
+            <PageTitle>Mes demandes</PageTitle>
             {/** Tabulator  */}
             <Tabs
                 indicatorColor="primary"

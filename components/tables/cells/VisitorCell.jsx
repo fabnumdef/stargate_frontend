@@ -9,13 +9,16 @@ const useStyle = makeStyles(() => ({
     },
     divBlock: {
         display: 'block'
+    },
+    widthCell: {
+        maxWidth: '220px'
     }
 }));
 
 export default function VisitorCell({ visitor }) {
     const classes = useStyle();
     return (
-        <TableCell>
+        <TableCell className={classes.widthCell}>
             <div>
                 <Typography display="inline" variant="body1" className={classes.subtitles}>
                     Visiteur :

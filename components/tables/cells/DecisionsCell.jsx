@@ -12,7 +12,8 @@ import { activeRoleCacheVar } from '../../../lib/apollo/cache';
 
 const useStyles = makeStyles((theme) => ({
     iconSuccess: {
-        color: theme.palette.success.main
+        color: theme.palette.success.main,
+        marginLeft: '5px'
     },
     iconWarning: {
         color: theme.palette.warning.main

@@ -20,7 +20,7 @@ const useStyles = makeStyles({
         padding: '16px'
     },
     icon: {
-        fontSize: '3rem'
+        fontSize: '5rem'
     }
 });
 
@@ -41,7 +41,7 @@ export default function EmptyArray({ type }) {
         }
     }
 
-    function getTest() {
+    function getText() {
         switch (type) {
             case 'en cours':
                 return 'demande en cours';
@@ -62,8 +62,8 @@ export default function EmptyArray({ type }) {
         <div>
             <div className={classes.svgContent}>{getIcon()}</div>
             <div className={classes.textContent}>
-                <Typography variant="subtitle2" style={{ textAlign: 'center' }}>
-                    {`Vous n'avez pas de ${getTest()} pour le moment !`}
+                <Typography variant="subtitle1" style={{ textAlign: 'center' }}>
+                    {`Vous n'avez pas de ${getText()} pour le moment !`}
                 </Typography>
             </div>
         </div>
