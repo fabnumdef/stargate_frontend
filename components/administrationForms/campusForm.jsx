@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Controller, useForm } from 'react-hook-form';
 import Grid from '@material-ui/core/Grid';
@@ -7,13 +7,14 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import { useRouter } from 'next/router';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     baseForm: {
         padding: '20px'
     },
     mainInput: {
-        width: '300px',
+        width: '100%',
         marginBottom: '20px',
         '& input': {
             padding: '20px 12px 20px'
@@ -22,47 +23,6 @@ const useStyles = makeStyles((theme) => ({
     fieldLabel: {
         fontWeight: 'bold'
     },
-    formSelect: {
-        width: '300px',
-        top: '-13px'
-    },
-    titleUserSelect: {
-        display: 'inline-block',
-        width: '160px'
-    },
-    userSelect: {
-        display: 'inline-block',
-        width: '70%',
-        padding: '20px 0 15px 0px'
-    },
-    assistantSelect: {
-        width: '250px',
-        top: '-5px'
-    },
-    assistantList: {
-        width: '250px',
-        marginBottom: '3px'
-    },
-    rightBorder: {
-        borderColor: theme.palette.primary.main,
-        borderRight: '2px solid'
-    },
-    marginAdministrator: {
-        marginTop: '50px'
-    },
-    tableContainer: {
-        maxHeight: '140px'
-    },
-    row: {
-        borderBottom: 'none',
-        color: 'rgba(0, 0, 0, 0.87)',
-        paddingLeft: '0px'
-    },
-    icon: {
-        marginBottom: '-16px',
-        marginTop: '-16px',
-        padding: '1px 3px 1px 3px'
-    },
     buttonsContainer: {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -70,39 +30,23 @@ const useStyles = makeStyles((theme) => ({
         '& button': {
             margin: '3px'
         }
-    },
-    loadMore: {
-        margin: '4px',
-        paddingTop: '4px',
-        color: theme.palette.primary.main,
-        textAlign: 'center',
-        borderTop: '1px solid rgba(15, 65, 148, 0.1)',
-        '&:hover': {
-            cursor: 'pointer',
-            textDecoration: 'underline'
-        }
     }
 }));
 
 const CampusForm = ({ submitForm, defaultValues }) => {
     const classes = useStyles();
-    const { handleSubmit, errors, control, setValue } = useForm();
-
-    const [updated, setUpdated] = useState(false);
+    const router = useRouter();
+    const { handleSubmit, errors, control } = useForm();
 
     const onSubmit = (data) => {
-        setUpdated(false);
         submitForm(data);
     };
 
     const handleCancel = () => {
-        setValue('name', defaultValues.name);
-        setUpdated(false);
-    };
-
-    const editLabel = (campusLabel) => {
-        setValue('label', campusLabel);
-        setUpdated(true);
+        if (defaultValues.id.length) {
+            return;
+        }
+        return router.push('/administration/base');
     };
 
     return (
@@ -115,7 +59,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                 Identifiant&nbsp;:
                             </Typography>
                         </Grid>
-                        <Grid item sm={12} xs={12} md={12} lg={6}>
+                        <Grid item sm={12} xs={12} md={12} lg={8}>
                             <Controller
                                 as={
                                     <TextField
@@ -124,6 +68,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                         helperText={errors.id && errors.id.message}
                                         variant="filled"
                                         className={classes.mainInput}
+                                        placeholder={'Ex: BASE-NAVALE'}
                                     />
                                 }
                                 rules={{
@@ -143,7 +88,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                 Nom&nbsp;:
                             </Typography>
                         </Grid>
-                        <Grid item sm={12} xs={12} md={12} lg={6}>
+                        <Grid item sm={12} xs={12} md={12} lg={8}>
                             <Controller
                                 as={
                                     <TextField
@@ -155,6 +100,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                         helperText={errors.label && errors.label.message}
                                         variant="filled"
                                         className={classes.mainInput}
+                                        placeholder={'Ex: Base Navale'}
                                     />
                                 }
                                 rules={{
@@ -164,10 +110,6 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                 control={control}
                                 name="label"
                                 defaultValue={defaultValues.label}
-                                onChange={([event]) => {
-                                    editLabel(event.target.value);
-                                    return event.target.value;
-                                }}
                             />
                         </Grid>
                     </Grid>
@@ -181,7 +123,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                 suite
                             </Typography>
                         </Grid>
-                        <Grid item sm={12} xs={12} md={12} lg={6}>
+                        <Grid item sm={12} xs={12} md={12} lg={3}>
                             <Controller
                                 as={
                                     <TextField
@@ -193,6 +135,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                         helperText={errors.trigram && errors.trigram.message}
                                         variant="filled"
                                         className={classes.mainInput}
+                                        placeholder={'Ex: BNV'}
                                     />
                                 }
                                 rules={{
@@ -212,15 +155,11 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                     </Grid>
                 </Grid>
                 <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-                    <Button
-                        onClick={handleCancel}
-                        disabled={!updated}
-                        variant="outlined"
-                        color="primary">
+                    <Button onClick={handleCancel} variant="outlined" color="primary">
                         Annuler
                     </Button>
-                    <Button type="submit" disabled={!updated} variant="contained" color="primary">
-                        Sauvegarder
+                    <Button type="submit" variant="contained" color="primary">
+                        {defaultValues.id.length ? 'Modifier' : 'Suivant'}
                     </Button>
                 </Grid>
             </form>

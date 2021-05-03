@@ -24,7 +24,10 @@ function CreateCampus() {
             const {
                 data: { createCampus: campusData }
             } = await createCampus({
-                variables: { id: data.id, campus: { label: data.label, trigram: data.trigram } }
+                variables: {
+                    id: data.id.trim(),
+                    campus: { label: data.label.trim(), trigram: data.trigram.trim() }
+                }
             });
 
             router.push(`${campusData.id}`);

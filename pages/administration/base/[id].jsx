@@ -37,7 +37,12 @@ function EditCampus() {
     const submitEditCampus = async (data) => {
         try {
             if (data.name !== editCampusData.getCampus.label) {
-                await editCampus({ variables: { id, campus: { label: data.label } } });
+                await editCampus({
+                    variables: {
+                        id,
+                        campus: { label: data.label.trim(), trigram: data.trigram.trim() }
+                    }
+                });
             }
             return addAlert({
                 message: 'La modification a bien été effectuée',
