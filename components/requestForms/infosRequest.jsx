@@ -374,7 +374,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                         Responsable visite :
                                     </Typography>
                                 </Grid>
-                                <Grid container md={10} sm={12} xs={12} spacing={3}>
+                                <Grid container item md={10} sm={12} xs={12} spacing={3}>
                                     <Grid item md={6} sm={6} xs={6}>
                                         <Controller
                                             as={
@@ -499,6 +499,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             sm={12}
                             xs={12}
                             md={8}
+                            item
                             container
                             direction="row"
                             alignItems="center"
@@ -630,10 +631,10 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                         <Grid item md={4} sm={12} xs={12}>
                             {/* Item 5: Période d'acces */}
                             <Grid container className={classes.infoTime}>
-                                <Grid md={1} style={{ textAlign: 'end' }}>
+                                <Grid item md={1} style={{ textAlign: 'end' }}>
                                     <ErrorOutlineIcon className={classes.infoIcon} />
                                 </Grid>
-                                <Grid md={11}>
+                                <Grid item md={11}>
                                     <Typography variant="body2" className={classes.infoTimeTitle}>
                                         Informations délais de traitement avant la date de visite
                                     </Typography>
@@ -664,7 +665,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                     {/* Item 6: Motif */}
                     <Grid item container>
-                        <Grid container alignItems="center" xs={12} sm={12} md={2}>
+                        <Grid container item alignItems="center" xs={12} sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 Motif de la visite* :
                             </Typography>
@@ -690,7 +691,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                     {/* Item 1: Liste des lieux */}
                     <Grid item container>
-                        <Grid container alignItems="center" item xs={12} sm={12} md={2}>
+                        <Grid container item alignItems="center" xs={12} sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel} gutterBottom>
                                 Accès lieux* :
                             </Typography>
