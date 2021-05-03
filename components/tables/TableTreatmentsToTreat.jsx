@@ -68,6 +68,7 @@ function mapCreateRow({
     employeeType,
     isInternal,
     isCribled,
+    exportDate,
     units,
     request
 }) {
@@ -100,7 +101,8 @@ function mapCreateRow({
             company: company,
             employeeType: EMPLOYEE_TYPE[employeeType],
             criblage: isCribled,
-            units
+            units,
+            exportDate
         }
     };
 }
@@ -183,7 +185,7 @@ export const choicesArray = (role) => {
     return choices;
 };
 
-const TableTreatmentsToTreat = ({ requests, treated }) => {
+const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
     const [toViewVisitor, setToViewVisitor] = useState(null);
 
     const classes = useStyles();
@@ -199,10 +201,9 @@ const TableTreatmentsToTreat = ({ requests, treated }) => {
     const choices = useMemo(() => choicesArray(activeRoleCacheVar().role, treated), [
         activeRoleCacheVar()
     ]);
-    const columns = useMemo(() => columnsArray(activeRoleCacheVar().role, treated), [
+    const columns = useMemo(() => columnsArray(activeRoleCacheVar().role, treated, exported), [
         activeRoleCacheVar()
     ]);
-
     return (
         <TableContainer className={classes.root}>
             <Table stickyHeader aria-label="sticky table" className={classes.tableCollapes}>
@@ -224,6 +225,7 @@ const TableTreatmentsToTreat = ({ requests, treated }) => {
                             modalOpen={() => setToViewVisitor(row.visitor)}
                             columns={columns}
                             treated={treated}
+                            exported={exported}
                         />
                     ))}
                 </TableBody>

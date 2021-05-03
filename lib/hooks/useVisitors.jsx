@@ -1,14 +1,19 @@
 import { useCallback } from 'react';
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 
-import { campusIdVar } from '../apollo/cache';
+import { activeRoleCacheVar, campusIdVar } from '../apollo/cache';
 import { LIST_VISITORS_DATA } from '../apollo/fragments';
 import { useSnackBar } from './snackbar';
 
 import { MUTATE_VISITOR } from '../apollo/mutations';
+import { ROLES } from '../../utils/constants/enums';
+
+export const filters = { exportDate: null };
 
 export default function useVisitors() {
     const { addAlert } = useSnackBar();
+
+    const client = useApolloClient();
 
     const [validateVisitorStep] = useMutation(MUTATE_VISITOR);
 
@@ -16,6 +21,22 @@ export default function useVisitors() {
      * @todo parameters to switch filters or fragments
      */
     const shiftVisitors = useCallback((visitors) => {
+        const campus = client.readFragment({
+            id: `Campus:${campusIdVar()}`,
+            fragment: LIST_VISITORS_DATA,
+            fragmentName: 'ListVisitor',
+            variables:
+                activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role
+                    ? {
+                          role: activeRoleCacheVar().role,
+                          unit: activeRoleCacheVar().unit,
+                          filters
+                      }
+                    : {
+                          role: activeRoleCacheVar().role,
+                          unit: activeRoleCacheVar().unit
+                      }
+        });
         Promise.all(
             visitors.map((visitor) =>
                 validateVisitorStep({
@@ -39,14 +60,12 @@ export default function useVisitors() {
                         }
                     },
                     update: (cache) => {
-                        const campus = cache.readFragment({
-                            id: `Campus:${campusIdVar()}`,
-                            fragment: LIST_VISITORS_DATA,
-                            fragmentName: 'ListVisitor'
-                        });
-
                         const newList = campus.listVisitorsToValidate.list.filter(
                             (v) => v.id !== visitor.id
+                        );
+
+                        const remove = campus.listVisitorsToValidate.list.find(
+                            (v) => v.id === visitor.id
                         );
 
                         const updatedList = {
@@ -58,6 +77,14 @@ export default function useVisitors() {
                                     ...campus.listVisitorsToValidate.meta,
                                     total: campus.listVisitorsToValidate.meta.total - 1
                                 }
+                            },
+                            listVisitors: {
+                                ...campus.listVisitors,
+                                list: [...campus.listVisitors.list, remove],
+                                meta: {
+                                    ...campus.listVisitors.meta,
+                                    total: campus.listVisitors.meta.total + 1
+                                }
                             }
                         };
 
@@ -65,7 +92,18 @@ export default function useVisitors() {
                             id: `Campus:${campusIdVar()}`,
                             fragment: LIST_VISITORS_DATA,
                             fragmentName: 'ListVisitor',
-                            data: updatedList
+                            data: updatedList,
+                            variables:
+                                activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role
+                                    ? {
+                                          role: activeRoleCacheVar().role,
+                                          unit: activeRoleCacheVar().unit,
+                                          filters
+                                      }
+                                    : {
+                                          role: activeRoleCacheVar().role,
+                                          unit: activeRoleCacheVar().unit
+                                      }
                         });
                     }
                 })

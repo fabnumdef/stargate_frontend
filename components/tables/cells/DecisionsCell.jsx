@@ -104,7 +104,10 @@ export default function DecisionsCell({ visitor, modalOpen }) {
                                     />
                                 </Typography>
                             ) : (
-                                <Typography key={unit.label} className={classes.typoContent}>
+                                <Typography
+                                    component={'span'}
+                                    key={unit.label}
+                                    className={classes.typoContent}>
                                     {unit.label}
                                     {getOSDecision(unit)
                                         ? GetRightDisplay(getOSDecision(unit))

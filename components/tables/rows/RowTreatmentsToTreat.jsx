@@ -8,6 +8,7 @@ import VisitorCell from '../cells/VisitorCell';
 import DecisionsCell from '../cells/DecisionsCell';
 import ReasonCell from '../cells/ReasonCell';
 import StatusCell from '../cells/StatusCell';
+import ExportCell from '../cells/ExportCell';
 import TableRow from '@material-ui/core/TableRow';
 
 const StyledRow = withStyles((theme) => ({
@@ -44,6 +45,13 @@ function RowTreatments({ columns, choices, row, treated, modalOpen }) {
                         );
                     case 'reason':
                         return <ReasonCell key={column.id} request={row.request} />;
+                    case 'export':
+                        return (
+                            row.visitor.exportDate && (
+                                <ExportCell key={column.id} visitor={row.visitor} />
+                            )
+                        );
+
                     case 'action':
                         return treated ? (
                             <StatusCell key={column.id} visitor={row.visitor} />

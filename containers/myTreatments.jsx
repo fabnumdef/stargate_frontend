@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,8 +13,9 @@ import SelectedBadge from '../components/styled/common/TabBadge';
 import TableTreatmentsToTreat from '../components/tables/TableTreatmentsToTreat';
 
 import { useRouter } from 'next/router';
-import { LIST_TREATMENTS } from '../lib/apollo/queries';
+import { LIST_TREATMENTS, LIST_EXPORTS } from '../lib/apollo/queries';
 import { useDecisions, withDecisionsProvider } from '../lib/hooks/useDecisions';
+import { useExport, withExportProvider } from '../lib/hooks/useExportBA';
 import useVisitors from '../lib/hooks/useVisitors';
 import RoundButton from '../components/styled/common/roundButton';
 import LoadingCircle from '../components/styled/animations/loadingCircle';
@@ -22,7 +23,6 @@ import EmptyArray from '../components/styled/common/emptyArray';
 import AlertMessage from '../components/styled/common/sticker';
 import { activeRoleCacheVar } from '../lib/apollo/cache';
 import { ROLES } from '../utils/constants/enums/index';
-import { STATE_REQUEST } from '../utils/constants/enums';
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     tabs: {
-        marginBottom: '30px'
+        marginBottom: '20px'
     },
     tab: {
         '& .MuiBox-root': {
@@ -59,37 +59,38 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-// export const LIST_MY_VISITORS = gql`
-//     query listMyVisitors(
-//         $campusId: String!
-//         $isDone: RequestVisitorIsDone!
-//         $requestsId: [String]
-//     ) {
-//         campusId @client @export(as: "campusId")
-//         getCampus(id: $campusId) {
-//             id
-//             listVisitors(isDone: $isDone, requestsId: $requestsId) {
-//                 generateCSVExportLink {
-//                     token
-//                     link
-//                 }
-//             }
-//         }
-//     }
-// `;
-
-const tabList = [
-    {
-        index: 0,
-        value: 'progress',
-        label: `À traiter`
-    },
-    {
-        index: 1,
-        value: 'treated',
-        label: `Traitées`
-    }
-];
+function getTabList() {
+    if (activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role)
+        return [
+            {
+                index: 0,
+                value: 'progress',
+                label: `À traiter`
+            },
+            {
+                index: 1,
+                value: 'export',
+                label: `À exporter`
+            },
+            {
+                index: 2,
+                value: 'treated',
+                label: `Traitées`
+            }
+        ];
+    return [
+        {
+            index: 0,
+            value: 'progress',
+            label: `À traiter`
+        },
+        {
+            index: 1,
+            value: 'treated',
+            label: `Traitées`
+        }
+    ];
+}
 
 const STATUS = [
     { shortLabel: 'VA', label: 'Visiteur Accompagné' },
@@ -102,6 +103,7 @@ function MyTreatments() {
     const router = useRouter();
 
     const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
+    const { visitors, exportVisitors, visitorsNumber } = useExport();
     const { shiftVisitors } = useVisitors();
 
     React.useEffect(() => {
@@ -116,7 +118,6 @@ function MyTreatments() {
     };
 
     const { data, loading } = useQuery(LIST_TREATMENTS, {
-        filtersP: { status: STATE_REQUEST.STATE_CREATED.state },
         variables: {
             cursor: {
                 first: 10,
@@ -137,6 +138,32 @@ function MyTreatments() {
             )
     });
 
+    const { data: exportData, loading: exportLoading } = useQuery(LIST_EXPORTS, {
+        variables: {
+            cursor: {
+                first: 10,
+                offset: 0
+            },
+            filters: { exportDate: null }
+        },
+        skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
+    });
+
+    /** Ba's controllers */
+    const treatedArrayBA = useMemo(() => {
+        if (activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role) return;
+
+        let treated = [];
+
+        if (!data) return treated;
+
+        treated = data.getCampus.treated.list.filter(
+            (visitor) => !isNaN(Date.parse(visitor.exportDate))
+        );
+
+        return treated;
+    }, [data]);
+
     const handleSubmit = () => {
         const visitors = Object.values(decisions).filter(
             (visitor) => visitor.choice.validation !== ''
@@ -145,31 +172,19 @@ function MyTreatments() {
         resetDecision();
     };
 
-    // get link of export csv if BA role
-    // const [exportCsv] = useLazyQuery(LIST_MY_VISITORS, {
-    //     onCompleted: React.useCallback((d) => {
-    //         const link = document.createElement('a');
-    //         link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
-    //         link.setAttribute('download', `export-${new Date()}.csv`);
-    //         document.body.appendChild(link);
-    //         link.click();
-    //         link.parentNode.removeChild(link);
-    //     }),
-    //     onError: React.useCallback((e) => {
-    //         addAlert({
-    //             message: e.message,
-    //             severity: 'error'
-    //         });
-    //     }, [])
-    // });
+    const handleExportMany = () => {
+        exportVisitors(exportData.getCampus.export.list.map((visitor) => visitor.id));
+    };
 
-    if (loading) return <LoadingCircle />;
+    const handleExportSelected = () => {
+        exportVisitors(visitors);
+    };
+
+    if (loading || exportLoading || !data) return <LoadingCircle />;
 
     return (
         <div className={classes.paper}>
-            <div className={classes.title}>
-                <PageTitle>Mes traitements</PageTitle>
-            </div>
+            <PageTitle>Mes traitements</PageTitle>
             {activeRoleCacheVar().role === ROLES.ROLE_SECURITY_OFFICER.role && (
                 <div className={classes.header}>
                     <AlertMessage
@@ -199,13 +214,26 @@ function MyTreatments() {
                 variant="scrollable"
                 scrollButtons="off"
                 aria-label="tabs my requests">
-                {tabList.map((tab) => (
+                {getTabList().map((tab) => (
                     <AntTab
                         label={
                             <>
                                 {tab.label}{' '}
                                 <SelectedBadge select={value === tab.index}>
-                                    {data.getCampus[tab.value].meta.total}
+                                    {(() => {
+                                        if (tab.value === 'export')
+                                            return (
+                                                exportData?.getCampus[tab.value]?.meta?.total ?? 0
+                                            );
+
+                                        if (
+                                            tab.value === 'treated' &&
+                                            activeRoleCacheVar().role ===
+                                                ROLES.ROLE_ACCESS_OFFICE.role
+                                        )
+                                            return treatedArrayBA.length;
+                                        return data.getCampus[tab.value].meta.total;
+                                    })()}
                                 </SelectedBadge>
                             </>
                         }
@@ -220,10 +248,7 @@ function MyTreatments() {
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
                 {data.getCampus.progress.meta.total > 0 ? (
                     <>
-                        <TableTreatmentsToTreat
-                            requests={data.getCampus.progress?.list}
-                            treated={false}
-                        />
+                        <TableTreatmentsToTreat requests={data.getCampus.progress?.list} />
                         <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
@@ -248,17 +273,69 @@ function MyTreatments() {
             </TabPanel>
 
             <TabPanel value={value} index={1} classes={{ root: classes.tab }}>
-                {data.getCampus.treated.meta.total > 0 ? (
-                    <TableTreatmentsToTreat
-                        requests={data.getCampus.treated?.list}
-                        treated={true}
-                    />
-                ) : (
-                    <EmptyArray type={'finalisé'} />
-                )}
+                {(() => {
+                    if (activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role)
+                        return (
+                            <>
+                                {exportData?.getCampus?.export?.meta?.total > 0 ? (
+                                    <>
+                                        <TableTreatmentsToTreat
+                                            requests={exportData?.getCampus?.export?.list ?? []}
+                                            treated
+                                        />
+                                        <ButtonsFooterContainer>
+                                            <RoundButton
+                                                variant="contained"
+                                                color="primary"
+                                                type="submit"
+                                                onClick={handleExportMany}>
+                                                {`Exporter (${exportData?.getCampus?.export?.list?.length})`}
+                                            </RoundButton>
+                                        </ButtonsFooterContainer>
+                                    </>
+                                ) : (
+                                    <EmptyArray type={'à exporter'} />
+                                )}
+                            </>
+                        );
+                    return (
+                        <>
+                            {data.getCampus.treated.meta.total > 0 ? (
+                                <TableTreatmentsToTreat
+                                    requests={data.getCampus.treated?.list}
+                                    treated
+                                />
+                            ) : (
+                                <EmptyArray type={'finalisé'} />
+                            )}
+                        </>
+                    );
+                })()}
             </TabPanel>
+
+            {!!getTabList()[2] && (
+                <TabPanel value={value} index={2} classes={{ root: classes.tab }}>
+                    {treatedArrayBA.length > 0 ? (
+                        <>
+                            <TableTreatmentsToTreat requests={treatedArrayBA} treated exported />
+                            <ButtonsFooterContainer>
+                                <RoundButton
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    disabled={visitorsNumber === 0}
+                                    onClick={handleExportSelected}>
+                                    {`Ré Exporter (${visitorsNumber})`}
+                                </RoundButton>
+                            </ButtonsFooterContainer>
+                        </>
+                    ) : (
+                        <EmptyArray type={'finalisé'} />
+                    )}
+                </TabPanel>
+            )}
         </div>
     );
 }
 
-export default withDecisionsProvider(MyTreatments);
+export default withDecisionsProvider(withExportProvider(MyTreatments));
