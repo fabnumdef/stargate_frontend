@@ -1,8 +1,8 @@
 import React from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { CampusFormContainer } from '../../../containers';
-import { useSnackBar } from '../../../lib/hooks/snackbar';
+import { CampusFormContainer } from '../../../../containers';
+import { useSnackBar } from '../../../../lib/hooks/snackbar';
 
 const GET_CAMPUS = gql`
     query getCampus($id: String!) {

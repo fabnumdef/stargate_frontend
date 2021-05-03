@@ -44,7 +44,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
 
     const handleCancel = () => {
         if (defaultValues.id.length) {
-            return;
+            return router.push(`/administration/base/${defaultValues.id}`);
         }
         return router.push('/administration/base');
     };
