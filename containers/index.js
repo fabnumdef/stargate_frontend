@@ -4,7 +4,6 @@ export { default as UserAdministration } from './administration/userAdministrati
 export { default as UnitAdministration } from './administration/unitAdministration';
 export { default as CampusAdministration } from './administration/campusAdministration';
 export { default as CampusFormContainer } from './administration/forms/campusFormContainer';
-export { default as BaseFormContainer } from './administration/forms/baseFormContainer';
 
 export { default as RequestDetailToTreat } from './requestDetail/requestDetailToTreat';
 export { default as RequestDetailProgress } from './requestDetail/requestDetailProgress';
