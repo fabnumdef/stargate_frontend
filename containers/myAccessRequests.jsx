@@ -10,13 +10,13 @@ import TabPanel from '../components/styled/tabpanel';
 import TableMyRequests from '../components/tables/TableMyRequests';
 
 import PageTitle from '../components/styled/common/pageTitle';
-import EmptyArray from '../components/styled/emptyArray';
+import EmptyArray from '../components/styled/common/emptyArray';
 
 import { STATE_REQUEST } from '../utils/constants/enums';
 import useRequest from '../lib/hooks/useRequest';
 import { LIST_MY_REQUESTS } from '../lib/apollo/queries';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         width: '100%'
     },
@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     paper: {
-        padding: theme.spacing(1, 12),
         display: 'flex',
         flexDirection: 'column',
         height: '100%',

@@ -5,7 +5,7 @@ import ActionCell from '../../../../components/tables/cells/ActionCell';
 import { activeRoleCacheVar } from '../../../../lib/apollo/cache';
 import { ROLES } from '../../../../utils/constants/enums';
 import { render, screen } from '../../../../utils/tests/renderApollo';
-import { choicesArray } from '../../../../components/tables/TableTreatmentsToTreat';
+import { choicesArray } from '../../../../components/tables/TableTreatments';
 import { DecisionsProvider } from '../../../../lib/hooks/useDecisions';
 import userEvent from '@testing-library/user-event';
 

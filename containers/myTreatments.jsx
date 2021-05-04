@@ -10,7 +10,7 @@ import AntTab from '../components/styled/common/Tab';
 import TabPanel from '../components/styled/tabpanel';
 
 import SelectedBadge from '../components/styled/common/TabBadge';
-import TableTreatmentsToTreat from '../components/tables/TableTreatmentsToTreat';
+import TableTreatmentsToTreat from '../components/tables/TableTreatments';
 
 import { useRouter } from 'next/router';
 import { LIST_TREATMENTS, LIST_EXPORTS } from '../lib/apollo/queries';
@@ -22,10 +22,11 @@ import LoadingCircle from '../components/styled/animations/loadingCircle';
 import EmptyArray from '../components/styled/common/emptyArray';
 import AlertMessage from '../components/styled/common/sticker';
 import { activeRoleCacheVar } from '../lib/apollo/cache';
-import { ROLES } from '../utils/constants/enums/index';
+import { ROLES, WORKFLOW_BEHAVIOR } from '../utils/constants/enums/index';
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
+import { getMyDecision } from '../utils/mappers/getDecisions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         width: '100%'
     },
@@ -38,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     paper: {
-        padding: theme.spacing(1, 12),
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -149,6 +149,16 @@ function MyTreatments() {
         skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
     });
 
+    const exportDataFilters = useMemo(() => {
+        if (!exportData) return [];
+
+        return exportData.getCampus.export.list.filter(
+            (v) =>
+                getMyDecision(v.units).value.value ===
+                WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive
+        );
+    }, [exportData]);
+
     /** Ba's controllers */
     const treatedArrayBA = useMemo(() => {
         if (activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role) return;
@@ -221,10 +231,7 @@ function MyTreatments() {
                                 {tab.label}{' '}
                                 <SelectedBadge select={value === tab.index}>
                                     {(() => {
-                                        if (tab.value === 'export')
-                                            return (
-                                                exportData?.getCampus[tab.value]?.meta?.total ?? 0
-                                            );
+                                        if (tab.value === 'export') return exportDataFilters.length;
 
                                         if (
                                             tab.value === 'treated' &&
@@ -280,7 +287,7 @@ function MyTreatments() {
                                 {exportData?.getCampus?.export?.meta?.total > 0 ? (
                                     <>
                                         <TableTreatmentsToTreat
-                                            requests={exportData?.getCampus?.export?.list ?? []}
+                                            requests={exportDataFilters}
                                             treated
                                         />
                                         <ButtonsFooterContainer>
@@ -289,7 +296,7 @@ function MyTreatments() {
                                                 color="primary"
                                                 type="submit"
                                                 onClick={handleExportMany}>
-                                                {`Exporter (${exportData?.getCampus?.export?.list?.length})`}
+                                                {`Exporter (${exportDataFilters.length})`}
                                             </RoundButton>
                                         </ButtonsFooterContainer>
                                     </>

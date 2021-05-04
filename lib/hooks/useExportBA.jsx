@@ -1,11 +1,8 @@
 import React, { useState, useCallback, useContext, useMemo } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
-import { LIST_CSV_EXPORTS, LIST_TREATMENTS } from '../apollo/queries';
+import { LIST_CSV_EXPORTS } from '../apollo/queries';
 import { useSnackBar } from './snackbar';
-import { LIST_VISITORS_TREATED } from '../apollo/fragments';
-import { campusIdVar, activeRoleCacheVar } from '../apollo/cache';
-import { filters } from './useVisitors';
 
 export const ExportContext = React.createContext();
 
@@ -39,48 +36,7 @@ export function ExportProvider({ children }) {
         exportCsv({
             variables: {
                 visitorsId: tabVisitors
-            },
-            update: (cache) => {
-                const campus = cache.readFragment({
-                    id: `Campus:${campusIdVar()}`,
-                    fragment: LIST_VISITORS_TREATED,
-                    fragmentName: 'ListExport',
-                    variables: {
-                        role: activeRoleCacheVar().role,
-                        unit: activeRoleCacheVar().unit,
-                        filters
-                    }
-                });
-
-                const updatedList = {
-                    ...campus,
-                    export: {
-                        ...campus.export,
-                        list: [],
-                        meta: {
-                            ...campus.export.meta,
-                            total: 0
-                        }
-                    }
-                };
-
-                cache.writeFragment({
-                    id: `Campus:${campusIdVar()}`,
-                    fragment: LIST_VISITORS_TREATED,
-                    fragmentName: 'ListExport',
-                    data: updatedList,
-                    variables: {
-                        role: activeRoleCacheVar().role,
-                        unit: activeRoleCacheVar().unit,
-                        filters
-                    }
-                });
-            },
-            refetchQueries: [
-                {
-                    query: LIST_TREATMENTS
-                }
-            ]
+            }
         });
         resetVisitors();
     }, []);
@@ -98,6 +54,7 @@ export function ExportProvider({ children }) {
 
     const generateCSV = useCallback(() => {
         exportCsv({
+            fetchPolicy: 'no-cache',
             variables: {
                 visitorsId: visitors
             }
