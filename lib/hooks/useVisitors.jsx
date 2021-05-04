@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useApolloClient, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
 import { activeRoleCacheVar, campusIdVar } from '../apollo/cache';
 import { LIST_VISITORS_DATA } from '../apollo/fragments';
@@ -13,30 +13,12 @@ export const filters = { exportDate: null };
 export default function useVisitors() {
     const { addAlert } = useSnackBar();
 
-    const client = useApolloClient();
-
     const [validateVisitorStep] = useMutation(MUTATE_VISITOR);
 
     /**
      * @todo parameters to switch filters or fragments
      */
     const shiftVisitors = useCallback((visitors) => {
-        const campus = client.readFragment({
-            id: `Campus:${campusIdVar()}`,
-            fragment: LIST_VISITORS_DATA,
-            fragmentName: 'ListVisitor',
-            variables:
-                activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role
-                    ? {
-                          role: activeRoleCacheVar().role,
-                          unit: activeRoleCacheVar().unit,
-                          filters
-                      }
-                    : {
-                          role: activeRoleCacheVar().role,
-                          unit: activeRoleCacheVar().unit
-                      }
-        });
         Promise.all(
             visitors.map((visitor) =>
                 validateVisitorStep({
