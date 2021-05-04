@@ -5,7 +5,11 @@ import ErrorIcon from '@material-ui/icons/Error';
 import WarningIcon from '@material-ui/icons/Warning';
 import TimerIcon from '@material-ui/icons/Timer';
 import { WORKFLOW_BEHAVIOR, ROLES } from '../../../utils/constants/enums';
-import getDecisions from '../../../utils/mappers/getDecisions';
+import {
+    isRejected,
+    getScreeningDecision,
+    getOSDecision
+} from '../../../utils/mappers/getDecisions';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { activeRoleCacheVar } from '../../../lib/apollo/cache';
@@ -36,10 +40,9 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer'
     }
 }));
-export default function DecisionsCell({ visitor, modalOpen }) {
+export default function DecisionsCell({ visitor: { units }, modalOpen }) {
     const classes = useStyles();
-    const { isRejected, getScreeningDecision, getOSDecision } = getDecisions();
-    const screeningDecision = getScreeningDecision(visitor.units);
+    const screeningDecision = getScreeningDecision(units);
 
     function screeningDisplay() {
         if (screeningDecision === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative)
@@ -92,7 +95,7 @@ export default function DecisionsCell({ visitor, modalOpen }) {
             {activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role ? (
                 <>
                     <div style={{ display: 'block' }}>
-                        {visitor.units.map((unit) =>
+                        {units.map((unit) =>
                             unit.label === isRejected(unit) ? (
                                 <Typography key={unit.label} className={classes.typoContent}>
                                     {unit.label}

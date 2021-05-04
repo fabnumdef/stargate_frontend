@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client/core';
 import userEvent from '@testing-library/user-event';
 
-import TableTreatments from '../../../components/tables/TableTreatmentsToTreat';
+import TableTreatments from '../../../components/tables/TableTreatments';
 import { activeRoleCacheVar, typePolicies } from '../../../lib/apollo/cache';
 import { GET_ACTIVE_ROLE } from '../../../lib/apollo/queries';
 import { ACCEPTED_STATUS } from '../../../utils';

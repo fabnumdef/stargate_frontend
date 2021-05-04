@@ -1,6 +1,6 @@
 import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
-import getDecisions from '../../../utils/mappers/getDecisions';
+import { getMyDecision } from '../../../utils/mappers/getDecisions';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import Typography from '@material-ui/core/Typography';
@@ -20,10 +20,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function StatusCell({ visitor }) {
+export default function StatusCell({ visitor: { units } }) {
     const classes = useStyles();
-    const { getMyDecision } = getDecisions();
-    const myDecision = getMyDecision(visitor.units);
+    const myDecision = getMyDecision(units);
     function getInfoDisplay() {
         if (myDecision.value.tags.length !== 0) return myDecision.value.tags;
         return myDecision.value.value === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive

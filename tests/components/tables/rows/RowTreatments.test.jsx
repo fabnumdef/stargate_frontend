@@ -3,8 +3,8 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import userEvent from '@testing-library/user-event';
 
-import RowTreatments from '../../../../components/tables/rows/RowTreatmentsToTreat';
-import { choicesArray } from '../../../../components/tables/TableTreatmentsToTreat';
+import RowTreatments from '../../../../components/tables/rows/RowTreatments';
+import { choicesArray } from '../../../../components/tables/TableTreatments';
 import { activeRoleCacheVar, typePolicies } from '../../../../lib/apollo/cache';
 import { GET_ACTIVE_ROLE } from '../../../../lib/apollo/queries';
 import { ACCEPTED_STATUS } from '../../../../utils';

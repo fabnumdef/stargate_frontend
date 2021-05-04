@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { activeRoleCacheVar } from '../../lib/apollo/cache';
 import { EMPLOYEE_TYPE, ROLES } from '../../utils/constants/enums';
 import CustomTableCellHeader from './cells/TableCellHeader';
-import RowTreatment from './rows/RowTreatmentsToTreat';
+import RowTreatment from './rows/RowTreatments';
 import ProcessDialog from '../styled/common/ProcessDialogs';
 
 const useStyles = makeStyles(() => ({
@@ -219,7 +219,7 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
                 <TableBody>
                     {rows.map((row) => (
                         <RowTreatment
-                            key={`${row.request.id}_${row.visitor.id}`}
+                            key={`${treated ? 'treated' : ''}_${row.request.id}_${row.visitor.id}`}
                             choices={choices}
                             row={row}
                             modalOpen={() => setToViewVisitor(row.visitor)}
