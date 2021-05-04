@@ -1,22 +1,11 @@
 import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
+import ItemCard from './itemCard';
 
-const containerStyle = {
+const cardIndex = {
     textAlign: 'center',
-    margin: '0 20px'
-};
-
-const cardStyle = {
-    border: 'solid 1px #0e4194',
-    marginBottom: '.5rem',
-    backgroundColor: 'white',
-    cursor: 'move',
-    width: '130px',
-    height: '70px',
-    borderRadius: '3px',
-    display: 'flex',
-    flexDirection: 'column'
+    marginBottom: '-12px'
 };
 
 const buttonContainer = {
@@ -85,16 +74,16 @@ const DndCard = ({ id, text, index, moveCard, deleteCard }) => {
     const opacity = isDragging ? 0 : 1;
     drag(drop(ref));
     return (
-        <div ref={ref} style={containerStyle}>
-            {index + 1}
-            <div style={{ ...cardStyle, opacity }}>
+        <div ref={ref}>
+            <div style={cardIndex}>{index + 1}</div>
+            <ItemCard opacity={opacity} style={{ cursor: 'move', opacity }}>
                 <div style={buttonContainer}>
                     <button type="button" onClick={() => deleteCard(text)} style={buttonStyle}>
                         X
                     </button>
                 </div>
                 <div>{text}</div>
-            </div>
+            </ItemCard>
         </div>
     );
 };

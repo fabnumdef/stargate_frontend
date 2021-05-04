@@ -97,6 +97,7 @@ export const ROLES = {
         shortLabel: 'BA',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
+        editable: true,
         permission: [
             '/',
             '/compte',
@@ -111,6 +112,7 @@ export const ROLES = {
         shortLabel: 'G',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
+        editable: true,
         permission: ['/', '/compte']
     },
     ROLE_HOST: {

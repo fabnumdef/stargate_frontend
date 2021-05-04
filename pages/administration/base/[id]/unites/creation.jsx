@@ -1,15 +1,14 @@
 import React from 'react';
-import { gql, useApolloClient, useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
-import PageTitle from '../../../components/styled/common/pageTitle';
-import UnitForm from '../../../components/administrationForms/unitForm';
-import { useSnackBar } from '../../../lib/hooks/snackbar';
-import { useLogin } from '../../../lib/loginContext';
-import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
+import PageTitle from '../../../../../components/styled/common/pageTitle';
+import UnitForm from '../../../../../components/administrationForms/unitForm';
+import { useSnackBar } from '../../../../../lib/hooks/snackbar';
+import { useLogin } from '../../../../../lib/loginContext';
+import { FORMS_LIST, ROLES } from '../../../../../utils/constants/enums';
 
 const CREATE_UNIT = gql`
     mutation createUnit($campusId: String!, $unit: UnitInput!) {
-        campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             createUnit(unit: $unit) {
                 id
@@ -50,7 +49,6 @@ const EDIT_USER = gql`
 
 const EDIT_PLACE = gql`
     mutation editPlace($campusId: String!, $id: ObjectID!, $place: PlaceInput!) {
-        campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             editPlace(id: $id, place: $place) {
                 id
@@ -66,7 +64,6 @@ const EDIT_PLACE = gql`
 
 const GET_UNITS_LIST = gql`
     query listUnits($cursor: OffsetCursor, $campusId: String!, $search: String) {
-        campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
             listUnits(cursor: $cursor, search: $search) {
                 meta {
@@ -85,15 +82,11 @@ const GET_UNITS_LIST = gql`
 function CreateUnit() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
-    const client = useApolloClient();
-    const { campusId } = client.readQuery({
-        query: gql`
-            query getCampusId {
-                campusId
-            }
-        `
-    });
+
+    const campusId = router.query.id;
+
     const [createUnit] = useMutation(CREATE_UNIT, {
+        variables: { campusId },
         update: (
             cache,
             {
@@ -139,7 +132,7 @@ function CreateUnit() {
         }
     });
     const [editUserReq] = useMutation(EDIT_USER);
-    const [editPlaceReq] = useMutation(EDIT_PLACE);
+    const [editPlaceReq] = useMutation(EDIT_PLACE, { variables: { campusId } });
     const { activeRole } = useLogin();
 
     const editUser = async (id, roles) => {
@@ -235,7 +228,7 @@ function CreateUnit() {
 
     return (
         <>
-            <PageTitle title="Administration" subtitles={['Unité', 'Nouvelle unité']} />
+            <PageTitle subtitles={['Unité', 'Nouvelle unité']}>Administration</PageTitle>
             <UnitForm
                 submitForm={submitCreateUnit}
                 defaultValues={defaultValues}

@@ -1,5 +1,10 @@
 export { default as TabPanel } from './styled/tabpanel';
 export { default as DetailsInfosRequest } from './styled/detailsInfosRequest';
+//Administration
+export { default as CampusSection } from './administration/campusEdition/campusSection';
+export { default as PlaceSection } from './administration/campusEdition/placeSection';
+export { default as UnitSection } from './administration/campusEdition/unitSection';
+
 // Forms
 export { default as FormInfosRequest } from './requestForms/infosRequest';
 export { default as FormInfosRecapDemande } from './requestForms/infosFinalView';
