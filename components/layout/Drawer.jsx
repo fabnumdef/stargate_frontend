@@ -125,6 +125,10 @@ function rootNameByRole(role) {
     }
 }
 
+function getBaseLabel(campus, role) {
+    return role === ROLES.ROLE_SUPERADMIN.role ? 'ADMINISTRATEUR' : campus?.label ?? '';
+}
+
 export const GET_MENU_DRAWER = gql`
     query getMenuDrawer($campusId: String!) {
         campusId @client @export(as: "campusId")
@@ -163,7 +167,7 @@ export default function DrawerTemplate({ drawerWidth }) {
             <div className={classes.baseLabel}>
                 <RoomOutlinedIcon className={classes.baseLabelIcon} />
                 <Typography variant="subtitle2" className={classes.baseLabelText}>
-                    {data?.getCampus?.label ?? ''}
+                    {getBaseLabel(data.getCampus, data.activeRoleCache.role)}
                 </Typography>
             </div>
             <List>

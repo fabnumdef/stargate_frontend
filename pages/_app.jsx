@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 
 import { useApollo } from '../lib/apollo';
 import { LoginContextProvider } from '../lib/loginContext';
+import { PermissionsContext } from '../lib/permissionsContext';
 import { isLoggedInVar, restoreActiveRoleCacheVar, restoreCampusIdVar } from '../lib/apollo/cache';
 import { SnackBarProvider } from '../lib/hooks/snackbar';
 import theme from '../styles/theme';
@@ -57,10 +58,12 @@ export default function App({ Component, pageProps }) {
             <ThemeProvider theme={theme}>
                 <SnackBarProvider>
                     <LoginContextProvider>
-                        <CssBaseline />
-                        <Layout>
-                            <Component {...pageProps} />
-                        </Layout>
+                        <PermissionsContext>
+                            <CssBaseline />
+                            <Layout>
+                                <Component {...pageProps} />
+                            </Layout>
+                        </PermissionsContext>
                     </LoginContextProvider>
                 </SnackBarProvider>
             </ThemeProvider>
