@@ -83,7 +83,7 @@ function CreateUnit() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
 
-    const campusId = router.query.id;
+    const { campusId } = router.query;
 
     const [createUnit] = useMutation(CREATE_UNIT, {
         variables: { campusId },

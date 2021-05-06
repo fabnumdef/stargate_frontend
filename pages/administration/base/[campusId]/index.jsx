@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 function CampusEditionPage() {
     const router = useRouter();
-    const { id: campusId } = router.query;
+    const { campusId } = router.query;
     const classes = useStyles();
 
     if (!campusId) {

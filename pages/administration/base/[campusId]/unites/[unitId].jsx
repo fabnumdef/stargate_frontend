@@ -136,7 +136,7 @@ const EDIT_PLACE = gql`
 function CreateUnit() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
-    const { unitId: id, id: campusId } = router.query;
+    const { unitId: id, campusId } = router.query;
     const [unitData, setUnitData] = useState(null);
 
     const { data: unit } = useQuery(GET_UNIT, {
