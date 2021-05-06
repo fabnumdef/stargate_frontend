@@ -1,57 +1,27 @@
-import React, { useState } from 'react';
-import { gql, useQuery, useMutation } from '@apollo/client';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 
-import TablePagination from '@material-ui/core/TablePagination';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
-import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import SelectedBadge from '../components/styled/common/TabBadge';
 
-import { format } from 'date-fns';
 import { CSVLink } from 'react-csv';
+import { TabPanel } from '../components';
 
-import { TabPanel, TabScreeningVisitors } from '../components';
+import TableScreening from '../components/tables/TableScreening';
 
 import AntTab from '../components/styled/common/Tab';
-
-import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
-
-import { useSnackBar } from '../lib/hooks/snackbar';
-
-import { useLogin } from '../lib/loginContext';
-import checkStatus, { ACTIVE_STEP_STATUS } from '../utils/mappers/checkStatusVisitor';
-import Loading from './loading';
-
+import { LIST_TREATMENTS_SCREENING } from '../lib/apollo/queries';
 import EmptyArray from '../components/styled/common/emptyArray';
+import RoundButton from '../components/styled/common/roundButton';
+import PageTitle from '../components/styled/common/pageTitle';
+import { useDecisions, withDecisionsProvider } from '../lib/hooks/useDecisions';
+import SearchField from '../components/styled/common/SearchField';
+import useVisitors from '../lib/hooks/useVisitors';
 
-const useStyles = makeStyles(() => ({
-    root: {
-        width: '100%'
-    },
-    tab: {
-        '& .MuiBox-root': {
-            padding: 'Opx'
-        }
-    },
-    pageTitle: {
-        margin: '16px 0',
-        color: '#0d40a0',
-        fontWeight: 'bold'
-    },
-    pageTitleHolder: {
-        borderBottom: '1px solid #e5e5e5'
-    },
-    pageTitleControl: {
-        marginLeft: 'auto'
-    }
-}));
+import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 
 const CSV_REGEX = /[êëîïç\- ]/gi;
 
@@ -65,342 +35,263 @@ function csvName() {
     return `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
 }
 
-function createData(
-    {
-        id,
-        nationality,
-        birthday,
-        birthplace,
-        firstname,
-        birthLastname,
-        units,
-        identityDocuments,
-        request,
-        generateIdentityFileExportLink
-    },
-    activeRole
-) {
-    return {
-        id,
-        nationality,
-        birthday: format(new Date(birthday), 'dd/MM/yyyy'),
-        birthplace,
-        firstname,
-        birthLastname,
-        report: null,
-        screening: checkStatus(units, activeRole),
-        requestId: request.id,
-        vAttachedFile:
-            identityDocuments[0] && identityDocuments[0].file ? identityDocuments[0].file.id : null,
-        link: generateIdentityFileExportLink ? generateIdentityFileExportLink.link : null
-    };
-}
-
-export const LIST_VISITOR_REQUESTS = gql`
-    query ListVisitorsToValidateRequestQuery(
-        $campusId: String!
-        $search: String
-        $cursor: OffsetCursor!
-        $as: ValidationPersonas!
-    ) {
-        campusId @client @export(as: "campusId")
-        activeRoleCache @client @export(as: "as") {
-            role: role
-        }
-        getCampus(id: $campusId) {
-            id
-            listVisitorsToValidate(search: $search, cursor: $cursor, as: $as) {
-                list {
-                    id
-                    firstname
-                    nationality
-                    birthday
-                    birthplace
-                    birthLastname
-                    units {
-                        id
-                        label
-                        steps {
-                            role
-                            state {
-                                isOK
-                                value
-                            }
-                        }
-                    }
-                    request {
-                        id
-                    }
-                    identityDocuments {
-                        file {
-                            id
-                        }
-                    }
-                    generateIdentityFileExportLink {
-                        link
-                    }
-                }
-                meta {
-                    total
-                }
-            }
-        }
+const formatCsvData = (value) => {
+    switch (value) {
+        case 'ê':
+        case 'ë':
+            return 'e';
+        case 'î':
+        case 'ï':
+            return 'i';
+        case 'ç':
+            return 'c';
+        default:
+            return '';
     }
-`;
+};
 
-export default function ScreeningManagement() {
+const tabList = [
+    {
+        index: 0,
+        value: 'progress',
+        label: `À traiter`
+    },
+    {
+        index: 1,
+        value: 'treated',
+        label: `Traitées`
+    }
+];
+
+const useStyles = makeStyles(() => ({
+    root: {
+        '& section': {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: '20px'
+        },
+        '& a': {
+            textDecoration: 'none'
+        }
+    },
+    tabs: {
+        marginBottom: '20px'
+    },
+    tab: {
+        '& .MuiBox-root': {
+            padding: 'Opx'
+        }
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '250px',
+        right: '6vw',
+        position: 'absolute'
+    },
+    title: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'baseline'
+    }
+}));
+
+function ScreeningManagement() {
     const classes = useStyles();
 
-    const { addAlert } = useSnackBar();
-    const { activeRole } = useLogin();
-
+    const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
+    const { shiftVisitors } = useVisitors();
     // submit values
-    const [visitors, setVisitors] = useState([]);
-    // tabMotor
     const [value, setValue] = useState(0);
+    const [search, setSearch] = React.useState('');
 
-    // filters
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-    const [search, setSearch] = React.useState(null);
-
-    const initMount = React.useRef(true);
-
-    const { data, fetchMore, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
+    const { data, loading, fetchMore } = useQuery(LIST_TREATMENTS_SCREENING, {
         variables: {
-            cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-            search
-        },
-        fetchPolicy: 'cache-and-network'
-    });
-
-    const [shiftVisitor] = useMutation(MUTATE_VISITOR);
-
-    React.useEffect(() => {
-        if (!data) return;
-        setVisitors(
-            data.getCampus.listVisitorsToValidate.list.reduce((acc, dem) => {
-                acc.push(createData(dem, activeRole));
-                return acc.filter((visitor) => visitor.screening.step === ACTIVE_STEP_STATUS);
-            }, [])
-        );
-    }, [data]);
-
-    const tabList = [
-        {
-            index: 0,
-            label: `À traiter ${
-                data && data.getCampus.listVisitorsToValidate.meta.total > 0
-                    ? `(${data.getCampus.listVisitorsToValidate.meta.total})`
-                    : ''
-            }`
-        }
-    ];
-
-    const handleFetchMore = () => {
-        fetchMore({
-            variables: {
-                cursor: { first: rowsPerPage, offset: page * rowsPerPage }
+            cursor: {
+                first: 30,
+                offset: 0
             },
-            updateQuery: (prev, { fetchMoreResult }) => {
-                if (!fetchMoreResult) return prev;
-                return fetchMoreResult;
-            }
-        });
-    };
-
-    const handlePageSize = () => {
-        if (!data) return 0;
-        return data.getCampus.listVisitorsToValidate.meta.total;
-    };
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+            search
+        }
+    });
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
-        setPage(0);
     };
 
-    React.useEffect(() => {
-        if (initMount.current) {
-            initMount.current = false;
-        }
-        handleFetchMore();
-    }, [page, rowsPerPage]);
-
-    const formatCsvData = (value) => {
-        switch (value) {
-            case 'ê':
-            case 'ë':
-                return 'e';
-            case 'î':
-            case 'ï':
-                return 'i';
-            case 'ç':
-                return 'c';
-            default:
-                return '';
-        }
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value);
     };
 
-    const csvData = () =>
-        visitors
-            .filter((visitor) => visitor.screening.step === 'activeSteps')
-            .map((visitor) => [
-                visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
-                visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
-                visitor.birthday.trim()
-            ]);
+    useEffect(() => {
+        if (!data) return;
+        fetchMore({
+            variables:
+                search === ''
+                    ? {
+                          cursor: {
+                              first: 30,
+                              offset: 0
+                          }
+                      }
+                    : {
+                          cursor: {
+                              first: 30,
+                              offset: 0
+                          },
+                          search
+                      }
+        });
+    }, [search]);
 
-    const submitForm = async () => {
-        await Promise.all(
-            visitors.map(async (visitor) => {
-                if (visitor.report !== null) {
-                    try {
-                        await shiftVisitor({
-                            variables: {
-                                requestId: visitor.requestId,
-                                visitorId: visitor.id,
-                                decision: visitor.report,
-                                as: { role: activeRole.role }
-                            }
-                        });
-                    } catch (e) {
-                        addAlert({
-                            message: e.message,
-                            severity: 'error'
-                        });
-                    }
+    const csvData = useMemo(() => {
+        if (!data) return [];
+        return data.getCampus.progress.list.map((visitor) => [
+            visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+            visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+            visitor.birthday.trim()
+        ]);
+    }, [data]);
+
+    useEffect(() => {
+        if (!data) return;
+        data.getCampus.progress.list.forEach((visitor) =>
+            addDecision({
+                id: visitor.id,
+                request: { id: visitor.request.id },
+                choice: {
+                    label: '',
+                    validation: '',
+                    tags: []
                 }
             })
         );
-        // refresh the query
-        refetch();
+    }, [data]);
+
+    const handleSubmit = () => {
+        const visitors = Object.values(decisions).filter(
+            (visitor) => visitor.choice.validation !== ''
+        );
+        shiftVisitors(visitors);
+        resetDecision();
     };
 
+    if (loading) return '';
+
     return (
-        <>
-            <Grid container spacing={2} className={classes.root}>
-                <Grid item sm={12} xs={12}>
-                    <Box display="flex" alignItems="center">
-                        <Typography variant="h5" className={classes.pageTitle}>
-                            Demandes de contrôle
-                        </Typography>
-                    </Box>
-                </Grid>
-                <Grid item sm={12} xs={12}>
-                    {/** Tabulator  */}
-                    <Tabs
-                        value={value}
-                        onChange={handleChange}
-                        variant="scrollable"
-                        scrollButtons="off">
-                        {tabList.map((tab, index) => (
-                            <AntTab
-                                label={tab.label}
-                                id={index}
-                                aria-controls={index}
-                                key={tab.label}
-                            />
-                        ))}
-                    </Tabs>
-                </Grid>
-
-                {data && visitors.length > 0 ? (
-                    <Grid item sm={12} xs={12}>
-                        <Grid item sm={12} xs={12}>
-                            <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
-                                <Grid container spacing={1} className={classes.searchField}>
-                                    <Grid item sm={2} xs={12} md={1} lg={1}>
-                                        {data && (
-                                            <CSVLink
-                                                style={{ textDecoration: 'none' }}
-                                                className={classes.linkCsv}
-                                                data={csvData()}
-                                                separator=";"
-                                                filename={csvName()}>
-                                                <Button
-                                                    size="small"
-                                                    variant="contained"
-                                                    color="primary"
-                                                    endIcon={<NoteAddIcon />}>
-                                                    Export
-                                                </Button>
-                                            </CSVLink>
-                                        )}
-                                    </Grid>
-                                    <Grid item sm={6} xs={12} md={8} lg={8}>
-                                        <TablePagination
-                                            rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                                            component="div"
-                                            count={handlePageSize()}
-                                            rowsPerPage={rowsPerPage}
-                                            page={page}
-                                            onChangePage={handleChangePage}
-                                            onChangeRowsPerPage={handleChangeRowsPerPage}
-                                        />
-                                    </Grid>
-                                    <Grid item sm={3} xs={12} md={2} lg={2}>
-                                        <TextField
-                                            style={{ float: 'right' }}
-                                            margin="dense"
-                                            variant="outlined"
-                                            value={search}
-                                            onChange={(event) => setSearch(event.target.value)}
-                                            placeholder="Rechercher..."
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <SearchIcon />
-                                                    </InputAdornment>
-                                                ),
-                                                inputProps: { 'data-testid': 'searchField' }
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                                {!data ? (
-                                    <Loading />
-                                ) : (
-                                    <TabScreeningVisitors
-                                        visitors={visitors}
-                                        onChange={(visitorsChange) => setVisitors(visitorsChange)}
-                                    />
-                                )}
-                            </TabPanel>
-                            <TabPanel value={value} index={1} />
-                        </Grid>
-
-                        <Grid item sm={12}>
-                            <Grid container justify="flex-end">
-                                <div>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={submitForm}
-                                        disabled={
-                                            !visitors.find((visitor) => visitor.report !== null)
-                                        }>
-                                        Soumettre
-                                    </Button>
-                                </div>
-                            </Grid>
-                        </Grid>
-                    </Grid>
+        <div className={classes.root}>
+            <div className={classes.title}>
+                <PageTitle>Demandes de contrôle</PageTitle>
+            </div>
+            {/** Tabulator  */}
+            <Tabs
+                indicatorColor="primary"
+                value={value}
+                onChange={handleChange}
+                className={classes.tabs}
+                variant="scrollable"
+                scrollButtons="off"
+                aria-label="tabs screening">
+                {tabList.map((tab) => (
+                    <AntTab
+                        label={
+                            <>
+                                {tab.label}{' '}
+                                <SelectedBadge select={value === tab.index}>
+                                    {data.getCampus[tab.value].meta.total || 0}
+                                </SelectedBadge>
+                            </>
+                        }
+                        value={tab.index}
+                        id={tab.index}
+                        aria-controls={tab.index}
+                        key={tab.label}
+                    />
+                ))}
+            </Tabs>
+            <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
+                {data?.getCampus?.progress?.meta?.total ? (
+                    <>
+                        <section>
+                            <CSVLink data={csvData} separator=";" filename={csvName()}>
+                                <RoundButton
+                                    variant="outlined"
+                                    color="primary"
+                                    disabled={data?.getCampus?.progress?.meta?.total <= 0}>
+                                    Export CSV
+                                </RoundButton>
+                            </CSVLink>
+                            <SearchField value={search} onChange={handleSearchChange}>
+                                Rechercher...
+                            </SearchField>
+                        </section>
+                        <TableScreening
+                            requests={data.getCapus.progress.list}
+                            selectAll={(choice) => {
+                                const update = { ...decisions };
+                                update.forEach((visitor) =>
+                                    addDecision({
+                                        id: visitor.id,
+                                        request: { id: visitor.request.id },
+                                        choice
+                                    })
+                                );
+                            }}
+                        />
+                        <ButtonsFooterContainer>
+                            <RoundButton
+                                variant="outlined"
+                                color="primary"
+                                type="reset"
+                                onClick={resetDecision}>
+                                Annuler
+                            </RoundButton>
+                            <RoundButton
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                onClick={handleSubmit}
+                                disabled={submitDecisionNumber === 0}>
+                                {`Soumettre (${submitDecisionNumber})`}
+                            </RoundButton>
+                        </ButtonsFooterContainer>
+                    </>
                 ) : (
-                    <Grid item sm={12} xs={12}>
-                        <EmptyArray type="à traiter" />
-                    </Grid>
+                    <EmptyArray type={'à traiter'} />
                 )}
-            </Grid>
-        </>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                {data?.getCampus?.treated?.meta?.total ? (
+                    <>
+                        <section>
+                            <CSVLink data={csvData} separator=";" filename={csvName()} />
+                            <SearchField value={search} onChange={handleSearchChange}>
+                                Rechercher...
+                            </SearchField>
+                        </section>
+                        <TableScreening
+                            treated
+                            requests={data.getCampus.treated.list}
+                            selectAll={(choice) => {
+                                const update = { ...decisions };
+                                update.forEach((visitor) =>
+                                    addDecision({
+                                        id: visitor.id,
+                                        request: { id: visitor.request.id },
+                                        choice
+                                    })
+                                );
+                            }}
+                        />
+                    </>
+                ) : (
+                    <EmptyArray type={'à traiter'} />
+                )}
+            </TabPanel>
+        </div>
     );
 }
+
+export default withDecisionsProvider(ScreeningManagement);
