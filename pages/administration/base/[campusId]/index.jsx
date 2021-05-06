@@ -2,7 +2,8 @@ import React from 'react';
 import {
     CampusSectionContainer,
     PlaceSectionContainer,
-    UnitSectionContainer
+    UnitSectionContainer,
+    AdminSectionContainer
 } from '../../../../containers';
 import { useRouter } from 'next/router';
 import Grid from '@material-ui/core/Grid';
@@ -30,6 +31,7 @@ function CampusEditionPage() {
             <CampusSectionContainer id={campusId} />
             <PlaceSectionContainer campusId={campusId} />
             <UnitSectionContainer campusId={campusId} />
+            <AdminSectionContainer campusId={campusId} />
         </Grid>
     );
 }

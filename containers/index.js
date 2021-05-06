@@ -7,6 +7,7 @@ export { default as CampusFormContainer } from './administration/forms/baseFormC
 export { default as CampusSectionContainer } from './administration/campusEdition/campusSectionContainer';
 export { default as PlaceSectionContainer } from './administration/campusEdition/placeSectionContainer';
 export { default as UnitSectionContainer } from './administration/campusEdition/unitSectionContainer';
+export { default as AdminSectionContainer } from './administration/campusEdition/adminSectionContainer';
 
 export { default as RequestDetailToTreat } from './requestDetail/requestDetailToTreat';
 export { default as RequestDetailProgress } from './requestDetail/requestDetailProgress';

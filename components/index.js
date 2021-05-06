@@ -4,6 +4,7 @@ export { default as DetailsInfosRequest } from './styled/detailsInfosRequest';
 export { default as CampusSection } from './administration/campusEdition/campusSection';
 export { default as PlaceSection } from './administration/campusEdition/placeSection';
 export { default as UnitSection } from './administration/campusEdition/unitSection';
+export { default as AdminSection } from './administration/campusEdition/adminSection';
 
 // Forms
 export { default as FormInfosRequest } from './requestForms/infosRequest';

@@ -6,14 +6,25 @@ import { Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import { ADMIN_CAMPUS_PLACES_EDITION } from '../../../utils/constants/appUrls';
 import { useRouter } from 'next/router';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    globalContainer: {
+        paddingLeft: theme.spacing(4)
+    },
+    warningIcon: {
+        width: 30
+    }
+}));
 
 function PlaceSection({ listPlaces, campusId }) {
     const router = useRouter();
+    const classes = useStyles();
 
     return (
         <Grid container alignItems="center">
-            <Grid container item sm={12} md={2}>
-                <Grid item sm={3}>
+            <Grid container item md={2} className={classes.globalContainer}>
+                <Grid item className={classes.warningIcon}>
                     {!listPlaces.list.length && <WarningIcon />}
                 </Grid>
                 <Grid>
