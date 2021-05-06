@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useQuery } from '@apollo/client';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useLazyQuery } from '@apollo/client';
 
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -107,44 +107,38 @@ function ScreeningManagement() {
     const [value, setValue] = useState(0);
     const [search, setSearch] = React.useState('');
 
-    const { data, loading, fetchMore } = useQuery(LIST_TREATMENTS_SCREENING, {
-        variables: {
-            cursor: {
-                first: 30,
-                offset: 0
-            },
-            search
-        }
+    const [fetchData, { data, networkStatus }] = useLazyQuery(LIST_TREATMENTS_SCREENING, {
+        notifyOnNetworkStatusChange: true
     });
+
+    useEffect(() => {
+        fetchData({
+            variables: {
+                cursor: {
+                    first: 30,
+                    offset: 0
+                }
+            }
+        });
+    }, []);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
     const handleSearchChange = (event) => {
+        event.preventDefault();
+        fetchData({
+            variables: {
+                cursor: {
+                    first: 30,
+                    offset: 0
+                },
+                search: event.target.value !== '' ? event.target.value : ''
+            }
+        });
         setSearch(event.target.value);
     };
-
-    useEffect(() => {
-        if (!data) return;
-        fetchMore({
-            variables:
-                search === ''
-                    ? {
-                          cursor: {
-                              first: 30,
-                              offset: 0
-                          }
-                      }
-                    : {
-                          cursor: {
-                              first: 30,
-                              offset: 0
-                          },
-                          search
-                      }
-        });
-    }, [search]);
 
     const csvData = useMemo(() => {
         if (!data) return [];
@@ -170,6 +164,18 @@ function ScreeningManagement() {
         );
     }, [data]);
 
+    const handleSelectAll = useCallback(
+        (choice) =>
+            data.getCampus.progress.list.forEach((visitor) =>
+                addDecision({
+                    id: visitor.id,
+                    request: { id: visitor.request.id },
+                    choice
+                })
+            ),
+        [data]
+    );
+
     const handleSubmit = () => {
         const visitors = Object.values(decisions).filter(
             (visitor) => visitor.choice.validation !== ''
@@ -178,7 +184,7 @@ function ScreeningManagement() {
         resetDecision();
     };
 
-    if (loading) return '';
+    if (!data || networkStatus === 1) return '';
 
     return (
         <div className={classes.root}>
@@ -229,16 +235,7 @@ function ScreeningManagement() {
                         </section>
                         <TableScreening
                             requests={data.getCapus.progress.list}
-                            selectAll={(choice) => {
-                                const update = { ...decisions };
-                                update.forEach((visitor) =>
-                                    addDecision({
-                                        id: visitor.id,
-                                        request: { id: visitor.request.id },
-                                        choice
-                                    })
-                                );
-                            }}
+                            selectAll={handleSelectAll}
                         />
                         <ButtonsFooterContainer>
                             <RoundButton
@@ -274,16 +271,7 @@ function ScreeningManagement() {
                         <TableScreening
                             treated
                             requests={data.getCampus.treated.list}
-                            selectAll={(choice) => {
-                                const update = { ...decisions };
-                                update.forEach((visitor) =>
-                                    addDecision({
-                                        id: visitor.id,
-                                        request: { id: visitor.request.id },
-                                        choice
-                                    })
-                                );
-                            }}
+                            selectAll={() => {}}
                         />
                     </>
                 ) : (

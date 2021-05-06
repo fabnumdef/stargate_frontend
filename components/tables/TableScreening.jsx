@@ -136,16 +136,16 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                                         PaperProps={{
                                             style: { maxHeight: ITEM_HEIGHT * 4.5, width: '20ch' }
                                         }}>
-                                        {choices.map((choice) => {
+                                        {choices.map((choice) => (
                                             <MenuItem
                                                 key={choice.label}
-                                                onClick={(choice) => {
+                                                onClick={() => {
                                                     selectAll(choice);
                                                     setAnchorEl(null);
                                                 }}>
                                                 {choice.label}
-                                            </MenuItem>;
-                                        })}
+                                            </MenuItem>
+                                        ))}
                                     </Menu>
                                 </>
                             ) : (
