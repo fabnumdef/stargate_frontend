@@ -68,9 +68,6 @@ function CampusSection({ campusData }) {
                         </Grid>
                     </Paper>
                 </Grid>
-                <Grid item sm={12} md={6}>
-                    Bouton
-                </Grid>
             </Grid>
             <Grid className={classes.validators}>
                 <Typography variant="h6">Configurations validateurs</Typography>

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import PageTitle from '../../../components/styled/common/pageTitle';
-import UnitForm from '../../../components/administrationForms/unitForm';
-import { useSnackBar } from '../../../lib/hooks/snackbar';
-import { useLogin } from '../../../lib/loginContext';
-import { FORMS_LIST, ROLES } from '../../../utils/constants/enums';
-import { mapEditUnit } from '../../../utils/mappers/adminMappers';
+import PageTitle from '../../../../../components/styled/common/pageTitle';
+import UnitForm from '../../../../../components/administrationForms/unitForm';
+import { useSnackBar } from '../../../../../lib/hooks/snackbar';
+import { useLogin } from '../../../../../lib/loginContext';
+import { FORMS_LIST, ROLES } from '../../../../../utils/constants/enums';
+import { mapEditUnit } from '../../../../../utils/mappers/adminMappers';
 
 const GET_UNIT = gql`
     query getUnit($campusId: String!, $id: ObjectID!) {
-        campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
             id
             getUnit(id: $id) {
@@ -54,7 +53,6 @@ const GET_USERS = gql`
 
 const GET_PLACES = gql`
     query listPlaces($campusId: String!, $hasUnit: HasUnitFilter) {
-        campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
             id
             listPlaces(hasUnit: $hasUnit) {
@@ -73,7 +71,6 @@ const GET_PLACES = gql`
 
 const EDIT_UNIT = gql`
     mutation editUnit($campusId: String!, $id: ObjectID!, $unit: UnitInput!) {
-        campusId @client @export(as: "campusId")
         mutateCampus(id: $campusId) {
             editUnit(id: $id, unit: $unit) {
                 id
@@ -139,11 +136,11 @@ const EDIT_PLACE = gql`
 function CreateUnit() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
-    const { id } = router.query;
+    const { unitId: id, id: campusId } = router.query;
     const [unitData, setUnitData] = useState(null);
 
     const { data: unit } = useQuery(GET_UNIT, {
-        variables: { id },
+        variables: { id, campusId },
         fetchPolicy: 'cache-and-network'
     });
 
@@ -154,11 +151,11 @@ function CreateUnit() {
         variables: { hasRole: { role: ROLES.ROLE_SECURITY_OFFICER.role, unit: id } }
     });
     const { data: placesData } = useQuery(GET_PLACES, {
-        variables: { hasUnit: { id } },
+        variables: { hasUnit: { id }, campusId },
         fetchPolicy: 'cache-and-network'
     });
 
-    const [editUnit] = useMutation(EDIT_UNIT);
+    const [editUnit] = useMutation(EDIT_UNIT, { variables: { campusId } });
     const [editUserReq] = useMutation(EDIT_USER);
     const [editPlaceReq] = useMutation(EDIT_PLACE);
     const [deleteUserRoleReq] = useMutation(DELETE_ROLE);
@@ -344,12 +341,13 @@ function CreateUnit() {
 
     return (
         <>
-            <PageTitle title="Administration" subtitles={['Unité', 'Editer unité']} />
+            <PageTitle subtitles={['Unité', 'Editer unité']}>Administration</PageTitle>
             {defaultValues && (
                 <UnitForm
                     submitForm={submitEditUnit}
                     defaultValues={defaultValues}
                     userRole={activeRole}
+                    campusId={campusId}
                     type="edit"
                 />
             )}

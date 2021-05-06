@@ -3,6 +3,7 @@ export const ADMIN_CAMPUS_MANAGEMENT = (id) => `/administration/base/${id}`;
 export const ADMIN_CAMPUS_ROLE_EDITION = (campusId, role) =>
     `/administration/base/${campusId}/${role}`;
 export const ADMIN_CAMPUS_PLACES_EDITION = (campusId) => `/administration/base/${campusId}/lieux`;
-export const ADMIN_CAMPUS_UNITS_EDITION = (id) => `/administration/unites/${id}`;
+export const ADMIN_CAMPUS_UNITS_EDITION = (campusId, id) =>
+    `/administration/base/${campusId}/unites/${id}`;
 export const ADMIN_CAMPUS_UNIT_CREATE = (campusId) =>
     `/administration/base/${campusId}/unites/creation`;

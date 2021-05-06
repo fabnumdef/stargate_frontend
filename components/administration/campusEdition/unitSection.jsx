@@ -23,8 +23,8 @@ function UnitSection({ listUnits, campusId }) {
     const router = useRouter();
     const classes = useStyles();
 
-    const handleEditUnit = (id) => {
-        router.push(ADMIN_CAMPUS_UNITS_EDITION(id));
+    const handleEditUnit = (unitId) => {
+        router.push(ADMIN_CAMPUS_UNITS_EDITION(campusId, unitId));
     };
 
     const handleCreateUnit = () => {

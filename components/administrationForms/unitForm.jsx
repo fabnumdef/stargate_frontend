@@ -114,7 +114,7 @@ const GET_USERS = gql`
     }
 `;
 
-const UnitForm = ({ defaultValues, type, submitForm }) => {
+const UnitForm = ({ defaultValues, type, submitForm, campusId }) => {
     const classes = useStyles();
     const client = useApolloClient();
     const theme = useTheme();
@@ -539,7 +539,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                 </Grid>
             </Grid>
             <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-                <Link href="/administration/unites">
+                <Link href={`/administration/base/${campusId}`}>
                     <Button variant="outlined" color="primary">
                         Annuler
                     </Button>
@@ -557,7 +557,8 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
 UnitForm.propTypes = {
     defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
     type: PropTypes.string.isRequired,
-    submitForm: PropTypes.func.isRequired
+    submitForm: PropTypes.func.isRequired,
+    campusId: PropTypes.string.isRequired
 };
 
 export default UnitForm;

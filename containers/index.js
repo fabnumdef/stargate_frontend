@@ -1,7 +1,6 @@
 export { default as Account } from './account';
 
 export { default as UserAdministration } from './administration/userAdministration';
-export { default as UnitAdministration } from './administration/unitAdministration';
 export { default as CampusesAdministration } from './administration/campusesAdministration';
 export { default as CampusFormContainer } from './administration/forms/baseFormContainer';
 
