@@ -14,6 +14,14 @@ jest.mock('../../../utils', () => ({
     tokenDuration: () => ({ expiredToken: false })
 }));
 
+jest.mock('next/router', () => ({
+    useRouter() {
+        return {
+            push: () => {}
+        };
+    }
+}));
+
 const mocks = [
     {
         request: {
