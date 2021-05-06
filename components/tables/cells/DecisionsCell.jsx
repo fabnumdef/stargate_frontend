@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.warning.main
     },
     decisionPart: {
-        display: 'flex'
+        display: 'flex',
+        marginLeft: '20px'
     },
     typoContent: {
         display: 'flex',
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         borderRadius: '4px',
         marginBottom: '10px',
-        maxWidth: '175px'
+        maxWidth: '155px'
     },
     more: {
         marginLeft: theme.spacing(2),

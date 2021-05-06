@@ -56,7 +56,9 @@ export default function TabProcess({ units }) {
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <CustomTableCellHeader key={column.id} style={column.style}>
+                            <CustomTableCellHeader
+                                key={column.id}
+                                style={column.id === 'steps' && { paddingLeft: '85px' }}>
                                 {column.label}
                             </CustomTableCellHeader>
                         ))}

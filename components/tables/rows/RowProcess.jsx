@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'inherit',
         '&:first-child': {
             borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10
+            borderBottomLeftRadius: 10,
+            width: '20%'
         },
         '&:last-child': {
             borderTopRightRadius: 10,

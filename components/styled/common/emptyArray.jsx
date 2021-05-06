@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import MyRequestsIcon from '../../icons/MyRequestsIcon';
-import MyTreatmentsIcon from '../../icons/MyTreatmentsIcon';
 
+import EmptyArrayLogo from '../animations/empty';
 const useStyles = makeStyles({
     svgContent: {
         textAlign: 'center',
@@ -27,20 +26,6 @@ const useStyles = makeStyles({
 export default function EmptyArray({ type }) {
     const classes = useStyles();
 
-    function getIcon() {
-        switch (type) {
-            case 'en cours':
-            case 'terminée':
-                return <MyRequestsIcon className={classes.icon} />;
-            case 'à traiter':
-            case 'à exporter':
-            case 'finalisé':
-                return <MyTreatmentsIcon className={classes.icon} />;
-            default:
-                break;
-        }
-    }
-
     function getText() {
         switch (type) {
             case 'en cours':
@@ -60,9 +45,11 @@ export default function EmptyArray({ type }) {
 
     return (
         <div>
-            <div className={classes.svgContent}>{getIcon()}</div>
+            <div className={classes.svgContent}>
+                <EmptyArrayLogo />
+            </div>
             <div className={classes.textContent}>
-                <Typography variant="subtitle1" style={{ textAlign: 'center' }}>
+                <Typography variant="h6" style={{ textAlign: 'center' }}>
                     {`Vous n'avez pas de ${getText()} pour le moment !`}
                 </Typography>
             </div>

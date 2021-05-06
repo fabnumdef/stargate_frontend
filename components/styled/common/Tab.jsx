@@ -6,7 +6,7 @@ const AntTab = withStyles((theme) => ({
     root: {
         textTransform: 'none',
         color: 'rgba(0, 0, 0, 0.25)',
-        fontSize: '1.125rem',
+        fontSize: '0.875rem',
         minWidth: 150,
         marginRight: theme.spacing(5),
         '&:hover': {

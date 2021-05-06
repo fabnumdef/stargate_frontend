@@ -183,7 +183,7 @@ export default function MyRequestAccess() {
                         load={load}
                     />
                 ) : (
-                    <EmptyArray type="finalisées" />
+                    <EmptyArray type="terminée" />
                 )}
             </TabPanel>
         </div>
