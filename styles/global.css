@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'Marianne';
+    src: url('/fonts/Marianne/marianne-regular-webfont.woff2') format('woff2'),
+        url('/fonts/Marianne/marianne-regular-webfont.woff') format('woff');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Marianne';
+    src: url('/fonts/Marianne/marianne-bold-webfont.woff2') format('woff2'),
+        url('/fonts/Marianne/marianne-bold-webfont.woff') format('woff');
+    font-style: bold;
+    font-weight: bold;
+    font-display: swap;
+}

@@ -9,7 +9,36 @@ export default class MyDocument extends Document {
     render() {
         return (
             <Html lang="fr">
-                <Head />
+                <Head>
+                    <link
+                        rel="preload"
+                        as="font"
+                        href="/fonts/marianne-bold-webfont.woff"
+                        type="font/woff"
+                        crossOrigin
+                    />
+                    <link
+                        rel="preload"
+                        as="font"
+                        href="/fonts/marianne-bold-webfont.woff2"
+                        type="font/woff2"
+                        crossOrigin
+                    />
+                    <link
+                        rel="preload"
+                        as="font"
+                        href="/fonts/marianne-regular-webfont.woff"
+                        type="font/woff"
+                        crossOrigin
+                    />
+                    <link
+                        rel="preload"
+                        as="font"
+                        href="/fonts/marianne-regular-webfont.woff2"
+                        type="font/woff2"
+                        crossOrigin
+                    />
+                </Head>
                 <body>
                     <Main />
                     <NextScript />
