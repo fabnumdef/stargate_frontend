@@ -51,8 +51,10 @@ const AccordionSummaryStyled = withStyles(() => ({
         borderRadius: '4px',
         marginBottom: -1,
         minHeight: 56,
+        maxHeight: '250px',
         '&$expanded': {
-            minHeight: 56
+            minHeight: 56,
+            maxHeight: '250px'
         },
         '&:hover': {
             border: `1px solid rgba(0, 0, 0, 0.8)`
@@ -132,7 +134,7 @@ export default function ListLieux({
                     ))}
                 </div>
             </AccordionSummaryStyled>
-            <AccordionDetails>
+            <AccordionDetails style={{ maxHeight: '220px' }}>
                 <ListStyled className={classes.root}>
                     {options.map((place) => {
                         const labelId = `checkbox-list-label-${place.id}`;

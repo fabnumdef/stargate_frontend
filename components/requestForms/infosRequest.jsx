@@ -13,7 +13,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -23,6 +22,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import ButtonsFooterContainer from '../styled/common/ButtonsFooterContainer';
+import RoundButton from '../styled/common/roundButton';
 
 import { isValid, differenceInDays, isBefore, isThursday, isFriday } from 'date-fns';
 import validator from 'validator';
@@ -98,9 +99,6 @@ const useStyles = makeStyles((theme) => ({
     },
     radioLabel: {
         marginRight: '70px'
-    },
-    buttonCancel: {
-        marginRight: '5px'
     },
     checkPos: {
         marginBottom: '5px'
@@ -730,21 +728,16 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                         </Grid>
                     </Grid>
 
-                    <Grid item sm={12} xs={12}>
-                        <Grid container justify="flex-end">
-                            <Link href="/">
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    className={classes.buttonCancel}>
-                                    Annuler
-                                </Button>
-                            </Link>
-                            <Button type="submit" variant="contained" color="primary">
-                                Continuer
-                            </Button>
-                        </Grid>
-                    </Grid>
+                    <ButtonsFooterContainer>
+                        <Link href="/">
+                            <RoundButton variant="outlined" color="primary">
+                                Annuler
+                            </RoundButton>
+                        </Link>
+                        <RoundButton type="submit" variant="contained" color="primary">
+                            Continuer
+                        </RoundButton>
+                    </ButtonsFooterContainer>
                     {/* Column 3 */}
                 </Grid>
             </form>

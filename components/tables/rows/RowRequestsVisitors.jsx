@@ -59,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
 
 function RowRequestsVisitors({ columns, row, onDelete }) {
     const classes = useStyles();
-
     const statusIcon = useMemo(() => {
         switch (row.status) {
             case 'CREATED':
@@ -78,7 +77,7 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
                         className={`${classes.iconStatus} ${classes.iconSuccess}`}
                     />
                 );
-            case 'REFUSED':
+            case 'REJECTED':
             case 'CANCELED':
                 return (
                     <ErrorIcon

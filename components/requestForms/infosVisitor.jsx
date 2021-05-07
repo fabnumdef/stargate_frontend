@@ -20,8 +20,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import ButtonsFooterContainer from '../styled/common/ButtonsFooterContainer';
+import RoundButton from '../styled/common/roundButton';
 
 import validator from 'validator';
 import { isValid, differenceInYears } from 'date-fns';
@@ -939,24 +940,14 @@ export default function FormInfoVisitor({
                         </Grid>
                     </Grid>
 
-                    <Grid item sm={12}>
-                        <Grid container justify="flex-end">
-                            <div>
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    style={{ marginRight: '5px' }}
-                                    onClick={handleClickCancel}>
-                                    Retour
-                                </Button>
-                            </div>
-                            <div>
-                                <Button type="submit" variant="contained" color="primary">
-                                    Envoyer
-                                </Button>
-                            </div>
-                        </Grid>
-                    </Grid>
+                    <ButtonsFooterContainer>
+                        <RoundButton variant="outlined" color="primary" onClick={handleClickCancel}>
+                            Retour
+                        </RoundButton>
+                        <RoundButton type="submit" variant="contained" color="primary">
+                            Envoyer
+                        </RoundButton>
+                    </ButtonsFooterContainer>
                 </Grid>
             </form>
         </div>

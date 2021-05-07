@@ -83,14 +83,14 @@ function mapCreateRow({
           ${request.owner.rank || ''} 
           ${request.owner.firstname} 
           ${request.owner.lastname.toUpperCase()} 
-          (${request.owner.unit?.label ?? ''})`
+          ${request.owner.unit?.label ? `(${request.owner.unit.label})` : ''}`
                 : '',
             places: request.places
                 .map((place, index) => {
                     if (index === request.places.length - 1) return `${place.label}.`;
                     return `${place.label}, `;
                 })
-                .join(),
+                .join(''),
             reason: request.reason
         },
         visitor: {

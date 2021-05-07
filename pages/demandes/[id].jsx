@@ -11,9 +11,8 @@ import { Typography } from '@material-ui/core';
 import RequestVisitors from '../../containers/requestDetail/RequestVisitors';
 import LinkBack from '../../components/styled/common/Link';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     paper: {
-        padding: theme.spacing(9, 12),
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
