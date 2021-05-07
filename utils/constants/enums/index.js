@@ -42,6 +42,8 @@ export const ROLES = {
         shortLabel: 'SA',
         permission: [
             '/',
+            '/a-propos',
+            '/contactez-nous',
             '/compte',
             '/administration',
             '/administration/base',
@@ -55,6 +57,8 @@ export const ROLES = {
         shortLabel: 'A',
         permission: [
             '/',
+            '/a-propos',
+            '/contactez-nous',
             '/compte',
             '/administration',
             '/administration/base',
@@ -69,6 +73,8 @@ export const ROLES = {
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
         permission: [
             '/',
+            '/a-propos',
+            '/contactez-nous',
             '/compte',
             '/mes-demandes',
             '/mes-traitements',
@@ -87,6 +93,8 @@ export const ROLES = {
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
         permission: [
             '/',
+            '/a-propos',
+            '/contactez-nous',
             '/compte',
             '/mes-demandes',
             '/mes-traitements',
@@ -101,8 +109,15 @@ export const ROLES = {
         shortLabel: 'BA',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
-        editable: true,
-        permission: ['/', '/compte', '/mes-traitements']
+        permission: [
+            '/',
+            '/a-propos',
+            '/contactez-nous',
+            '/compte',
+            '/mes-demandes',
+            '/nouvelle-demande',
+            '/nouvelle-demande-groupe'
+        ]
     },
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
@@ -110,8 +125,7 @@ export const ROLES = {
         shortLabel: 'G',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
-        editable: true,
-        permission: ['/', '/compte']
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
     },
     ROLE_HOST: {
         role: 'ROLE_HOST',
@@ -123,14 +137,16 @@ export const ROLES = {
             '/mes-demandes',
             '/nouvelle-demande',
             '/nouvelle-demande/simple',
-            '/nouvelle-demande/groupe'
+            '/nouvelle-demande/groupe',
+            '/a-propos',
+            '/contactez-nous'
         ]
     },
     ROLE_GATEKEEPER: {
         role: 'ROLE_GATEKEEPER',
         label: 'Gardien',
         shortLabel: 'G',
-        permission: ['/', '/compte']
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
     },
     ROLE_OBSERVER: {
         role: 'ROLE_OBSERVER',
@@ -138,7 +154,7 @@ export const ROLES = {
         shortLabel: 'O',
         workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
-        permission: ['/', '/compte']
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
     }
 };
 

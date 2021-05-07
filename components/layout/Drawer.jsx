@@ -196,7 +196,7 @@ export default function DrawerTemplate({ drawerWidth }) {
                     )}
                 <Divider variant="middle" />
                 <NormalListItem
-                    item={{ label: 'À propos', permission: '/about', icon: ThumbUpAltIcon }}
+                    item={{ label: 'À propos', permission: '/a-propos', icon: ThumbUpAltIcon }}
                     action={(permission) => router.push(permission)}
                     pathname={router.pathname}
                 />
