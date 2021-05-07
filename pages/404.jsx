@@ -1,8 +1,8 @@
 import React from 'react';
 import { PageNotFound } from '../containers';
 
-function AboutPage() {
+function NotFoundPage() {
     return <PageNotFound />;
 }
 
-export default AboutPage;
+export default NotFoundPage;
