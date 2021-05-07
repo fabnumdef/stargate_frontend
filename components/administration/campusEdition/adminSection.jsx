@@ -9,6 +9,13 @@ import TextField from '@material-ui/core/TextField';
 import { Controller, useForm } from 'react-hook-form';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import SquareButton from '../../styled/common/squareButton';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import { gql, useMutation } from '@apollo/client';
+import { ROLES } from '../../../utils/constants/enums';
+import { LIST_USERS } from '../../../lib/apollo/queries';
+import { useSnackBar } from '../../../lib/hooks/snackbar';
+import { createUserFromMail } from '../../../utils/mappers/createUserFromMail';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -26,20 +33,177 @@ const useStyles = makeStyles((theme) => ({
     },
     listAdmins: {
         margin: '10px 16px !important'
+    },
+    icon: {
+        color: 'rgba(0, 0, 0, 0.25)',
+        padding: '0 !important',
+        '&:hover': {
+            backgroundColor: theme.palette.common.white,
+            color: theme.palette.primary.main
+        }
     }
 }));
 
-function AdminSection({ listAdmins }) {
-    const classes = useStyles();
-    const { control, handleSubmit, errors } = useForm();
+const CREATE_USER = gql`
+    mutation createUser($user: UserInput!) {
+        createUser(user: $user) {
+            id
+            firstname
+            lastname
+            email {
+                original
+            }
+            roles {
+                role
+                campuses {
+                    id
+                    label
+                }
+                units {
+                    id
+                    label
+                }
+            }
+        }
+    }
+`;
 
-    const handleCreateAdmin = (e) => {
-        e.preventDefault();
-        console.log('');
+const DELETE_ROLE = gql`
+    mutation deleteUserRole($id: ObjectID!, $user: UserInput) {
+        deleteUserRole(id: $id, user: $user) {
+            id
+        }
+    }
+`;
+
+function AdminSection({ listAdmins, campusData }) {
+    const classes = useStyles();
+    const { addAlert } = useSnackBar();
+    const { control, handleSubmit, errors, setValue } = useForm();
+
+    const [deleteUserRoleReq] = useMutation(DELETE_ROLE, {
+        update: (cache, { data: { deleteUserRole: deletedUser } }) => {
+            const currentUsers = cache.readQuery({
+                query: LIST_USERS,
+                variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } }
+            });
+            const updatedTotal = currentUsers.listUsers.meta.total - 1;
+            const updatedUsers = {
+                ...currentUsers,
+                listUsers: {
+                    ...currentUsers.listUsers,
+                    list: currentUsers.listUsers.list.filter((user) => user.id !== deletedUser.id),
+                    meta: {
+                        ...currentUsers.listUsers.meta,
+                        total: updatedTotal
+                    }
+                }
+            };
+            cache.writeQuery({
+                query: LIST_USERS,
+                variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } },
+                data: updatedUsers
+            });
+        }
+    });
+    const [createUser] = useMutation(CREATE_USER, {
+        update: (cache, { data: { createUser: createdUser } }) => {
+            const currentUsers = cache.readQuery({
+                query: LIST_USERS,
+                variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } }
+            });
+            const updatedTotal = currentUsers.listUsers.meta.total + 1;
+            const updatedUsers = {
+                ...currentUsers,
+                listUsers: {
+                    ...currentUsers.listUsers,
+                    list: [...currentUsers.listUsers.list, createdUser],
+                    meta: {
+                        ...currentUsers.listUsers.meta,
+                        total: updatedTotal
+                    }
+                }
+            };
+            cache.writeQuery({
+                query: LIST_USERS,
+                variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } },
+                data: updatedUsers
+            });
+        }
+    });
+
+    const submitCreateUser = async (user) => {
+        try {
+            const {
+                data: {
+                    createUser: { id }
+                }
+            } = await createUser({ variables: { user } });
+            if (id) {
+                addAlert({ message: "L'administrateur a bien été créé", severity: 'success' });
+                setValue('adminEmail', '');
+            }
+            return null;
+        } catch (e) {
+            switch (true) {
+                case e.message === 'GraphQL error: User already exists':
+                    return addAlert({
+                        message: 'Un utilisateur est déjà enregistré avec cet e-mail',
+                        severity: 'error'
+                    });
+                case e.message.includes(
+                    'User validation failed: email.original: queryMx ENOTFOUND'
+                ):
+                    return addAlert({
+                        message: "Erreur, veuillez vérifier le domaine de l'adresse e-mail",
+                        severity: 'warning'
+                    });
+                default:
+                    return addAlert({
+                        message: 'Erreur serveur, merci de réessayer',
+                        severity: 'warning'
+                    });
+            }
+        }
+    };
+
+    const deleteAdmin = async (id) => {
+        try {
+            await deleteUserRoleReq({
+                variables: {
+                    id,
+                    user: {
+                        roles: {
+                            role: ROLES.ROLE_ADMIN.role
+                        }
+                    }
+                }
+            });
+            addAlert({
+                message: "Le rôle d'administrateur à bien été supprimé de l'utilisateur",
+                severity: 'success'
+            });
+        } catch {
+            return null;
+        }
+    };
+
+    const handleCreateAdmin = (formData) => {
+        const roles = {
+            role: ROLES.ROLE_ADMIN.role,
+            campuses: { id: campusData.id, label: campusData.label }
+        };
+        const userAdmin = createUserFromMail(formData.adminEmail, roles);
+        submitCreateUser(userAdmin);
     };
 
     const handleDeleteAdmin = (id) => {
-        console.log(id);
+        deleteAdmin(id);
+    };
+
+    const checkMailFormat = (value) => {
+        const [username, mail] = value.split('@');
+        return username.split('.').length === 2 && mail === 'intradef.gouv.fr';
     };
 
     return (
@@ -75,7 +239,7 @@ function AdminSection({ listAdmins }) {
                             defaultValue=""
                             rules={{
                                 validate: (value) =>
-                                    value.trim() !== '' ||
+                                    checkMailFormat(value) ||
                                     "L'email doit être au format nom.prenom@intradef.gouv.fr"
                             }}
                         />
@@ -92,11 +256,16 @@ function AdminSection({ listAdmins }) {
                     {listAdmins.list.map((admin) => (
                         <GridListTile key={admin.id}>
                             <Grid container>
-                                <Grid item sm={10} md={3}>
+                                <Grid item sm={10} md={3} alignItems="center">
                                     <Typography variant="body1">{admin.email.original}</Typography>
                                 </Grid>
-                                <Grid item sm={2} onClick={handleDeleteAdmin(admin.id)}>
-                                    <WarningIcon />
+                                <Grid item sm={2}>
+                                    <SquareButton
+                                        aria-label="deleteAdmin"
+                                        onClick={() => handleDeleteAdmin(admin.id)}
+                                        classes={{ root: classes.icon }}>
+                                        <DeleteOutlineIcon />
+                                    </SquareButton>
                                 </Grid>
                             </Grid>
                         </GridListTile>
@@ -108,7 +277,8 @@ function AdminSection({ listAdmins }) {
 }
 
 AdminSection.propTypes = {
-    listAdmins: PropTypes.array.isRequired
+    listAdmins: PropTypes.array.isRequired,
+    campusData: PropTypes.objectOf(PropTypes.string.isRequired).isRequired
 };
 
 export default AdminSection;
