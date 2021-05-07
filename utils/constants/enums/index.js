@@ -109,15 +109,7 @@ export const ROLES = {
         shortLabel: 'BA',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
-        permission: [
-            '/',
-            '/a-propos',
-            '/contactez-nous',
-            '/compte',
-            '/mes-demandes',
-            '/nouvelle-demande',
-            '/nouvelle-demande-groupe'
-        ]
+        permission: ['/', '/a-propos', '/contactez-nous', '/compte']
     },
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
