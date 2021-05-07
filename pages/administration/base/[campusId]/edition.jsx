@@ -3,6 +3,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { CampusFormContainer } from '../../../../containers';
 import { useSnackBar } from '../../../../lib/hooks/snackbar';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../../utils/constants/appUrls';
 
 const GET_CAMPUS = gql`
     query getCampus($id: String!) {
@@ -26,7 +27,7 @@ const EDIT_CAMPUS = gql`
 function EditCampus() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
-    const { id } = router.query;
+    const { campusId: id } = router.query;
     const [editCampus] = useMutation(EDIT_CAMPUS);
 
     const { data: editCampusData, loading } = useQuery(GET_CAMPUS, {
@@ -36,18 +37,17 @@ function EditCampus() {
 
     const submitEditCampus = async (data) => {
         try {
-            if (data.name !== editCampusData.getCampus.label) {
-                await editCampus({
-                    variables: {
-                        id,
-                        campus: { label: data.label.trim(), trigram: data.trigram.trim() }
-                    }
-                });
-            }
-            return addAlert({
+            await editCampus({
+                variables: {
+                    id,
+                    campus: { label: data.label.trim(), trigram: data.trigram.trim() }
+                }
+            });
+            addAlert({
                 message: 'La modification a bien été effectuée',
                 severity: 'success'
             });
+            return router.push(ADMIN_CAMPUS_MANAGEMENT(id));
         } catch (e) {
             return addAlert({
                 message: 'Erreur serveur, merci de réessayer',
