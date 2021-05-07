@@ -234,7 +234,7 @@ function ScreeningManagement() {
                             </SearchField>
                         </section>
                         <TableScreening
-                            requests={data.getCapus.progress.list}
+                            requests={data.getCampus.progress.list}
                             selectAll={handleSelectAll}
                         />
                         <ButtonsFooterContainer>
