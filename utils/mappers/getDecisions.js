@@ -53,8 +53,11 @@ export const isRejected = (unit) => {
  */
 export const getScreeningDecision = (units) => {
     let screeningDecision;
-    units[0].steps.find(
-        (step) => step.role === ROLES.ROLE_SCREENING.role && (screeningDecision = step.state.value)
+    units.find((unit) =>
+        unit.steps.find(
+            (step) =>
+                step.role === ROLES.ROLE_SCREENING.role && (screeningDecision = step.state.value)
+        )
     );
     return screeningDecision;
 };

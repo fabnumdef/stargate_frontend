@@ -24,7 +24,6 @@ const AntTab = withStyles((theme) => ({
     },
     selected: {},
     wrapper: {
-        alignItems: 'flex-start',
         flexDirection: 'row',
         justifyContent: 'space-between'
     }

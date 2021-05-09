@@ -45,9 +45,7 @@ export default function RequestCell({ request }) {
 
                 <Typography display="inline" variant="body1">{` ${request.places}`}</Typography>
             </div>
-            {!ROLES[activeRoleCacheVar().role].role.includes(
-                ROLES.ROLE_UNIT_CORRESPONDENT.role
-            ) && (
+            {activeRoleCacheVar().role !== ROLES.ROLE_UNIT_CORRESPONDENT.role && (
                 <div>
                     <Typography display="inline" variant="body1" className={classes.subtitles}>
                         Motif :

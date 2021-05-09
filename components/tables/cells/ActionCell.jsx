@@ -10,11 +10,9 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
 import { useDecisions } from '../../../lib/hooks/useDecisions';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
-    divGrid: {
-        display: 'grid'
-    },
     radio: {
         '&$checked': {
             color: theme.palette.success.main
@@ -145,11 +143,15 @@ export function ActionCell({ choices, decision }) {
     return React.useMemo(
         () => (
             <TableCell>
-                <div className={classes.divGrid}>
+                <Grid container style={{ width: '110px' }}>
                     {choices.map((choice) => {
                         if (choice.label === 'Autre choix') {
                             return (
-                                <div className={classes.divRelative} key={choice.label}>
+                                <Grid
+                                    item
+                                    sm={12}
+                                    className={classes.divRelative}
+                                    key={choice.label}>
                                     <FormControlLabel
                                         label=""
                                         value={choice.label}
@@ -187,31 +189,33 @@ export function ActionCell({ choices, decision }) {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                </div>
+                                </Grid>
                             );
                         }
                         return (
-                            <FormControlLabel
-                                key={choice.label}
-                                label={choice.label}
-                                value={choice.label}
-                                control={
-                                    <Radio
-                                        classes={{
-                                            root:
-                                                choice.label !== 'REFUSER'
-                                                    ? classes.radio
-                                                    : classes.radioRejected,
-                                            checked: classes.checked
-                                        }}
-                                        checked={choice.label === decisionChoice.label}
-                                        onClick={() => handleRadioClick(choice)}
-                                    />
-                                }
-                            />
+                            <Grid item sm={12} key={choice.label}>
+                                <FormControlLabel
+                                    key={choice.label}
+                                    label={choice.label}
+                                    value={choice.label}
+                                    control={
+                                        <Radio
+                                            classes={{
+                                                root:
+                                                    choice.label !== 'REFUSER'
+                                                        ? classes.radio
+                                                        : classes.radioRejected,
+                                                checked: classes.checked
+                                            }}
+                                            checked={choice.label === decisionChoice.label}
+                                            onClick={() => handleRadioClick(choice)}
+                                        />
+                                    }
+                                />
+                            </Grid>
                         );
                     })}
-                </div>
+                </Grid>
             </TableCell>
         ),
         [decisionQuery]

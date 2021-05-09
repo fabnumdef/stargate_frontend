@@ -7,9 +7,6 @@ const useStyle = makeStyles(() => ({
     subtitles: {
         fontWeight: 'bold'
     },
-    divBlock: {
-        display: 'block'
-    },
     widthCell: {
         maxWidth: '220px'
     }

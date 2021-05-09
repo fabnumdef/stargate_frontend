@@ -24,7 +24,6 @@ import CustomTableHeader from '../../tables/cells/TableCellHeader';
 import CustomCheckbox from '../../styled/customCheckbox';
 import { useLogin } from '../../../lib/loginContext';
 import { EMPLOYEE_TYPE, ROLES, WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
-// import getDecisions from '../../../utils/mappers/getDecisions';
 
 import ckeckStatusVisitor, { ACTIVE_STEP_STATUS } from '../../../utils/mappers/checkStatusVisitor';
 
@@ -111,7 +110,6 @@ function createData(
         validation: null,
         vip,
         vipReason,
-        // steps: getDecisions(units),
         step: findStep.step
     };
 }
