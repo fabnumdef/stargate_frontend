@@ -91,27 +91,19 @@ export function ActionCell({ choices, decision }) {
      * 'Autre choix' (select menu) => set choice to the value of otherChoice.
      * else set the decision to the values of the clicked element
      * @param {*} choice
-     * @returns
+     * @returns addDecision.
      */
     const handleRadioClick = (choice) => {
+        let selectedChoice;
         if (decisionChoice === choice) {
-            addDecision({
-                choice: initChoice,
-                request: { id: decision.request.id },
-                id: decision.id
-            });
-            return;
+            selectedChoice = initChoice;
+        } else if (choice.label === 'Autre choix') {
+            selectedChoice = otherChoice;
+        } else {
+            selectedChoice = choice;
         }
-        if (choice.label === 'Autre choix') {
-            addDecision({
-                choice: otherChoice,
-                request: { id: decision.request.id },
-                id: decision.id
-            });
-            return;
-        }
-        addDecision({
-            choice,
+        return addDecision({
+            choice: selectedChoice,
             request: { id: decision.request.id },
             id: decision.id
         });
