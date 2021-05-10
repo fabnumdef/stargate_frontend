@@ -59,14 +59,5 @@ describe('Container: Drawer', () => {
                 })
             );
         });
-
-        await waitFor(() =>
-            userEvent.click(
-                screen.getByRole('button', {
-                    name: /unité/i
-                })
-            )
-        );
-        expect(mockPush).toHaveBeenCalledWith('/administration/unites');
     });
 });
