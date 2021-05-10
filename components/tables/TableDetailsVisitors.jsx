@@ -17,7 +17,7 @@ import { EMPLOYEE_TYPE, STATE_REQUEST } from '../../utils/constants/enums';
 const columns = [
     {
         id: 'visitor',
-        label: 'Visiteur(s)'
+        label: 'Visiteur'
     },
     {
         id: 'company',
@@ -85,7 +85,9 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
                             if (column.id === 'visitor') {
                                 return (
                                     <CustomTableCellHeader key={column.id} style={column.style}>
-                                        {column.label} ({list.length})
+                                        {list.length > 1
+                                            ? `${column.label}s (${list.length})`
+                                            : `${column.label} (${list.length})`}
                                     </CustomTableCellHeader>
                                 );
                             }
