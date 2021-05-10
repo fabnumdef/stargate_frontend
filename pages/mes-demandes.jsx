@@ -1,8 +1,8 @@
 import React from 'react';
-import { MyAccesRequests } from '../containers';
+import { MyAccessRequests } from '../containers';
 
-function MyRequestAcces() {
-    return <MyAccesRequests />;
+function MyRequestAccess() {
+    return <MyAccessRequests />;
 }
 
-export default MyRequestAcces;
+export default MyRequestAccess;

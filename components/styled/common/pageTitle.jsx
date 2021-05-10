@@ -10,7 +10,7 @@ const useStyles = makeStyles(() => ({
     pageTitle: {
         fontSize: '1.75rem',
         fontWeight: 'bold',
-        marginBottom: 70
+        marginBottom: 24
     }
 }));
 

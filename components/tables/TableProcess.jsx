@@ -23,7 +23,7 @@ const columns = [
     }
 ];
 
-function createData({ units }) {
+function createData(units) {
     return {
         unit: units.label,
         steps: units.steps
@@ -33,7 +33,7 @@ function createData({ units }) {
 const useStyles = makeStyles({
     root: {
         border: '1px solid #F3F3F3',
-        maxHeight: '340px',
+        minWidth: '300px',
         overflowX: 'hidden'
     }
 });
@@ -43,7 +43,7 @@ export default function TabProcess({ units }) {
 
     const rows = React.useMemo(
         () =>
-            units.reduce((acc, dem) => {
+            units?.reduce((acc, dem) => {
                 acc.push(createData(dem));
                 return acc;
             }, []),
@@ -56,7 +56,9 @@ export default function TabProcess({ units }) {
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <CustomTableCellHeader key={column.id} style={column.style}>
+                            <CustomTableCellHeader
+                                key={column.id}
+                                style={column.id === 'steps' && { paddingLeft: '85px' }}>
                                 {column.label}
                             </CustomTableCellHeader>
                         ))}
@@ -64,8 +66,8 @@ export default function TabProcess({ units }) {
                 </TableHead>
 
                 <TableBody>
-                    {rows.map((row) => (
-                        <RowProcess key={row.id} row={row} columns={columns} />
+                    {rows?.map((row) => (
+                        <RowProcess key={row.unit} row={row} columns={columns} />
                     ))}
                 </TableBody>
             </Table>

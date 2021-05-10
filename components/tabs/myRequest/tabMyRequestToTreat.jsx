@@ -18,7 +18,7 @@ import { format } from 'date-fns';
 import TableContainer from '@material-ui/core/TableContainer';
 import CustomTableCellHeader from '../../tables/cells/TableCellHeader';
 
-import EmptyArray from '../../styled/emptyArray';
+import EmptyArray from '../../styled/common/emptyArray';
 
 const columns = [
     { id: 'id', label: 'N° demande', width: '220px' },

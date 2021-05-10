@@ -21,7 +21,12 @@ export function SnackBarProvider({ children }) {
         return undefined;
     }, [activeAlertIds, alerts]);
 
-    const addAlert = useCallback((content) => setAlerts(() => [content, ...alerts]), [alerts]);
+    const addAlert = useCallback(
+        (content) => {
+            setAlerts(() => [content, ...alerts]);
+        },
+        [alerts]
+    );
 
     const value = { addAlert };
 

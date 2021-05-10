@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
         alignContent: 'center',
         margin: '15px',
         padding: '8px',
-        background: theme.palette.common.white,
+        background: 'rgba(90, 160, 255, 0.05)',
         textAlign: 'left'
     },
     title: {

@@ -10,7 +10,8 @@ import { gql, useMutation } from '@apollo/client';
 
 import { format } from 'date-fns';
 
-import Button from '@material-ui/core/Button';
+import ButtonsFooterContainer from '../styled/common/ButtonsFooterContainer';
+import RoundButton from '../styled/common/roundButton';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
 import TabRecapRequest from '../tabs/tabRecapRequest';
@@ -173,29 +174,24 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
                     handleBack={handleBack}
                 />
             </Grid>
-            <Grid item xs={12} sm={12}>
-                <Grid container justify="flex-end">
-                    {group && (
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            style={{ marginRight: '5px' }}
-                            onClick={handleBack}>
-                            Retour
-                        </Button>
-                    )}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() =>
-                            createRequest({
-                                variables: { idRequest: formData.id, transition: 'CREATE' }
-                            })
-                        }>
-                        Valider
-                    </Button>
-                </Grid>
-            </Grid>
+
+            <ButtonsFooterContainer>
+                {group && (
+                    <RoundButton variant="outlined" color="primary" onClick={handleBack}>
+                        Retour
+                    </RoundButton>
+                )}
+                <RoundButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() =>
+                        createRequest({
+                            variables: { idRequest: formData.id, transition: 'CREATE' }
+                        })
+                    }>
+                    Valider
+                </RoundButton>
+            </ButtonsFooterContainer>
         </Grid>
     );
 }

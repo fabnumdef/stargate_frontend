@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import SquareButton from '../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import ReasonCell from '../cells/ReasonCell';
+import SeeMoreOrLess from '../../styled/common/SeeMoreOrLess';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
 import StyledRow from '../../styled/common/StyledRow';
 
@@ -67,11 +67,13 @@ function RowTreatments({ columns, row, onDelete }) {
                         );
                     case 'reason':
                         return (
-                            <ReasonCell className={classes.cells} key={`${row.id} ${value}`}>
-                                {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                            </ReasonCell>
+                            <TableCell className={classes.cells} key={`${row.id} ${value}`}>
+                                <SeeMoreOrLess>
+                                    {column.format && typeof value === 'number'
+                                        ? column.format(value)
+                                        : value}
+                                </SeeMoreOrLess>
+                            </TableCell>
                         );
                     default:
                         return (

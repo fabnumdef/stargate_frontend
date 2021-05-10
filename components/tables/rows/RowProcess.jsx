@@ -29,13 +29,12 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'inherit',
         '&:first-child': {
             borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10
+            borderBottomLeftRadius: 10,
+            width: '20%'
         },
         '&:last-child': {
             borderTopRightRadius: 10,
-            borderBottomRightRadius: 10,
-            display: 'flex',
-            justifyContent: 'flex-end'
+            borderBottomRightRadius: 10
         }
     },
     icon: {
@@ -49,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
 
 function RowTreatments({ columns, row }) {
     const classes = useStyles();
-
     return (
         <StyledRow hover key={row.id}>
             {columns.map((column) => {

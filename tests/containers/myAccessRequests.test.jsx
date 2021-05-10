@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client';
 
-import MyAccesRequests from '../../containers/myAccesRequests';
+import MyAccessRequests from '../../containers/myAccessRequests';
 import { campusIdVar, typePolicies } from '../../lib/apollo/cache';
 import { cleanup, render, screen, waitFor } from '../../utils/tests/renderApollo';
 import { LIST_MY_REQUESTS } from '../../lib/apollo/queries';
@@ -15,7 +15,7 @@ jest.mock('next/router', () => ({
     })
 }));
 
-describe('Container: MyAccesRequests', () => {
+describe('Container: MyAccessRequests', () => {
     let cache;
 
     let mocks = [
@@ -129,7 +129,7 @@ describe('Container: MyAccesRequests', () => {
     campusIdVar('NAVAL-BASE');
 
     it('display correctly', async () => {
-        render(<MyAccesRequests />, { mocks, cache, addTypename: false });
+        render(<MyAccessRequests />, { mocks, cache, addTypename: false });
 
         await waitFor(() => {
             expect(screen.getByText(/NAVAL-BASE20210318-1/i)).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe('Container: MyAccesRequests', () => {
     it('delete correctly', async () => {
         const mockMutation = mocks[1].result;
 
-        render(<MyAccesRequests />, { mocks, cache, resolvers: {}, addTypename: false });
+        render(<MyAccessRequests />, { mocks, cache, resolvers: {}, addTypename: false });
 
         await waitFor(() => {
             userEvent.click(screen.getByLabelText(/delete/i));
@@ -155,7 +155,7 @@ describe('Container: MyAccesRequests', () => {
     });
 
     it('change of table', async () => {
-        render(<MyAccesRequests />, { mocks, cache, resolvers: {}, addTypename: false });
+        render(<MyAccessRequests />, { mocks, cache, resolvers: {}, addTypename: false });
 
         await waitFor(() => {
             userEvent.click(
@@ -169,7 +169,7 @@ describe('Container: MyAccesRequests', () => {
     });
 
     it('call the detail of a request', async () => {
-        render(<MyAccesRequests />, { mocks, cache, resolvers: {}, addTypename: false });
+        render(<MyAccessRequests />, { mocks, cache, resolvers: {}, addTypename: false });
 
         await waitFor(() => {
             userEvent.click(screen.getByLabelText(/details/i));

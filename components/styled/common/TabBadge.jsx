@@ -6,11 +6,12 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        fontSize: '0.8125rem',
         border: '1px solid',
         borderRadius: '50%',
         background: 'transparent',
-        height: '25px',
-        width: '25px'
+        height: '30px',
+        width: '30px'
     }
 }));
 

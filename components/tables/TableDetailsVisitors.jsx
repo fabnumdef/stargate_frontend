@@ -43,7 +43,7 @@ function createData({ id, rank, firstname, birthLastname, employeeType, company,
 const useStyles = makeStyles({
     root: {
         border: '1px solid #F3F3F3',
-        maxHeight: '440px',
+        maxHeight: '60vh',
         overflowX: 'hidden'
     }
 });

@@ -19,7 +19,7 @@ import { CSVLink } from 'react-csv';
 
 import { TabPanel, TabScreeningVisitors } from '../components';
 
-import { AntTab } from './myTreatements';
+import AntTab from '../components/styled/common/Tab';
 
 import { MUTATE_VISITOR } from './requestDetail/requestDetailToTreat';
 
@@ -29,7 +29,7 @@ import { useLogin } from '../lib/loginContext';
 import checkStatus, { ACTIVE_STEP_STATUS } from '../utils/mappers/checkStatusVisitor';
 import Loading from './loading';
 
-import EmptyArray from '../components/styled/emptyArray';
+import EmptyArray from '../components/styled/common/emptyArray';
 
 const useStyles = makeStyles(() => ({
     root: {

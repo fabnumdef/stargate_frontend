@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import TableContainer from '@material-ui/core/TableContainer';
-import EmptyArray from '../../styled/emptyArray';
+import EmptyArray from '../../styled/common/emptyArray';
 import CustomTableCellHeader from '../../tables/cells/TableCellHeader';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 
