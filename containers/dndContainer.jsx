@@ -8,6 +8,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import DndCard from '../components/styled/dndCard';
+import Typography from '@material-ui/core/Typography';
 
 const style = {
     display: 'flex',
@@ -17,13 +18,12 @@ const style = {
 
 const buttonStyle = {
     color: 'white',
-    fontSize: '80px',
     height: '70px',
     width: '130px',
     borderRadius: '4px',
     backgroundColor: '#0e4194',
     boxShadow: '5px 3px 6px 0 rgba(0, 0, 0, 0.16)',
-    margin: '20px 0 0 25px'
+    margin: '28px 0 0 20px'
 };
 
 const DndContainer = ({ cards, setCards, allCards }) => {
@@ -74,7 +74,7 @@ const DndContainer = ({ cards, setCards, allCards }) => {
                             id="selectWorkflow"
                             onClick={() => toggleMenu(!openMenu)}
                             style={buttonStyle}>
-                            +
+                            <Typography style={{ fontSize: '60px' }}>+</Typography>
                         </Button>
                         <Select
                             variant="outlined"

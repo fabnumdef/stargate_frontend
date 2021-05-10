@@ -1,16 +1,17 @@
 import React from 'react';
-import { CampusAdministration } from '../../../containers';
+import { CampusesAdministration } from '../../../containers';
 import { activeRoleCacheVar, campusIdVar } from '../../../lib/apollo/cache';
 import { useRouter } from 'next/router';
 import { ROLES } from '../../../utils/constants/enums';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../utils/constants/appUrls';
 
-function CampusAdministrationIndex() {
+function CampusesAdministrationIndex() {
     const router = useRouter();
     if (activeRoleCacheVar().role === ROLES.ROLE_ADMIN.role) {
-        router.push(`/administration/base/${campusIdVar()}`);
+        router.push(ADMIN_CAMPUS_MANAGEMENT(campusIdVar()));
         return <></>;
     }
-    return <CampusAdministration />;
+    return <CampusesAdministration />;
 }
 
-export default CampusAdministrationIndex;
+export default CampusesAdministrationIndex;

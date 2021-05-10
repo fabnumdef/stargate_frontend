@@ -1,9 +1,13 @@
 export { default as Account } from './account';
 
 export { default as UserAdministration } from './administration/userAdministration';
-export { default as UnitAdministration } from './administration/unitAdministration';
-export { default as CampusAdministration } from './administration/campusAdministration';
+export { default as CampusesAdministration } from './administration/campusesAdministration';
 export { default as CampusFormContainer } from './administration/forms/campusFormContainer';
+
+export { default as CampusSectionContainer } from './administration/campusEdition/campusSectionContainer';
+export { default as PlaceSectionContainer } from './administration/campusEdition/placeSectionContainer';
+export { default as UnitSectionContainer } from './administration/campusEdition/unitSectionContainer';
+export { default as AdminSectionContainer } from './administration/campusEdition/adminSectionContainer';
 
 export { default as RequestDetailToTreat } from './requestDetail/requestDetailToTreat';
 export { default as RequestDetailProgress } from './requestDetail/requestDetailProgress';

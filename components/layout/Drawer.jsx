@@ -21,6 +21,8 @@ import MyRequestsIcon from '../icons/MyRequestsIcon';
 import ContactUsIcon from '../icons/ContactUsIcon';
 import NewDemandIcon from '../icons/NewDemandIcon';
 import RoomOutlinedIcon from '@material-ui/icons/RoomOutlined';
+import { GET_ACTIVE_ROLE } from '../../lib/apollo/queries';
+import { campusIdVar } from '../../lib/apollo/cache';
 
 const useStyles = (drawerWidth) =>
     makeStyles((theme) => ({
@@ -145,12 +147,15 @@ export const GET_MENU_DRAWER = gql`
 export default function DrawerTemplate({ drawerWidth }) {
     const classes = useStyles(drawerWidth);
     const router = useRouter();
+    const campusId = campusIdVar();
 
-    const { data, loading } = useQuery(GET_MENU_DRAWER);
+    const { data } = useQuery(campusId.length ? GET_MENU_DRAWER : GET_ACTIVE_ROLE);
 
-    if (loading) {
+    if (!data) {
+        // TODO rework data fetching or add a loading in menu when switching role
         return '';
     }
+
     return (
         <Drawer
             className={classes.drawer}
@@ -166,7 +171,7 @@ export default function DrawerTemplate({ drawerWidth }) {
             <div className={classes.baseLabel}>
                 <RoomOutlinedIcon className={classes.baseLabelIcon} />
                 <Typography variant="subtitle2" className={classes.baseLabelText}>
-                    {getBaseLabel(data.getCampus, data.activeRoleCache.role)}
+                    {getBaseLabel(data?.getCampus, data.activeRoleCache.role)}
                 </Typography>
             </div>
             <List>
