@@ -96,7 +96,6 @@ const menu = [
     {
         label: 'Administration',
         subItems: [
-            { label: 'Unité', permission: '/administration/unites', icon: DescriptionIcon },
             {
                 label: 'Base',
                 permission: '/administration/base',

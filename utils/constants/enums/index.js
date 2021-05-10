@@ -45,6 +45,7 @@ export const ROLES = {
             '/compte',
             '/administration',
             '/administration/base',
+            '/administration/base/creation',
             '/administration/utilisateurs'
         ]
     },
@@ -57,7 +58,6 @@ export const ROLES = {
             '/compte',
             '/administration',
             '/administration/base',
-            '/administration/unites',
             '/administration/utilisateurs'
         ]
     },
@@ -71,8 +71,10 @@ export const ROLES = {
             '/',
             '/compte',
             '/mes-demandes',
+            '/mes-traitements',
             '/nouvelle-demande',
-            '/nouvelle-demande-groupe',
+            '/nouvelle-demande/simple',
+            '/nouvelle-demande/groupe',
             '/administration',
             '/administration/utilisateurs'
         ]
@@ -87,8 +89,10 @@ export const ROLES = {
             '/',
             '/compte',
             '/mes-demandes',
+            '/mes-traitements',
             '/nouvelle-demande',
-            '/nouvelle-demande-groupe'
+            '/nouvelle-demande/simple',
+            '/nouvelle-demande/groupe'
         ]
     },
     ROLE_ACCESS_OFFICE: {
@@ -98,13 +102,7 @@ export const ROLES = {
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
         editable: true,
-        permission: [
-            '/',
-            '/compte',
-            '/mes-demandes',
-            '/nouvelle-demande',
-            '/nouvelle-demande-groupe'
-        ]
+        permission: ['/', '/compte', '/mes-traitements']
     },
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
@@ -119,7 +117,14 @@ export const ROLES = {
         role: 'ROLE_HOST',
         label: 'Hôte',
         shortLabel: 'H',
-        permission: ['/', '/compte', '/mes-demandes', '/nouvelle-demande']
+        permission: [
+            '/',
+            '/compte',
+            '/mes-demandes',
+            '/nouvelle-demande',
+            '/nouvelle-demande/simple',
+            '/nouvelle-demande/groupe'
+        ]
     },
     ROLE_GATEKEEPER: {
         role: 'ROLE_GATEKEEPER',
