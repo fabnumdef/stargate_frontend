@@ -23,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
             color: theme.palette.error.main
         }
     },
+    radioWarning: {
+        '&$checked': {
+            color: theme.palette.warning.main
+        }
+    },
     checked: {},
     formControl: {
         display: 'block'
