@@ -20,7 +20,8 @@ import DeleteModal from '../styled/common/DeleteDialogs';
 const createColumns = (visitors) => [
     {
         id: 'visiteur',
-        label: `Visiteur(s) (${visitors.length})`
+        label:
+            visitors.length > 1 ? `Visiteurs (${visitors.length})` : `Visiteur (${visitors.length})`
     },
     {
         id: 'unite',
@@ -62,18 +63,18 @@ const useStyles = makeStyles((theme) => ({
         width: 330
     },
     row: {
-        '& > td': {
-            borderTop: `20px solid ${theme.palette.background.layout}`,
-            borderBottom: `20px solid ${theme.palette.background.layout}`
+        '&:hover': {
+            boxShadow: `inset -10px -10px 0px ${theme.palette.primary.dark}
+            , inset 11px 11px 0px ${theme.palette.primary.dark}`,
+            backgroundColor: `${theme.palette.common.white} !important`
         },
+        '& > td:last-child': {
+            border: 'none',
+            display: 'flex',
+            justifyContent: 'flex-end'
+        },
+        border: `19px solid ${theme.palette.background.layout}`,
         width: 330
-    },
-    firstCell: {
-        borderLeft: `30px solid ${theme.palette.background.layout}`
-    },
-    lastCell: {
-        borderRight: `30px solid ${theme.palette.background.layout}`,
-        textAlign: 'right'
     },
     icon: {
         color: 'rgba(0, 0, 0, 0.25)',

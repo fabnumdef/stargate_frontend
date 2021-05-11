@@ -17,6 +17,8 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 import TabRecapRequest from '../tabs/tabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';
 import { makeStyles } from '@material-ui/core/styles';
+import { LIST_MY_REQUESTS } from '../../lib/apollo/fragments';
+import { campusIdVar } from '../../lib/apollo/cache';
 
 const useStyles = makeStyles((theme) => ({
     requestTitle: {
@@ -63,7 +65,21 @@ const CREATE_REQUEST = gql`
         mutateCampus(id: $campusId) {
             shiftRequest(id: $idRequest, transition: $transition) {
                 id
+                from
+                to
+                reason
                 status
+                places {
+                    id
+                    label
+                }
+                owner {
+                    firstname
+                    lastname
+                    unit {
+                        label
+                    }
+                }
             }
         }
     }
@@ -120,6 +136,38 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
     });
 
     const [createRequest] = useMutation(CREATE_REQUEST, {
+        update: (cache, { data: { mutateCampus: shiftRequest } }) => {
+            const campus = cache.readFragment({
+                id: `Campus:${campusIdVar()}`,
+                fragment: LIST_MY_REQUESTS,
+                fragmentName: 'listMyRequests',
+                variables: {
+                    filters: { status: STATE_REQUEST.STATE_CREATED.state }
+                }
+            });
+
+            const updatedList = {
+                ...campus,
+                listMyRequests: {
+                    ...campus.listMyRequests,
+                    list: [...campus.listMyRequests.list, shiftRequest],
+                    meta: {
+                        ...campus.listMyRequests.meta,
+                        total: campus.listMyRequests.meta.total + 1
+                    }
+                }
+            };
+
+            cache.writeFragment({
+                id: `Campus:${campusIdVar()}`,
+                fragment: LIST_MY_REQUESTS,
+                fragmentName: 'listMyRequests',
+                variables: {
+                    filters: { status: STATE_REQUEST.STATE_CREATED.state }
+                },
+                data: updatedList
+            });
+        },
         onCompleted: (data) => {
             if (data.mutateCampus.shiftRequest.status === STATE_REQUEST.STATE_CREATED.state) {
                 router.push('/mes-demandes');
