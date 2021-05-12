@@ -6,6 +6,7 @@ import UnitForm from '../../../../../components/administrationForms/unitForm';
 import { useSnackBar } from '../../../../../lib/hooks/snackbar';
 import { useLogin } from '../../../../../lib/loginContext';
 import { FORMS_LIST, ROLES } from '../../../../../utils/constants/enums';
+import { GET_UNITS_LIST } from '../../../../../lib/apollo/queries';
 
 const CREATE_UNIT = gql`
     mutation createUnit($campusId: String!, $unit: UnitInput!) {
@@ -56,23 +57,6 @@ const EDIT_PLACE = gql`
                 unitInCharge {
                     id
                     label
-                }
-            }
-        }
-    }
-`;
-
-const GET_UNITS_LIST = gql`
-    query listUnits($cursor: OffsetCursor, $campusId: String!, $search: String) {
-        getCampus(id: $campusId) {
-            listUnits(cursor: $cursor, search: $search) {
-                meta {
-                    offset
-                    first
-                    total
-                }
-                list {
-                    id
                 }
             }
         }
