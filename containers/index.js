@@ -17,4 +17,7 @@ export { default as MyTreatments } from './myTreatments';
 export { default as RequestAcces } from './requestAcces';
 export { default as MyAccessRequests } from './myAccessRequests';
 
+export { default as UnderConstruction } from './underConstruction';
+export { default as PageNotFound } from './pageNotFound';
+
 export { default as DndModule } from './dndContainer';
