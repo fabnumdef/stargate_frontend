@@ -22,7 +22,7 @@ import LoadingCircle from '../components/styled/animations/loadingCircle';
 import EmptyArray from '../components/styled/common/emptyArray';
 import AlertMessage from '../components/styled/common/sticker';
 import { activeRoleCacheVar } from '../lib/apollo/cache';
-import { ROLES, STATE_REQUEST, WORKFLOW_BEHAVIOR } from '../utils/constants/enums/index';
+import { ROLES, WORKFLOW_BEHAVIOR } from '../utils/constants/enums/index';
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 import { getMyDecision } from '../utils/mappers/getDecisions';
 
@@ -144,7 +144,7 @@ function MyTreatments() {
                 first: 10,
                 offset: 0
             },
-            filters: { exportDate: null, isDone: true, status: STATE_REQUEST.STATE_ACCEPTED.state }
+            filters: { exportDate: null }
         },
         skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
     });
@@ -159,11 +159,8 @@ function MyTreatments() {
 
         treated = data.getCampus.treated.list.filter(
             (visitor) =>
-                !isNaN(
-                    Date.parse(visitor.exportDate) &&
-                        getMyDecision(visitor.units) !==
-                            WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive
-                )
+                visitor.exportDate !== null ||
+                getMyDecision(visitor.units) === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
         );
 
         return treated;

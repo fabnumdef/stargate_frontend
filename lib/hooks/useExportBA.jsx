@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { GEN_CSV_EXPORTS } from '../apollo/mutations';
 import { useSnackBar } from './snackbar';
 import { LIST_TREATMENTS, LIST_EXPORTS } from '../apollo/queries';
-import { STATE_REQUEST } from '../../utils/constants/enums';
 
 export const ExportContext = React.createContext();
 
@@ -22,9 +21,7 @@ export function ExportProvider({ children }) {
                 query: LIST_EXPORTS,
                 variables: {
                     filters: {
-                        exportDate: null,
-                        isDone: true,
-                        status: STATE_REQUEST.STATE_ACCEPTED.state
+                        exportDate: null
                     }
                 }
             }
