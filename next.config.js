@@ -1,11 +1,7 @@
-const withCSS = require('@zeit/next-css');
-
-module.exports = withCSS({
+module.exports = {
+    reactStrictMode: true,
     poweredByHeader: false,
-    publicRuntimeConfig: {
-        API_URL: process.env.API_URL
-    },
-    serverRuntimeConfig: {
+    env: {
         API_URL: process.env.API_URL
     },
     async redirects() {
@@ -22,4 +18,4 @@ module.exports = withCSS({
             }
         ];
     }
-});
+};

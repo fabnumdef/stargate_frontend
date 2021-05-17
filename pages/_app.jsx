@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import 'typeface-roboto';
 
 import { ApolloProvider } from '@apollo/client';
 import CssBaseline from '@material-ui/core/CssBaseline';
