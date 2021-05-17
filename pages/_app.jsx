@@ -5,6 +5,7 @@ import { ApolloProvider } from '@apollo/client';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Head from 'next/head';
+import NextApp from 'next/app';
 import PropTypes from 'prop-types';
 
 import { useApollo } from '../lib/apollo';
@@ -71,6 +72,11 @@ export default function App({ Component, pageProps }) {
         </ApolloProvider>
     );
 }
+
+App.getInitialProps = async (ctx) => {
+    const appProps = await NextApp.getInitialProps(ctx);
+    return { ...appProps };
+};
 
 App.propTypes = {
     Component: PropTypes.elementType.isRequired,
