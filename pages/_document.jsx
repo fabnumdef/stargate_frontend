@@ -1,5 +1,4 @@
 import React from 'react';
-import 'typeface-roboto';
 
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import Document, { Head, Html, Main, NextScript } from 'next/document';
@@ -15,28 +14,28 @@ export default class MyDocument extends Document {
                         as="font"
                         href="/fonts/marianne-bold-webfont.woff"
                         type="font/woff"
-                        crossOrigin
+                        crossOrigin="true"
                     />
                     <link
                         rel="preload"
                         as="font"
                         href="/fonts/marianne-bold-webfont.woff2"
                         type="font/woff2"
-                        crossOrigin
+                        crossOrigin="true"
                     />
                     <link
                         rel="preload"
                         as="font"
                         href="/fonts/marianne-regular-webfont.woff"
                         type="font/woff"
-                        crossOrigin
+                        crossOrigin="true"
                     />
                     <link
                         rel="preload"
                         as="font"
                         href="/fonts/marianne-regular-webfont.woff2"
                         type="font/woff2"
-                        crossOrigin
+                        crossOrigin="true"
                     />
                 </Head>
                 <body>
