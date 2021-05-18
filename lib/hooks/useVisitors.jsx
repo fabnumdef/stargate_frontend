@@ -8,7 +8,9 @@ import { useSnackBar } from './snackbar';
 import { MUTATE_VISITOR } from '../apollo/mutations';
 import { ROLES, WORKFLOW_BEHAVIOR } from '../../utils/constants/enums';
 
-export const filters = { exportDate: null };
+export const filters = {
+    exportDate: null
+};
 
 export default function useVisitors() {
     const { addAlert } = useSnackBar();
@@ -42,31 +44,29 @@ export default function useVisitors() {
                         }
                     },
                     update: (cache) => {
-                        if (
+                        // check if BA behavior or not
+                        const variables =
                             activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role &&
                             visitor.choice.validation ===
-                                WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
-                        ) {
-                            return;
-                        }
+                                WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive
+                                ? {
+                                      role: activeRoleCacheVar().role,
+                                      unit: activeRoleCacheVar().unit,
+                                      filters
+                                  }
+                                : {
+                                      role: activeRoleCacheVar().role,
+                                      unit: activeRoleCacheVar().unit
+                                  };
 
                         const campus = cache.readFragment({
                             id: `Campus:${campusIdVar()}`,
                             fragment: LIST_VISITORS_DATA,
                             fragmentName: 'ListVisitor',
-                            variables:
-                                activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role
-                                    ? {
-                                          role: activeRoleCacheVar().role,
-                                          unit: activeRoleCacheVar().unit,
-                                          filters
-                                      }
-                                    : {
-                                          role: activeRoleCacheVar().role,
-                                          unit: activeRoleCacheVar().unit
-                                      }
+                            variables
                         });
 
+                        // Remove submit values
                         let newList = campus.listVisitorsToValidate.list.filter(
                             (v) => v.id !== visitor.id
                         );
@@ -94,29 +94,19 @@ export default function useVisitors() {
                             }
                         };
 
+                        // Update cache
                         cache.writeFragment({
                             id: `Campus:${campusIdVar()}`,
                             fragment: LIST_VISITORS_DATA,
                             fragmentName: 'ListVisitor',
                             data: updatedList,
-                            variables:
-                                activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role
-                                    ? {
-                                          role: activeRoleCacheVar().role,
-                                          unit: activeRoleCacheVar().unit,
-                                          filters
-                                      }
-                                    : {
-                                          role: activeRoleCacheVar().role,
-                                          unit: activeRoleCacheVar().unit
-                                      }
+                            variables
                         });
                     }
                 })
             )
         )
             .then(() => {
-                /** Update the cache */
                 addAlert({
                     message: 'Opération effectuée',
                     severy: 'success'

@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useContext, useMemo } from 'react';
-import { useLazyQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
-import { LIST_CSV_EXPORTS } from '../apollo/queries';
+import { GEN_CSV_EXPORTS } from '../apollo/mutations';
 import { useSnackBar } from './snackbar';
+import { LIST_TREATMENTS, LIST_EXPORTS } from '../apollo/queries';
 
 export const ExportContext = React.createContext();
 
@@ -10,11 +11,24 @@ export function ExportProvider({ children }) {
     const [visitors, setVisitors] = useState([]);
     const { addAlert } = useSnackBar();
 
-    const [exportCsv] = useLazyQuery(LIST_CSV_EXPORTS, {
+    const [exportCsv] = useMutation(GEN_CSV_EXPORTS, {
         fetchPolicy: 'no-cache',
+        refetchQueries: [
+            {
+                query: LIST_TREATMENTS
+            },
+            {
+                query: LIST_EXPORTS,
+                variables: {
+                    filters: {
+                        exportDate: null
+                    }
+                }
+            }
+        ],
         onCompleted: React.useCallback((d) => {
             const link = document.createElement('a');
-            link.href = d.getCampus.listVisitors.generateCSVExportLink.link;
+            link.href = d.mutateCampus.generateCSVExportLink.link;
             link.setAttribute('download', `export-${new Date()}.csv`);
             document.body.appendChild(link);
             link.click();

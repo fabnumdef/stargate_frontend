@@ -159,7 +159,7 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                 <TableBody>
                     {rows.map((row) => (
                         <RowScreeningTreatments
-                            key={`treated_${row.id}`}
+                            key={`${treated ? 'treated' : ''}_${row.id}`}
                             choices={choices}
                             row={row}
                             columns={columns}

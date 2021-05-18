@@ -149,16 +149,6 @@ function MyTreatments() {
         skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
     });
 
-    const exportDataFilters = useMemo(() => {
-        if (!exportData) return [];
-
-        return exportData.getCampus.export.list.filter(
-            (v) =>
-                getMyDecision(v.units).value.value ===
-                WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive
-        );
-    }, [exportData]);
-
     /** Ba's controllers */
     const treatedArrayBA = useMemo(() => {
         if (activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role) return;
@@ -168,7 +158,9 @@ function MyTreatments() {
         if (!data) return treated;
 
         treated = data.getCampus.treated.list.filter(
-            (visitor) => !isNaN(Date.parse(visitor.exportDate))
+            (visitor) =>
+                visitor.exportDate !== null ||
+                getMyDecision(visitor.units) === WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.negative
         );
 
         return treated;
@@ -231,7 +223,8 @@ function MyTreatments() {
                                 {tab.label}{' '}
                                 <SelectedBadge select={value === tab.index}>
                                     {(() => {
-                                        if (tab.value === 'export') return exportDataFilters.length;
+                                        if (tab.value === 'export')
+                                            return exportData.getCampus.export.meta.total;
 
                                         if (
                                             tab.value === 'treated' &&
@@ -287,7 +280,7 @@ function MyTreatments() {
                                 {exportData?.getCampus?.export?.meta?.total > 0 ? (
                                     <>
                                         <TableTreatmentsToTreat
-                                            requests={exportDataFilters}
+                                            requests={exportData.getCampus.export.list}
                                             treated
                                         />
                                         <ButtonsFooterContainer>
@@ -296,7 +289,7 @@ function MyTreatments() {
                                                 color="primary"
                                                 type="submit"
                                                 onClick={handleExportMany}>
-                                                {`Exporter (${exportDataFilters.length})`}
+                                                {`Exporter (${exportData.getCampus.export.list.length})`}
                                             </RoundButton>
                                         </ButtonsFooterContainer>
                                     </>
