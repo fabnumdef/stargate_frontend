@@ -11,11 +11,12 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import SquareButton from '../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { ROLES } from '../../../utils/constants/enums';
 import { LIST_USERS } from '../../../lib/apollo/queries';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
-import { createUserFromMail } from '../../../utils/mappers/createUserFromMail';
+import { createUserData, checkMailFormat } from '../../../utils/mappers/createUserFromMail';
+import { CREATE_USER, DELETE_ROLE } from '../../../lib/apollo/mutations';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -38,43 +39,15 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgba(0, 0, 0, 0.25)',
         padding: '0 !important',
         '&:hover': {
-            backgroundColor: theme.palette.common.white,
             color: theme.palette.primary.main
+        }
+    },
+    adminsListItem: {
+        '&:hover': {
+            backgroundColor: theme.palette.background.layoutDark
         }
     }
 }));
-
-const CREATE_USER = gql`
-    mutation createUser($user: UserInput!) {
-        createUser(user: $user) {
-            id
-            firstname
-            lastname
-            email {
-                original
-            }
-            roles {
-                role
-                campuses {
-                    id
-                    label
-                }
-                units {
-                    id
-                    label
-                }
-            }
-        }
-    }
-`;
-
-const DELETE_ROLE = gql`
-    mutation deleteUserRole($id: ObjectID!, $user: UserInput) {
-        deleteUserRole(id: $id, user: $user) {
-            id
-        }
-    }
-`;
 
 function AdminSection({ listAdmins, campusData }) {
     const classes = useStyles();
@@ -193,17 +166,12 @@ function AdminSection({ listAdmins, campusData }) {
             role: ROLES.ROLE_ADMIN.role,
             campuses: { id: campusData.id, label: campusData.label }
         };
-        const userAdmin = createUserFromMail(formData.adminEmail, roles);
+        const userAdmin = createUserData(formData.adminEmail, roles);
         submitCreateUser(userAdmin);
     };
 
     const handleDeleteAdmin = (id) => {
         deleteAdmin(id);
-    };
-
-    const checkMailFormat = (value) => {
-        const [username, mail] = value.split('@');
-        return username.split('.').length === 2 && mail === 'intradef.gouv.fr';
     };
 
     return (
@@ -255,7 +223,7 @@ function AdminSection({ listAdmins, campusData }) {
                 <GridList cols={1} cellHeight={20} className={classes.listAdmins}>
                     {listAdmins.list.map((admin) => (
                         <GridListTile key={admin.id}>
-                            <Grid container>
+                            <Grid container className={classes.adminsListItem}>
                                 <Grid item sm={10} md={3} alignItems="center">
                                     <Typography variant="body1">{admin.email.original}</Typography>
                                 </Grid>

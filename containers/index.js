@@ -8,6 +8,7 @@ export { default as CampusSectionContainer } from './administration/campusEditio
 export { default as PlaceSectionContainer } from './administration/campusEdition/placeSectionContainer';
 export { default as UnitSectionContainer } from './administration/campusEdition/unitSectionContainer';
 export { default as AdminSectionContainer } from './administration/campusEdition/adminSectionContainer';
+export { default as AccOffEditContainer } from './administration/campusEdition/role/AccOffEditContainer';
 
 export { default as RequestDetailToTreat } from './requestDetail/requestDetailToTreat';
 export { default as RequestDetailProgress } from './requestDetail/requestDetailProgress';

@@ -109,7 +109,8 @@ export const ROLES = {
         shortLabel: 'BA',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
-        permission: ['/', '/a-propos', '/contactez-nous', '/compte']
+        permission: ['/', '/a-propos', '/contactez-nous', '/compte'],
+        editable: true
     },
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
@@ -117,7 +118,8 @@ export const ROLES = {
         shortLabel: 'G',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
-        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
+        editable: true
     },
     ROLE_HOST: {
         role: 'ROLE_HOST',
