@@ -51,7 +51,7 @@ function CampusSection({ campusData, usersTotalByRole }) {
                 <Grid item sm={12} md={6}>
                     <Paper elevation={3} className={classes.textInfos}>
                         <Grid container>
-                            <Grid item sm={10}>
+                            <Grid item sm={9}>
                                 <Typography variant="h5">
                                     {campusData.label} - {campusData.trigram}
                                 </Typography>
@@ -61,7 +61,7 @@ function CampusSection({ campusData, usersTotalByRole }) {
                                     Créée le {format(new Date(campusData.createdAt), 'dd/MM/yyyy')}
                                 </Typography>
                             </Grid>
-                            <Grid item sm={2}>
+                            <Grid item sm={3}>
                                 <Button
                                     variant="outlined"
                                     color="primary"

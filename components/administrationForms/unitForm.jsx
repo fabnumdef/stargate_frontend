@@ -11,7 +11,10 @@ import { useQuery } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
 import { GET_PLACES_LIST } from '../../lib/apollo/queries';
 import { useRouter } from 'next/router';
-import ItemCard from '../styled/itemCard';
+
+import { ROLES } from '../../utils/constants/enums';
+import { DndModule } from '../../containers';
+
 import ListLieux from '../lists/checkLieux';
 import Paper from '@material-ui/core/Paper';
 import LoadingCircle from '../styled/animations/loadingCircle';
@@ -34,11 +37,25 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const UnitForm = ({ defaultValues, submitForm }) => {
+const UnitForm = ({ defaultValues, type, submitForm }) => {
     const router = useRouter();
     const { campusId } = router.query;
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
+
+    const allCards = Object.values(ROLES)
+        .filter((role) => role.workflow)
+        .map((role, i) => ({
+            id: i + 1,
+            text: role.label,
+            role: role.role,
+            behavior: role.behavior
+        }));
+
+    const createDefaultCards = () =>
+        defaultValues.cards.map((card) => allCards.find((c) => c.role === card.role));
+
+    const [cards, setCards] = useState(type === 'create' ? allCards : createDefaultCards);
 
     // const { addAlert } = useSnackBar();
     const { handleSubmit, errors, control } = useForm();
@@ -216,9 +233,7 @@ const UnitForm = ({ defaultValues, submitForm }) => {
                             <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                                 Parcours de validation :
                             </Typography>
-                        </Grid>
-                        <Grid item>
-                            <ItemCard style={{ cursor: 'pointer', fontSize: 35 }}>+</ItemCard>
+                            <DndModule cards={cards} setCards={setCards} allCards={allCards} />
                         </Grid>
                     </Grid>
                     <Grid item container>
@@ -263,6 +278,7 @@ const UnitForm = ({ defaultValues, submitForm }) => {
 
 UnitForm.propTypes = {
     defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
+    type: PropTypes.string.isRequired,
     submitForm: PropTypes.func.isRequired,
     campusId: PropTypes.string.isRequired
 };
