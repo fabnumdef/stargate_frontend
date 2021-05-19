@@ -14,6 +14,8 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import SquareButton from '../../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import { useRouter } from 'next/router';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../../utils/constants/appUrls';
 
 const useStyles = makeStyles((theme) => ({
     listAccOff: {
@@ -38,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AccOffEdit({ campus, role, accOffUsers, submitCreateUser, deleteAccOff }) {
     const classes = useStyles();
+    const router = useRouter();
     const { control, handleSubmit, errors, setValue } = useForm();
 
     const handleCreateAccOff = async (formData) => {
@@ -61,7 +64,7 @@ function AccOffEdit({ campus, role, accOffUsers, submitCreateUser, deleteAccOff 
                     <Grid container alignItems="center" sm={8}>
                         <Grid container item sm={12} md={3}>
                             <Grid item sm={2}>
-                                {accOffUsers.list.length && <WarningIcon />}
+                                {!accOffUsers.list.length && <WarningIcon />}
                             </Grid>
                             <Grid item sm={10}>
                                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
@@ -133,6 +136,14 @@ function AccOffEdit({ campus, role, accOffUsers, submitCreateUser, deleteAccOff 
                         </GridList>
                     </Grid>
                 </Grid>
+            </Grid>
+            <Grid container justify="flex-end">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => router.push(ADMIN_CAMPUS_MANAGEMENT(campus.id))}>
+                    Retour
+                </Button>
             </Grid>
         </Grid>
     );
