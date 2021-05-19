@@ -210,3 +210,34 @@ export const ERROR_TYPE = {
     regexp: 'Mail non conforme',
     date: 'Format de date invalide'
 };
+
+export const ACCESS_OFFICE_VALIDATION_CHOICES = [
+    {
+        label: 'VA',
+        description: 'Visiteur Accompagné',
+        tags: ['VA'],
+        mainList: true
+    },
+    {
+        label: 'VL',
+        description: 'Visiteur Libre',
+        tags: ['VL'],
+        mainList: true
+    },
+    {
+        label: 'VIP',
+        description: 'Visiteur Important',
+        tags: ['VIP'],
+        mainList: true
+    },
+    {
+        label: 'Enfant -13 ans',
+        tags: ['-13'],
+        mainList: false
+    },
+    {
+        label: 'Carte CIMS Nominative',
+        tags: ['CIMS'],
+        mainList: false
+    }
+];
