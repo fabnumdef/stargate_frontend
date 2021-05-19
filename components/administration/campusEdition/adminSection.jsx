@@ -15,7 +15,11 @@ import { useMutation } from '@apollo/client';
 import { ROLES } from '../../../utils/constants/enums';
 import { LIST_USERS } from '../../../lib/apollo/queries';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
-import { createUserData, checkMailFormat } from '../../../utils/mappers/createUserFromMail';
+import {
+    createUserData,
+    checkMailFormat,
+    GOUV_DOMAIN_MAIL
+} from '../../../utils/mappers/createUserFromMail';
 import { CREATE_USER, DELETE_ROLE } from '../../../lib/apollo/mutations';
 
 const useStyles = makeStyles((theme) => ({
@@ -207,8 +211,8 @@ function AdminSection({ listAdmins, campusData }) {
                             defaultValue=""
                             rules={{
                                 validate: (value) =>
-                                    checkMailFormat(value) ||
-                                    "L'email doit être au format nom.prenom@intradef.gouv.fr"
+                                    checkMailFormat(value, GOUV_DOMAIN_MAIL) ||
+                                    `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`
                             }}
                         />
                         <Button
