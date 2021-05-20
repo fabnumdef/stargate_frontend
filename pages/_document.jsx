@@ -14,29 +14,30 @@ export default class MyDocument extends Document {
                         as="font"
                         href="/fonts/marianne-bold-webfont.woff"
                         type="font/woff"
-                        crossOrigin="true"
+                        crossOrigin=""
                     />
                     <link
                         rel="preload"
                         as="font"
                         href="/fonts/marianne-bold-webfont.woff2"
                         type="font/woff2"
-                        crossOrigin="true"
+                        crossOrigin=""
                     />
                     <link
                         rel="preload"
                         as="font"
                         href="/fonts/marianne-regular-webfont.woff"
                         type="font/woff"
-                        crossOrigin="true"
+                        crossOrigin=""
                     />
                     <link
                         rel="preload"
                         as="font"
                         href="/fonts/marianne-regular-webfont.woff2"
                         type="font/woff2"
-                        crossOrigin="true"
+                        crossOrigin=""
                     />
+                    <link rel="stylesheet" href="/fonts/global.css" />
                 </Head>
                 <body>
                     <Main />
