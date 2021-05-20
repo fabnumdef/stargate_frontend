@@ -114,7 +114,7 @@ export const ROLES = {
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
         label: 'Criblage',
-        shortLabel: 'G',
+        shortLabel: 'GD',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
         permission: ['/', '/compte', '/a-propos', '/contactez-nous']
