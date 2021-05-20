@@ -26,6 +26,9 @@ const useStyles = makeStyles(() => ({
             padding: 'Opx'
         }
     },
+    paper: {
+        padding: '34px'
+    },
     stepperTitles: {
         marginRight: '20px',
         pointerEvents: 'none'
@@ -116,8 +119,8 @@ export default function RequestAccesForm({ group }) {
                     ))}
                 </Grid>
                 <Grid item sm={12} xs={12} elevation={2}>
-                    <Paper elevation={3}>
-                        <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
+                    <TabPanel value={activeStep} index={0} classes={{ root: classes.tab }}>
+                        <Paper elevation={3} className={classes.paper}>
                             <NoSsr>
                                 <FormInfosRequest
                                     formData={formData}
@@ -128,8 +131,10 @@ export default function RequestAccesForm({ group }) {
                                     handleBack={handleBack}
                                 />
                             </NoSsr>
-                        </TabPanel>
-                        <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
+                        </Paper>
+                    </TabPanel>
+                    <TabPanel value={activeStep} index={1} classes={{ root: classes.tab }}>
+                        <Paper elevation={3} className={classes.paper}>
                             <NoSsr>
                                 {(() => {
                                     if (group && !selectVisitor) {
@@ -153,8 +158,8 @@ export default function RequestAccesForm({ group }) {
                                     );
                                 })()}
                             </NoSsr>
-                        </TabPanel>
-                    </Paper>
+                        </Paper>
+                    </TabPanel>
                     <TabPanel value={activeStep} index={2} classes={{ root: classes.tab }}>
                         <NoSsr>
                             <FormInfosRecapDemande
