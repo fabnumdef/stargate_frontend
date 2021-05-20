@@ -39,8 +39,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 30
     },
     screeningListItem: {
+        borderRadius: 4,
+        paddingLeft: 5,
         '&:hover': {
-            backgroundColor: theme.palette.background.layoutDark
+            backgroundColor: theme.palette.background.layoutDark,
+            transition: '.4s'
         }
     }
 }));
@@ -120,7 +123,7 @@ function ScreeningEdit({ campus, role, screeningUsers, submitCreateUser, deleteS
                     </form>
                     <Grid container item justify="flex-end" sm={8} className={classes.section}>
                         <Grid item sm={8}>
-                            <GridList cols={1} cellHeight={25} className={classes.listScreening}>
+                            <GridList cols={1} cellHeight={31} className={classes.listScreening}>
                                 {screeningUsers.list.map((screening) => (
                                     <GridListTile key={screening.id}>
                                         <Grid container className={classes.screeningListItem}>

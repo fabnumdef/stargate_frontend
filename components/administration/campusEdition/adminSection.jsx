@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(4)
     },
     listAdmins: {
-        margin: '10px 16px !important'
+        margin: '10px 16px !important',
+        maxWidth: 450
     },
     icon: {
         color: 'rgba(0, 0, 0, 0.25)',
@@ -47,8 +48,11 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     adminsListItem: {
+        paddingLeft: 5,
+        borderRadius: 4,
         '&:hover': {
-            backgroundColor: theme.palette.background.layoutDark
+            backgroundColor: theme.palette.background.layoutDark,
+            transition: '.4s'
         }
     }
 }));
@@ -224,14 +228,14 @@ function AdminSection({ listAdmins, campusData }) {
                         </Button>
                     </form>
                 </Grid>
-                <GridList cols={1} cellHeight={20} className={classes.listAdmins}>
+                <GridList cols={1} cellHeight={30} className={classes.listAdmins}>
                     {listAdmins.list.map((admin) => (
                         <GridListTile key={admin.id}>
                             <Grid container className={classes.adminsListItem}>
-                                <Grid item sm={10} md={3} alignItems="center">
+                                <Grid item sm={11} alignItems="center">
                                     <Typography variant="body1">{admin.email.original}</Typography>
                                 </Grid>
-                                <Grid item sm={2}>
+                                <Grid item sm={1}>
                                     <SquareButton
                                         aria-label="deleteAdmin"
                                         onClick={() => handleDeleteAdmin(admin.id)}
