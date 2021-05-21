@@ -38,8 +38,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 30
     },
     accOffListItem: {
+        borderRadius: 4,
+        paddingLeft: 5,
         '&:hover': {
-            backgroundColor: theme.palette.background.layoutDark
+            backgroundColor: theme.palette.background.layoutDark,
+            transition: '.4s'
         }
     }
 }));
@@ -162,9 +165,7 @@ function AccOffEdit({ campus, role, accOffUsers, submitCreateUser, deleteAccOff 
                                             <Grid item sm={4}>
                                                 {choice.label}
                                             </Grid>
-                                            <Grid item sm={4}>
-                                                {choice.description || ''}
-                                            </Grid>
+                                            <Grid item>{choice.description}</Grid>
                                         </Grid>
                                     </GridListTile>
                                 ))}

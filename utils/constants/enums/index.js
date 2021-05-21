@@ -234,12 +234,14 @@ export const ACCESS_OFFICE_VALIDATION_CHOICES = [
         mainList: true
     },
     {
-        label: 'Enfant -13 ans',
+        label: 'HMSA',
+        description: 'Hors MINARM Stagiaire accompagné',
         tags: ['-13'],
         mainList: false
     },
     {
-        label: 'Carte CIMS Nominative',
+        label: 'CIMS',
+        description: 'Carte CIMS Nominative',
         tags: ['CIMS'],
         mainList: false
     }
