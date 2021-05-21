@@ -54,7 +54,7 @@ export function LoginContextProvider({ children }) {
     const signOut = (alert = false) => {
         client.resetStore().then(() => {
             client.cache.evict({ fieldName: 'me' });
-            client.cache.evict({ id: campusIdVar() });
+            client.cache.evict({ fieldName: 'getCampus' });
             client.cache.gc();
 
             localStorage.removeItem('token');
