@@ -111,7 +111,8 @@ export const ROLES = {
         shortLabel: 'BA',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
-        permission: ['/', '/a-propos', '/contactez-nous', '/compte']
+        permission: ['/', '/a-propos', '/contactez-nous', '/compte'],
+        editable: true
     },
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
@@ -119,7 +120,8 @@ export const ROLES = {
         shortLabel: 'G',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
-        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
+        editable: true
     },
     ROLE_HOST: {
         role: 'ROLE_HOST',
@@ -211,3 +213,34 @@ export const ERROR_TYPE = {
     regexp: 'Mail non conforme',
     date: 'Format de date invalide'
 };
+
+export const ACCESS_OFFICE_VALIDATION_CHOICES = [
+    {
+        label: 'VA',
+        description: 'Visiteur Accompagné',
+        tags: ['VA'],
+        mainList: true
+    },
+    {
+        label: 'VL',
+        description: 'Visiteur Libre',
+        tags: ['VL'],
+        mainList: true
+    },
+    {
+        label: 'VIP',
+        description: 'Visiteur Important',
+        tags: ['VIP'],
+        mainList: true
+    },
+    {
+        label: 'Enfant -13 ans',
+        tags: ['-13'],
+        mainList: false
+    },
+    {
+        label: 'Carte CIMS Nominative',
+        tags: ['CIMS'],
+        mainList: false
+    }
+];

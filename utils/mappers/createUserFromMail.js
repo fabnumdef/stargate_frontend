@@ -3,7 +3,7 @@ const normalizeName = (data) => {
     return numberLessData.charAt(0).toUpperCase() + numberLessData.substring(1).toLowerCase();
 };
 
-export const createUserFromMail = (email, roles) => {
+export const createUserData = (email, roles) => {
     const [firstname, lastname] = email.split('@')[0].split('.');
     return {
         firstname: normalizeName(firstname),
@@ -11,4 +11,9 @@ export const createUserFromMail = (email, roles) => {
         email,
         roles
     };
+};
+
+export const checkMailFormat = (value) => {
+    const [username, mail] = value.split('@');
+    return username.split('.').length === 2 && mail === 'intradef.gouv.fr';
 };

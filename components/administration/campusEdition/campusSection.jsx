@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { ROLES } from '../../../utils/constants/enums';
 import ItemCard from '../../styled/itemCard';
 import { ADMIN_CAMPUS_EDITION, ADMIN_CAMPUS_ROLE_EDITION } from '../../../utils/constants/appUrls';
+import WarningIcon from '@material-ui/icons/Warning';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -24,10 +25,15 @@ const useStyles = makeStyles((theme) => ({
     },
     validators: {
         padding: `${theme.spacing(8)}px 0 0 ${theme.spacing(8)}px`
+    },
+    emptyValidatorsIcon: {
+        position: 'absolute',
+        marginLeft: 70,
+        marginTop: '-5px'
     }
 }));
 
-function CampusSection({ campusData }) {
+function CampusSection({ campusData, usersTotalByRole }) {
     const classes = useStyles();
     const router = useRouter();
 
@@ -38,6 +44,8 @@ function CampusSection({ campusData }) {
             return router.push(ADMIN_CAMPUS_ROLE_EDITION(campusData.id, role));
         }
     };
+
+    console.log(usersTotalByRole);
 
     return (
         <Grid className={classes.root} sm={12}>
@@ -77,6 +85,9 @@ function CampusSection({ campusData }) {
                             item
                             key={role.role}
                             onClick={() => handleEditRole(role.editable, role.role)}>
+                            {usersTotalByRole[role.role] < 1 && (
+                                <WarningIcon className={classes.emptyValidatorsIcon} />
+                            )}
                             <ItemCard
                                 style={{
                                     cursor: role.editable ? 'pointer' : '',
@@ -94,7 +105,8 @@ function CampusSection({ campusData }) {
 }
 
 CampusSection.propTypes = {
-    campusData: PropTypes.objectOf(PropTypes.string).isRequired
+    campusData: PropTypes.objectOf(PropTypes.string).isRequired,
+    usersTotalByRole: PropTypes.objectOf(PropTypes.number).isRequired
 };
 
 export default CampusSection;

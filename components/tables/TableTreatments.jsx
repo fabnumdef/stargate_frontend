@@ -9,7 +9,11 @@ import PropTypes from 'prop-types';
 import { memo, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { activeRoleCacheVar } from '../../lib/apollo/cache';
-import { EMPLOYEE_TYPE, ROLES } from '../../utils/constants/enums';
+import {
+    ACCESS_OFFICE_VALIDATION_CHOICES,
+    EMPLOYEE_TYPE,
+    ROLES
+} from '../../utils/constants/enums';
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowTreatment from './rows/RowTreatments';
 import ProcessDialog from '../styled/common/ProcessDialogs';
@@ -138,36 +142,20 @@ export const choicesArray = (role) => {
             break;
         case ROLES.ROLE_ACCESS_OFFICE.role:
             choices.push(
-                {
-                    label: 'VA',
-                    validation: ROLES[role].workflow.positive,
-                    tags: ['VA']
-                },
-                {
-                    label: 'VL',
-                    validation: ROLES[role].workflow.positive,
-                    tags: ['VL']
-                },
-                {
-                    label: 'VIP',
-                    validation: ROLES[role].workflow.positive,
-                    tags: ['VIP']
-                },
+                ...ACCESS_OFFICE_VALIDATION_CHOICES.filter(
+                    (choice) => choice.mainList
+                ).map((choice) => ({ ...choice, validation: ROLES[role].workflow.positive })),
                 {
                     label: 'Autre choix',
                     validation: null,
                     tags: [],
                     subChoices: [
-                        {
-                            label: 'Enfant -13 ans',
-                            validation: ROLES[role].workflow.positive,
-                            tags: ['-13']
-                        },
-                        {
-                            label: 'Carte CIMS Nominative',
-                            validation: ROLES[role].workflow.positive,
-                            tags: ['CIMS']
-                        }
+                        ...ACCESS_OFFICE_VALIDATION_CHOICES.filter(
+                            (choice) => !choice.mainList
+                        ).map((choice) => ({
+                            ...choice,
+                            validation: ROLES[role].workflow.positive
+                        }))
                     ]
                 }
             );

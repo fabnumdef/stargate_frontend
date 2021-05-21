@@ -5,6 +5,7 @@ export { default as CampusSection } from './administration/campusEdition/campusS
 export { default as PlaceSection } from './administration/campusEdition/placeSection';
 export { default as UnitSection } from './administration/campusEdition/unitSection';
 export { default as AdminSection } from './administration/campusEdition/adminSection';
+export { default as AccOffEdit } from './administration/campusEdition/role/AccOffEdit';
 
 // Forms
 export { default as FormInfosRequest } from './requestForms/infosRequest';
