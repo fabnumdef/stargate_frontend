@@ -31,9 +31,12 @@ const useStyles = makeStyles((theme) => ({
     error: {
         color: theme.palette.error.main
     },
-    buttonCancel: {
+    buttonsContainer: {
         display: 'flex',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        '& button': {
+            margin: '3px'
+        }
     }
 }));
 
@@ -68,7 +71,12 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
     const { data: placesList, loading } = useQuery(GET_PLACES_LIST, { variables: { campusId } });
 
     const onSubmit = (formData) => {
+        console.log(formData);
         submitForm(formData);
+    };
+
+    const findOs = () => {
+        return cards.findIndex((card) => card.role === ROLES.ROLE_SECURITY_OFFICER.role);
     };
 
     if (loading) return <LoadingCircle />;
@@ -78,12 +86,12 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                 <Grid container spacing={4}>
                     {/* Base part */}
                     <Grid item container spacing={2}>
-                        <Grid item sm={2}>
+                        <Grid item sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 Nom complet unité :
                             </Typography>
                         </Grid>
-                        <Grid item sm={10}>
+                        <Grid item sm={12} md={10}>
                             <Controller
                                 as={
                                     <TextField
@@ -96,20 +104,19 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                     />
                                 }
                                 rules={{
-                                    validate: (value) =>
-                                        value.trim() !== '' || 'Le nom est obligatoire'
+                                    required: 'Le nom est obligatoire'
                                 }}
                                 control={control}
                                 name="name"
-                                defaultValue={defaultValues.name ?? ''}
+                                defaultValue=""
                             />
                         </Grid>
-                        <Grid item sm={2}>
+                        <Grid item sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 Trigramme :
                             </Typography>
                         </Grid>
-                        <Grid item sm={10}>
+                        <Grid item sm={12} md={10}>
                             <Controller
                                 as={
                                     <TextField
@@ -137,31 +144,43 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 }}
                                 control={control}
                                 name="trigram"
-                                defaultValue={defaultValues.trigram ?? ''}
+                                defaultValue=""
                             />
                         </Grid>
                     </Grid>
                     {/* Email part */}
                     <Grid item container spacing={2}>
-                        <Grid item sm={2}>
+                        <Grid item sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 E-mail fonctionnel :
                             </Typography>
                         </Grid>
-                        <Grid item sm={10}>
-                            <TextField
-                                size="small"
-                                inputProps={{ 'data-testid': 'unit-emailfonctionnel' }}
-                                variant="outlined"
-                                placeholder="email"
+                        <Grid item sm={12} md={10}>
+                            <Controller
+                                as={
+                                    <TextField
+                                        size="small"
+                                        inputProps={{ 'data-testid': 'unit-emailfonctionnel' }}
+                                        variant="outlined"
+                                        placeholder="email"
+                                    />
+                                }
+                                rules={{
+                                    format: (value) =>
+                                        checkMailFormat(value) ||
+                                        "L'email doit être au format nom.prenom@intradef.gouv.fr"
+                                }}
+                                control={control}
+                                name="corresemail"
+                                defaultValue=""
                             />
                         </Grid>
-                        <Grid item sm={2}>
+                        <Grid item sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 Correspondant unité :
                             </Typography>
                         </Grid>
-                        <Grid item sm={10}>
+                        <Grid item sm={12} md={10}>
                             <Controller
                                 as={
                                     <TextField
@@ -179,24 +198,26 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                     />
                                 }
                                 rules={{
-                                    validate: (value) =>
-                                        value.trim() !== '' ||
-                                        "Le correspondant d'unité est obligatoire",
-                                    format: (value) =>
-                                        checkMailFormat(value) ||
-                                        "L'email doit être au format nom.prenom@intradef.gouv.fr"
+                                    validate: {
+                                        valide: (value) =>
+                                            value.trim() !== '' ||
+                                            "Le correspondant d'unité est obligatoire",
+                                        format: (value) =>
+                                            checkMailFormat(value) ||
+                                            "L'email doit être au format nom.prenom@intradef.gouv.fr"
+                                    }
                                 }}
                                 control={control}
                                 name="corresemail"
-                                defaultValue={defaultValues.corresemail ?? ''}
+                                defaultValue=""
                             />
                         </Grid>
-                        <Grid item sm={2}>
+                        <Grid item sm={12} md={2}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 Officier sécurité :
                             </Typography>
                         </Grid>
-                        <Grid item sm={10}>
+                        <Grid item sm={12} md={10}>
                             <Controller
                                 as={
                                     <TextField
@@ -214,16 +235,21 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                     />
                                 }
                                 rules={{
-                                    validate: (value) =>
-                                        value.trim() !== '' ||
-                                        "L'officier de sécurité est obligatoire",
-                                    format: (value) =>
-                                        checkMailFormat(value) ||
-                                        "L'email doit être au format nom.prenom@intradef.gouv.fr"
+                                    validate: {
+                                        valide:
+                                            findOs() !== -1
+                                                ? (value) =>
+                                                      value.trim() !== '' ||
+                                                      "L'officier de sécurité est obligatoire"
+                                                : '',
+                                        format: (value) =>
+                                            checkMailFormat(value) ||
+                                            "L'email doit être au format nom.prenom@intradef.gouv.fr"
+                                    }
                                 }}
                                 control={control}
                                 name="offsecuemail"
-                                defaultValue={defaultValues.offsecuemail}
+                                defaultValue=""
                             />
                         </Grid>
                     </Grid>
@@ -242,7 +268,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 Lieux :
                             </Typography>
                         </Grid>
-                        <Grid item sm={3}>
+                        <Grid item sm={4}>
                             <Controller
                                 as={
                                     <ListLieux
@@ -255,6 +281,11 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                         onChange={(checked) => checked}
                                     />
                                 }
+                                rules={{
+                                    validate: (value) =>
+                                        (value && value.length > 0) ||
+                                        "Le choix d'un lieu est obligatoire"
+                                }}
                                 control={control}
                                 name="places"
                             />
@@ -266,11 +297,14 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <div className={classes.buttonCancel}>
+                <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
                     <Button onClick={() => router.back()} variant="contained" color="primary">
                         Annuler
                     </Button>
-                </div>
+                    <Button type="submit" variant="contained" color="primary">
+                        Valider
+                    </Button>
+                </Grid>
             </form>
         </Paper>
     );
