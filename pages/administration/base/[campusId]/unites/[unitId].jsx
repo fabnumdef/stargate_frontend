@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../../../components/styled/common/pageTitle';
 import UnitForm from '../../../../../components/administrationForms/unitForm';
 import { useSnackBar } from '../../../../../lib/hooks/snackbar';
-import { useLogin } from '../../../../../lib/loginContext';
-import { FORMS_LIST, ROLES } from '../../../../../utils/constants/enums';
+import { ROLES } from '../../../../../utils/constants/enums';
 import { mapEditUnit } from '../../../../../utils/mappers/adminMappers';
+import { activeRoleCacheVar } from '../../../../../lib/apollo/cache';
 
-const GET_UNIT = gql`
-    query getUnit($campusId: String!, $id: ObjectID!) {
+const GET_UNIT_FORM_DATA = gql`
+    query getUnitFormData(
+        $cursor: OffsetCursor
+        $campusId: String!
+        $id: ObjectID!
+        $roleUnitCorrespondent: HasRoleInput!
+        $roleSecurityOfficer: HasRoleInput!
+        $hasUnit: HasUnitFilter
+    ) {
         getCampus(id: $campusId) {
             id
             getUnit(id: $id) {
@@ -23,17 +30,25 @@ const GET_UNIT = gql`
                     }
                 }
             }
+            listPlaces(hasUnit: $hasUnit) {
+                list {
+                    id
+                    label
+                    unitInCharge {
+                        id
+                        label
+                    }
+                }
+            }
         }
-    }
-`;
-
-const GET_USERS = gql`
-    query listUsers($cursor: OffsetCursor, $hasRole: HasRoleInput) {
-        listUsers(cursor: $cursor, hasRole: $hasRole) {
+        unitCorrespondents: listUsers(cursor: $cursor, hasRole: $roleUnitCorrespondent) {
             list {
                 id
                 firstname
                 lastname
+                email {
+                    original
+                }
                 roles {
                     role
                     userInCharge
@@ -48,18 +63,22 @@ const GET_USERS = gql`
                 }
             }
         }
-    }
-`;
-
-const GET_PLACES = gql`
-    query listPlaces($campusId: String!, $hasUnit: HasUnitFilter) {
-        getCampus(id: $campusId) {
-            id
-            listPlaces(hasUnit: $hasUnit) {
-                list {
-                    id
-                    label
-                    unitInCharge {
+        securityOfficer: listUsers(cursor: $cursor, hasRole: $roleSecurityOfficer) {
+            list {
+                id
+                firstname
+                lastname
+                email {
+                    original
+                }
+                roles {
+                    role
+                    userInCharge
+                    campuses {
+                        id
+                        label
+                    }
+                    units {
                         id
                         label
                     }
@@ -137,88 +156,75 @@ function CreateUnit() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
     const { unitId: id, campusId } = router.query;
-    const [unitData, setUnitData] = useState(null);
 
-    const { data: unit } = useQuery(GET_UNIT, {
-        variables: { id, campusId },
-        fetchPolicy: 'cache-and-network'
+    const { data, loading } = useQuery(GET_UNIT_FORM_DATA, {
+        variables: {
+            id,
+            campusId,
+            roleUnitCorrespondent: { role: ROLES.ROLE_UNIT_CORRESPONDENT.role, unit: id },
+            roleSecurityOfficer: { role: ROLES.ROLE_SECURITY_OFFICER.role, unit: id },
+            hasUnit: { id }
+        }
     });
 
-    const { data: unitCorresDatas } = useQuery(GET_USERS, {
-        variables: { hasRole: { role: ROLES.ROLE_UNIT_CORRESPONDENT.role, unit: id } }
+    const defaultValues = useMemo(() => {
+        if (!data) return;
+        return mapEditUnit(
+            data.getCampus.getUnit,
+            [...data.unitCorrespondents.list],
+            [...data.securityOfficer.list],
+            [...data.getCampus.listPlaces.list]
+        );
+    }, [data]);
+
+    // @todo give real error message
+    const [editUnit] = useMutation(EDIT_UNIT, {
+        variables: { campusId },
+        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
     });
-    const { data: unitOfficerDatas } = useQuery(GET_USERS, {
-        variables: { hasRole: { role: ROLES.ROLE_SECURITY_OFFICER.role, unit: id } }
+    const [editUserReq] = useMutation(EDIT_USER, {
+        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
     });
-    const { data: placesData } = useQuery(GET_PLACES, {
-        variables: { hasUnit: { id }, campusId },
-        fetchPolicy: 'cache-and-network'
+    const [editPlaceReq] = useMutation(EDIT_PLACE, {
+        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
+    });
+    const [deleteUserRoleReq] = useMutation(DELETE_ROLE, {
+        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
     });
 
-    const [editUnit] = useMutation(EDIT_UNIT, { variables: { campusId } });
-    const [editUserReq] = useMutation(EDIT_USER);
-    const [editPlaceReq] = useMutation(EDIT_PLACE);
-    const [deleteUserRoleReq] = useMutation(DELETE_ROLE);
-    const { activeRole } = useLogin();
-
-    const [defaultValues, setDefaultValues] = useState(null);
-
-    const editUser = async (userId, role, userInCharge) => {
-        try {
-            await editUserReq({
-                variables: {
-                    id: userId,
-                    user: {
-                        roles: {
-                            role,
-                            userInCharge,
-                            campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-                            units: { id, label: unitData.label }
-                        }
+    const editUser = (userId, role, userInCharge) => {
+        editUserReq({
+            variables: {
+                id: userId,
+                user: {
+                    roles: {
+                        role,
+                        userInCharge,
+                        campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
+                        units: { id, label: data.getCampus.getUnit.label }
                     }
                 }
-            });
-        } catch (e) {
-            addAlert({ message: 'Une erreur est survenue', severity: 'error' });
-        }
-        return true;
+            }
+        });
     };
 
-    const deleteRole = async (userId, role) => {
-        try {
-            const userRoleDeleted = await deleteUserRoleReq({
-                variables: {
-                    id: userId,
-                    user: {
-                        roles: {
-                            role
-                        }
+    const deleteRole = (userId, role) => {
+        const userRoleDeleted = deleteUserRoleReq({
+            variables: {
+                id: userId,
+                user: {
+                    roles: {
+                        role
                     }
                 }
-            });
-            return userRoleDeleted;
-        } catch {
-            return null;
-        }
+            }
+        });
+        return userRoleDeleted;
     };
 
-    const editPlace = async (placeId, data) => {
+    const submitEditUnit = async (formData, editUnitData) => {
         try {
-            await editPlaceReq({
-                variables: {
-                    id: placeId,
-                    place: { unitInCharge: data }
-                }
-            });
-            return true;
-        } catch (e) {
-            return e;
-        }
-    };
-
-    const submitEditUnit = async (formData, editUnitData, assistantsList) => {
-        try {
-            await editUnit({ variables: { id, unit: editUnitData } });
+            editUnit({ variables: { id, unit: editUnitData } });
             const unitId = id;
 
             if (
@@ -226,29 +232,27 @@ function CreateUnit() {
                 defaultValues.unitCorrespondent.id !== formData.unitCorrespondent
             ) {
                 if (defaultValues.unitCorrespondent.id) {
-                    await deleteRole(
+                    deleteRole(
                         defaultValues.unitCorrespondent.id,
                         ROLES.ROLE_UNIT_CORRESPONDENT.role
                     );
                 }
-                await editUser(
+                editUser(
                     formData.unitCorrespondent,
                     ROLES.ROLE_UNIT_CORRESPONDENT.role,
                     formData.unitCorrespondent
                 );
             }
+
             if (
                 (!defaultValues.unitOfficer.id && formData.unitOfficer.length) ||
                 (defaultValues.unitOfficer.id &&
                     defaultValues.unitOfficer.id !== formData.unitOfficer)
             ) {
                 if (defaultValues.unitOfficer.id) {
-                    await deleteRole(
-                        defaultValues.unitOfficer.id,
-                        ROLES.ROLE_SECURITY_OFFICER.role
-                    );
+                    deleteRole(defaultValues.unitOfficer.id, ROLES.ROLE_SECURITY_OFFICER.role);
                 }
-                await editUser(
+                editUser(
                     formData.unitOfficer,
                     ROLES.ROLE_SECURITY_OFFICER.role,
                     formData.unitOfficer
@@ -261,96 +265,44 @@ function CreateUnit() {
             const placesToAdd = formData.places.filter(
                 (place) => !defaultValues.placesList.find((p) => p.id === place.id)
             );
-            await Promise.all(
-                placesToDelete.map(async (place) => {
-                    await editPlace(place.id, null);
-                })
-            );
-            await Promise.all(
-                placesToAdd.map(async (place) => {
-                    await editPlace(place.id, { id: unitId });
-                })
-            );
 
-            if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
-                await Promise.all(
-                    assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
-                        if (user.toDelete && user.id !== formData.unitCorrespondent) {
-                            return deleteRole(user.id, ROLES.ROLE_UNIT_CORRESPONDENT.role);
-                        }
-                        const haveRole = user.roles.find(
-                            (role) => role.role === ROLES.ROLE_UNIT_CORRESPONDENT.role
-                        );
-                        if (!haveRole || haveRole.userInCharge !== formData.unitCorrespondent) {
-                            await editUser(
-                                user.id,
-                                ROLES.ROLE_UNIT_CORRESPONDENT.role,
-                                formData.unitCorrespondent
-                            );
-                        }
-                        return user;
-                    })
-                );
-            }
+            placesToDelete.map((place) => {
+                editPlaceReq({
+                    variables: {
+                        id: place.id,
+                        place: { unitInCharge: null }
+                    }
+                });
+            });
 
-            if (assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].length) {
-                await Promise.all(
-                    assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map(async (user) => {
-                        if (user.toDelete && user.id !== formData.unitOfficer) {
-                            return deleteRole(user.id, ROLES.ROLE_SECURITY_OFFICER.role);
-                        }
-                        const haveRole = user.roles.find(
-                            (role) => role.role === ROLES.ROLE_SECURITY_OFFICER.role
-                        );
-                        if (!haveRole || haveRole.userInCharge !== formData.unitOfficer) {
-                            await editUser(
-                                user.id,
-                                ROLES.ROLE_SECURITY_OFFICER.role,
-                                formData.unitOfficer
-                            );
-                        }
-                        return user;
-                    })
-                );
-            }
+            placesToAdd.map((place) => {
+                editPlaceReq({
+                    variables: {
+                        id: place.id,
+                        place: { unitInCharge: unitId }
+                    }
+                });
+            });
+
             addAlert({ message: "L'unité a bien été modifiée", severity: 'success' });
-            return router.push('/administration/unites');
+            router.push('/administration/unites');
         } catch (e) {
-            return addAlert({ message: 'Une erreur est survenue', severity: 'error' });
+            console.error(e);
         }
     };
 
-    useEffect(() => {
-        if (unit) {
-            setUnitData(unit.getCampus.getUnit);
-        }
-    }, [unit]);
-
-    useEffect(() => {
-        if (unitData && unitCorresDatas && unitOfficerDatas && placesData) {
-            setDefaultValues(
-                mapEditUnit(
-                    unitData,
-                    [...unitCorresDatas.listUsers.list],
-                    [...unitOfficerDatas.listUsers.list],
-                    [...placesData.getCampus.listPlaces.list]
-                )
-            );
-        }
-    }, [unitData, unitCorresDatas, unitOfficerDatas, placesData]);
+    if (loading || !defaultValues) return '';
 
     return (
         <>
             <PageTitle subtitles={['Unité', 'Editer unité']}>Administration</PageTitle>
-            {defaultValues && (
-                <UnitForm
-                    submitForm={submitEditUnit}
-                    defaultValues={defaultValues}
-                    userRole={activeRole}
-                    campusId={campusId}
-                    type="edit"
-                />
-            )}
+            <UnitForm
+                submitForm={submitEditUnit}
+                defaultValues={defaultValues}
+                userRole={activeRoleCacheVar()}
+                campusId={campusId}
+                type="edit"
+            />
         </>
     );
 }

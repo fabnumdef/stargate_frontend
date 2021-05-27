@@ -47,9 +47,8 @@ export const mapUnitData = (data, cards) => ({
 export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesList) => {
     const cards = unitData.workflow.steps.map((step) => ({ role: step.role }));
     const unitCorrespondentIndex = unitCorresList.findIndex((u) =>
-        u.roles.find(
-            (r) => r.role === ROLES.ROLE_UNIT_CORRESPONDENT.role && r.userInCharge === u.id
-        )
+        //@todo check if units includes u.id
+        u.roles.find((r) => r.role === ROLES.ROLE_UNIT_CORRESPONDENT.role)
     );
     const unitCorrespondent =
         unitCorrespondentIndex !== -1 ? unitCorresList.splice(unitCorrespondentIndex, 1)[0] : {};

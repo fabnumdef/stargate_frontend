@@ -41,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UnitForm = ({ defaultValues, type, submitForm }) => {
+    console.log(defaultValues);
+
     const router = useRouter();
     const { campusId } = router.query;
     const classes = useStyles();
@@ -75,10 +77,6 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
         submitForm(formData);
     };
 
-    const findOs = () => {
-        return cards.findIndex((card) => card.role === ROLES.ROLE_SECURITY_OFFICER.role);
-    };
-
     if (loading) return <LoadingCircle />;
     return (
         <Paper elevation={3}>
@@ -108,7 +106,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 }}
                                 control={control}
                                 name="name"
-                                defaultValue=""
+                                defaultValue={defaultValues.name || ''}
                             />
                         </Grid>
                         <Grid item sm={12} md={2}>
@@ -122,7 +120,6 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                     <TextField
                                         size="small"
                                         inputProps={{
-                                            'data-testid': 'create-unit-trigram',
                                             maxLength: 3
                                         }}
                                         error={Object.prototype.hasOwnProperty.call(
@@ -144,7 +141,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 }}
                                 control={control}
                                 name="trigram"
-                                defaultValue=""
+                                defaultValue={defaultValues.trigram || ''}
                             />
                         </Grid>
                     </Grid>
@@ -160,7 +157,6 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 as={
                                     <TextField
                                         size="small"
-                                        inputProps={{ 'data-testid': 'unit-emailfonctionnel' }}
                                         variant="outlined"
                                         placeholder="email"
                                     />
@@ -185,7 +181,6 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 as={
                                     <TextField
                                         size="small"
-                                        inputProps={{ 'data-testid': 'unit-corresemail' }}
                                         error={Object.prototype.hasOwnProperty.call(
                                             errors,
                                             'corresemail'
@@ -209,7 +204,9 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 }}
                                 control={control}
                                 name="corresemail"
-                                defaultValue=""
+                                defaultValue={
+                                    defaultValues.unitCorrespondent?.email?.original ?? ''
+                                }
                             />
                         </Grid>
                         <Grid item sm={12} md={2}>
@@ -236,12 +233,9 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 }
                                 rules={{
                                     validate: {
-                                        valide:
-                                            findOs() !== -1
-                                                ? (value) =>
-                                                      value.trim() !== '' ||
-                                                      "L'officier de sécurité est obligatoire"
-                                                : '',
+                                        valide: (value) =>
+                                            value.trim() !== '' ||
+                                            "L'officier de sécurité est obligatoire",
                                         format: (value) =>
                                             checkMailFormat(value) ||
                                             "L'email doit être au format nom.prenom@intradef.gouv.fr"
@@ -249,7 +243,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 }}
                                 control={control}
                                 name="offsecuemail"
-                                defaultValue=""
+                                defaultValue={defaultValues.unitOfficer?.email?.original ?? ''}
                             />
                         </Grid>
                     </Grid>
