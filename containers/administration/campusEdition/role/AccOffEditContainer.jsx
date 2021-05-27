@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { LIST_USERS } from '../../../../lib/apollo/queries';
 import { ROLES } from '../../../../utils/constants/enums';
 import { createUserData } from '../../../../utils/mappers/createUserFromMail';
-import { CREATE_USER, DELETE_ROLE } from '../../../../lib/apollo/mutations';
+import { CREATE_USER, ADD_USER_ROLE, DELETE_ROLE } from '../../../../lib/apollo/mutations';
 import { useSnackBar } from '../../../../lib/hooks/snackbar';
 
 function AccOffEditContainer({ campus, role }) {
@@ -39,38 +39,39 @@ function AccOffEditContainer({ campus, role }) {
             });
         }
     });
-    const [createUser] = useMutation(CREATE_USER, {
-        update: (cache, { data: { createUser: createdUser } }) => {
-            const currentUsers = cache.readQuery({
-                query: LIST_USERS,
-                variables: { campus: campus.id, hasRole: { role: ROLES.ROLE_ACCESS_OFFICE.role } }
-            });
-            const updatedTotal = currentUsers.listUsers.meta.total + 1;
-            const updatedUsers = {
-                ...currentUsers,
-                listUsers: {
-                    ...currentUsers.listUsers,
-                    list: [...currentUsers.listUsers.list, createdUser],
-                    meta: {
-                        ...currentUsers.listUsers.meta,
-                        total: updatedTotal
-                    }
+
+    const addRoleUpdate = (cache, user) => {
+        const currentUsers = cache.readQuery({
+            query: LIST_USERS,
+            variables: { campus: campus.id, hasRole: { role: ROLES.ROLE_ACCESS_OFFICE.role } }
+        });
+        const updatedTotal = currentUsers.listUsers.meta.total + 1;
+        const updatedUsers = {
+            ...currentUsers,
+            listUsers: {
+                ...currentUsers.listUsers,
+                list: [...currentUsers.listUsers.list, user],
+                meta: {
+                    ...currentUsers.listUsers.meta,
+                    total: updatedTotal
                 }
-            };
-            cache.writeQuery({
-                query: LIST_USERS,
-                variables: { campus: campus.id, hasRole: { role: ROLES.ROLE_ACCESS_OFFICE.role } },
-                data: updatedUsers
-            });
-        }
+            }
+        };
+        cache.writeQuery({
+            query: LIST_USERS,
+            variables: { campus: campus.id, hasRole: { role: ROLES.ROLE_ACCESS_OFFICE.role } },
+            data: updatedUsers
+        });
+    };
+
+    const [addUserRole] = useMutation(ADD_USER_ROLE, {
+        update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
+    });
+    const [createUser] = useMutation(CREATE_USER, {
+        update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
     });
 
-    const submitCreateUser = async (formData) => {
-        const roles = {
-            role: ROLES.ROLE_ACCESS_OFFICE.role,
-            campuses: { id: campus.id, label: campus.label }
-        };
-        const user = createUserData(formData.accOffEmail, roles);
+    const submitCreateAccOff = async (user) => {
         try {
             const {
                 data: {
@@ -110,15 +111,34 @@ function AccOffEditContainer({ campus, role }) {
         }
     };
 
+    const submitAddUserRole = async (user, roleData) => {
+        try {
+            const {
+                data: {
+                    addUserRole: { id, email }
+                }
+            } = await addUserRole({ variables: { id: user.id, roleData } });
+            if (id) {
+                addAlert({
+                    message: `Le rôle Bureau des Accès à bien été ajouté à ${email.original}`,
+                    severity: 'success'
+                });
+            }
+        } catch {
+            addAlert({
+                message: "Erreur lors de l'ajout du rôle à l'utilisateur",
+                severity: 'error'
+            });
+        }
+    };
+
     const deleteAccOff = async (id) => {
         try {
             await deleteUserRoleReq({
                 variables: {
                     id,
-                    user: {
-                        roles: {
-                            role: ROLES.ROLE_ACCESS_OFFICE.role
-                        }
+                    roleData: {
+                        role: ROLES.ROLE_ACCESS_OFFICE.role
                     }
                 }
             });
@@ -131,13 +151,27 @@ function AccOffEditContainer({ campus, role }) {
         }
     };
 
+    const handleCreateAccOff = (formData) => {
+        const roleData = {
+            role: ROLES.ROLE_ADMIN.role,
+            campuses: { id: campus.id, label: campus.label }
+        };
+        const userExist = false;
+        if (!userExist) {
+            const userAdmin = createUserData(formData.adminEmail, roleData);
+            submitCreateAccOff(userAdmin);
+        } else {
+            submitAddUserRole(userExist, roleData);
+        }
+    };
+
     return (
         !loading && (
             <AccOffEdit
                 campus={campus}
                 role={role}
                 accOffUsers={data?.listUsers ?? []}
-                submitCreateUser={submitCreateUser}
+                submitCreateUser={handleCreateAccOff}
                 deleteAccOff={deleteAccOff}
             />
         )
