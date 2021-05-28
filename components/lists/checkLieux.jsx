@@ -12,6 +12,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Divider } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     heading: {
@@ -139,24 +140,27 @@ export default function ListLieux({
                     {options.map((place) => {
                         const labelId = `checkbox-list-label-${place.id}`;
                         return (
-                            <ListItem
-                                className={classes.listItem}
-                                key={place.id}
-                                button
-                                onClick={handleToggle(place)}
-                                data-testid={`listitem-${label}-${place.id}`}>
-                                <ListItemIcon>
-                                    <Checkbox
-                                        color="primary"
-                                        edge="start"
-                                        checked={checked.indexOf(place) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{ 'aria-labelledby': labelId }}
-                                    />
-                                </ListItemIcon>
-                                <ListItemText id={place.id} primary={place.label} />
-                            </ListItem>
+                            <>
+                                <ListItem
+                                    key={place.id}
+                                    disableRipple
+                                    button
+                                    onClick={handleToggle(place)}
+                                    data-testid={`listitem-${label}-${place.id}`}>
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            color="primary"
+                                            edge="start"
+                                            checked={checked.indexOf(place) !== -1}
+                                            tabIndex={-1}
+                                            disableRipple
+                                            inputProps={{ 'aria-labelledby': labelId }}
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText id={place.id} primary={place.label} />
+                                </ListItem>
+                                <Divider light variant="middle" />
+                            </>
                         );
                     })}
                 </ListStyled>
