@@ -1,25 +1,11 @@
 import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
-import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import ActionCell from '../cells/ActionCell';
 import TableRow from '@material-ui/core/TableRow';
 import { IconButton, makeStyles } from '@material-ui/core';
 import { AttachFile, CheckCircle, Error } from '@material-ui/icons';
 import { WORKFLOW_BEHAVIOR } from '../../../utils/constants/enums';
-
-const StyledRow = withStyles((theme) => ({
-    root: {
-        border: `19px solid ${theme.palette.background.table}`
-    },
-    hover: {
-        '&:hover': {
-            boxShadow: `inset -1px -2px 0px ${theme.palette.primary.dark}
-            , inset 1px 1px 0px ${theme.palette.primary.dark}`,
-            backgroundColor: `${theme.palette.common.white} !important`
-        }
-    }
-}))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
     info: {
@@ -41,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 function RowScreening({ columns, choices, row, treated }) {
     const classes = useStyles();
     return (
-        <StyledRow hover key={row.id}>
+        <TableRow hover key={row.id}>
             {columns.map((column) => {
                 const value = row[column.id];
                 switch (column.id) {
@@ -113,7 +99,7 @@ function RowScreening({ columns, choices, row, treated }) {
                         );
                 }
             })}
-        </StyledRow>
+        </TableRow>
     );
 }
 

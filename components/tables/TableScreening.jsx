@@ -18,14 +18,38 @@ import RowScreeningTreatments from './rows/RowScreening';
 import { IconButton } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 
-const useStyles = makeStyles(() => ({
-    tableCollapes: {
-        borderCollapse: 'collapse'
+const useStyles = makeStyles((theme) => ({
+    cont: {
+        position: 'relative'
     },
     root: {
-        border: '1px solid #F3F3F3',
-        maxHeight: '55vh',
+        borderTop: '1px solid rgba(224, 224, 224, 1)',
+        padding: '0 20px 0 20px',
+        background: theme.palette.background.table,
+        maxHeight: '63vh',
         overflowX: 'hidden'
+    },
+    header: {
+        position: 'absolute',
+        top: '1px',
+        left: '0',
+        width: '100%',
+        height: '57px',
+        backgroundColor: 'white',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-1px',
+            height: '1px',
+            width: '100%',
+            backgroundColor: 'rgba(224, 224, 224, 1)'
+        }
+    },
+    headerToTreat: {
+        height: '81px'
+    },
+    table: {
+        zIndex: 10
     }
 }));
 
@@ -107,68 +131,73 @@ const TableScreening = ({ requests, treated, selectAll }) => {
     );
 
     return (
-        <TableContainer className={classes.root}>
-            <Table stickyHeader aria-label="sticky table" className={classes.tableCollapes}>
-                <TableHead>
-                    <TableRow>
-                        {columns.map((column) =>
-                            !treated && column.id === 'action' ? (
-                                <>
+        <div className={classes.cont}>
+            <div className={`${classes.header} ${!treated ? classes.headerToTreat : ''}`} />
+            <TableContainer className={classes.root}>
+                <Table stickyHeader aria-label="sticky table" className={classes.table}>
+                    <TableHead>
+                        <TableRow>
+                            {columns.map((column) =>
+                                !treated && column.id === 'action' ? (
+                                    <>
+                                        <CustomTableCellHeader key={column.id} align={column.align}>
+                                            {column.label || ''}
+                                            <IconButton
+                                                aria-label="options"
+                                                onClick={(event) => {
+                                                    setAnchorEl(event.currentTarget);
+                                                }}
+                                                aria-haspopup="true">
+                                                <MoreVert />
+                                            </IconButton>
+                                        </CustomTableCellHeader>
+                                        <Menu
+                                            id="options"
+                                            anchorEl={anchorEl}
+                                            keepMounted
+                                            open={open}
+                                            onClose={() => {
+                                                setAnchorEl(null);
+                                            }}
+                                            PaperProps={{
+                                                style: {
+                                                    maxHeight: ITEM_HEIGHT * 4.5,
+                                                    width: '20ch'
+                                                }
+                                            }}>
+                                            {choices.map((choice) => (
+                                                <MenuItem
+                                                    key={choice.label}
+                                                    onClick={() => {
+                                                        selectAll(choice);
+                                                        setAnchorEl(null);
+                                                    }}>
+                                                    {choice.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Menu>
+                                    </>
+                                ) : (
                                     <CustomTableCellHeader key={column.id} align={column.align}>
                                         {column.label || ''}
-                                        <IconButton
-                                            aria-label="options"
-                                            onClick={(event) => {
-                                                setAnchorEl(event.currentTarget);
-                                            }}
-                                            aria-haspopup="true">
-                                            <MoreVert />
-                                        </IconButton>
                                     </CustomTableCellHeader>
-                                    <Menu
-                                        id="options"
-                                        anchorEl={anchorEl}
-                                        keepMounted
-                                        open={open}
-                                        onClose={() => {
-                                            setAnchorEl(null);
-                                        }}
-                                        PaperProps={{
-                                            style: { maxHeight: ITEM_HEIGHT * 4.5, width: '20ch' }
-                                        }}>
-                                        {choices.map((choice) => (
-                                            <MenuItem
-                                                key={choice.label}
-                                                onClick={() => {
-                                                    selectAll(choice);
-                                                    setAnchorEl(null);
-                                                }}>
-                                                {choice.label}
-                                            </MenuItem>
-                                        ))}
-                                    </Menu>
-                                </>
-                            ) : (
-                                <CustomTableCellHeader key={column.id} align={column.align}>
-                                    {column.label || ''}
-                                </CustomTableCellHeader>
-                            )
-                        )}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
+                                )
+                            )}
+                        </TableRow>
+                    </TableHead>
                     {rows.map((row) => (
-                        <RowScreeningTreatments
-                            key={`${treated ? 'treated' : ''}_${row.id}`}
-                            choices={choices}
-                            row={row}
-                            columns={columns}
-                            treated={treated}
-                        />
+                        <TableBody key={`${treated ? 'treated' : ''}_${row.id}`}>
+                            <RowScreeningTreatments
+                                choices={choices}
+                                row={row}
+                                columns={columns}
+                                treated={treated}
+                            />
+                        </TableBody>
                     ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                </Table>
+            </TableContainer>
+        </div>
     );
 };
 export default memo(TableScreening);

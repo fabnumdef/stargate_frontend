@@ -16,9 +16,7 @@ export { default as FormInfosImport } from './requestForms/infosImport';
 export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestProgress';
 export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';
 export { default as TabMesDemandesTreated } from './tabs/myRequest/tabMyRequestTreated';
-export { default as TabRecapRequest } from './tabs/tabRecapRequest';
 export { default as TabVisiteur } from './tabs/tabVisiteurs';
-export { default as TabScreeningVisitors } from './tabs/tabScreeningVisitors';
 
 export { default as TabRequestVisitorsToTreat } from './tabs/detailsRequest/tabRequestVisitorsToTreat';
 export { default as TabRequestVisitorsToTreatAcces } from './tabs/detailsRequest/tabRequestVisitorsToTreatAcces';

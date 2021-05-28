@@ -54,13 +54,37 @@ function createData({ id, from, to, places, reason, status }) {
     };
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+    cont: {
+        position: 'relative'
+    },
     root: {
-        border: '1px solid #F3F3F3',
+        borderTop: '1px solid rgba(224, 224, 224, 1)',
+        padding: '0 20px 0 20px',
+        background: theme.palette.background.table,
         maxHeight: '63vh',
         overflowX: 'hidden'
+    },
+    header: {
+        position: 'absolute',
+        top: '1px',
+        left: '0',
+        width: '100%',
+        height: '57px',
+        backgroundColor: 'white',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-1px',
+            height: '1px',
+            width: '100%',
+            backgroundColor: 'rgba(224, 224, 224, 1)'
+        }
+    },
+    table: {
+        zIndex: 10
     }
-});
+}));
 
 export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMore }) {
     const classes = useStyles();
@@ -77,39 +101,41 @@ export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMor
     );
 
     return (
-        <TableContainer className={classes.root}>
-            <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <TableRow>
-                        {columns.map((column) => (
-                            <CustomTableCellHeader key={column.id} style={column.style}>
-                                {column.label}
-                            </CustomTableCellHeader>
-                        ))}
-                    </TableRow>
-                </TableHead>
+        <div className={classes.cont}>
+            <div className={classes.header} />
+            <TableContainer className={classes.root}>
+                <Table stickyHeader aria-label="sticky table" className={classes.table}>
+                    <TableHead>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <CustomTableCellHeader key={column.id} style={column.style}>
+                                    {column.label}
+                                </CustomTableCellHeader>
+                            ))}
+                        </TableRow>
+                    </TableHead>
 
-                <TableBody>
                     {rows.map((row) => (
-                        <RowRequests
-                            key={row.id}
-                            row={row}
-                            columns={columns}
-                            onDelete={() => setToDeleteID(row.id)}
-                        />
+                        <TableBody key={row.id}>
+                            <RowRequests
+                                row={row}
+                                columns={columns}
+                                onDelete={() => setToDeleteID(row.id)}
+                            />
+                        </TableBody>
                     ))}
-                </TableBody>
-            </Table>
-            <LoadMore onLoadMore={onLoadMore} display={load} />
-            <DeleteModal
-                isOpen={toDeleteID}
-                title="Supression demande"
-                onClose={(confirm) => {
-                    if (confirm) onDelete(toDeleteID);
-                    setToDeleteID(null);
-                }}
-            />
-        </TableContainer>
+                </Table>
+                <LoadMore onLoadMore={onLoadMore} display={load} />
+                <DeleteModal
+                    isOpen={toDeleteID}
+                    title="Supression demande"
+                    onClose={(confirm) => {
+                        if (confirm) onDelete(toDeleteID);
+                        setToDeleteID(null);
+                    }}
+                />
+            </TableContainer>
+        </div>
     );
 }
 
