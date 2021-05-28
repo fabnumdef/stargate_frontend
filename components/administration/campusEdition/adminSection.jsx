@@ -11,9 +11,9 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import SquareButton from '../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { ROLES } from '../../../utils/constants/enums';
-import { LIST_USERS } from '../../../lib/apollo/queries';
+import { LIST_USERS, FIND_USER_BY_MAIL } from '../../../lib/apollo/queries';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { createUserData, checkMailFormat } from '../../../utils/mappers/createUserFromMail';
 import { ADD_USER_ROLE, CREATE_USER, DELETE_ROLE } from '../../../lib/apollo/mutations';
@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 function AdminSection({ listAdmins, campusData }) {
     const classes = useStyles();
     const { addAlert } = useSnackBar();
+    const client = useApolloClient();
     const { control, handleSubmit, errors, setValue } = useForm();
 
     const [deleteUserRoleReq] = useMutation(DELETE_ROLE, {
@@ -104,7 +105,7 @@ function AdminSection({ listAdmins, campusData }) {
     };
 
     const [addUserRole] = useMutation(ADD_USER_ROLE, {
-        update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
+        update: (cache, { data: { addUserRole: updatedUser } }) => addRoleUpdate(cache, updatedUser)
     });
     const [createUser] = useMutation(CREATE_USER, {
         update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
@@ -147,17 +148,12 @@ function AdminSection({ listAdmins, campusData }) {
 
     const submitAddUserRole = async (user, roleData) => {
         try {
-            const {
-                data: {
-                    addUserRole: { id, email }
-                }
-            } = await addUserRole({ variables: { id: user.id, roleData } });
-            if (id) {
-                addAlert({
-                    message: `Le rôle Administrateur à bien été ajouté à ${email.original}`,
-                    severity: 'success'
-                });
-            }
+            const { data } = await addUserRole({ variables: { id: user.id, roleData } });
+            addAlert({
+                message: `Le rôle Administrateur à bien été ajouté à ${data.addUserRole.email.original}`,
+                severity: 'success'
+            });
+            return setValue('adminEmail', '');
         } catch {
             addAlert({
                 message: "Erreur lors de l'ajout du rôle Administrateur à l'utilisateur",
@@ -185,17 +181,23 @@ function AdminSection({ listAdmins, campusData }) {
         }
     };
 
-    const handleCreateAdmin = (formData) => {
+    const handleCreateAdmin = async (formData) => {
         const roleData = {
             role: ROLES.ROLE_ADMIN.role,
-            campuses: { id: campusData.id, label: campusData.label }
+            campus: { id: campusData.id, label: campusData.label }
         };
-        const userExist = false;
-        if (!userExist) {
+        const { data } = await client.query({
+            query: FIND_USER_BY_MAIL,
+            variables: {
+                email: formData.adminEmail
+            },
+            fetchPolicy: 'no-cache'
+        });
+        if (!data.findUser) {
             const userAdmin = createUserData(formData.adminEmail, roleData);
-            submitCreateUser(userAdmin);
+            await submitCreateUser(userAdmin);
         } else {
-            submitAddUserRole(userExist, roleData);
+            await submitAddUserRole(data.findUser, roleData);
         }
     };
 

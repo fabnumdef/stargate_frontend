@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { AccOffEdit } from '../../../../components';
-import { useMutation, useQuery } from '@apollo/client';
-import { LIST_USERS } from '../../../../lib/apollo/queries';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client';
+import { FIND_USER_BY_MAIL, LIST_USERS } from '../../../../lib/apollo/queries';
 import { ROLES } from '../../../../utils/constants/enums';
 import { createUserData } from '../../../../utils/mappers/createUserFromMail';
 import { CREATE_USER, ADD_USER_ROLE, DELETE_ROLE } from '../../../../lib/apollo/mutations';
@@ -10,6 +10,7 @@ import { useSnackBar } from '../../../../lib/hooks/snackbar';
 
 function AccOffEditContainer({ campus, role }) {
     const { addAlert } = useSnackBar();
+    const client = useApolloClient();
     const { data, loading } = useQuery(LIST_USERS, {
         variables: { campus: campus.id, hasRole: { role: ROLES.ROLE_ACCESS_OFFICE.role } }
     });
@@ -65,7 +66,7 @@ function AccOffEditContainer({ campus, role }) {
     };
 
     const [addUserRole] = useMutation(ADD_USER_ROLE, {
-        update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
+        update: (cache, { data: { addUserRole: updatedUser } }) => addRoleUpdate(cache, updatedUser)
     });
     const [createUser] = useMutation(CREATE_USER, {
         update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
@@ -115,20 +116,20 @@ function AccOffEditContainer({ campus, role }) {
         try {
             const {
                 data: {
-                    addUserRole: { id, email }
+                    addUserRole: { email }
                 }
             } = await addUserRole({ variables: { id: user.id, roleData } });
-            if (id) {
-                addAlert({
-                    message: `Le rôle Bureau des Accès à bien été ajouté à ${email.original}`,
-                    severity: 'success'
-                });
-            }
+            addAlert({
+                message: `Le rôle Bureau des Accès à bien été ajouté à ${email.original}`,
+                severity: 'success'
+            });
+            return true;
         } catch {
             addAlert({
                 message: "Erreur lors de l'ajout du rôle à l'utilisateur",
                 severity: 'error'
             });
+            return false;
         }
     };
 
@@ -151,22 +152,29 @@ function AccOffEditContainer({ campus, role }) {
         }
     };
 
-    const handleCreateAccOff = (formData) => {
+    const handleCreateAccOff = async (formData) => {
         const roleData = {
-            role: ROLES.ROLE_ADMIN.role,
-            campuses: { id: campus.id, label: campus.label }
+            role: ROLES.ROLE_ACCESS_OFFICE.role,
+            campus: { id: campus.id, label: campus.label }
         };
-        const userExist = false;
-        if (!userExist) {
-            const userAdmin = createUserData(formData.adminEmail, roleData);
-            submitCreateAccOff(userAdmin);
+        const { data } = await client.query({
+            query: FIND_USER_BY_MAIL,
+            variables: {
+                email: formData.accOffEmail
+            },
+            fetchPolicy: 'no-cache'
+        });
+        if (!data.findUser) {
+            const userAdmin = createUserData(formData.accOffEmail, roleData);
+            return submitCreateAccOff(userAdmin);
         } else {
-            submitAddUserRole(userExist, roleData);
+            return submitAddUserRole(data.findUser, roleData);
         }
     };
 
     return (
-        !loading && (
+        !loading &&
+        data && (
             <AccOffEdit
                 campus={campus}
                 role={role}

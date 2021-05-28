@@ -5,10 +5,10 @@ import { CampusSection } from '../../../components';
 import { GET_CAMPUS, LIST_USERS } from '../../../lib/apollo/queries';
 import { ROLES } from '../../../utils/constants/enums';
 
-function CampusSectionContainer({ id }) {
+function CampusSectionContainer({ campusId }) {
     const client = useApolloClient();
     const [usersTotalByRole, setUsersTotalByRole] = useState(null);
-    const { data: campusData } = useQuery(GET_CAMPUS, { variables: { id } });
+    const { data: campusData } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
 
     const initData = async () => {
         let usersTotal = {};
@@ -16,7 +16,7 @@ function CampusSectionContainer({ id }) {
             [ROLES.ROLE_ACCESS_OFFICE.role, ROLES.ROLE_SCREENING.role].map(async (role) => {
                 const users = await client.query({
                     query: LIST_USERS,
-                    variables: { hasRole: { role }, campusId: id }
+                    variables: { hasRole: { role }, campusId }
                 });
                 usersTotal = {
                     ...usersTotal,
@@ -41,7 +41,7 @@ function CampusSectionContainer({ id }) {
 }
 
 CampusSectionContainer.propTypes = {
-    id: PropTypes.string.isRequired
+    campusId: PropTypes.string.isRequired
 };
 
 export default CampusSectionContainer;
