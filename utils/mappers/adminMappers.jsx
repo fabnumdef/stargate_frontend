@@ -54,7 +54,7 @@ export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesLis
         unitCorrespondentIndex !== -1 ? unitCorresList.splice(unitCorrespondentIndex, 1)[0] : {};
 
     const unitOfficerIndex = unitOfficerList.findIndex((u) =>
-        u.roles.find((r) => r.role === ROLES.ROLE_SECURITY_OFFICER.role && r.userInCharge === u.id)
+        u.roles.find((r) => r.role === ROLES.ROLE_SECURITY_OFFICER.role)
     );
     const unitOfficer =
         unitOfficerIndex !== -1 ? unitOfficerList.splice(unitOfficerIndex, 1)[0] : {};

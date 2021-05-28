@@ -86,6 +86,14 @@ export const ROLES = {
             '/administration/utilisateurs'
         ]
     },
+    ROLE_SCREENING: {
+        role: 'ROLE_SCREENING',
+        label: 'Criblage',
+        shortLabel: 'G',
+        workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
+        behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
+    },
     ROLE_SECURITY_OFFICER: {
         role: 'ROLE_SECURITY_OFFICER',
         label: 'Officier de sécurité',
@@ -112,15 +120,6 @@ export const ROLES = {
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
         permission: ['/', '/a-propos', '/contactez-nous', '/compte'],
-        editable: true
-    },
-    ROLE_SCREENING: {
-        role: 'ROLE_SCREENING',
-        label: 'Criblage',
-        shortLabel: 'GD',
-        workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
-        permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
         editable: true
     },
     ROLE_HOST: {

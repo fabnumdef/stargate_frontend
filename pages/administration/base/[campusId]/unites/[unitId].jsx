@@ -7,6 +7,7 @@ import { useSnackBar } from '../../../../../lib/hooks/snackbar';
 import { ROLES } from '../../../../../utils/constants/enums';
 import { mapEditUnit } from '../../../../../utils/mappers/adminMappers';
 import { activeRoleCacheVar } from '../../../../../lib/apollo/cache';
+import LoadingCircle from '../../../../../components/styled/animations/loadingCircle';
 
 const GET_UNIT_FORM_DATA = gql`
     query getUnitFormData(
@@ -180,16 +181,23 @@ function CreateUnit() {
     // @todo give real error message
     const [editUnit] = useMutation(EDIT_UNIT, {
         variables: { campusId },
-        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
+        onError: () =>
+            addAlert({ message: 'Erreur lors de la modification unité', severity: 'error' })
     });
     const [editUserReq] = useMutation(EDIT_USER, {
-        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
+        onError: () =>
+            addAlert({ message: 'Erreur lors de la modification utilisateur', severity: 'error' })
     });
     const [editPlaceReq] = useMutation(EDIT_PLACE, {
-        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
+        onError: () =>
+            addAlert({ message: 'Erreur lors de la modification des lieux', severity: 'error' })
     });
     const [deleteUserRoleReq] = useMutation(DELETE_ROLE, {
-        onError: () => addAlert({ message: 'Une erreur est survenue', severity: 'error' })
+        onError: () =>
+            addAlert({
+                message: 'Erreur lors de la supression de role utilisateur',
+                severity: 'error'
+            })
     });
 
     const editUser = (userId, role, userInCharge) => {
@@ -291,8 +299,7 @@ function CreateUnit() {
         }
     };
 
-    if (loading || !defaultValues) return '';
-
+    if (loading || !defaultValues) return <LoadingCircle />;
     return (
         <>
             <PageTitle subtitles={['Unité', 'Editer unité']}>Administration</PageTitle>

@@ -18,6 +18,7 @@ import { DndModule } from '../../containers';
 import ListLieux from '../lists/checkLieux';
 import Paper from '@material-ui/core/Paper';
 import LoadingCircle from '../styled/animations/loadingCircle';
+
 const useStyles = makeStyles((theme) => ({
     workflow: {
         marginLeft: theme.spacing(8)
@@ -41,8 +42,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UnitForm = ({ defaultValues, type, submitForm }) => {
-    console.log(defaultValues);
-
     const router = useRouter();
     const { campusId } = router.query;
     const classes = useStyles();
@@ -62,7 +61,10 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
 
     const [cards, setCards] = useState(type === 'create' ? allCards : createDefaultCards);
 
+    const findOs = cards.find((card) => card.role === ROLES.ROLE_SECURITY_OFFICER.role);
+
     // const { addAlert } = useSnackBar();
+
     const { handleSubmit, errors, control } = useForm();
 
     const checkMailFormat = (value) => {
@@ -73,9 +75,12 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
     const { data: placesList, loading } = useQuery(GET_PLACES_LIST, { variables: { campusId } });
 
     const onSubmit = (formData) => {
-        console.log(formData);
         submitForm(formData);
     };
+
+    const listPlaces = defaultValues.placesList.concat(
+        placesList?.getCampus.listPlaces.list.filter((place) => place.unitInCharge.id === null)
+    );
 
     if (loading) return <LoadingCircle />;
     return (
@@ -159,6 +164,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                         size="small"
                                         variant="outlined"
                                         placeholder="email"
+                                        disabled
                                     />
                                 }
                                 rules={{
@@ -234,7 +240,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                 rules={{
                                     validate: {
                                         valide: (value) =>
-                                            value.trim() !== '' ||
+                                            (findOs && value.trim() !== '') ||
                                             "L'officier de sécurité est obligatoire",
                                         format: (value) =>
                                             checkMailFormat(value) ||
@@ -266,12 +272,10 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                             <Controller
                                 as={
                                     <ListLieux
-                                        options={
-                                            placesList ? placesList.getCampus.listPlaces.list : []
-                                        }
+                                        options={listPlaces ? listPlaces : []}
                                         expanded={expanded}
                                         setExpanded={setExpanded}
-                                        defaultChecked={[]}
+                                        defaultChecked={defaultValues.placesList}
                                         onChange={(checked) => checked}
                                     />
                                 }
@@ -307,8 +311,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
 UnitForm.propTypes = {
     defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
     type: PropTypes.string.isRequired,
-    submitForm: PropTypes.func.isRequired,
-    campusId: PropTypes.string.isRequired
+    submitForm: PropTypes.func.isRequired
 };
 
 export default UnitForm;
