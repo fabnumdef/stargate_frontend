@@ -45,8 +45,6 @@ function CampusSection({ campusData, usersTotalByRole }) {
         }
     };
 
-    console.log(usersTotalByRole);
-
     return (
         <Grid className={classes.root} sm={12}>
             <Grid container className={classes.globalContainer}>

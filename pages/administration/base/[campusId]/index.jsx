@@ -28,7 +28,7 @@ function CampusEditionPage() {
 
     return (
         <Grid className={classes.root}>
-            <CampusSectionContainer id={campusId} />
+            <CampusSectionContainer campusId={campusId} />
             <PlaceSectionContainer campusId={campusId} />
             <UnitSectionContainer campusId={campusId} />
             <AdminSectionContainer campusId={campusId} />

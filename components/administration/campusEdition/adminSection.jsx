@@ -11,12 +11,12 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import SquareButton from '../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { ROLES } from '../../../utils/constants/enums';
-import { LIST_USERS } from '../../../lib/apollo/queries';
+import { LIST_USERS, FIND_USER_BY_MAIL } from '../../../lib/apollo/queries';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { createUserData, checkMailFormat } from '../../../utils/mappers/createUserFromMail';
-import { CREATE_USER, DELETE_ROLE } from '../../../lib/apollo/mutations';
+import { ADD_USER_ROLE, CREATE_USER, DELETE_ROLE } from '../../../lib/apollo/mutations';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 function AdminSection({ listAdmins, campusData }) {
     const classes = useStyles();
     const { addAlert } = useSnackBar();
+    const client = useApolloClient();
     const { control, handleSubmit, errors, setValue } = useForm();
 
     const [deleteUserRoleReq] = useMutation(DELETE_ROLE, {
@@ -79,30 +80,35 @@ function AdminSection({ listAdmins, campusData }) {
             });
         }
     });
-    const [createUser] = useMutation(CREATE_USER, {
-        update: (cache, { data: { createUser: createdUser } }) => {
-            const currentUsers = cache.readQuery({
-                query: LIST_USERS,
-                variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } }
-            });
-            const updatedTotal = currentUsers.listUsers.meta.total + 1;
-            const updatedUsers = {
-                ...currentUsers,
-                listUsers: {
-                    ...currentUsers.listUsers,
-                    list: [...currentUsers.listUsers.list, createdUser],
-                    meta: {
-                        ...currentUsers.listUsers.meta,
-                        total: updatedTotal
-                    }
+    const addRoleUpdate = (cache, user) => {
+        const currentUsers = cache.readQuery({
+            query: LIST_USERS,
+            variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } }
+        });
+        const updatedTotal = currentUsers.listUsers.meta.total + 1;
+        const updatedUsers = {
+            ...currentUsers,
+            listUsers: {
+                ...currentUsers.listUsers,
+                list: [...currentUsers.listUsers.list, user],
+                meta: {
+                    ...currentUsers.listUsers.meta,
+                    total: updatedTotal
                 }
-            };
-            cache.writeQuery({
-                query: LIST_USERS,
-                variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } },
-                data: updatedUsers
-            });
-        }
+            }
+        };
+        cache.writeQuery({
+            query: LIST_USERS,
+            variables: { campus: campusData.id, hasRole: { role: ROLES.ROLE_ADMIN.role } },
+            data: updatedUsers
+        });
+    };
+
+    const [addUserRole] = useMutation(ADD_USER_ROLE, {
+        update: (cache, { data: { addUserRole: updatedUser } }) => addRoleUpdate(cache, updatedUser)
+    });
+    const [createUser] = useMutation(CREATE_USER, {
+        update: (cache, { data: { createUser: createdUser } }) => addRoleUpdate(cache, createdUser)
     });
 
     const submitCreateUser = async (user) => {
@@ -140,15 +146,29 @@ function AdminSection({ listAdmins, campusData }) {
         }
     };
 
+    const submitAddUserRole = async (user, roleData) => {
+        try {
+            const { data } = await addUserRole({ variables: { id: user.id, roleData } });
+            addAlert({
+                message: `Le rôle Administrateur à bien été ajouté à ${data.addUserRole.email.original}`,
+                severity: 'success'
+            });
+            return setValue('adminEmail', '');
+        } catch {
+            addAlert({
+                message: "Erreur lors de l'ajout du rôle Administrateur à l'utilisateur",
+                severity: 'error'
+            });
+        }
+    };
+
     const deleteAdmin = async (id) => {
         try {
             await deleteUserRoleReq({
                 variables: {
                     id,
-                    user: {
-                        roles: {
-                            role: ROLES.ROLE_ADMIN.role
-                        }
+                    roleData: {
+                        role: ROLES.ROLE_ADMIN.role
                     }
                 }
             });
@@ -161,13 +181,24 @@ function AdminSection({ listAdmins, campusData }) {
         }
     };
 
-    const handleCreateAdmin = (formData) => {
-        const roles = {
+    const handleCreateAdmin = async (formData) => {
+        const roleData = {
             role: ROLES.ROLE_ADMIN.role,
-            campuses: { id: campusData.id, label: campusData.label }
+            campus: { id: campusData.id, label: campusData.label }
         };
-        const userAdmin = createUserData(formData.adminEmail, roles);
-        submitCreateUser(userAdmin);
+        const { data } = await client.query({
+            query: FIND_USER_BY_MAIL,
+            variables: {
+                email: formData.adminEmail
+            },
+            fetchPolicy: 'no-cache'
+        });
+        if (!data.findUser) {
+            const userAdmin = createUserData(formData.adminEmail, roleData);
+            await submitCreateUser(userAdmin);
+        } else {
+            await submitAddUserRole(data.findUser, roleData);
+        }
     };
 
     const handleDeleteAdmin = (id) => {
