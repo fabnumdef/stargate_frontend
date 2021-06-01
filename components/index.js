@@ -6,12 +6,14 @@ export { default as PlaceSection } from './administration/campusEdition/placeSec
 export { default as UnitSection } from './administration/campusEdition/unitSection';
 export { default as AdminSection } from './administration/campusEdition/adminSection';
 export { default as AccOffEdit } from './administration/campusEdition/role/AccOffEdit';
+export { default as ScreeningEdit } from './administration/campusEdition/role/screeningEdit';
 
 // Forms
 export { default as FormInfosRequest } from './requestForms/infosRequest';
 export { default as FormInfosRecapDemande } from './requestForms/infosFinalView';
 export { default as FormInfosVisitor } from './requestForms/infosVisitor';
 export { default as FormInfosImport } from './requestForms/infosImport';
+export { default as CreateRoleField } from './administrationForms/createRoleField';
 // Tabs
 export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestProgress';
 export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';

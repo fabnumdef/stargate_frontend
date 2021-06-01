@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'italic'
     },
     validators: {
-        padding: `${theme.spacing(8)}px 0 0 ${theme.spacing(8)}px`
+        padding: `${theme.spacing(5)}px 0 0 ${theme.spacing(5)}px`
     },
     emptyValidatorsIcon: {
         position: 'absolute',
@@ -76,7 +76,9 @@ function CampusSection({ campusData, usersTotalByRole }) {
                 </Grid>
             </Grid>
             <Grid className={classes.validators}>
-                <Typography variant="h6">Configurations validateurs</Typography>
+                <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                    Configurations validateurs
+                </Typography>
                 <Grid container>
                     {validatorsRoles.map((role) => (
                         <Grid
