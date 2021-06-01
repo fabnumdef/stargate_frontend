@@ -11,6 +11,7 @@ const useStyles = makeStyles(() => ({
     pageTitle: {
         fontSize: '1.50rem',
         marginBottom: 24,
+        fontWeight: 'bold',
         '& h2': {
             fontSize: '1.75rem',
             display: 'inline',

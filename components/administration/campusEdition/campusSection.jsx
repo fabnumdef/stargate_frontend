@@ -41,12 +41,6 @@ function CampusSection({ campusData, usersTotalByRole }) {
 
     const validatorsRoles = Object.values(ROLES).filter((r) => r.workflow);
 
-    const handleEditRole = (editable, role) => {
-        if (editable) {
-            return router.push(ADMIN_CAMPUS_ROLE_EDITION(campusData.id, role));
-        }
-    };
-
     return (
         <Grid sm={12}>
             <Grid container className={classes.globalContainer}>
@@ -79,15 +73,10 @@ function CampusSection({ campusData, usersTotalByRole }) {
                     </Typography>
                     <Grid container>
                         {validatorsRoles.map((role) => (
-                            <Grid
-                                item
-                                key={role.role}
-                                onClick={() => handleEditRole(role.editable, role.role)}>
+                            <Grid item key={role.role}>
                                 <ItemCard
                                     style={{
-                                        cursor: role.editable ? 'pointer' : '',
-                                        justifyContent: 'center',
-                                        opacity: role.editable ? 1 : 0.6
+                                        justifyContent: 'center'
                                     }}>
                                     <Typography variant="body1">
                                         {role.shortLabel}
@@ -101,7 +90,9 @@ function CampusSection({ campusData, usersTotalByRole }) {
                     </Grid>
                 </Grid>
                 <Grid>
-                    <EditButton onClick={() => {}} />
+                    <EditButton
+                        onClick={() => router.push(ADMIN_CAMPUS_ROLE_EDITION(campusData.id))}
+                    />
                 </Grid>
             </Grid>
         </Grid>
