@@ -4,16 +4,26 @@ import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 import { GOUV_DOMAIN_MAIL } from '../../../utils/mappers/createUserFromMail';
 import { CreateRoleField } from '../../index';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: `20px 10px 23px 50px`,
+        backgroundColor: theme.palette.background.layout,
+        borderRadius: 4
+    }
+}));
 
 function AdminSection({ listAdmins, roleData }) {
+    const classes = useStyles();
     return (
-        <Grid container alignItems="center">
+        <Grid container alignItems="center" className={classes.root}>
             <CreateRoleField
                 roleData={roleData}
                 usersList={listAdmins.list}
                 mailDomain={GOUV_DOMAIN_MAIL}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                    Administrateur(s) fonctionnel(s) ({listAdmins.meta.total})
+                    Administrateur(s) fonctionnel(s)
                 </Typography>
             </CreateRoleField>
         </Grid>

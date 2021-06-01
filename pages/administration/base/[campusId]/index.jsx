@@ -9,10 +9,10 @@ import { useRouter } from 'next/router';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         '& > *': {
-            marginBottom: theme.spacing(6)
+            marginBottom: 10
         }
     }
 }));

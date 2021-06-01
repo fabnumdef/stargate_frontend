@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
+import AddIcon from '@material-ui/icons/Add';
 
 import {
     ADMIN_CAMPUS_UNITS_EDITION,
@@ -15,7 +16,9 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
-        paddingLeft: theme.spacing(5)
+        padding: `20px 10px 23px 50px`,
+        backgroundColor: theme.palette.background.layout,
+        borderRadius: 4
     },
     warningIcon: {
         width: 30
@@ -57,12 +60,14 @@ function UnitSection({ listUnits, campusId }) {
                                 justifyContent: 'center',
                                 opacity: 1
                             }}>
-                            <Typography variant="body1">{unit.label}</Typography>
+                            <Typography variant="body1">{unit.trigram}</Typography>
                         </ItemCard>
                     </Grid>
                 ))}
                 <Grid item onClick={handleCreateUnit}>
-                    <ItemCard style={{ cursor: 'pointer', fontSize: 35 }}>+</ItemCard>
+                    <ItemCard style={{ cursor: 'pointer', justifyContent: 'center', width: 45 }}>
+                        <AddIcon />
+                    </ItemCard>
                 </Grid>
             </Grid>
         </Grid>

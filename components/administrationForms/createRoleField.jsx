@@ -20,13 +20,17 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginBottom: 40
+        marginBottom: 10
     },
     fieldTitle: {
         marginBottom: 17
     },
     fieldSection: {
-        width: 400
+        width: 400,
+        marginRight: 40
+    },
+    fieldInput: {
+        backgroundColor: theme.palette.common.white
     },
     listUsers: {
         marginTop: 10,
@@ -40,9 +44,6 @@ const useStyles = makeStyles((theme) => ({
             transition: '.4s'
         }
     },
-    noWarningBlock: {
-        marginLeft: 50
-    },
     warningIcon: {
         width: 50
     },
@@ -52,6 +53,13 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             color: theme.palette.primary.main
         }
+    },
+    addButton: {
+        width: 109,
+        height: 50,
+        marginTop: 5,
+        padding: '10px 27px 10px 26px',
+        borderRadius: 25
     }
 }));
 
@@ -225,9 +233,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
             <form onSubmit={handleSubmit(handleCreateUserWithRole)}>
                 <Grid>
                     <Grid container className={classes.fieldTitle}>
-                        <Grid className={classes.warningIcon}>
-                            {!usersList.length && <WarningIcon />}
-                        </Grid>
+                        {!usersList.length && <WarningIcon className={classes.warningIcon} />}
                         {children}
                     </Grid>
                     <Grid container item className={classes.noWarningBlock}>
@@ -235,9 +241,10 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                             <Controller
                                 as={
                                     <TextField
-                                        label="Adresse email"
+                                        label="Adresse mail"
                                         variant="outlined"
                                         fullWidth
+                                        className={classes.fieldInput}
                                         error={Object.prototype.hasOwnProperty.call(
                                             errors,
                                             'userEmail'
@@ -286,7 +293,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                                 type="submit"
                                 variant="outlined"
                                 color="primary"
-                                className={classes.noWarningBlock}>
+                                className={classes.addButton}>
                                 Ajouter
                             </Button>
                         </Grid>
