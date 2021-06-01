@@ -7,13 +7,13 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useQuery } from '@apollo/client';
-// import { useSnackBar } from '../../lib/hooks/snackbar';
 import { Controller, useForm } from 'react-hook-form';
 import { GET_PLACES_LIST } from '../../lib/apollo/queries';
 import { useRouter } from 'next/router';
-
+import { mapUnitData } from '../../utils/mappers/adminMappers';
 import { ROLES } from '../../utils/constants/enums';
 import { DndModule } from '../../containers';
+// import { GOUV_DOMAIN_MAIL } from '../../utils/mappers/createUserFromMail';
 
 import ListLieux from '../lists/checkLieux';
 import Paper from '@material-ui/core/Paper';
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const UnitForm = ({ defaultValues, type, submitForm }) => {
+const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
     const router = useRouter();
     const { campusId } = router.query;
     const classes = useStyles();
@@ -61,11 +61,9 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
 
     const [cards, setCards] = useState(type === 'create' ? allCards : createDefaultCards);
 
-    const findOs = cards.find((card) => card.role === ROLES.ROLE_SECURITY_OFFICER.role);
-
-    // const { addAlert } = useSnackBar();
-
-    const { handleSubmit, errors, control } = useForm();
+    const { handleSubmit, errors, control } = useForm({
+        defaultValues: { places: defaultValues.placesList }
+    });
 
     const checkMailFormat = (value) => {
         const [username, mail] = value.split('@');
@@ -75,7 +73,12 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
     const { data: placesList, loading } = useQuery(GET_PLACES_LIST, { variables: { campusId } });
 
     const onSubmit = (formData) => {
-        submitForm(formData);
+        const unitData = mapUnitData(formData, cards);
+        submitForm(formData, unitData);
+    };
+
+    const onDelete = () => {
+        deleteUnit();
     };
 
     const listPlaces = defaultValues.placesList.concat(
@@ -173,8 +176,8 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                         "L'email doit être au format nom.prenom@intradef.gouv.fr"
                                 }}
                                 control={control}
-                                name="corresemail"
-                                defaultValue=""
+                                name="unitEmail"
+                                defaultValue={defaultValues.unitEmail ?? ''}
                             />
                         </Grid>
                         <Grid item sm={12} md={2}>
@@ -198,16 +201,16 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                         placeholder="email"
                                     />
                                 }
-                                rules={{
-                                    validate: {
-                                        valide: (value) =>
-                                            value.trim() !== '' ||
-                                            "Le correspondant d'unité est obligatoire",
-                                        format: (value) =>
-                                            checkMailFormat(value) ||
-                                            "L'email doit être au format nom.prenom@intradef.gouv.fr"
-                                    }
-                                }}
+                                // rules={{
+                                //     validate: {
+                                //         valide: (value) =>
+                                //             value.trim() !== '' ||
+                                //             "Le correspondant d'unité est obligatoire",
+                                //         format: (value) =>
+                                //             checkMailFormat(value) ||
+                                //             `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`
+                                //     }
+                                // }}
                                 control={control}
                                 name="corresemail"
                                 defaultValue={
@@ -237,16 +240,16 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                         placeholder="email"
                                     />
                                 }
-                                rules={{
-                                    validate: {
-                                        valide: (value) =>
-                                            (findOs && value.trim() !== '') ||
-                                            "L'officier de sécurité est obligatoire",
-                                        format: (value) =>
-                                            checkMailFormat(value) ||
-                                            "L'email doit être au format nom.prenom@intradef.gouv.fr"
-                                    }
-                                }}
+                                // rules={{
+                                //     validate: {
+                                //         valide: (value) =>
+                                //             value.trim() !== '' ||
+                                //             "L'officier de sécurité est obligatoire",
+                                //         format: (value) =>
+                                //             checkMailFormat(value) ||
+                                //             `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`
+                                //     }
+                                // }}
                                 control={control}
                                 name="offsecuemail"
                                 defaultValue={defaultValues.unitOfficer?.email?.original ?? ''}
@@ -277,6 +280,7 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                                         setExpanded={setExpanded}
                                         defaultChecked={defaultValues.placesList}
                                         onChange={(checked) => checked}
+                                        label="Lieux"
                                     />
                                 }
                                 rules={{
@@ -302,6 +306,11 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
                     <Button type="submit" variant="contained" color="primary">
                         Valider
                     </Button>
+                    {defaultValues.placesList.length > 0 && (
+                        <Button onClick={() => onDelete()} variant="contained" color="primary">
+                            Supprimer
+                        </Button>
+                    )}
                 </Grid>
             </form>
         </Paper>
@@ -311,7 +320,8 @@ const UnitForm = ({ defaultValues, type, submitForm }) => {
 UnitForm.propTypes = {
     defaultValues: PropTypes.objectOf(PropTypes.shape).isRequired,
     type: PropTypes.string.isRequired,
-    submitForm: PropTypes.func.isRequired
+    submitForm: PropTypes.func.isRequired,
+    deleteUnit: PropTypes.func
 };
 
 export default UnitForm;

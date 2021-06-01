@@ -1,12 +1,13 @@
 import React from 'react';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery, useApolloClient } from '@apollo/client';
 import { useRouter } from 'next/router';
 import PageTitle from '../../../../../components/styled/common/pageTitle';
 import UnitForm from '../../../../../components/administrationForms/unitForm';
 import { useSnackBar } from '../../../../../lib/hooks/snackbar';
 import { useLogin } from '../../../../../lib/loginContext';
-import { FORMS_LIST, ROLES } from '../../../../../utils/constants/enums';
-import { GET_UNITS_LIST } from '../../../../../lib/apollo/queries';
+import { ROLES } from '../../../../../utils/constants/enums';
+import { FIND_USER_BY_MAIL, GET_CAMPUS } from '../../../../../lib/apollo/queries';
+import { ADD_USER_ROLE } from '../../../../../lib/apollo/mutations';
 
 const CREATE_UNIT = gql`
     mutation createUnit($campusId: String!, $unit: UnitInput!) {
@@ -20,28 +21,6 @@ const CREATE_UNIT = gql`
                         role
                         behavior
                     }
-                }
-            }
-        }
-    }
-`;
-
-const EDIT_USER = gql`
-    mutation editUser($id: ObjectID!, $user: UserInput!) {
-        editUser(id: $id, user: $user) {
-            id
-            firstname
-            lastname
-            roles {
-                role
-                userInCharge
-                campuses {
-                    id
-                    label
-                }
-                units {
-                    id
-                    label
                 }
             }
         }
@@ -66,145 +45,90 @@ const EDIT_PLACE = gql`
 function CreateUnit() {
     const { addAlert } = useSnackBar();
     const router = useRouter();
+    const client = useApolloClient();
 
     const { campusId } = router.query;
-
+    const { data: campusData } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
     const [createUnit] = useMutation(CREATE_UNIT, {
         variables: { campusId },
-        update: (
-            cache,
-            {
-                data: {
-                    mutateCampus: { createUnit: createdUnit }
-                }
-            }
-        ) => {
-            const currentUnits = cache.readQuery({
-                query: GET_UNITS_LIST,
-                variables: {
-                    cursor: { first: 10, offset: 0 },
-                    search: null,
-                    campusId
-                }
-            });
-            const updatedTotal = currentUnits.getCampus.listUnits.meta.total + 1;
-            const updatedUnits = {
-                ...currentUnits,
-                getCampus: {
-                    ...currentUnits.getCampus,
-                    listUnits: {
-                        ...currentUnits.getCampus.listUnits,
-                        ...(updatedTotal < 10 && {
-                            list: [...currentUnits.getCampus.listUnits.list, createdUnit]
-                        }),
-                        meta: {
-                            ...currentUnits.getCampus.listUnits.meta,
-                            total: updatedTotal
-                        }
-                    }
-                }
-            };
-            cache.writeQuery({
-                query: GET_UNITS_LIST,
-                variables: {
-                    cursor: { first: 10, offset: 0 },
-                    search: null,
-                    campusId
-                },
-                data: updatedUnits
-            });
-        }
+        onError: () =>
+            addAlert({ message: "Erreur lors de la création de l'unité", severity: 'error' })
     });
-    const [editUserReq] = useMutation(EDIT_USER);
+    // const [editUserReq] = useMutation(EDIT_USER);
     const [editPlaceReq] = useMutation(EDIT_PLACE, { variables: { campusId } });
     const { activeRole } = useLogin();
 
-    const editUser = async (id, roles) => {
-        try {
-            await editUserReq({
-                variables: {
-                    id,
-                    user: { roles }
-                }
-            });
-        } catch (e) {
-            addAlert({ message: 'Une erreur est survenue', severity: 'error' });
-        }
-        return true;
-    };
+    const [addUserRole] = useMutation(ADD_USER_ROLE, {
+        onError: () =>
+            addAlert({
+                message: 'Erreur lors de la supression de role utilisateur',
+                severity: 'error'
+            })
+    });
 
-    const submitCreateUnit = async (formData, unitData, assistantsList) => {
+    const submitCreateUnit = async (formData, unitData) => {
         try {
             const { data: unitResponse } = await createUnit({ variables: { unit: unitData } });
             const unitId = unitResponse.mutateCampus.createUnit.id;
-            await editUser(formData.unitCorrespondent, {
-                role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-                userInCharge: formData.unitCorrespondent,
-                campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-                units: { id: unitId, label: unitData.label }
+
+            const { data: findCuData } = await client.query({
+                query: FIND_USER_BY_MAIL,
+                variables: {
+                    email: formData.corresemail
+                },
+                fetchPolicy: 'no-cache'
             });
+
             await Promise.all(
                 formData.places.map(async (place) => {
                     await editPlaceReq({
                         variables: {
                             id: place.id,
-                            place: { unitInCharge: { id: unitId } }
+                            place: { unitInCharge: { id: unitId, label: unitData.label } }
                         }
                     });
                 })
             );
-            if (assistantsList[FORMS_LIST.CORRES_ASSISTANTS].length) {
-                await Promise.all(
-                    assistantsList[FORMS_LIST.CORRES_ASSISTANTS].map(async (user) => {
-                        if (user.toDelete) {
-                            return user;
+
+            addUserRole({
+                variables: {
+                    id: findCuData.findUser.id,
+                    roleData: {
+                        role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
+                        campus: { id: campusId, label: campusData.label },
+                        unit: { id: unitId, label: unitData.label }
+                    }
+                }
+            });
+
+            if (formData.offsecuemail) {
+                const { data: findOsData } = await client.query({
+                    query: FIND_USER_BY_MAIL,
+                    variables: {
+                        email: formData.offsecuemail
+                    },
+                    fetchPolicy: 'no-cache'
+                });
+
+                addUserRole({
+                    variables: {
+                        id: findOsData.findUser.id,
+                        roleData: {
+                            role: ROLES.ROLE_SECURITY_OFFICER.role,
+                            campus: { id: campusId, label: campusData.label },
+                            unit: { id: unitId, label: unitData.label }
                         }
-                        await editUser(user.id, {
-                            role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-                            userInCharge: formData.unitCorrespondent,
-                            campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-                            units: { id: unitId, label: unitData.label }
-                        });
-                        return user;
-                    })
-                );
-            }
-            if (formData.unitOfficer) {
-                await editUser(formData.unitOfficer, {
-                    role: ROLES.ROLE_SECURITY_OFFICER.role,
-                    userInCharge: formData.unitOfficer,
-                    campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-                    units: { id: unitId, label: unitData.label }
+                    }
                 });
             }
-            if (assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].length) {
-                await Promise.all(
-                    assistantsList[FORMS_LIST.OFFICER_ASSISTANTS].map(async (user) => {
-                        if (user.toDelete) {
-                            return user;
-                        }
-                        await editUser(user.id, {
-                            role: ROLES.ROLE_SECURITY_OFFICER.role,
-                            userInCharge: formData.unitOfficer,
-                            campuses: { id: 'NAVAL-BASE', label: 'Base Navale' },
-                            units: { id: unitId, label: unitData.label }
-                        });
-                        return user;
-                    })
-                );
-            }
-            addAlert({ message: "L'unité a bien été créé", severity: 'success' });
-            return router.push('/administration/unites');
+            addAlert({ message: "L'unité a bien été créée", severity: 'success' });
+            return router.back();
         } catch (e) {
             return addAlert({ message: 'Une erreur est survenue', severity: 'error' });
         }
     };
 
     const defaultValues = {
-        assistantsList: {
-            [FORMS_LIST.CORRES_ASSISTANTS]: [],
-            [FORMS_LIST.OFFICER_ASSISTANTS]: []
-        },
         placesList: [],
         unitOfficer: {},
         unitCorrespondent: {}
