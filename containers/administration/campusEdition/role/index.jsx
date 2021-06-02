@@ -14,11 +14,12 @@ import HeaderPageBackBtn from '../../../../components/styled/headerPageBackBtn';
 const subtitles = ['Configuration validateurs'];
 
 const selectRoleComponent = (role, campus) => {
+    const campusData = { id: campus.id, label: campus.label };
     switch (role) {
         case ROLES.ROLE_ACCESS_OFFICE.role:
-            return <AccOffEditContainer role={role} campus={campus} />;
+            return <AccOffEditContainer role={role} campus={campusData} />;
         case ROLES.ROLE_SCREENING.role:
-            return <ScreeningEditContainer role={role} campus={campus} />;
+            return <ScreeningEditContainer role={role} campus={campusData} />;
         default:
             return <div />;
     }

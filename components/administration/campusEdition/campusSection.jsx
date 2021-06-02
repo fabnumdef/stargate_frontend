@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 4
     },
     emptyValidatorsIcon: {
-        width: 17,
-        height: 14,
+        marginLeft: 5,
+        height: 22,
         color: theme.palette.warning.main
     }
 }));
@@ -78,12 +78,12 @@ function CampusSection({ campusData, usersTotalByRole }) {
                                     style={{
                                         justifyContent: 'center'
                                     }}>
-                                    <Typography variant="body1">
-                                        {role.shortLabel}
+                                    <Grid container justify="center">
+                                        <Typography variant="body1">{role.shortLabel}</Typography>
                                         {usersTotalByRole[role.role] < 1 && (
                                             <WarningIcon className={classes.emptyValidatorsIcon} />
                                         )}
-                                    </Typography>
+                                    </Grid>
                                 </ItemCard>
                             </Grid>
                         ))}

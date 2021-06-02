@@ -144,7 +144,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                     severity: 'success'
                 });
             }
-            return true;
+            return setValue('userEmail', '');
         } catch (e) {
             switch (true) {
                 case e.message === 'GraphQL error: User already exists':
@@ -231,6 +231,10 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
         }
     };
 
+    const displayEmail = (mail) => {
+        return mail.length > 30 ? mail.slice(0, 30) + '...' : mail;
+    };
+
     return (
         <Grid className={classes.root}>
             <form onSubmit={handleSubmit(handleCreateUserWithRole)}>
@@ -274,7 +278,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                                                 className={classes.userListItem}>
                                                 <Grid item>
                                                     <Typography variant="body1">
-                                                        {user.email.original}
+                                                        {displayEmail(user.email.original)}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item className={classes.iconContainer}>
