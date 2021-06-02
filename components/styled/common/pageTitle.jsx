@@ -9,7 +9,6 @@ const useStyles = makeStyles(() => ({
         width: '100%'
     },
     pageTitle: {
-        fontSize: '1.50rem',
         marginBottom: 24,
         '& h2': {
             fontSize: '1.75rem',
@@ -27,10 +26,10 @@ function PageTitle({ children, subtitles }) {
             <Typography variant="h2">{`${children} `}</Typography>
             {subtitles &&
                 subtitles.map((sub, i) => (
-                    <span key={sub + i}>
+                    <Typography variant="h2" key={sub + i}>
                         &gt;
                         {` ${sub} `}
-                    </span>
+                    </Typography>
                 ))}
         </Grid>
     );
