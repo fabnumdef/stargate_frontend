@@ -10,31 +10,30 @@ function CampusSectionContainer({ campusId }) {
     const [usersTotalByRole, setUsersTotalByRole] = useState(null);
     const { data: campusData } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
 
-    const initData = async () => {
-        let usersTotal = {};
-        await Promise.all(
-            [ROLES.ROLE_ACCESS_OFFICE.role, ROLES.ROLE_SCREENING.role].map(async (role) => {
-                const users = await client.query({
-                    query: LIST_USERS,
-                    variables: { hasRole: { role }, campusId }
-                });
-                usersTotal = {
-                    ...usersTotal,
-                    [role]: users.data.listUsers.meta.total
-                };
-            })
-        );
-        setUsersTotalByRole(usersTotal);
-    };
-
     useEffect(() => {
-        if (!usersTotalByRole) {
-            initData();
+        async function loadUsersTotalByRole() {
+            let usersTotal = {};
+            await Promise.all(
+                [ROLES.ROLE_ACCESS_OFFICE.role, ROLES.ROLE_SCREENING.role].map(async (role) => {
+                    const users = await client.query({
+                        query: LIST_USERS,
+                        variables: { hasRole: { role }, campusId }
+                    });
+                    usersTotal = {
+                        ...usersTotal,
+                        [role]: users.data.listUsers.meta.total
+                    };
+                })
+            );
+            setUsersTotalByRole(usersTotal);
         }
-    }, [usersTotalByRole]);
+
+        if (!campusData) return;
+        loadUsersTotalByRole();
+    }, [campusData]);
+
     return (
-        usersTotalByRole &&
-        campusData && (
+        usersTotalByRole && (
             <CampusSection campusData={campusData.getCampus} usersTotalByRole={usersTotalByRole} />
         )
     );

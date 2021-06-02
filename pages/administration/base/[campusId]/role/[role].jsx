@@ -11,7 +11,7 @@ function RoleEditionPage() {
     const { campusId, role } = router.query;
 
     if (!campusId || !role) {
-        return null;
+        return '';
     }
 
     const { data } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
@@ -24,7 +24,7 @@ function RoleEditionPage() {
             case ROLES.ROLE_SCREENING.role:
                 return <ScreeningEditContainer campus={{ id, label }} role={role} />;
             default:
-                return <div></div>;
+                return '';
         }
     };
 
