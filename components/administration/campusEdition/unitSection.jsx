@@ -13,6 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import { makeStyles } from '@material-ui/core/styles';
+import SelectedBadge from '../../styled/common/TabBadge';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -45,10 +46,11 @@ function UnitSection({ listUnits, campusId }) {
                         <WarningIcon />
                     </Grid>
                 )}
-                <Grid>
+                <Grid container>
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                        Unités ({listUnits.meta.total})
+                        Unités
                     </Typography>
+                    <SelectedBadge small>{listUnits.meta.total}</SelectedBadge>
                 </Grid>
             </Grid>
             <Grid container item sm={12} md={12} className={classes.listUnits}>

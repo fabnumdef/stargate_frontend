@@ -7,6 +7,7 @@ import { ADMIN_CAMPUS_PLACES_EDITION } from '../../../utils/constants/appUrls';
 import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
 import EditButton from '../../styled/EditButton';
+import SelectedBadge from '../../styled/common/TabBadge';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,10 +30,11 @@ function PlaceSection({ listPlaces, campusId }) {
                 <Grid item>
                     {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
                 </Grid>
-                <Grid>
+                <Grid container>
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                        Lieux ({listPlaces.meta.total})
+                        Lieux
                     </Typography>
+                    <SelectedBadge small>{listPlaces.meta.total}</SelectedBadge>
                 </Grid>
             </Grid>
             <Grid>
