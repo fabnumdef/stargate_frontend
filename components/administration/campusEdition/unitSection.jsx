@@ -15,13 +15,10 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
-        paddingLeft: theme.spacing(4)
+        paddingLeft: theme.spacing(5)
     },
     warningIcon: {
         width: 30
-    },
-    listUnits: {
-        marginLeft: theme.spacing(8)
     }
 }));
 
@@ -38,11 +35,13 @@ function UnitSection({ listUnits, campusId }) {
     };
 
     return (
-        <Grid container alignItems="center">
-            <Grid container item className={classes.globalContainer}>
-                <Grid item className={classes.warningIcon}>
-                    {!listUnits.list.length && <WarningIcon />}
-                </Grid>
+        <Grid container alignItems="center" className={classes.globalContainer}>
+            <Grid container item>
+                {!listUnits.list.length && (
+                    <Grid item className={classes.warningIcon}>
+                        <WarningIcon />
+                    </Grid>
+                )}
                 <Grid>
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                         Unités ({listUnits.meta.total})

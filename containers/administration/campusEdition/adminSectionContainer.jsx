@@ -5,6 +5,11 @@ import { useQuery } from '@apollo/client';
 import { LIST_USERS, GET_CAMPUS } from '../../../lib/apollo/queries';
 import { ROLES } from '../../../utils/constants/enums';
 
+const roleData = (campusData) => ({
+    role: ROLES.ROLE_ADMIN.role,
+    campus: { id: campusData.id, label: campusData.label }
+});
+
 function AdminSectionContainer({ campusId }) {
     const { data, loading } = useQuery(LIST_USERS, {
         variables: { campus: campusId, hasRole: { role: ROLES.ROLE_ADMIN.role } }
@@ -12,10 +17,14 @@ function AdminSectionContainer({ campusId }) {
     const { data: campusData, loading: loadCampus } = useQuery(GET_CAMPUS, {
         variables: { id: campusId }
     });
+
     return (
         !loading &&
         !loadCampus && (
-            <AdminSection listAdmins={data?.listUsers || []} campusData={campusData.getCampus} />
+            <AdminSection
+                listAdmins={data?.listUsers || []}
+                roleData={roleData(campusData.getCampus)}
+            />
         )
     );
 }

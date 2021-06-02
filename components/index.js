@@ -13,6 +13,7 @@ export { default as FormInfosRequest } from './requestForms/infosRequest';
 export { default as FormInfosRecapDemande } from './requestForms/infosFinalView';
 export { default as FormInfosVisitor } from './requestForms/infosVisitor';
 export { default as FormInfosImport } from './requestForms/infosImport';
+export { default as CreateRoleField } from './administrationForms/createRoleField';
 // Tabs
 export { default as TabDemandesProgress } from './tabs/myRequest/tabMyRequestProgress';
 export { default as TabMesDemandesToTreat } from './tabs/myRequest/tabMyRequestToTreat';

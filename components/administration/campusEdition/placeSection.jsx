@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
-        paddingLeft: theme.spacing(4)
+        paddingLeft: theme.spacing(1)
     },
     warningIcon: {
         width: 30
