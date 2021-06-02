@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
 
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+import TableContainer from './styled/TableContainer';
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowProcess from './rows/RowProcess';
 
@@ -31,10 +31,8 @@ function createData(units) {
 }
 
 const useStyles = makeStyles({
-    root: {
-        border: '1px solid #F3F3F3',
-        minWidth: '300px',
-        overflowX: 'hidden'
+    table: {
+        zIndex: 1000
     }
 });
 
@@ -51,7 +49,7 @@ export default function TabProcess({ units }) {
     );
 
     return (
-        <TableContainer className={classes.root}>
+        <TableContainer height={36}>
             <Table stickyHeader aria-label="sticky table" size="small" className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -65,11 +63,11 @@ export default function TabProcess({ units }) {
                     </TableRow>
                 </TableHead>
 
-                <TableBody>
-                    {rows?.map((row) => (
-                        <RowProcess key={row.unit} row={row} columns={columns} />
-                    ))}
-                </TableBody>
+                {rows?.map((row) => (
+                    <TableBody key={row.unit}>
+                        <RowProcess row={row} columns={columns} />
+                    </TableBody>
+                ))}
             </Table>
         </TableContainer>
     );

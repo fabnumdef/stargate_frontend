@@ -13,7 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import CustomTableCellHeader from './cells/TableCellHeader';
 
 import { EMPLOYEE_TYPE } from '../../utils/constants/enums';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableContainer from './styled/TableContainer';
 import SquareButton from '../styled/common/squareButton';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -51,32 +51,6 @@ function createData({ id, firstname, birthLastname, rank, company, employeeType 
 }
 
 const useStyles = makeStyles((theme) => ({
-    cont: {
-        position: 'relative'
-    },
-    root: {
-        borderTop: '1px solid rgba(224, 224, 224, 1)',
-        padding: '0 20px 0 20px',
-        background: theme.palette.background.table,
-        maxHeight: '63vh',
-        overflowX: 'hidden'
-    },
-    header: {
-        position: 'absolute',
-        top: '1px',
-        left: '0',
-        width: '100%',
-        height: '62px',
-        backgroundColor: 'white',
-        '&::after': {
-            content: '""',
-            position: 'absolute',
-            bottom: '-1px',
-            height: '1px',
-            width: '100%',
-            backgroundColor: 'rgba(224, 224, 224, 1)'
-        }
-    },
     table: {
         zIndex: 10
     },
@@ -133,8 +107,8 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
     };
 
     return (
-        <div className={classes.cont}>
-            <TableContainer className={classes.root}>
+        <>
+            <TableContainer height={62}>
                 <Table stickyHeader aria-label="sticky table" className={classes.table}>
                     <TableHead>
                         <TableRow>
@@ -190,8 +164,7 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
                     setToDeleteID(null);
                 }}
             />
-            <div className={classes.header} />
-        </div>
+        </>
     );
 }
 

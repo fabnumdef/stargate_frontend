@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -15,36 +14,11 @@ import {
     ROLES
 } from '../../utils/constants/enums';
 import CustomTableCellHeader from './cells/TableCellHeader';
+import TableContainer from './styled/TableContainer';
 import RowTreatment from './rows/RowTreatments';
 import ProcessDialog from '../styled/common/ProcessDialogs';
 
-const useStyles = makeStyles((theme) => ({
-    cont: {
-        position: 'relative'
-    },
-    root: {
-        borderTop: '1px solid rgba(224, 224, 224, 1)',
-        padding: '0 20px 0 20px',
-        background: theme.palette.background.table,
-        maxHeight: '63vh',
-        overflowX: 'hidden'
-    },
-    header: {
-        position: 'absolute',
-        top: '1px',
-        left: '0',
-        width: '100%',
-        height: '57px',
-        backgroundColor: 'white',
-        '&::after': {
-            content: '""',
-            position: 'absolute',
-            bottom: '-1px',
-            height: '1px',
-            width: '100%',
-            backgroundColor: 'rgba(224, 224, 224, 1)'
-        }
-    },
+const useStyles = makeStyles(() => ({
     table: {
         zIndex: 10
     }
@@ -214,44 +188,41 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
         activeRoleCacheVar()
     ]);
     return (
-        <div className={classes.cont}>
-            <div className={classes.header} />
-            <TableContainer className={classes.root}>
-                <Table stickyHeader aria-label="sticky table" className={classes.table}>
-                    <TableHead>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <CustomTableCellHeader
-                                    id={column.id}
-                                    key={column.id}
-                                    align={column.align}>
-                                    {column.label || ''}
-                                </CustomTableCellHeader>
-                            ))}
-                        </TableRow>
-                    </TableHead>
+        <TableContainer height={57}>
+            <Table stickyHeader aria-label="sticky table" className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        {columns.map((column) => (
+                            <CustomTableCellHeader
+                                id={column.id}
+                                key={column.id}
+                                align={column.align}>
+                                {column.label || ''}
+                            </CustomTableCellHeader>
+                        ))}
+                    </TableRow>
+                </TableHead>
 
-                    {rows.map((row) => (
-                        <TableBody
-                            key={`${treated ? 'treated' : ''}_${row.request.id}_${row.visitor.id}`}>
-                            <RowTreatment
-                                choices={choices}
-                                row={row}
-                                modalOpen={() => setToViewVisitor(row.visitor)}
-                                columns={columns}
-                                treated={treated}
-                                exported={exported}
-                            />
-                        </TableBody>
-                    ))}
-                </Table>
-                <ProcessDialog
-                    isOpen={toViewVisitor !== null}
-                    units={toViewVisitor?.units}
-                    onClose={() => setToViewVisitor(null)}
-                />
-            </TableContainer>
-        </div>
+                {rows.map((row) => (
+                    <TableBody
+                        key={`${treated ? 'treated' : ''}_${row.request.id}_${row.visitor.id}`}>
+                        <RowTreatment
+                            choices={choices}
+                            row={row}
+                            modalOpen={() => setToViewVisitor(row.visitor)}
+                            columns={columns}
+                            treated={treated}
+                            exported={exported}
+                        />
+                    </TableBody>
+                ))}
+            </Table>
+            <ProcessDialog
+                isOpen={toViewVisitor !== null}
+                units={toViewVisitor?.units}
+                onClose={() => setToViewVisitor(null)}
+            />
+        </TableContainer>
     );
 };
 export default memo(TableTreatmentsToTreat);
