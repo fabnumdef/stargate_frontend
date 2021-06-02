@@ -1,4 +1,4 @@
-import { FORMS_LIST, ROLES } from '../constants/enums';
+import { ROLES } from '../constants/enums';
 
 export const mapUserData = (data, dataCampuses, dataUnits) => {
     const {
@@ -46,28 +46,12 @@ export const mapUnitData = (data, cards) => ({
 
 export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesList) => {
     const cards = unitData.workflow.steps.map((step) => ({ role: step.role }));
-    const unitCorrespondentIndex = unitCorresList.findIndex((u) =>
-        //@todo check if units includes u.id
-        u.roles.find((r) => r.role === ROLES.ROLE_UNIT_CORRESPONDENT.role)
-    );
-    const unitCorrespondent =
-        unitCorrespondentIndex !== -1 ? unitCorresList.splice(unitCorrespondentIndex, 1)[0] : {};
-
-    const unitOfficerIndex = unitOfficerList.findIndex((u) =>
-        u.roles.find((r) => r.role === ROLES.ROLE_SECURITY_OFFICER.role)
-    );
-    const unitOfficer =
-        unitOfficerIndex !== -1 ? unitOfficerList.splice(unitOfficerIndex, 1)[0] : {};
     return {
         name: unitData.label,
         trigram: unitData.trigram,
         cards,
-        unitCorrespondent,
-        unitOfficer,
-        assistantsList: {
-            [FORMS_LIST.CORRES_ASSISTANTS]: unitCorresList,
-            [FORMS_LIST.OFFICER_ASSISTANTS]: unitOfficerList
-        },
+        unitOfficerList,
+        unitCorresList,
         placesList
     };
 };

@@ -9,13 +9,16 @@ const cardIndex = {
 };
 
 const buttonContainer = {
-    alignSelf: 'end'
+    position: 'absolute'
 };
 
 const buttonStyle = {
     border: 'none',
     color: '#0e4194',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    position: 'relative',
+    top: '-8px',
+    left: 50
 };
 
 const ItemTypes = {
@@ -78,11 +81,11 @@ const DndCard = ({ id, text, index, moveCard, deleteCard }) => {
             <div style={cardIndex}>{index + 1}</div>
             <ItemCard opacity={opacity} style={{ cursor: 'move', opacity }}>
                 <div style={buttonContainer}>
+                    <div>{text}</div>
                     <button type="button" onClick={() => deleteCard(text)} style={buttonStyle}>
                         X
                     </button>
                 </div>
-                <div>{text}</div>
             </ItemCard>
         </div>
     );

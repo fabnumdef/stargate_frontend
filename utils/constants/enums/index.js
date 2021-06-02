@@ -92,7 +92,8 @@ export const ROLES = {
         shortLabel: 'G',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
-        permission: ['/', '/compte', '/a-propos', '/contactez-nous']
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
+        editable: true
     },
     ROLE_SECURITY_OFFICER: {
         role: 'ROLE_SECURITY_OFFICER',

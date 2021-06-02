@@ -18,13 +18,15 @@ import { DndModule } from '../../containers';
 import ListLieux from '../lists/checkLieux';
 import Paper from '@material-ui/core/Paper';
 import LoadingCircle from '../styled/animations/loadingCircle';
+import { CreateRoleField } from '../index';
+import { GOUV_DOMAIN_MAIL } from '../../utils/mappers/createUserFromMail';
 
 const useStyles = makeStyles((theme) => ({
     workflow: {
         marginLeft: theme.spacing(8)
     },
     createUnitForm: {
-        padding: '20px'
+        padding: '20px 50px'
     },
     fieldLabel: {
         fontWeight: 'bold'
@@ -51,7 +53,7 @@ const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
         .filter((role) => role.workflow)
         .map((role, i) => ({
             id: i + 1,
-            text: role.label,
+            text: role.shortLabel,
             role: role.role,
             behavior: role.behavior
         }));
@@ -64,11 +66,6 @@ const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
     const { handleSubmit, errors, control } = useForm({
         defaultValues: { places: defaultValues.placesList }
     });
-
-    const checkMailFormat = (value) => {
-        const [username, mail] = value.split('@');
-        return username.split('.').length === 2 && mail === 'intradef.gouv.fr';
-    };
 
     const { data: placesList, loading } = useQuery(GET_PLACES_LIST, { variables: { campusId } });
 
@@ -92,12 +89,12 @@ const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
                 <Grid container spacing={4}>
                     {/* Base part */}
                     <Grid item container spacing={2}>
-                        <Grid item sm={12} md={2}>
+                        <Grid item sm={12}>
                             <Typography variant="body1" className={classes.fieldLabel}>
-                                Nom complet unité :
+                                Unité :
                             </Typography>
                         </Grid>
-                        <Grid item sm={12} md={10}>
+                        <Grid item sm={12}>
                             <Controller
                                 as={
                                     <TextField
@@ -117,12 +114,12 @@ const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
                                 defaultValue={defaultValues.name || ''}
                             />
                         </Grid>
-                        <Grid item sm={12} md={2}>
+                        <Grid item sm={12}>
                             <Typography variant="body1" className={classes.fieldLabel}>
                                 Trigramme :
                             </Typography>
                         </Grid>
-                        <Grid item sm={12} md={10}>
+                        <Grid item sm={12}>
                             <Controller
                                 as={
                                     <TextField
@@ -154,108 +151,108 @@ const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
                         </Grid>
                     </Grid>
                     {/* Email part */}
-                    <Grid item container spacing={2}>
-                        <Grid item sm={12} md={2}>
-                            <Typography variant="body1" className={classes.fieldLabel}>
-                                E-mail fonctionnel :
-                            </Typography>
-                        </Grid>
-                        <Grid item sm={12} md={10}>
-                            <Controller
-                                as={
-                                    <TextField
-                                        size="small"
-                                        variant="outlined"
-                                        placeholder="email"
-                                        disabled
-                                    />
-                                }
-                                rules={{
-                                    format: (value) =>
-                                        checkMailFormat(value) ||
-                                        "L'email doit être au format nom.prenom@intradef.gouv.fr"
-                                }}
-                                control={control}
-                                name="unitEmail"
-                                defaultValue={defaultValues.unitEmail ?? ''}
-                            />
-                        </Grid>
-                        <Grid item sm={12} md={2}>
-                            <Typography variant="body1" className={classes.fieldLabel}>
-                                Correspondant unité :
-                            </Typography>
-                        </Grid>
-                        <Grid item sm={12} md={10}>
-                            <Controller
-                                as={
-                                    <TextField
-                                        size="small"
-                                        error={Object.prototype.hasOwnProperty.call(
-                                            errors,
-                                            'corresemail'
-                                        )}
-                                        helperText={
-                                            errors.corresemail && errors.corresemail.message
-                                        }
-                                        variant="outlined"
-                                        placeholder="email"
-                                    />
-                                }
-                                // rules={{
-                                //     validate: {
-                                //         valide: (value) =>
-                                //             value.trim() !== '' ||
-                                //             "Le correspondant d'unité est obligatoire",
-                                //         format: (value) =>
-                                //             checkMailFormat(value) ||
-                                //             `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`
-                                //     }
-                                // }}
-                                control={control}
-                                name="corresemail"
-                                defaultValue={
-                                    defaultValues.unitCorrespondent?.email?.original ?? ''
-                                }
-                            />
-                        </Grid>
-                        <Grid item sm={12} md={2}>
-                            <Typography variant="body1" className={classes.fieldLabel}>
-                                Officier sécurité :
-                            </Typography>
-                        </Grid>
-                        <Grid item sm={12} md={10}>
-                            <Controller
-                                as={
-                                    <TextField
-                                        size="small"
-                                        inputProps={{ 'data-testid': 'unit-offsecuemail' }}
-                                        error={Object.prototype.hasOwnProperty.call(
-                                            errors,
-                                            'offsecuemail'
-                                        )}
-                                        helperText={
-                                            errors.offsecuemail && errors.offsecuemail.message
-                                        }
-                                        variant="outlined"
-                                        placeholder="email"
-                                    />
-                                }
-                                // rules={{
-                                //     validate: {
-                                //         valide: (value) =>
-                                //             value.trim() !== '' ||
-                                //             "L'officier de sécurité est obligatoire",
-                                //         format: (value) =>
-                                //             checkMailFormat(value) ||
-                                //             `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`
-                                //     }
-                                // }}
-                                control={control}
-                                name="offsecuemail"
-                                defaultValue={defaultValues.unitOfficer?.email?.original ?? ''}
-                            />
-                        </Grid>
-                    </Grid>
+                    {/*<Grid item container spacing={2}>*/}
+                    {/*    <Grid item sm={12} md={2}>*/}
+                    {/*        <Typography variant="body1" className={classes.fieldLabel}>*/}
+                    {/*            E-mail fonctionnel :*/}
+                    {/*        </Typography>*/}
+                    {/*    </Grid>*/}
+                    {/*    <Grid item sm={12} md={10}>*/}
+                    {/*        <Controller*/}
+                    {/*            as={*/}
+                    {/*                <TextField*/}
+                    {/*                    size="small"*/}
+                    {/*                    variant="outlined"*/}
+                    {/*                    placeholder="email"*/}
+                    {/*                    disabled*/}
+                    {/*                />*/}
+                    {/*            }*/}
+                    {/*            rules={{*/}
+                    {/*                format: (value) =>*/}
+                    {/*                    checkMailFormat(value) ||*/}
+                    {/*                    "L'email doit être au format nom.prenom@intradef.gouv.fr"*/}
+                    {/*            }}*/}
+                    {/*            control={control}*/}
+                    {/*            name="unitEmail"*/}
+                    {/*            defaultValue={defaultValues.unitEmail ?? ''}*/}
+                    {/*        />*/}
+                    {/*    </Grid>*/}
+                    {/*    <Grid item sm={12} md={2}>*/}
+                    {/*        <Typography variant="body1" className={classes.fieldLabel}>*/}
+                    {/*            Correspondant unité :*/}
+                    {/*        </Typography>*/}
+                    {/*    </Grid>*/}
+                    {/*    <Grid item sm={12} md={10}>*/}
+                    {/*        <Controller*/}
+                    {/*            as={*/}
+                    {/*                <TextField*/}
+                    {/*                    size="small"*/}
+                    {/*                    error={Object.prototype.hasOwnProperty.call(*/}
+                    {/*                        errors,*/}
+                    {/*                        'corresemail'*/}
+                    {/*                    )}*/}
+                    {/*                    helperText={*/}
+                    {/*                        errors.corresemail && errors.corresemail.message*/}
+                    {/*                    }*/}
+                    {/*                    variant="outlined"*/}
+                    {/*                    placeholder="email"*/}
+                    {/*                />*/}
+                    {/*            }*/}
+                    {/*            // rules={{*/}
+                    {/*            //     validate: {*/}
+                    {/*            //         valide: (value) =>*/}
+                    {/*            //             value.trim() !== '' ||*/}
+                    {/*            //             "Le correspondant d'unité est obligatoire",*/}
+                    {/*            //         format: (value) =>*/}
+                    {/*            //             checkMailFormat(value) ||*/}
+                    {/*            //             `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`*/}
+                    {/*            //     }*/}
+                    {/*            // }}*/}
+                    {/*            control={control}*/}
+                    {/*            name="corresemail"*/}
+                    {/*            defaultValue={*/}
+                    {/*                defaultValues.unitCorrespondent?.email?.original ?? ''*/}
+                    {/*            }*/}
+                    {/*        />*/}
+                    {/*    </Grid>*/}
+                    {/*    <Grid item sm={12} md={2}>*/}
+                    {/*        <Typography variant="body1" className={classes.fieldLabel}>*/}
+                    {/*            Officier sécurité :*/}
+                    {/*        </Typography>*/}
+                    {/*    </Grid>*/}
+                    {/*    <Grid item sm={12} md={10}>*/}
+                    {/*        <Controller*/}
+                    {/*            as={*/}
+                    {/*                <TextField*/}
+                    {/*                    size="small"*/}
+                    {/*                    inputProps={{ 'data-testid': 'unit-offsecuemail' }}*/}
+                    {/*                    error={Object.prototype.hasOwnProperty.call(*/}
+                    {/*                        errors,*/}
+                    {/*                        'offsecuemail'*/}
+                    {/*                    )}*/}
+                    {/*                    helperText={*/}
+                    {/*                        errors.offsecuemail && errors.offsecuemail.message*/}
+                    {/*                    }*/}
+                    {/*                    variant="outlined"*/}
+                    {/*                    placeholder="email"*/}
+                    {/*                />*/}
+                    {/*            }*/}
+                    {/*            // rules={{*/}
+                    {/*            //     validate: {*/}
+                    {/*            //         valide: (value) =>*/}
+                    {/*            //             value.trim() !== '' ||*/}
+                    {/*            //             "L'officier de sécurité est obligatoire",*/}
+                    {/*            //         format: (value) =>*/}
+                    {/*            //             checkMailFormat(value) ||*/}
+                    {/*            //             `L'email doit être au format nom.prenom@${GOUV_DOMAIN_MAIL}`*/}
+                    {/*            //     }*/}
+                    {/*            // }}*/}
+                    {/*            control={control}*/}
+                    {/*            name="offsecuemail"*/}
+                    {/*            defaultValue={defaultValues.unitOfficer?.email?.original ?? ''}*/}
+                    {/*        />*/}
+                    {/*    </Grid>*/}
+                    {/*</Grid>*/}
                     {/* Workflow part */}
                     <Grid item container>
                         <Grid item sm={12}>
@@ -297,6 +294,30 @@ const UnitForm = ({ defaultValues, type, submitForm, deleteUnit }) => {
                                 </FormHelperText>
                             )}
                         </Grid>
+                    </Grid>
+                    <Grid item>
+                        <CreateRoleField
+                            roleData={{
+                                role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
+                                campus: { id: campusId }
+                            }}
+                            usersList={defaultValues.unitCorresList.list}
+                            mailDomain={GOUV_DOMAIN_MAIL}>
+                            <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                                Correspondant Unité
+                            </Typography>
+                        </CreateRoleField>
+                        <CreateRoleField
+                            roleData={{
+                                role: ROLES.ROLE_SECURITY_OFFICER.role,
+                                campus: { id: campusId }
+                            }}
+                            usersList={defaultValues.unitOfficerList.list}
+                            mailDomain={GOUV_DOMAIN_MAIL}>
+                            <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                                Officier Sécurité
+                            </Typography>
+                        </CreateRoleField>
                     </Grid>
                 </Grid>
                 <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
