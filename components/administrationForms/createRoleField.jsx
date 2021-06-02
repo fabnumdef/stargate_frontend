@@ -11,7 +11,7 @@ import { Typography } from '@material-ui/core';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import SquareButton from '../styled/common/squareButton';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { ADD_USER_ROLE, CREATE_USER, DELETE_ROLE } from '../../lib/apollo/mutations';
 import { FIND_USER_BY_MAIL, LIST_USERS } from '../../lib/apollo/queries';
@@ -20,13 +20,17 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginBottom: 40
+        marginBottom: 10
     },
     fieldTitle: {
         marginBottom: 17
     },
     fieldSection: {
-        width: 400
+        width: 400,
+        marginRight: 40
+    },
+    fieldInput: {
+        backgroundColor: theme.palette.common.white
     },
     listUsers: {
         marginTop: 10,
@@ -40,9 +44,6 @@ const useStyles = makeStyles((theme) => ({
             transition: '.4s'
         }
     },
-    noWarningBlock: {
-        marginLeft: 50
-    },
     warningIcon: {
         width: 50
     },
@@ -52,6 +53,16 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             color: theme.palette.primary.main
         }
+    },
+    iconSvg: {
+        height: 20
+    },
+    addButton: {
+        width: 109,
+        height: 50,
+        marginTop: 5,
+        padding: '10px 27px 10px 26px',
+        borderRadius: 25
     }
 }));
 
@@ -133,7 +144,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                     severity: 'success'
                 });
             }
-            return true;
+            return setValue('userEmail', '');
         } catch (e) {
             switch (true) {
                 case e.message === 'GraphQL error: User already exists':
@@ -220,14 +231,16 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
         }
     };
 
+    const displayEmail = (mail) => {
+        return mail.length > 30 ? mail.slice(0, 30) + '...' : mail;
+    };
+
     return (
         <Grid className={classes.root}>
             <form onSubmit={handleSubmit(handleCreateUserWithRole)}>
                 <Grid>
                     <Grid container className={classes.fieldTitle}>
-                        <Grid className={classes.warningIcon}>
-                            {!usersList.length && <WarningIcon />}
-                        </Grid>
+                        {!usersList.length && <WarningIcon className={classes.warningIcon} />}
                         {children}
                     </Grid>
                     <Grid container item className={classes.noWarningBlock}>
@@ -235,9 +248,10 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                             <Controller
                                 as={
                                     <TextField
-                                        label="Adresse email"
+                                        label="Adresse mail"
                                         variant="outlined"
                                         fullWidth
+                                        className={classes.fieldInput}
                                         error={Object.prototype.hasOwnProperty.call(
                                             errors,
                                             'userEmail'
@@ -264,15 +278,17 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                                                 className={classes.userListItem}>
                                                 <Grid item>
                                                     <Typography variant="body1">
-                                                        {user.email.original}
+                                                        {displayEmail(user.email.original)}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item>
+                                                <Grid item className={classes.iconContainer}>
                                                     <SquareButton
                                                         aria-label="deleteAdmin"
                                                         onClick={() => handleDeleteUser(user.id)}
                                                         classes={{ root: classes.icon }}>
-                                                        <DeleteOutlineIcon />
+                                                        <PersonAddDisabledIcon
+                                                            classes={{ root: classes.iconSvg }}
+                                                        />
                                                     </SquareButton>
                                                 </Grid>
                                             </Grid>
@@ -286,7 +302,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                                 type="submit"
                                 variant="outlined"
                                 color="primary"
-                                className={classes.noWarningBlock}>
+                                className={classes.addButton}>
                                 Ajouter
                             </Button>
                         </Grid>
