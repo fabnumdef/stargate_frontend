@@ -66,6 +66,7 @@ function CreateUnit() {
                 submitUnitForm={submitUnitForm}
                 campus={campusData.getCampus}
                 defaultValues={defaultValues}
+                cancelEdit={router.back()}
             />
         </>
     );

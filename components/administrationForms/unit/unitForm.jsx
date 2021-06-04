@@ -17,7 +17,8 @@ const useStyles = makeStyles((theme) => ({
     },
     createUnitForm: {
         width: '50%',
-        padding: '20px 30px'
+        padding: '20px 30px',
+        marginBottom: 20
     },
     fieldLabel: {
         fontWeight: 'bold'
@@ -29,12 +30,16 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'flex-end',
         '& button': {
-            margin: '3px'
+            margin: '25px 3px 0 3px'
         }
+    },
+    deleteButton: {
+        color: 'red',
+        justifyItems: 'flex-end'
     }
 }));
 
-const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit }) => {
+const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit, cancelEdit }) => {
     const classes = useStyles();
 
     const allCards = Object.values(ROLES)
@@ -66,6 +71,14 @@ const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit }) => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={4}>
                     {/* Base part */}
+                    {defaultValues.id && (
+                        <Button
+                            onClick={() => onDelete()}
+                            variant="outlined"
+                            className={classes.deleteButton}>
+                            Supprimer Unité
+                        </Button>
+                    )}
                     <Grid item container spacing={2}>
                         <Grid item sm={12}>
                             <Typography variant="body1" className={classes.fieldLabel}>
@@ -139,11 +152,11 @@ const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit }) => {
                     </Grid>
                 </Grid>
                 <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-                    <Button type="submit" variant="contained" color="primary">
-                        Valider
+                    <Button variant="outlined" color="primary" onClick={cancelEdit}>
+                        Annuler
                     </Button>
-                    <Button onClick={() => onDelete()} variant="contained" color="primary">
-                        Supprimer
+                    <Button type="submit" variant="outlined" color="primary">
+                        Valider
                     </Button>
                 </Grid>
             </form>
@@ -158,7 +171,8 @@ UnitForm.propTypes = {
         name: PropTypes.string.isRequired,
         trigram: PropTypes.string.isRequired,
         cards: PropTypes.array.isRequired
-    })
+    }),
+    cancelEdit: PropTypes.func.isRequired
 };
 
 export default UnitForm;

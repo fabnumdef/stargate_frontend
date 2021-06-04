@@ -9,6 +9,7 @@ export { default as HeaderConfigurationValidator } from './administration/campus
 export { default as AccOffEdit } from './administration/campusEdition/validatorConfiguration/AccOffEdit';
 export { default as ScreeningEdit } from './administration/campusEdition/validatorConfiguration/screeningEdit';
 // Administration Unit
+export { default as UnitDetail } from './administrationForms/unit/unitDetail';
 export { default as UnitForm } from './administrationForms/unit/unitForm';
 export { default as UnitPlacesForm } from './administrationForms/unit/unitPlacesForm';
 export { default as UnitRoleForm } from './administrationForms/unit/unitRoleForm';

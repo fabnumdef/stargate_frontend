@@ -5,10 +5,21 @@ import { CreateRoleField } from '../../index';
 import { ROLES } from '../../../utils/constants/enums';
 import { GOUV_DOMAIN_MAIL } from '../../../utils/mappers/createUserFromMail';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: `20px 10px 23px 50px`,
+        backgroundColor: theme.palette.background.layout,
+        borderRadius: 4
+    }
+}));
 
 const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList }) => {
+    const classes = useStyles();
+
     return (
-        <Grid>
+        <Grid className={classes.root}>
             <CreateRoleField
                 roleData={{
                     role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
