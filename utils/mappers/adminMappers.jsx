@@ -1,5 +1,14 @@
 import { ROLES } from '../constants/enums';
 
+export const workflowCards = Object.values(ROLES)
+    .filter((role) => role.workflow)
+    .map((role, i) => ({
+        id: i + 1,
+        text: role.shortLabel,
+        role: role.role,
+        behavior: role.behavior
+    }));
+
 export const mapUserData = (data, dataCampuses, dataUnits) => {
     const {
         listCampuses: { list: campuses }
@@ -44,15 +53,15 @@ export const mapUnitData = (data, cards) => ({
     }
 });
 
-export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesList) => {
-    const cards = unitData.workflow.steps.map((step) => ({ role: step.role }));
+export const mapEditUnit = (unitData) => {
+    const cards = unitData.workflow.steps.map((card) =>
+        workflowCards.find((c) => c.role === card.role)
+    );
     return {
+        id: unitData.id,
         name: unitData.label,
         trigram: unitData.trigram,
-        cards,
-        unitOfficerList,
-        unitCorresList,
-        placesList
+        cards
     };
 };
 

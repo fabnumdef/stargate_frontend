@@ -10,6 +10,10 @@ export { default as UnitSectionContainer } from './administration/campusEdition/
 export { default as AdminSectionContainer } from './administration/campusEdition/adminSectionContainer';
 export { default as ValidatorConfiguration } from './administration/campusEdition/role';
 
+export { default as UnitFormContainer } from './administration/forms/unit/unitFormContainer';
+export { default as UnitPlacesFormContainer } from './administration/forms/unit/unitPlacesFormContainer';
+export { default as UnitRoleFormContainer } from './administration/forms/unit/unitRoleFormContainer';
+
 export { default as RequestDetailToTreat } from './requestDetail/requestDetailToTreat';
 export { default as RequestDetailProgress } from './requestDetail/requestDetailProgress';
 export { default as RequestDetailTreated } from './requestDetail/requestDetailTreated';

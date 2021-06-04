@@ -63,10 +63,13 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 5,
         padding: '10px 27px 10px 26px',
         borderRadius: 25
+    },
+    disabledField: {
+        opacity: '0.6'
     }
 }));
 
-const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
+const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable }) => {
     const classes = useStyles();
     const { addAlert } = useSnackBar();
     const client = useApolloClient();
@@ -238,7 +241,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
     return (
         <Grid className={classes.root}>
             <form onSubmit={handleSubmit(handleCreateUserWithRole)}>
-                <Grid>
+                <Grid className={{ [classes.disabledField]: disable }}>
                     <Grid container className={classes.fieldTitle}>
                         {!usersList.length && <WarningIcon className={classes.warningIcon} />}
                         {children}
@@ -251,6 +254,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                                         label="Adresse mail"
                                         variant="outlined"
                                         fullWidth
+                                        disabled={disable}
                                         className={classes.fieldInput}
                                         error={Object.prototype.hasOwnProperty.call(
                                             errors,
@@ -299,6 +303,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                         </Grid>
                         <Grid item>
                             <Button
+                                disabled={disable}
                                 type="submit"
                                 variant="outlined"
                                 color="primary"
@@ -314,7 +319,8 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
 };
 
 CreateRoleField.defaultProps = {
-    usersList: []
+    usersList: [],
+    disable: false
 };
 
 CreateRoleField.propTypes = {
@@ -323,7 +329,8 @@ CreateRoleField.propTypes = {
     roleData: PropTypes.objectOf({
         role: PropTypes.string.isRequired
     }).isRequired,
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
+    disable: PropTypes.bool
 };
 
 export default CreateRoleField;

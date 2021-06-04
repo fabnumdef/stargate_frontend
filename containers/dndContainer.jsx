@@ -7,19 +7,27 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import PropTypes from 'prop-types';
 import DndCard from '../components/styled/dndCard';
-import EditButton from '../components/styled/EditButton';
+import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../components/styled/RoundedIconButton';
+import { makeStyles } from '@material-ui/core/styles';
 
-const style = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    width: '100%'
-};
-
-const addWorflowItemIcon = {
-    padding: '15px 0 0 5px'
-};
+const useStyles = makeStyles(() => ({
+    container: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        width: '100%'
+    },
+    addButton: {
+        height: '100%',
+        display: 'flex',
+        alignItems: 'flex-end'
+    },
+    selectList: {
+        display: 'none'
+    }
+}));
 
 const DndContainer = ({ cards, setCards, allCards }) => {
+    const classes = useStyles();
     const [openMenu, toggleMenu] = useState(false);
     const moveCard = useCallback(
         (dragIndex, hoverIndex) => {
@@ -59,12 +67,15 @@ const DndContainer = ({ cards, setCards, allCards }) => {
     );
     return (
         <DndProvider backend={HTML5Backend}>
-            <div style={style}>
+            <div className={classes.container}>
                 {cards.map((card, i) => renderCard(card, i))}
                 {cards.length < allCards.length && (
                     <FormControl>
-                        <div id="selectWorkflow" style={addWorflowItemIcon}>
-                            <EditButton onClick={() => toggleMenu(!openMenu)} />
+                        <div id="selectWorkflow" className={classes.addButton}>
+                            <RoundedIconButton
+                                onClick={() => toggleMenu(!openMenu)}
+                                type={ROUNDED_BUTTON_TYPE.ADD}
+                            />
                         </div>
                         <Select
                             variant="outlined"
@@ -74,7 +85,7 @@ const DndContainer = ({ cards, setCards, allCards }) => {
                             open={openMenu}
                             onClose={() => toggleMenu(false)}
                             onChange={(evt) => addCard(evt.target.value)}
-                            style={{ display: 'none' }}
+                            className={classes.selectList}
                             MenuProps={{
                                 anchorEl: document.getElementById('selectWorkflow'),
                                 style: { marginTop: 60 }
