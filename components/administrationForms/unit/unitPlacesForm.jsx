@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { Controller, useForm } from 'react-hook-form';
 
 import ListLieux from '../../lists/checkLieux';
 import ItemCard from '../../styled/itemCard';
 import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
+import RoundButton from '../../styled/common/roundButton';
 
 const useStyles = makeStyles((theme) => ({
     placesForm: {
@@ -94,15 +94,15 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces }) => {
             <Grid sm={editPlaces ? 3 : 1} className={classes.buttonsContainer}>
                 {editPlaces ? (
                     <Grid>
-                        <Button
+                        <RoundButton
                             onClick={() => setEditPlaces(false)}
                             variant="outlined"
                             color="primary">
                             Annuler
-                        </Button>
-                        <Button type="submit" variant="outlined" color="primary">
+                        </RoundButton>
+                        <RoundButton type="submit" variant="outlined" color="primary">
                             Valider
-                        </Button>
+                        </RoundButton>
                     </Grid>
                 ) : (
                     <Grid>

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { mapUnitData } from '../../../utils/mappers/adminMappers';
 import { ROLES } from '../../../utils/constants/enums';
 import { DndModule } from '../../../containers';
 import Paper from '@material-ui/core/Paper';
+import RoundButton from '../../styled/common/roundButton';
 
 const useStyles = makeStyles((theme) => ({
     workflow: {
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit, cancelEdit }) => {
+const UnitForm = ({ defaultValues, submitForm, handleDeleteUnit, cancelEdit }) => {
     const classes = useStyles();
 
     const allCards = Object.values(ROLES)
@@ -63,7 +63,7 @@ const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit, cancelEdit }) =
     };
 
     const onDelete = () => {
-        submitDeleteUnit();
+        handleDeleteUnit(defaultValues.name);
     };
 
     return (
@@ -72,12 +72,12 @@ const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit, cancelEdit }) =
                 <Grid container spacing={4}>
                     {/* Base part */}
                     {defaultValues.id && (
-                        <Button
+                        <RoundButton
                             onClick={() => onDelete()}
                             variant="outlined"
                             className={classes.deleteButton}>
                             Supprimer Unité
-                        </Button>
+                        </RoundButton>
                     )}
                     <Grid item container spacing={2}>
                         <Grid item sm={12}>
@@ -152,12 +152,12 @@ const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit, cancelEdit }) =
                     </Grid>
                 </Grid>
                 <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-                    <Button variant="outlined" color="primary" onClick={cancelEdit}>
+                    <RoundButton variant="outlined" color="primary" onClick={cancelEdit}>
                         Annuler
-                    </Button>
-                    <Button type="submit" variant="outlined" color="primary">
+                    </RoundButton>
+                    <RoundButton type="submit" variant="outlined" color="primary">
                         Valider
-                    </Button>
+                    </RoundButton>
                 </Grid>
             </form>
         </Paper>
@@ -166,7 +166,7 @@ const UnitForm = ({ defaultValues, submitForm, submitDeleteUnit, cancelEdit }) =
 
 UnitForm.propTypes = {
     submitForm: PropTypes.func.isRequired,
-    submitDeleteUnit: PropTypes.func,
+    handleDeleteUnit: PropTypes.func,
     defaultValues: PropTypes.objectOf({
         name: PropTypes.string.isRequired,
         trigram: PropTypes.string.isRequired,

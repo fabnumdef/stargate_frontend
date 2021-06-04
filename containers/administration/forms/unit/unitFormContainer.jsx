@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { UnitForm } from '../../../../components';
 
-function UnitFormContainer({ submitUnitForm, submitDeleteUnit, defaultValues, cancelEdit }) {
+function UnitFormContainer({ submitUnitForm, handleDeleteUnit, defaultValues, cancelEdit }) {
     return (
         <UnitForm
             submitForm={submitUnitForm}
-            submitDeleteUnit={submitDeleteUnit}
+            handleDeleteUnit={handleDeleteUnit}
             defaultValues={defaultValues}
             cancelEdit={cancelEdit}
         />
@@ -15,7 +15,7 @@ function UnitFormContainer({ submitUnitForm, submitDeleteUnit, defaultValues, ca
 
 UnitFormContainer.propTypes = {
     submitUnitForm: PropTypes.func.isRequired,
-    submitDeleteUnit: PropTypes.func,
+    handleDeleteUnit: PropTypes.func,
     defaultValues: PropTypes.objectOf({
         name: PropTypes.string.isRequired,
         trigram: PropTypes.string.isRequired,

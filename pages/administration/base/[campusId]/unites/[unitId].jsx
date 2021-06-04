@@ -15,6 +15,7 @@ import { UnitPlacesFormContainer } from '../../../../../containers';
 import { mapEditUnit } from '../../../../../utils/mappers/adminMappers';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteModal from '../../../../../components/styled/common/DeleteDialogs';
 
 const DELETE_UNIT = gql`
     mutation deleteUnit($campusId: String!, $id: ObjectID!) {
@@ -57,6 +58,8 @@ function EditUnit() {
     const { unitId: id, campusId } = router.query;
 
     const [editUnitSection, setEditUnit] = useState(false);
+    const [toDelete, setToDelete] = useState(null);
+
     const { data: unitData } = useQuery(GET_UNIT, {
         variables: {
             id,
@@ -77,9 +80,9 @@ function EditUnit() {
             addAlert({ message: 'Erreur lors de la modification unité', severity: 'error' })
     });
 
-    const submitEditUnit = async (formData, editUnitData) => {
+    const submitEditUnit = async (unitId) => {
         try {
-            editUnit({ variables: { id, unit: editUnitData } });
+            editUnit({ variables: { id, unit: unitId } });
             addAlert({ message: "L'unité a bien été modifiée", severity: 'success' });
         } catch (e) {
             return addAlert({
@@ -91,7 +94,7 @@ function EditUnit() {
 
     const submitDeleteUnit = async () => {
         try {
-            deleteUnit({ variables: { id } });
+            await deleteUnit({ variables: { id } });
             addAlert({ message: "L'unité a bien été supprimée", severity: 'success' });
             router.back();
         } catch (e) {
@@ -100,6 +103,10 @@ function EditUnit() {
                 severity: 'error'
             });
         }
+    };
+
+    const handleDeleteUnit = (label) => {
+        setToDelete(label);
     };
 
     const toggleEditUnit = () => {
@@ -115,7 +122,7 @@ function EditUnit() {
                 {editUnitSection ? (
                     <UnitFormContainer
                         submitUnitForm={submitEditUnit}
-                        submitDeleteUnit={submitDeleteUnit}
+                        handleDeleteUnit={handleDeleteUnit}
                         defaultValues={mapEditUnit(unitData.getCampus.getUnit)}
                         campus={campusData.getCampus}
                         cancelEdit={toggleEditUnit}
@@ -133,6 +140,14 @@ function EditUnit() {
                 <UnitRoleFormContainer
                     campus={campusData.getCampus}
                     unit={unitData.getCampus.getUnit}
+                />
+                <DeleteModal
+                    isOpen={toDelete ? toDelete : null}
+                    title="Supression Unité"
+                    onClose={(confirm) => {
+                        if (confirm) submitDeleteUnit();
+                        setToDelete(null);
+                    }}
                 />
             </Paper>
         </>
