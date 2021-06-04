@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme) => ({
         padding: `20px 10px 23px 50px`,
         backgroundColor: theme.palette.background.layout,
         borderRadius: 4
+    },
+    firstField: {
+        marginBottom: 20
     }
 }));
 
@@ -21,9 +24,10 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList
     return (
         <Grid className={classes.root}>
             <CreateRoleField
+                className={classes.firstField}
                 roleData={{
                     role: ROLES.ROLE_UNIT_CORRESPONDENT.role,
-                    unit: { id: unit.id, label: unit.name },
+                    unit: { id: unit.id, label: unit.label },
                     campus: { id: campus.id, label: campus.label }
                 }}
                 usersList={unitCorrespondandList}
@@ -35,7 +39,7 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList
             <CreateRoleField
                 roleData={{
                     role: ROLES.ROLE_SECURITY_OFFICER.role,
-                    unit: { id: unit.id, label: unit.name },
+                    unit: { id: unit.id, label: unit.label },
                     campus: { id: campus.id, label: campus.label }
                 }}
                 usersList={securityOfficerList}

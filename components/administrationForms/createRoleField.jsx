@@ -77,9 +77,22 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
 
     const [deleteUserRoleReq] = useMutation(DELETE_ROLE, {
         update: (cache, { data: { deleteUserRole: deletedUser } }) => {
+            let variables = {
+                campus: roleData.campus.id,
+                hasRole: { role: roleData.role }
+            };
+            if (roleData.unit) {
+                variables = {
+                    ...variables,
+                    hasRole: {
+                        ...variables.hasRole,
+                        unit: roleData.unit.id
+                    }
+                };
+            }
             const currentUsers = cache.readQuery({
                 query: LIST_USERS,
-                variables: { campus: roleData.campus.id, hasRole: { role: roleData.role } }
+                variables
             });
             const updatedTotal = currentUsers.listUsers.meta.total - 1;
             const updatedUsers = {
@@ -95,16 +108,29 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
             };
             cache.writeQuery({
                 query: LIST_USERS,
-                variables: { campus: roleData.campus.id, hasRole: { role: roleData.role } },
+                variables,
                 data: updatedUsers
             });
         }
     });
 
     const addRoleUpdate = (cache, user) => {
+        let variables = {
+            campus: roleData.campus.id,
+            hasRole: { role: roleData.role }
+        };
+        if (roleData.unit) {
+            variables = {
+                ...variables,
+                hasRole: {
+                    ...variables.hasRole,
+                    unit: roleData.unit.id
+                }
+            };
+        }
         const currentUsers = cache.readQuery({
             query: LIST_USERS,
-            variables: { campus: roleData.campus.id, hasRole: { role: roleData.role } }
+            variables
         });
         const updatedTotal = currentUsers.listUsers.meta.total + 1;
         const updatedUsers = {
@@ -120,7 +146,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
         };
         cache.writeQuery({
             query: LIST_USERS,
-            variables: { campus: roleData.campus.id, hasRole: { role: roleData.role } },
+            variables,
             data: updatedUsers
         });
     };
