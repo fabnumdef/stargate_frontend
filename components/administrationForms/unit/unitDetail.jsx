@@ -9,7 +9,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     createUnitDetail: {
-        width: '50%',
         padding: '20px 30px',
         marginBottom: 40
     },

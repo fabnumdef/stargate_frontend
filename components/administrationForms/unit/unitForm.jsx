@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(8)
     },
     createUnitForm: {
-        width: '50%',
         padding: '20px 30px',
         marginBottom: 20
     },

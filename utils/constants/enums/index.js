@@ -68,7 +68,7 @@ export const ROLES = {
     ROLE_UNIT_CORRESPONDENT: {
         role: 'ROLE_UNIT_CORRESPONDENT',
         label: "Correspondant d'unité",
-        shortLabel: 'CU',
+        shortLabel: 'CORR U',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
         permission: [
@@ -89,7 +89,7 @@ export const ROLES = {
     ROLE_SCREENING: {
         role: 'ROLE_SCREENING',
         label: 'Criblage',
-        shortLabel: 'G',
+        shortLabel: 'CRIBLAGE',
         workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
         permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
@@ -148,7 +148,7 @@ export const ROLES = {
     ROLE_OBSERVER: {
         role: 'ROLE_OBSERVER',
         label: 'Observateur',
-        shortLabel: 'O',
+        shortLabel: 'OBS.',
         workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
         permission: ['/', '/compte', '/a-propos', '/contactez-nous']
