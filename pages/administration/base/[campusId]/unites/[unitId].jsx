@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import PageTitle from '../../../../../components/styled/common/pageTitle';
-import { useSnackBar } from '../../../../../lib/hooks/snackbar';
-import LoadingCircle from '../../../../../components/styled/animations/loadingCircle';
+
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { GET_CAMPUS, GET_UNIT } from '../../../../../lib/apollo/queries';
+import { useSnackBar } from '../../../../../lib/hooks/snackbar';
+import { mapEditUnit } from '../../../../../utils/mappers/adminMappers';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../../../utils/constants/appUrls';
+
+import PageTitle from '../../../../../components/styled/common/pageTitle';
+import LoadingCircle from '../../../../../components/styled/animations/loadingCircle';
 import HeaderPageBackBtn from '../../../../../components/styled/headerPageBackBtn';
 import {
     UnitDetailContainer,
@@ -12,9 +19,6 @@ import {
     UnitRoleFormContainer
 } from '../../../../../containers';
 import { UnitPlacesFormContainer } from '../../../../../containers';
-import { mapEditUnit } from '../../../../../utils/mappers/adminMappers';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
 import DeleteModal from '../../../../../components/styled/common/DeleteDialogs';
 
 const DELETE_UNIT = gql`
@@ -119,7 +123,7 @@ function EditUnit() {
         try {
             await deleteUnit({ variables: { id } });
             addAlert({ message: "L'unité a bien été supprimée", severity: 'success' });
-            router.back();
+            router.push(ADMIN_CAMPUS_MANAGEMENT(campusId));
         } catch (e) {
             return addAlert({
                 message: 'Une erreur est survenue lors de la suppression',

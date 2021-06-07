@@ -40,7 +40,7 @@ function CreateUnit() {
             addAlert({ message: "Erreur lors de la création de l'unité", severity: 'error' })
     });
 
-    const submitUnitForm = async (formData, unitData) => {
+    const submitUnitForm = async (unitData) => {
         try {
             const {
                 data: {
@@ -66,7 +66,7 @@ function CreateUnit() {
                 submitUnitForm={submitUnitForm}
                 campus={campusData.getCampus}
                 defaultValues={defaultValues}
-                cancelEdit={router.back()}
+                cancelEdit={router.back}
             />
         </>
     );
