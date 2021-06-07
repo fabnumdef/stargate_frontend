@@ -58,7 +58,7 @@ const UnitForm = ({ defaultValues, submitForm, handleDeleteUnit, cancelEdit }) =
 
     const onSubmit = (formData) => {
         const unitData = mapUnitData(formData, cards);
-        submitForm(formData, unitData);
+        submitForm(unitData);
     };
 
     const onDelete = () => {

@@ -76,13 +76,36 @@ function EditUnit() {
     });
     const [editUnit] = useMutation(EDIT_UNIT, {
         variables: { campusId },
+        update: (
+            cache,
+            {
+                data: {
+                    mutateCampus: { editUnit: unit }
+                }
+            }
+        ) => {
+            cache.writeQuery({
+                query: GET_UNIT,
+                variables: {
+                    id,
+                    campusId
+                },
+                data: {
+                    getCampus: {
+                        getUnit: unit,
+                        __typename: 'Campus'
+                    }
+                }
+            });
+            setEditUnit(false);
+        },
         onError: () =>
             addAlert({ message: 'Erreur lors de la modification unité', severity: 'error' })
     });
 
-    const submitEditUnit = async (unitId) => {
+    const submitEditUnit = async (unit) => {
         try {
-            editUnit({ variables: { id, unit: unitId } });
+            editUnit({ variables: { id, unit } });
             addAlert({ message: "L'unité a bien été modifiée", severity: 'success' });
         } catch (e) {
             return addAlert({

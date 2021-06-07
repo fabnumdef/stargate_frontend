@@ -4,6 +4,7 @@ import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { UnitPlacesForm } from '../../../../components';
 import LoadingCircle from '../../../../components/styled/animations/loadingCircle';
 import { GET_PLACES_LIST } from '../../../../lib/apollo/queries';
+import { useSnackBar } from '../../../../lib/hooks/snackbar';
 
 const GET_UNIT_PLACES = gql`
     query ListPlacesQuery($campusId: String!, $hasUnit: HasUnitFilter) {
@@ -35,6 +36,7 @@ const EDIT_PLACE = gql`
 
 const UnitPlacesFormContainer = ({ campus, unit }) => {
     const { cache } = useApolloClient();
+    const { addAlert } = useSnackBar();
     const { data: unitPlacesListRes } = useQuery(GET_UNIT_PLACES, {
         variables: { campusId: campus.id, hasUnit: { id: unit.id } }
     });
@@ -44,7 +46,6 @@ const UnitPlacesFormContainer = ({ campus, unit }) => {
     const [editPlaceReq, { loading }] = useMutation(EDIT_PLACE);
 
     const updatePlaces = async (formData) => {
-        console.log(formData);
         const placesToAdd = formData.places.filter(
             (newPlace) =>
                 !unitPlacesListRes.getCampus.listPlaces.list.find(
@@ -75,7 +76,7 @@ const UnitPlacesFormContainer = ({ campus, unit }) => {
                 )
             );
 
-            return cache.writeQuery({
+            cache.writeQuery({
                 query: GET_UNIT_PLACES,
                 variables: { campusId: campus.id, hasUnit: { id: unit.id } },
                 data: {
@@ -86,8 +87,15 @@ const UnitPlacesFormContainer = ({ campus, unit }) => {
                     }
                 }
             });
-        } catch (e) {
-            console.log(e);
+            return addAlert({
+                message: 'La liste de lieux a bien été modifiée',
+                severity: 'success'
+            });
+        } catch {
+            return addAlert({
+                message: 'Erreur lors de la mise à jour',
+                severity: 'error'
+            });
         }
     };
 
