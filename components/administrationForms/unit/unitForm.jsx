@@ -72,12 +72,14 @@ const UnitForm = ({ defaultValues, submitForm, handleDeleteUnit, cancelEdit }) =
                 <Grid container spacing={4}>
                     {/* Base part */}
                     {defaultValues.id && (
-                        <RoundButton
-                            onClick={() => onDelete()}
-                            variant="outlined"
-                            className={classes.deleteButton}>
-                            Supprimer Unité
-                        </RoundButton>
+                        <Grid container justify="flex-end">
+                            <RoundButton
+                                onClick={() => onDelete()}
+                                variant="outlined"
+                                className={classes.deleteButton}>
+                                Supprimer Unité
+                            </RoundButton>
+                        </Grid>
                     )}
                     <Grid item container spacing={2}>
                         <Grid item sm={12}>

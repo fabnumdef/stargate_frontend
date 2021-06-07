@@ -2,30 +2,36 @@ import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 import ItemCard from './itemCard';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
+import SelectedBadge from './common/TabBadge';
 
-const cardIndex = {
-    textAlign: 'center',
-    marginBottom: '-12px'
-};
-
-const buttonContainer = {
-    position: 'absolute'
-};
-
-const buttonStyle = {
-    border: 'none',
-    color: '#0e4194',
-    backgroundColor: 'white',
-    position: 'relative',
-    top: '-8px',
-    left: 50
-};
+const useStyles = makeStyles(() => ({
+    cardHeader: {
+        width: 137,
+        paddingTop: 2
+    },
+    buttonStyle: {
+        height: 8
+    },
+    removeIcon: {
+        height: 12,
+        cursor: 'pointer',
+        zIndex: 1000
+    },
+    cardContent: {
+        position: 'relative',
+        top: '-8px'
+    }
+}));
 
 const ItemTypes = {
     CARD: 'cards'
 };
 
 const DndCard = ({ id, text, index, moveCard, deleteCard }) => {
+    const classes = useStyles();
     const ref = useRef(null);
     const [, drop] = useDrop({
         accept: ItemTypes.CARD,
@@ -78,14 +84,16 @@ const DndCard = ({ id, text, index, moveCard, deleteCard }) => {
     drag(drop(ref));
     return (
         <div ref={ref}>
-            <div style={cardIndex}>{index + 1}</div>
             <ItemCard opacity={opacity} style={{ cursor: 'move', opacity }}>
-                <div style={buttonContainer}>
-                    <div>{text}</div>
-                    <button type="button" onClick={() => deleteCard(text)} style={buttonStyle}>
-                        X
-                    </button>
-                </div>
+                <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    className={classes.cardHeader}>
+                    <SelectedBadge small>{index + 1}</SelectedBadge>
+                    <CloseIcon onClick={() => deleteCard(text)} className={classes.removeIcon} />
+                </Grid>
+                <Grid className={classes.cardContent}>{text}</Grid>
             </ItemCard>
         </div>
     );
