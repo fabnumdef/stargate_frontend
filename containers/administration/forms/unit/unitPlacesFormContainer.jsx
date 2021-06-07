@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { UnitPlacesForm } from '../../../../components';
 import LoadingCircle from '../../../../components/styled/animations/loadingCircle';
 import { GET_PLACES_LIST } from '../../../../lib/apollo/queries';
@@ -34,16 +34,61 @@ const EDIT_PLACE = gql`
 `;
 
 const UnitPlacesFormContainer = ({ campus, unit }) => {
+    const { cache } = useApolloClient();
     const { data: unitPlacesListRes } = useQuery(GET_UNIT_PLACES, {
         variables: { campusId: campus.id, hasUnit: { id: unit.id } }
     });
     const { data: placesListRes } = useQuery(GET_PLACES_LIST, {
-        variables: { campusId: campus.id, filters: { unitInCharge: { id: null } } }
+        variables: { campusId: campus.id, filters: { unitInCharge: null } }
     });
-    const [editPlaceReq] = useMutation(EDIT_PLACE);
+    const [editPlaceReq, { loading }] = useMutation(EDIT_PLACE);
 
-    const updatePlaces = (formData) => {
-        editPlaceReq({ variables: { campusId: campus.id, places: formData } });
+    const updatePlaces = async (formData) => {
+        console.log(formData);
+        const placesToAdd = formData.places.filter(
+            (newPlace) =>
+                !unitPlacesListRes.getCampus.listPlaces.list.find(
+                    (actualPlace) => actualPlace.id === newPlace.id
+                )
+        );
+        const placesToRemove = unitPlacesListRes.getCampus.listPlaces.list.filter(
+            (actualPlace) => !formData.places.find((newPlace) => newPlace.id === actualPlace.id)
+        );
+
+        try {
+            await Promise.all(
+                placesToAdd.map((p) =>
+                    editPlaceReq({
+                        variables: {
+                            campusId: campus.id,
+                            id: p.id,
+                            place: { unitInCharge: { id: unit.id, label: unit.label } }
+                        }
+                    })
+                )
+            );
+            await Promise.all(
+                placesToRemove.map((p) =>
+                    editPlaceReq({
+                        variables: { campusId: campus.id, id: p.id, place: { unitInCharge: null } }
+                    })
+                )
+            );
+
+            return cache.writeQuery({
+                query: GET_UNIT_PLACES,
+                variables: { campusId: campus.id, hasUnit: { id: unit.id } },
+                data: {
+                    getCampus: {
+                        listPlaces: {
+                            list: formData.places
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     if (!unitPlacesListRes || !placesListRes) return <LoadingCircle />;
@@ -53,6 +98,7 @@ const UnitPlacesFormContainer = ({ campus, unit }) => {
             updatePlaces={updatePlaces}
             unitPlacesList={unitPlacesListRes.getCampus.listPlaces.list}
             placesList={placesListRes.getCampus.listPlaces.list}
+            loadValidateForm={loading}
         />
     );
 };

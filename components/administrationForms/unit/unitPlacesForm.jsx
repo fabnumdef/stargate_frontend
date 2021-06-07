@@ -10,6 +10,7 @@ import ListLieux from '../../lists/checkLieux';
 import ItemCard from '../../styled/itemCard';
 import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
 import RoundButton from '../../styled/common/roundButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
     placesForm: {
@@ -30,10 +31,14 @@ const useStyles = makeStyles((theme) => ({
         '& button': {
             margin: '3px'
         }
+    },
+    validateBtn: {
+        width: 110,
+        height: 36
     }
 }));
 
-const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces }) => {
+const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces, loadValidateForm }) => {
     const classes = useStyles();
     const [editPlaces, setEditPlaces] = useState(false);
     const [expanded, setExpanded] = useState(false);
@@ -42,21 +47,23 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces }) => {
         unitPlacesList: { places: unitPlacesList }
     });
 
-    const onSubmit = (formData) => {
-        updatePlaces(formData);
+    const onSubmit = async (formData) => {
+        await updatePlaces(formData);
+        setEditPlaces(false);
+        setExpanded(false);
     };
 
     return (
-        <Grid container className={classes.placesForm}>
-            <Grid container sm={editPlaces ? 9 : 11}>
-                <Grid item sm={12}>
-                    <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                        Lieux
-                    </Typography>
-                </Grid>
-                {editPlaces ? (
-                    <Grid item sm={4}>
-                        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container className={classes.placesForm}>
+                <Grid container sm={editPlaces ? 9 : 11}>
+                    <Grid item sm={12}>
+                        <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                            Lieux
+                        </Typography>
+                    </Grid>
+                    {editPlaces ? (
+                        <Grid item sm={4}>
                             <Controller
                                 as={
                                     <ListLieux
@@ -81,46 +88,51 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces }) => {
                                     {errors.places.message}
                                 </FormHelperText>
                             )}
-                        </form>
-                    </Grid>
-                ) : (
-                    <Grid item container>
-                        {unitPlacesList.map((place) => {
-                            return <ItemCard key={place.id}>{place.label}</ItemCard>;
-                        })}
-                    </Grid>
-                )}
+                        </Grid>
+                    ) : (
+                        <Grid item container>
+                            {unitPlacesList.map((place) => {
+                                return <ItemCard key={place.id}>{place.label}</ItemCard>;
+                            })}
+                        </Grid>
+                    )}
+                </Grid>
+                <Grid sm={editPlaces ? 3 : 1} className={classes.buttonsContainer}>
+                    {editPlaces ? (
+                        <Grid>
+                            <RoundButton
+                                onClick={() => setEditPlaces(false)}
+                                variant="outlined"
+                                color="primary">
+                                Annuler
+                            </RoundButton>
+                            <RoundButton
+                                type="submit"
+                                variant="outlined"
+                                color="primary"
+                                className={classes.validateBtn}>
+                                {loadValidateForm ? <CircularProgress size={20} /> : 'Valider'}
+                            </RoundButton>
+                        </Grid>
+                    ) : (
+                        <Grid>
+                            <RoundedIconButton
+                                onClick={() => setEditPlaces(true)}
+                                type={ROUNDED_BUTTON_TYPE.EDIT}
+                            />
+                        </Grid>
+                    )}
+                </Grid>
             </Grid>
-            <Grid sm={editPlaces ? 3 : 1} className={classes.buttonsContainer}>
-                {editPlaces ? (
-                    <Grid>
-                        <RoundButton
-                            onClick={() => setEditPlaces(false)}
-                            variant="outlined"
-                            color="primary">
-                            Annuler
-                        </RoundButton>
-                        <RoundButton type="submit" variant="outlined" color="primary">
-                            Valider
-                        </RoundButton>
-                    </Grid>
-                ) : (
-                    <Grid>
-                        <RoundedIconButton
-                            onClick={() => setEditPlaces(true)}
-                            type={ROUNDED_BUTTON_TYPE.EDIT}
-                        />
-                    </Grid>
-                )}
-            </Grid>
-        </Grid>
+        </form>
     );
 };
 
 UnitPlacesForm.propTypes = {
     placesList: PropTypes.objectOf(PropTypes.shape).isRequired,
     unitPlacesList: PropTypes.objectOf(PropTypes.shape).isRequired,
-    updatePlaces: PropTypes.func.isRequired
+    updatePlaces: PropTypes.func.isRequired,
+    loadValidateForm: PropTypes.bool.isRequired
 };
 
 export default UnitPlacesForm;

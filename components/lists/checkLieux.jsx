@@ -30,8 +30,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AccordionStyled = withStyles(() => ({
+const AccordionStyled = withStyles((theme) => ({
     root: {
+        border: `1px solid rgba(0, 0, 0, 0.2)`,
+        backgroundColor: theme.palette.background.layout,
         boxShadow: 'none',
         '&:not(:last-child)': {
             borderBottom: 0
@@ -46,19 +48,16 @@ const AccordionStyled = withStyles(() => ({
     expanded: {}
 }))(Accordion);
 
-const AccordionSummaryStyled = withStyles(() => ({
+const AccordionSummaryStyled = withStyles((theme) => ({
     root: {
-        border: `1px solid rgba(0, 0, 0, 0.2)`,
         borderRadius: '4px',
-        marginBottom: -1,
         minHeight: 56,
         maxHeight: '250px',
+        backgroundColor: theme.palette.common.white,
         '&$expanded': {
             minHeight: 56,
-            maxHeight: '250px'
-        },
-        '&:hover': {
-            border: `1px solid rgba(0, 0, 0, 0.8)`
+            maxHeight: '250px',
+            borderBottom: `1px solid rgba(0, 0, 0, 0.2)`
         }
     },
     content: {
