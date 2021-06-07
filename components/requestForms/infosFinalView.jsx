@@ -191,12 +191,12 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
                 <Typography variant={'subtitle1'} className={classes.requestTitle}>
                     {formData.id}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <span className={classes.requestLabel}>Visite du :</span>{' '}
                     {formData.from && format(new Date(formData.from), 'dd/MM/yyyy')} au{' '}
                     {formData.to && format(new Date(formData.to), 'dd/MM/yyyy')}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <span className={classes.requestLabel}>Lieu(x) :</span>{' '}
                     {formData.places &&
                         formData.places.map((lieu, index) => {
@@ -204,7 +204,7 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
                             return `${lieu.label}, `;
                         })}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <span className={classes.requestLabel}>Motif :</span>{' '}
                     {formData.reason && formData.reason}
                 </Typography>

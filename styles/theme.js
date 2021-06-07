@@ -108,6 +108,7 @@ const theme = createMuiTheme(
             },
             MuiFilledInput: {
                 root: {
+                    fontSize: '0.75rem',
                     borderRadius: '4px',
                     backgroundColor: '#F9F9F9'
                 },

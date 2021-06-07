@@ -76,6 +76,9 @@ const useStyles = makeStyles((theme) => ({
     disabled: {
         opacity: 0.2,
         color: 'red'
+    },
+    captionSize: {
+        fontSize: '0.75rem'
     }
 }));
 
@@ -361,7 +364,7 @@ export default function FormInfoVisitor({
                 <Grid container spacing={8}>
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
-                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                            <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
                                 Origine visiteurs* :
                             </Typography>
                         </Grid>
@@ -382,13 +385,21 @@ export default function FormInfoVisitor({
                                                         data-testid="minarm-button"
                                                     />
                                                 }
-                                                label="MINARM"
+                                                label={
+                                                    <Typography variant="caption">
+                                                        MINARM
+                                                    </Typography>
+                                                }
                                             />
                                             <FormControlLabel
                                                 color="primary"
                                                 value="HORS MINARM"
                                                 control={<Radio color="primary" />}
-                                                label="HORS MINARM"
+                                                label={
+                                                    <Typography variant="caption">
+                                                        HORS MINARM
+                                                    </Typography>
+                                                }
                                             />
                                         </RadioGroup>
                                     }
@@ -406,7 +417,7 @@ export default function FormInfoVisitor({
 
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
-                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                            <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
                                 Type d&apos;employé* :
                             </Typography>
                         </Grid>
@@ -426,6 +437,7 @@ export default function FormInfoVisitor({
                                                 'data-testid': 'list-employe'
                                             }}
                                             fullWidth
+                                            className={classes.captionSize}
                                             labelId="typeEmployeDemande"
                                             id="simple-select-outlined"
                                             labelWidth={labelWidth}>
@@ -452,7 +464,7 @@ export default function FormInfoVisitor({
 
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
-                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                            <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
                                 Civilité du visiteur* :
                             </Typography>
                         </Grid>
@@ -651,7 +663,7 @@ export default function FormInfoVisitor({
 
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item xs={12} sm={12} md={2}>
-                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                            <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
                                 Identité* :
                             </Typography>
                         </Grid>
@@ -663,6 +675,7 @@ export default function FormInfoVisitor({
                                         options={getNationality()}
                                         getOptionLabel={(option) => option}
                                         value={controlledValue}
+                                        className={classes.captionSize}
                                         onChange={handleNationalityChange}
                                         defaultValue={getNationality().find(
                                             (n) => n === getValues().nationality
@@ -776,6 +789,7 @@ export default function FormInfoVisitor({
                                                     disabled={watch('nationality') === ''}
                                                     classes={{ disabled: classes.disabled }}
                                                     fullWidth
+                                                    className={classes.captionSize}
                                                     labelId="kind"
                                                     id="typeDocument"
                                                     labelWidth={labelWidth}>
@@ -874,7 +888,7 @@ export default function FormInfoVisitor({
 
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
-                            <Typography variant="body1" gutterBottom className={classes.fieldLabel}>
+                            <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
                                 VIP* :
                             </Typography>
                         </Grid>
@@ -889,13 +903,17 @@ export default function FormInfoVisitor({
                                             <FormControlLabel
                                                 value="TRUE"
                                                 control={<Radio color="primary" />}
-                                                label="OUI"
+                                                label={
+                                                    <Typography variant="caption">OUI</Typography>
+                                                }
                                                 labelPlacement="start"
                                             />
                                             <FormControlLabel
                                                 value="FALSE"
                                                 control={<Radio color="primary" />}
-                                                label="NON"
+                                                label={
+                                                    <Typography variant="caption">NON</Typography>
+                                                }
                                                 labelPlacement="start"
                                             />
                                         </RadioGroup>
