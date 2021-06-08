@@ -8,7 +8,8 @@ const useStyle = makeStyles(() => ({
         fontWeight: 'bold'
     },
     widthCell: {
-        maxWidth: '220px'
+        maxWidth: '220px',
+        verticalAlign: 'baseline'
     }
 }));
 

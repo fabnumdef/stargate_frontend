@@ -12,7 +12,8 @@ const useStyles = makeStyles(() => ({
         fontWeight: 'bold'
     },
     widthCell: {
-        maxWidth: '220px'
+        maxWidth: '220px',
+        verticalAlign: 'baseline'
     }
 }));
 
