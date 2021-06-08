@@ -2,13 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const cardStyle = {
-    border: 'solid 1px #0e4194',
-    padding: 5,
-    margin: 20,
+    border: 'solid 0.3px rgba(0, 0, 0, 0.4)',
+    padding: 10,
+    margin: '13px 10px 0 0',
     backgroundColor: 'white',
-    width: '130px',
-    height: '70px',
-    borderRadius: '3px',
+    width: '140px',
+    height: '40px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 10px 0 rgba(93, 119, 255, 0.1)',
     display: 'flex',
     flexDirection: 'column',
     textAlign: 'center'

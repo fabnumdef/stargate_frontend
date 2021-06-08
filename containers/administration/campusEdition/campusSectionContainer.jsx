@@ -5,43 +5,42 @@ import { CampusSection } from '../../../components';
 import { GET_CAMPUS, LIST_USERS } from '../../../lib/apollo/queries';
 import { ROLES } from '../../../utils/constants/enums';
 
-function CampusSectionContainer({ id }) {
+function CampusSectionContainer({ campusId }) {
     const client = useApolloClient();
     const [usersTotalByRole, setUsersTotalByRole] = useState(null);
-    const { data: campusData } = useQuery(GET_CAMPUS, { variables: { id } });
-
-    const initData = async () => {
-        let usersTotal = {};
-        await Promise.all(
-            [ROLES.ROLE_ACCESS_OFFICE.role, ROLES.ROLE_SCREENING.role].map(async (role) => {
-                const users = await client.query({
-                    query: LIST_USERS,
-                    variables: { hasRole: { role }, campusId: id }
-                });
-                usersTotal = {
-                    ...usersTotal,
-                    [role]: users.data.listUsers.meta.total
-                };
-            })
-        );
-        setUsersTotalByRole(usersTotal);
-    };
+    const { data: campusData } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
 
     useEffect(() => {
-        if (!usersTotalByRole) {
-            initData();
+        async function loadUsersTotalByRole() {
+            let usersTotal = {};
+            await Promise.all(
+                [ROLES.ROLE_ACCESS_OFFICE.role, ROLES.ROLE_SCREENING.role].map(async (role) => {
+                    const users = await client.query({
+                        query: LIST_USERS,
+                        variables: { hasRole: { role }, campusId }
+                    });
+                    usersTotal = {
+                        ...usersTotal,
+                        [role]: users.data.listUsers.meta.total
+                    };
+                })
+            );
+            setUsersTotalByRole(usersTotal);
         }
-    }, [usersTotalByRole]);
+
+        if (!campusData) return;
+        loadUsersTotalByRole();
+    }, [campusData]);
+
     return (
-        usersTotalByRole &&
-        campusData && (
+        usersTotalByRole && (
             <CampusSection campusData={campusData.getCampus} usersTotalByRole={usersTotalByRole} />
         )
     );
 }
 
 CampusSectionContainer.propTypes = {
-    id: PropTypes.string.isRequired
+    campusId: PropTypes.string.isRequired
 };
 
 export default CampusSectionContainer;

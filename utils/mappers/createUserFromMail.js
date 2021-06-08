@@ -1,3 +1,6 @@
+export const GOUV_DOMAIN_MAIL = 'intradef.gouv.fr';
+export const SCREENING_DOMAIN_MAIL = 'gendarmerie.interieur.gouv.fr';
+
 const normalizeName = (data) => {
     const numberLessData = data.replace(new RegExp('[^(a-zA-Z)]', 'g'), '').trim();
     return numberLessData.charAt(0).toUpperCase() + numberLessData.substring(1).toLowerCase();
@@ -13,7 +16,7 @@ export const createUserData = (email, roles) => {
     };
 };
 
-export const checkMailFormat = (value) => {
+export const checkMailFormat = (value, domain) => {
     const [username, mail] = value.split('@');
-    return username.split('.').length === 2 && mail === 'intradef.gouv.fr';
+    return username.split('.').length === 2 && mail === domain;
 };
