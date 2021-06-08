@@ -14,7 +14,6 @@ const useStyles = (height) =>
             borderTop: '1px solid rgba(224, 224, 224, 1)',
             padding: '0 20px 0 20px',
             background: theme.palette.background.table,
-            maxHeight: '63vh',
             overflowX: 'hidden'
         },
         header: {

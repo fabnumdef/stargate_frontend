@@ -10,6 +10,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
 import { useDecisions } from '../../../lib/hooks/useDecisions';
+import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
@@ -38,6 +39,11 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         maxWidth: '155px'
     },
+    liFontSize: {
+        '& li': {
+            fontSize: '0.75rem'
+        }
+    },
     divRelative: {
         position: 'relative'
     }
@@ -50,7 +56,8 @@ const CustomInput = withStyles((theme) => ({
         }
     },
     input: {
-        border: 'none'
+        border: 'none',
+        fontSize: '0.75rem'
     }
 }))(InputBase);
 
@@ -169,6 +176,7 @@ export function ActionCell({ choices, decision }) {
                                             displayEmpty
                                             labelId="select-label"
                                             id="select"
+                                            MenuProps={{ classes: { paper: classes.liFontSize } }}
                                             value={otherChoice.label}
                                             input={<CustomInput />}>
                                             <MenuItem key="other choice" disabled value="">
@@ -193,7 +201,9 @@ export function ActionCell({ choices, decision }) {
                             <Grid item sm={12} key={choice.label}>
                                 <FormControlLabel
                                     key={choice.label}
-                                    label={choice.label}
+                                    label={
+                                        <Typography variant="caption">{choice.label}</Typography>
+                                    }
                                     value={choice.label}
                                     control={
                                         <Radio

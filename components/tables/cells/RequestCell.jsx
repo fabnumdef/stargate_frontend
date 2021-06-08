@@ -21,33 +21,33 @@ export default function RequestCell({ request }) {
     return (
         <TableCell className={classes.widthCell}>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Demande :
                 </Typography>
-                <Typography display="inline" variant="body1">{` ${request.id}`}</Typography>
+                <Typography display="inline" variant="caption">{` ${request.id}`}</Typography>
             </div>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Période :
                 </Typography>
-                <Typography display="inline" variant="body1">{` ${request.period}`}</Typography>
+                <Typography display="inline" variant="caption">{` ${request.period}`}</Typography>
             </div>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Demandeur :
                 </Typography>
-                <Typography display="inline" variant="body1">{` ${request.owner}`}</Typography>
+                <Typography display="inline" variant="caption">{` ${request.owner}`}</Typography>
             </div>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Lieux :
                 </Typography>
 
-                <Typography display="inline" variant="body1">{` ${request.places}`}</Typography>
+                <Typography display="inline" variant="caption">{` ${request.places}`}</Typography>
             </div>
             {activeRoleCacheVar().role !== ROLES.ROLE_UNIT_CORRESPONDENT.role && (
                 <div>
-                    <Typography display="inline" variant="body1" className={classes.subtitles}>
+                    <Typography display="inline" variant="body2" className={classes.subtitles}>
                         Motif :
                     </Typography>
                     <SeeMoreOrLess>{` ${request.reason}`}</SeeMoreOrLess>

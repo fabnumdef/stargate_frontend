@@ -98,7 +98,10 @@ export default function DecisionsCell({ visitor: { units }, modalOpen }) {
                     <div style={{ display: 'block' }}>
                         {units.map((unit) =>
                             unit.label === isRejected(unit) ? (
-                                <Typography key={unit.label} className={classes.typoContent}>
+                                <Typography
+                                    key={unit.label}
+                                    variant="caption"
+                                    className={classes.typoContent}>
                                     {unit.label}
                                     <ErrorIcon
                                         key={unit.label}
@@ -109,6 +112,7 @@ export default function DecisionsCell({ visitor: { units }, modalOpen }) {
                                 </Typography>
                             ) : (
                                 <Typography
+                                    variant="caption"
                                     component={'span'}
                                     key={unit.label}
                                     className={classes.typoContent}>
@@ -121,7 +125,7 @@ export default function DecisionsCell({ visitor: { units }, modalOpen }) {
                         )}
                     </div>
                     <Typography
-                        variant="body2"
+                        variant="caption"
                         display="inline"
                         onClick={modalOpen}
                         className={classes.more}>
