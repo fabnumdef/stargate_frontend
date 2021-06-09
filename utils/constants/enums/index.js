@@ -77,7 +77,6 @@ export const ROLES = {
             '/contactez-nous',
             '/compte',
             '/demandes',
-            '/mes-demandes',
             '/mes-traitements',
             '/nouvelle-demande',
             '/nouvelle-demande/simple',
@@ -97,7 +96,6 @@ export const ROLES = {
             '/a-propos',
             '/contactez-nous',
             '/compte',
-            '/mes-demandes',
             '/demandes',
             '/mes-traitements',
             '/nouvelle-demande',
@@ -130,7 +128,6 @@ export const ROLES = {
         permission: [
             '/',
             '/compte',
-            '/mes-demandes',
             '/demandes',
             '/nouvelle-demande',
             '/nouvelle-demande/simple',

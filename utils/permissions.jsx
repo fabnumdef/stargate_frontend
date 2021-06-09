@@ -28,7 +28,7 @@ export const urlAuthorization = (path, role) => {
                 ROLES.ROLE_SUPERADMIN.role,
                 ROLES.ROLE_UNIT_CORRESPONDENT.role
             ].includes(role);
-        case path === '/mes-demandes':
+        case path === '/demandes':
         case path === '/nouvelle-demande':
         case path === '/nouvelle-demande-groupe':
         case path.includes('/demandes/en-cours'):
