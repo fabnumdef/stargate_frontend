@@ -46,6 +46,11 @@ const useStyles = makeStyles(() => ({
         fontStyle: 'italic',
         fontWeight: 'bold',
         marginLeft: '2%'
+    },
+    headPaper: {
+        flexDirection: 'column',
+        height: '100%',
+        position: 'relative'
     }
 }));
 
@@ -96,7 +101,7 @@ export default function RequestAccesForm({ group }) {
     });
 
     return (
-        <>
+        <div className={classes.headPaper}>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
@@ -175,7 +180,7 @@ export default function RequestAccesForm({ group }) {
                     </TabPanel>
                 </Grid>
             </Grid>
-        </>
+        </div>
     );
 }
 
