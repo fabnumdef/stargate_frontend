@@ -10,7 +10,7 @@ import { ROLES } from '../../../utils/constants/enums';
 import ItemCard from '../../styled/itemCard';
 import { ADMIN_CAMPUS_EDITION, ADMIN_CAMPUS_ROLE_EDITION } from '../../../utils/constants/appUrls';
 import WarningIcon from '@material-ui/icons/Warning';
-import EditButton from '../../styled/EditButton';
+import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -58,8 +58,9 @@ function CampusSection({ campusData, usersTotalByRole }) {
                                 </Typography>
                             </Grid>
                             <Grid item>
-                                <EditButton
+                                <RoundedIconButton
                                     onClick={() => router.push(ADMIN_CAMPUS_EDITION(campusData.id))}
+                                    type={ROUNDED_BUTTON_TYPE.EDIT}
                                 />
                             </Grid>
                         </Grid>
@@ -90,8 +91,9 @@ function CampusSection({ campusData, usersTotalByRole }) {
                     </Grid>
                 </Grid>
                 <Grid>
-                    <EditButton
+                    <RoundedIconButton
                         onClick={() => router.push(ADMIN_CAMPUS_ROLE_EDITION(campusData.id))}
+                        type={ROUNDED_BUTTON_TYPE.EDIT}
                     />
                 </Grid>
             </Grid>

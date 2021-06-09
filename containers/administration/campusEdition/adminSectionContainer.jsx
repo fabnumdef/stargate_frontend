@@ -12,7 +12,11 @@ const roleData = (campusData) => ({
 
 function AdminSectionContainer({ campusId }) {
     const { data, loading } = useQuery(LIST_USERS, {
-        variables: { campus: campusId, hasRole: { role: ROLES.ROLE_ADMIN.role } }
+        variables: {
+            campus: campusId,
+            cursor: { offset: 0, first: 10 },
+            hasRole: { role: ROLES.ROLE_ADMIN.role }
+        }
     });
     const { data: campusData, loading: loadCampus } = useQuery(GET_CAMPUS, {
         variables: { id: campusId }
