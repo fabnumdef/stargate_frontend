@@ -14,7 +14,7 @@ import ButtonsFooterContainer from '../styled/common/ButtonsFooterContainer';
 import RoundButton from '../styled/common/roundButton';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 
-import TabRecapRequest from '../tabs/tabRecapRequest';
+import TabRecapRequest from '../tables/TabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';
 import { makeStyles } from '@material-ui/core/styles';
 import { LIST_MY_REQUESTS } from '../../lib/apollo/fragments';

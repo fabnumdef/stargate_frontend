@@ -3,12 +3,12 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 import SquareButton from '../../styled/common/squareButton';
 import { VISITOR_STATUS } from '../../../utils/constants/enums';
-import StyledRow from '../../styled/common/StyledRow';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
@@ -21,13 +21,7 @@ const useStyles = makeStyles((theme) => ({
         border: 'none',
         color: 'inherit',
         fontWeight: 'inherit',
-        '&:first-child': {
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10
-        },
         '&:last-child': {
-            borderTopRightRadius: 10,
-            borderBottomRightRadius: 10,
             display: 'flex'
         }
     },
@@ -90,7 +84,7 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
     }, [row]);
 
     return (
-        <StyledRow hover key={row.id}>
+        <TableRow hover key={row.id}>
             {columns.map((column) => {
                 const value = row[column.id];
                 switch (column.id) {
@@ -127,7 +121,7 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
                         );
                 }
             })}
-        </StyledRow>
+        </TableRow>
     );
 }
 

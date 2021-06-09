@@ -40,13 +40,11 @@ function createData({ id, rank, firstname, birthLastname, employeeType, company,
     };
 }
 
-const useStyles = makeStyles({
-    root: {
-        border: '1px solid #F3F3F3',
-        maxHeight: '60vh',
-        overflowX: 'hidden'
+const useStyles = makeStyles(() => ({
+    table: {
+        zIndex: 10
     }
-});
+}));
 
 export default function TabDetailVisitors({ list, status, onDelete }) {
     const classes = useStyles();
@@ -77,7 +75,7 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
     );
 
     return (
-        <TableContainer className={classes.root}>
+        <TableContainer height={57}>
             <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -99,17 +97,15 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
                         })}
                     </TableRow>
                 </TableHead>
-
-                <TableBody>
-                    {rows.map((row) => (
+                {rows.map((row) => (
+                    <TableBody key={row.id}>
                         <RowRequestsVisitors
-                            key={row.id}
                             row={row}
                             columns={columnStatus}
                             onDelete={() => setToDeleteID({ id: row.id, visitor: row.visitor })}
                         />
-                    ))}
-                </TableBody>
+                    </TableBody>
+                ))}
             </Table>
             <DeleteModal
                 isOpen={toDeleteID ? toDeleteID.visitor : null}

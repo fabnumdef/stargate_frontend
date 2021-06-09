@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -15,17 +14,13 @@ import {
     ROLES
 } from '../../utils/constants/enums';
 import CustomTableCellHeader from './cells/TableCellHeader';
+import TableContainer from './styled/TableContainer';
 import RowTreatment from './rows/RowTreatments';
 import ProcessDialog from '../styled/common/ProcessDialogs';
 
 const useStyles = makeStyles(() => ({
-    tableCollapes: {
-        borderCollapse: 'collapse'
-    },
-    root: {
-        border: '1px solid #F3F3F3',
-        maxHeight: '63vh',
-        overflowX: 'hidden'
+    table: {
+        zIndex: 10
     }
 }));
 
@@ -193,21 +188,25 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
         activeRoleCacheVar()
     ]);
     return (
-        <TableContainer className={classes.root}>
-            <Table stickyHeader aria-label="sticky table" className={classes.tableCollapes}>
+        <TableContainer height={57}>
+            <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <CustomTableCellHeader key={column.id} align={column.align}>
+                            <CustomTableCellHeader
+                                id={column.id}
+                                key={column.id}
+                                align={column.align}>
                                 {column.label || ''}
                             </CustomTableCellHeader>
                         ))}
                     </TableRow>
                 </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
+
+                {rows.map((row) => (
+                    <TableBody
+                        key={`${treated ? 'treated' : ''}_${row.request.id}_${row.visitor.id}`}>
                         <RowTreatment
-                            key={`${treated ? 'treated' : ''}_${row.request.id}_${row.visitor.id}`}
                             choices={choices}
                             row={row}
                             modalOpen={() => setToViewVisitor(row.visitor)}
@@ -215,8 +214,8 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
                             treated={treated}
                             exported={exported}
                         />
-                    ))}
-                </TableBody>
+                    </TableBody>
+                ))}
             </Table>
             <ProcessDialog
                 isOpen={toViewVisitor !== null}

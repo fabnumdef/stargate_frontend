@@ -13,7 +13,11 @@ export default function TabPanel({ children, value, index }) {
             hidden={value !== index}
             id={`tabpanel-${index}`}
             aria-labelledby={`tab-${index}`}>
-            {value === index && <Box p={3}>{children}</Box>}
+            {value === index && (
+                <Box style={{ position: 'relative' }} p={3}>
+                    {children}
+                </Box>
+            )}
         </Typography>
     );
 }

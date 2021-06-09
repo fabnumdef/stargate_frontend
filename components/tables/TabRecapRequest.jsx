@@ -10,8 +10,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
+import CustomTableCellHeader from './cells/TableCellHeader';
+
 import { EMPLOYEE_TYPE } from '../../utils/constants/enums';
-import TableContainer from '@material-ui/core/TableContainer';
+import TableContainer from './styled/TableContainer';
 import SquareButton from '../styled/common/squareButton';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -49,32 +51,14 @@ function createData({ id, firstname, birthLastname, rank, company, employeeType 
 }
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        border: '1px solid #F3F3F3',
-        maxHeight: '440px',
-        overflowX: 'hidden'
-    },
-    header: {
-        border: `1px solid ${theme.palette.background.layout}`,
-        '&:first-child': { paddingLeft: '30px' }
-    },
-    headerContent: {
-        fontWeight: 'bold',
-        width: 330
+    table: {
+        zIndex: 10
     },
     row: {
-        '&:hover': {
-            boxShadow: `inset -10px -10px 0px ${theme.palette.primary.dark}
-            , inset 11px 11px 0px ${theme.palette.primary.dark}`,
-            backgroundColor: `${theme.palette.common.white} !important`
-        },
-        '& > td:last-child': {
-            border: 'none',
+        '& td:last-child': {
             display: 'flex',
             justifyContent: 'flex-end'
-        },
-        border: `19px solid ${theme.palette.background.layout}`,
-        width: 330
+        }
     },
     icon: {
         color: 'rgba(0, 0, 0, 0.25)',
@@ -123,62 +107,64 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
     };
 
     return (
-        <TableContainer className={classes.root}>
-            <Table>
-                <TableHead>
-                    <TableRow className={classes.header}>
-                        {columns.map((column) => (
-                            <TableCell key={column.id} className={classes.headerContent}>
-                                {column.id === 'action' ? (
-                                    <Button
-                                        size="small"
-                                        variant="outlined"
-                                        color="primary"
-                                        onClick={handleAddVisitor}
-                                        startIcon={<AddIcon />}
-                                        style={{ float: 'right' }}>
-                                        Ajouter
-                                    </Button>
-                                ) : (
-                                    column.label
-                                )}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row, index) => (
-                        <TableRow key={row.id} className={classes.row}>
-                            <TableCell className={classes.firstCell}>{row.visiteur}</TableCell>
-                            <TableCell>{row.unite}</TableCell>
-                            <TableCell>{row.type}</TableCell>
-                            <TableCell className={classes.lastCell}>
-                                <SquareButton
-                                    aria-label="details"
-                                    onClick={() => handleUpdate(index)}
-                                    classes={{ root: classes.icon }}>
-                                    <DescriptionOutlinedIcon />
-                                </SquareButton>
-                                <SquareButton
-                                    aria-label="delete"
-                                    onClick={() => setToDeleteID(row.id)}
-                                    classes={{ root: classes.icon }}>
-                                    <DeleteOutlineIcon />
-                                </SquareButton>
-                            </TableCell>
+        <>
+            <TableContainer height={62}>
+                <Table stickyHeader aria-label="sticky table" className={classes.table}>
+                    <TableHead>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <CustomTableCellHeader key={column.id}>
+                                    {column.id === 'action' ? (
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={handleAddVisitor}
+                                            startIcon={<AddIcon />}
+                                            style={{ float: 'right' }}>
+                                            Ajouter
+                                        </Button>
+                                    ) : (
+                                        column.label
+                                    )}
+                                </CustomTableCellHeader>
+                            ))}
                         </TableRow>
+                    </TableHead>
+                    {rows.map((row, index) => (
+                        <TableBody key={row.id}>
+                            <TableRow className={classes.row}>
+                                <TableCell>{row.visiteur}</TableCell>
+                                <TableCell>{row.unite}</TableCell>
+                                <TableCell>{row.type}</TableCell>
+                                <TableCell>
+                                    <SquareButton
+                                        aria-label="details"
+                                        onClick={() => handleUpdate(index)}
+                                        classes={{ root: classes.icon }}>
+                                        <DescriptionOutlinedIcon />
+                                    </SquareButton>
+                                    <SquareButton
+                                        aria-label="delete"
+                                        onClick={() => setToDeleteID(row)}
+                                        classes={{ root: classes.icon }}>
+                                        <DeleteOutlineIcon />
+                                    </SquareButton>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
                     ))}
-                </TableBody>
-            </Table>
+                </Table>
+            </TableContainer>
             <DeleteModal
-                isOpen={toDeleteID}
+                isOpen={toDeleteID ? toDeleteID.visiteur : null}
                 title="Supression Visiteur"
                 onClose={(confirm) => {
-                    if (confirm) handleDeleteConfirm(toDeleteID);
+                    if (confirm) handleDeleteConfirm(toDeleteID.id);
                     setToDeleteID(null);
                 }}
             />
-        </TableContainer>
+        </>
     );
 }
 

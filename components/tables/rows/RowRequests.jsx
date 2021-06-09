@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useRouter } from 'next/router';
+import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 
 import PropTypes from 'prop-types';
@@ -10,20 +11,13 @@ import SquareButton from '../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import SeeMoreOrLess from '../../styled/common/SeeMoreOrLess';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
-import StyledRow from '../../styled/common/StyledRow';
 
 const useStyles = makeStyles((theme) => ({
     cells: {
         border: 'none',
         color: 'inherit',
         fontWeight: 'inherit',
-        '&:first-child': {
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10
-        },
         '&:last-child': {
-            borderTopRightRadius: 10,
-            borderBottomRightRadius: 10,
             display: 'flex',
             justifyContent: 'flex-end'
         }
@@ -42,7 +36,7 @@ function RowTreatments({ columns, row, onDelete }) {
     const classes = useStyles();
 
     return (
-        <StyledRow hover key={row.id}>
+        <TableRow hover key={row.id}>
             {columns.map((column) => {
                 const value = row[column.id];
                 switch (column.id) {
@@ -85,7 +79,7 @@ function RowTreatments({ columns, row, onDelete }) {
                         );
                 }
             })}
-        </StyledRow>
+        </TableRow>
     );
 }
 

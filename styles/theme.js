@@ -57,12 +57,53 @@ const theme = createMuiTheme(
                     ul: {
                         padding: 0,
                         margin: 0
+                    },
+                    table: {
+                        backgroundColor: palette.background.table
+                    },
+                    tbody: {
+                        '&::before': {
+                            content: '""',
+                            display: 'block',
+                            height: '20px'
+                        }
+                    },
+                    'table tbody:last-child': {
+                        '&::after': {
+                            content: '""',
+                            display: 'block',
+                            height: '20px'
+                        }
+                    },
+                    th: {
+                        borderBottom: 'none !important'
+                    },
+                    'thead tr': {
+                        backgroundColor: 'white'
+                    },
+                    'tbody tr': {
+                        backgroundColor: 'white'
+                    },
+                    'tr td:last-child': {
+                        borderTopRightRadius: '10px',
+                        borderBottomRightRadius: '10px'
+                    },
+                    'tr td:first-child': {
+                        borderTopLeftRadius: '10px',
+                        borderBottomLeftRadius: '10px'
                     }
                 }
             },
             MuiTable: {
                 stickyHeader: {
-                    borderCollapse: 'ihnerit'
+                    borderCollapse: 'unset'
+                }
+            },
+            MuiTableRow: {
+                root: {
+                    '&.MuiTableRow-hover:hover': {
+                        backgroundColor: 'white'
+                    }
                 }
             },
             MuiFilledInput: {
