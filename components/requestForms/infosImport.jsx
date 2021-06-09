@@ -87,6 +87,9 @@ const useStyles = makeStyles((theme) => ({
     successMessage: {
         marginLeft: 30,
         color: theme.palette.success.main
+    },
+    fieldTitle: {
+        width: 210
     }
 }));
 
@@ -178,7 +181,12 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
     return (
         <Grid container spacing={4}>
             <Grid container item justify="start">
-                <Grid container item sm={2} justify="space-around" alignItems="center">
+                <Grid
+                    container
+                    item
+                    justify="space-around"
+                    alignItems="center"
+                    className={classes.fieldTitle}>
                     <SelectedBadge>1</SelectedBadge>
                     <Typography variant="subtitle2">Remplir la fiche visiteur : </Typography>
                 </Grid>
@@ -194,7 +202,12 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
                 </Grid>
             </Grid>
             <Grid container item justify="start" className={classes.importSection}>
-                <Grid container item sm={2} justify="space-around" alignItems="center">
+                <Grid
+                    container
+                    item
+                    justify="space-around"
+                    alignItems="center"
+                    className={classes.fieldTitle}>
                     <SelectedBadge>2</SelectedBadge>
                     <Typography variant="subtitle2">Charger la fiche visiteur : </Typography>
                 </Grid>
