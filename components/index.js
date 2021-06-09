@@ -6,7 +6,7 @@ export { default as PlaceSection } from './administration/campusEdition/placeSec
 export { default as UnitSection } from './administration/campusEdition/unitSection';
 export { default as AdminSection } from './administration/campusEdition/adminSection';
 export { default as HeaderConfigurationValidator } from './administration/campusEdition/validatorConfiguration/header';
-export { default as AccOffEdit } from './administration/campusEdition/validatorConfiguration/AccOffEdit';
+export { default as AccOffEdit } from './administration/campusEdition/validatorConfiguration/accOffEdit';
 export { default as ScreeningEdit } from './administration/campusEdition/validatorConfiguration/screeningEdit';
 // Forms
 export { default as FormInfosRequest } from './requestForms/infosRequest';
