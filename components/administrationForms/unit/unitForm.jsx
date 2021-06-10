@@ -168,7 +168,8 @@ const UnitForm = ({ defaultValues, submitForm, handleDeleteUnit, cancelEdit }) =
 UnitForm.propTypes = {
     submitForm: PropTypes.func.isRequired,
     handleDeleteUnit: PropTypes.func,
-    defaultValues: PropTypes.objectOf({
+    defaultValues: PropTypes.shape({
+        id: PropTypes.string,
         name: PropTypes.string.isRequired,
         trigram: PropTypes.string.isRequired,
         cards: PropTypes.array.isRequired

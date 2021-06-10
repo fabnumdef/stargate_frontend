@@ -66,6 +66,7 @@ const GET_CAMPUSES = gql`
 const GET_UNITS = gql`
     query listUnits($campusId: String!) {
         getCampus(id: $campusId) {
+            id
             listUnits {
                 list {
                     id

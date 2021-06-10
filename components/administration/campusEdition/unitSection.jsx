@@ -78,8 +78,8 @@ function UnitSection({ listUnits, campusId }) {
 
 UnitSection.propTypes = {
     campusId: PropTypes.string.isRequired,
-    listUnits: PropTypes.objectOf({
-        meta: PropTypes.objectOf(PropTypes.string).isRequired,
+    listUnits: PropTypes.shape({
+        meta: PropTypes.object.isRequired,
         list: PropTypes.array.isRequired
     }).isRequired
 };

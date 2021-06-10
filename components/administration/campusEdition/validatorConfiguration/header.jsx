@@ -52,11 +52,7 @@ const HeaderConfigurationValidator = ({ validatorsRoles, selectedRole, setSelect
 };
 
 HeaderConfigurationValidator.propTypes = {
-    validatorsRoles: PropTypes.arrayOf({
-        role: PropTypes.string.isRequired,
-        editable: PropTypes.bool,
-        shortLabel: PropTypes.string
-    }).isRequired,
+    validatorsRoles: PropTypes.array.isRequired,
     selectedRole: PropTypes.string,
     setSelectedRole: PropTypes.func.isRequired
 };

@@ -20,7 +20,7 @@ function AdminSection({ listAdmins, roleData }) {
         <Grid container alignItems="center" className={classes.root}>
             <CreateRoleField
                 roleData={roleData}
-                usersList={listAdmins.list}
+                usersList={listAdmins}
                 mailDomain={GOUV_DOMAIN_MAIL}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Administrateur(s) fonctionnel(s)
@@ -32,10 +32,10 @@ function AdminSection({ listAdmins, roleData }) {
 
 AdminSection.propTypes = {
     listAdmins: PropTypes.array.isRequired,
-    roleData: PropTypes.objectOf({
+    roleData: PropTypes.shape({
         role: PropTypes.string,
-        campus: PropTypes.objectOf(PropTypes.string).isRequired
-    }).isRequired
+        campus: PropTypes.objectOf(PropTypes.string)
+    })
 };
 
 export default AdminSection;
