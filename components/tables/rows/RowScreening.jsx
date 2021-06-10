@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
     },
     iconWarning: {
         color: theme.palette.warning.main
+    },
+    fontSizeCell: {
+        fontSize: '0.75rem'
     }
 }));
 
@@ -33,7 +36,7 @@ function RowScreening({ columns, choices, row, treated }) {
                 switch (column.id) {
                     case 'lastname':
                         return (
-                            <TableCell key={column.id}>
+                            <TableCell className={classes.fontSizeCell} key={column.id}>
                                 <>
                                     {row.vAttachedFile && (
                                         <a href={row.link} download>
@@ -56,7 +59,7 @@ function RowScreening({ columns, choices, row, treated }) {
                         );
                     case 'action':
                         return treated ? (
-                            <TableCell key={column.id}>
+                            <TableCell className={classes.fontSizeCell} key={column.id}>
                                 {row.isScreened ===
                                 WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.positive ? (
                                     <div className={classes.info}>
@@ -91,7 +94,7 @@ function RowScreening({ columns, choices, row, treated }) {
 
                     default:
                         return (
-                            <TableCell key={column.id}>
+                            <TableCell className={classes.fontSizeCell} key={column.id}>
                                 {column.format && typeof value === 'number'
                                     ? column.format(value)
                                     : value}

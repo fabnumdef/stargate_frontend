@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import PageTitle from '../components/styled/common/pageTitle';
 
 import NoSsr from '../lib/nossr';
 
@@ -45,6 +46,11 @@ const useStyles = makeStyles(() => ({
         fontStyle: 'italic',
         fontWeight: 'bold',
         marginLeft: '2%'
+    },
+    headPaper: {
+        flexDirection: 'column',
+        height: '100%',
+        position: 'relative'
     }
 }));
 
@@ -95,15 +101,15 @@ export default function RequestAccesForm({ group }) {
     });
 
     return (
-        <>
+        <div className={classes.headPaper}>
             <Grid container spacing={2} className={classes.root}>
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center">
-                        <Typography variant="h4" className={classes.pageTitle}>
+                        <PageTitle>
                             {group
                                 ? "Nouvelle demande d'accès temporaire de groupe"
                                 : "Nouvelle demande d'accès temporaire"}
-                        </Typography>
+                        </PageTitle>
                     </Box>
                 </Grid>
                 <Grid item sm={12} xs={12}>
@@ -174,7 +180,7 @@ export default function RequestAccesForm({ group }) {
                     </TabPanel>
                 </Grid>
             </Grid>
-        </>
+        </div>
     );
 }
 

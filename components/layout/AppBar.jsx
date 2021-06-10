@@ -11,7 +11,8 @@ const useStyles = (drawerWidth) =>
         },
         appBar: {
             width: `calc(100% - ${drawerWidth}px)`,
-            marginLeft: drawerWidth
+            marginLeft: drawerWidth,
+            position: 'absolute'
         }
     }))();
 

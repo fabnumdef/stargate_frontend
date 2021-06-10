@@ -10,7 +10,7 @@ const palette = {
         light: '#799aff'
     },
     secondary: {
-        main: '#FBBB33'
+        main: '#0C09CA'
     },
     success: {
         main: '#28a745'
@@ -108,6 +108,7 @@ const theme = createMuiTheme(
             },
             MuiFilledInput: {
                 root: {
+                    fontSize: '0.75rem',
                     borderRadius: '4px',
                     backgroundColor: '#F9F9F9'
                 },
