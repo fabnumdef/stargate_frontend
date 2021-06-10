@@ -120,7 +120,7 @@ function MyTreatments() {
     const { data, loading } = useQuery(LIST_TREATMENTS, {
         variables: {
             cursor: {
-                first: 10,
+                first: 50,
                 offset: 0
             }
         },
@@ -141,7 +141,7 @@ function MyTreatments() {
     const { data: exportData, loading: exportLoading } = useQuery(LIST_EXPORTS, {
         variables: {
             cursor: {
-                first: 10,
+                first: 50,
                 offset: 0
             },
             filters: { exportDate: null }

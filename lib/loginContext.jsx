@@ -105,7 +105,7 @@ export function LoginContextProvider({ children }) {
                     variables: {
                         campusId,
                         as: { role: activeRole.role, unit: activeRole.unit },
-                        cursor: { offset: 0, first: 30 },
+                        cursor: { offset: 0, first: 50 },
                         filterCreated: { status: STATE_REQUEST.STATE_CREATED.state },
                         filterTreated: {
                             status: [

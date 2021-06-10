@@ -67,7 +67,7 @@ const tabList = [
     }
 ];
 
-const FIRST_INIT = 10;
+const FIRST_INIT = 50;
 
 export default function MyRequestAccess() {
     const classes = useStyles();
