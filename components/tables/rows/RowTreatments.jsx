@@ -1,6 +1,5 @@
 import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
-import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import ActionCell from '../cells/ActionCell';
 import RequestCell from '../cells/RequestCell';
@@ -11,22 +10,9 @@ import StatusCell from '../cells/StatusCell';
 import ExportCell from '../cells/ExportCell';
 import TableRow from '@material-ui/core/TableRow';
 
-const StyledRow = withStyles((theme) => ({
-    root: {
-        border: `19px solid ${theme.palette.background.table}`
-    },
-    hover: {
-        '&:hover': {
-            boxShadow: `inset -1px -2px 0px ${theme.palette.primary.dark}
-            , inset 1px 1px 0px ${theme.palette.primary.dark}`,
-            backgroundColor: `${theme.palette.common.white} !important`
-        }
-    }
-}))(TableRow);
-
 function RowTreatments({ columns, choices, row, treated, modalOpen }) {
     return (
-        <StyledRow hover key={row.visitor.id}>
+        <TableRow hover key={row.visitor.id}>
             {columns.map((column) => {
                 const value = row[column.id];
                 switch (column.id) {
@@ -76,7 +62,7 @@ function RowTreatments({ columns, choices, row, treated, modalOpen }) {
                         );
                 }
             })}
-        </StyledRow>
+        </TableRow>
     );
 }
 

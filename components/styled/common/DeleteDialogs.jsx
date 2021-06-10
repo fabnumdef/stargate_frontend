@@ -87,11 +87,15 @@ function DeleteDialogs({ title, isOpen, onClose }) {
                     </Typography>
                 </MuiDialogContent>
                 <MuiDialogActions className={classes.actionButtons}>
-                    <RoundButton variant="outlined" onClick={() => onClose(false)}>
+                    <RoundButton
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => onClose(false)}>
                         Annuler
                     </RoundButton>
                     <RoundButton
                         variant="outlined"
+                        color="secondary"
                         onClick={() => onClose(true)}
                         className={classes.deleteButton}>
                         Supprimer

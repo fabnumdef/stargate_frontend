@@ -24,15 +24,19 @@ import useVisitors from '../lib/hooks/useVisitors';
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 
 const CSV_REGEX = /[êëîïç\- ]/gi;
-
-function csvName() {
-    const date = new Date(Date.now());
+const convertCSVDate = (date) => {
+    const dateToConvert = new Date(date);
     const options = {
         year: '2-digit',
         month: '2-digit',
         day: '2-digit'
     };
-    return `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
+    return dateToConvert.toLocaleString('fr-FR', options);
+};
+
+function csvName() {
+    const date = Date.now();
+    return `criblage du ${convertCSVDate(date)}.csv`;
 }
 
 const formatCsvData = (value) => {
@@ -115,7 +119,7 @@ function ScreeningManagement() {
         fetchData({
             variables: {
                 cursor: {
-                    first: 30,
+                    first: 50,
                     offset: 0
                 }
             }
@@ -131,7 +135,7 @@ function ScreeningManagement() {
         fetchData({
             variables: {
                 cursor: {
-                    first: 30,
+                    first: 50,
                     offset: 0
                 },
                 search: event.target.value !== '' ? event.target.value : ''
@@ -145,7 +149,7 @@ function ScreeningManagement() {
         return data.getCampus.progress.list.map((visitor) => [
             visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
             visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
-            visitor.birthday.trim()
+            convertCSVDate(visitor.birthday.trim())
         ]);
     }, [data]);
 
@@ -162,6 +166,8 @@ function ScreeningManagement() {
                 }
             })
         );
+
+        console.log(data);
     }, [data]);
 
     const handleSelectAll = useCallback(
@@ -224,7 +230,7 @@ function ScreeningManagement() {
                             <CSVLink data={csvData} separator=";" filename={csvName()}>
                                 <RoundButton
                                     variant="outlined"
-                                    color="primary"
+                                    color="secondary"
                                     disabled={data?.getCampus?.progress?.meta?.total <= 0}>
                                     Export CSV
                                 </RoundButton>
@@ -240,14 +246,14 @@ function ScreeningManagement() {
                         <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 type="reset"
                                 onClick={resetDecision}>
                                 Annuler
                             </RoundButton>
                             <RoundButton
                                 variant="contained"
-                                color="primary"
+                                color="secondary"
                                 type="submit"
                                 onClick={handleSubmit}
                                 disabled={submitDecisionNumber === 0}>

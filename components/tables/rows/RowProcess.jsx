@@ -4,37 +4,15 @@ import TableCell from '@material-ui/core/TableCell';
 
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import StepCell from '../cells/StepCell';
-
-/** @todo Put layout Dark et main to hover and border effect */
-const StyledRow = withStyles((theme) => ({
-    root: {
-        border: `19px solid ${theme.palette.background.table}`
-    },
-    hover: {
-        '&:hover': {
-            boxShadow: `inset -10px -10px 0px ${theme.palette.primary.dark}
-            , inset 11px 11px 0px ${theme.palette.primary.dark}`,
-            backgroundColor: `${theme.palette.common.white} !important`
-        }
-    }
-}))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
     cells: {
-        border: 'none',
-
         color: 'inherit',
         fontWeight: 'inherit',
         '&:first-child': {
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10,
             width: '20%'
-        },
-        '&:last-child': {
-            borderTopRightRadius: 10,
-            borderBottomRightRadius: 10
         }
     },
     icon: {
@@ -49,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 function RowTreatments({ columns, row }) {
     const classes = useStyles();
     return (
-        <StyledRow hover key={row.id}>
+        <TableRow hover key={row.id}>
             {columns.map((column) => {
                 const value = row[column.id];
                 switch (column.id) {
@@ -71,7 +49,7 @@ function RowTreatments({ columns, row }) {
                         );
                 }
             })}
-        </StyledRow>
+        </TableRow>
     );
 }
 

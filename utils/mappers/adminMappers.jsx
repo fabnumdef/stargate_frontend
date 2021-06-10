@@ -1,4 +1,13 @@
-import { FORMS_LIST, ROLES } from '../constants/enums';
+import { ROLES } from '../constants/enums';
+
+export const workflowCards = Object.values(ROLES)
+    .filter((role) => role.workflow)
+    .map((role, i) => ({
+        id: i + 1,
+        text: role.shortLabel,
+        role: role.role,
+        behavior: role.behavior
+    }));
 
 export const mapUserData = (data, dataCampuses, dataUnits) => {
     const {
@@ -44,32 +53,15 @@ export const mapUnitData = (data, cards) => ({
     }
 });
 
-export const mapEditUnit = (unitData, unitCorresList, unitOfficerList, placesList) => {
-    const cards = unitData.workflow.steps.map((step) => ({ role: step.role }));
-    const unitCorrespondentIndex = unitCorresList.findIndex((u) =>
-        u.roles.find(
-            (r) => r.role === ROLES.ROLE_UNIT_CORRESPONDENT.role && r.userInCharge === u.id
-        )
+export const mapEditUnit = (unitData) => {
+    const cards = unitData.workflow.steps.map((card) =>
+        workflowCards.find((c) => c.role === card.role)
     );
-    const unitCorrespondent =
-        unitCorrespondentIndex !== -1 ? unitCorresList.splice(unitCorrespondentIndex, 1)[0] : {};
-
-    const unitOfficerIndex = unitOfficerList.findIndex((u) =>
-        u.roles.find((r) => r.role === ROLES.ROLE_SECURITY_OFFICER.role && r.userInCharge === u.id)
-    );
-    const unitOfficer =
-        unitOfficerIndex !== -1 ? unitOfficerList.splice(unitOfficerIndex, 1)[0] : {};
     return {
+        id: unitData.id,
         name: unitData.label,
         trigram: unitData.trigram,
-        cards,
-        unitCorrespondent,
-        unitOfficer,
-        assistantsList: {
-            [FORMS_LIST.CORRES_ASSISTANTS]: unitCorresList,
-            [FORMS_LIST.OFFICER_ASSISTANTS]: unitOfficerList
-        },
-        placesList
+        cards
     };
 };
 

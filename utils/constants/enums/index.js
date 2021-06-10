@@ -68,7 +68,7 @@ export const ROLES = {
     ROLE_UNIT_CORRESPONDENT: {
         role: 'ROLE_UNIT_CORRESPONDENT',
         label: "Correspondant d'unité",
-        shortLabel: 'CU',
+        shortLabel: 'CORR U',
         workflow: WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.VALIDATION.value,
         permission: [
@@ -77,7 +77,6 @@ export const ROLES = {
             '/contactez-nous',
             '/compte',
             '/demandes',
-            '/mes-demandes',
             '/mes-traitements',
             '/nouvelle-demande',
             '/nouvelle-demande/simple',
@@ -85,6 +84,15 @@ export const ROLES = {
             '/administration',
             '/administration/utilisateurs'
         ]
+    },
+    ROLE_SCREENING: {
+        role: 'ROLE_SCREENING',
+        label: 'Criblage',
+        shortLabel: 'CRIBLAGE',
+        workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
+        behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
+        permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
+        editable: true
     },
     ROLE_SECURITY_OFFICER: {
         role: 'ROLE_SECURITY_OFFICER',
@@ -97,7 +105,6 @@ export const ROLES = {
             '/a-propos',
             '/contactez-nous',
             '/compte',
-            '/mes-demandes',
             '/demandes',
             '/mes-traitements',
             '/nouvelle-demande',
@@ -114,15 +121,6 @@ export const ROLES = {
         permission: ['/', '/a-propos', '/contactez-nous', '/compte'],
         editable: true
     },
-    ROLE_SCREENING: {
-        role: 'ROLE_SCREENING',
-        label: 'Criblage',
-        shortLabel: 'GD',
-        workflow: WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.ADVISEMENT.value,
-        permission: ['/', '/compte', '/a-propos', '/contactez-nous'],
-        editable: true
-    },
     ROLE_HOST: {
         role: 'ROLE_HOST',
         label: 'Hôte',
@@ -130,7 +128,6 @@ export const ROLES = {
         permission: [
             '/',
             '/compte',
-            '/mes-demandes',
             '/demandes',
             '/nouvelle-demande',
             '/nouvelle-demande/simple',
@@ -148,7 +145,7 @@ export const ROLES = {
     ROLE_OBSERVER: {
         role: 'ROLE_OBSERVER',
         label: 'Observateur',
-        shortLabel: 'O',
+        shortLabel: 'OBS.',
         workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
         behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
         permission: ['/', '/compte', '/a-propos', '/contactez-nous']

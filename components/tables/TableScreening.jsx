@@ -3,7 +3,6 @@ import { memo, useMemo, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -13,19 +12,43 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { format } from 'date-fns';
 
 import { ROLES } from '../../utils/constants/enums';
+import TableContainer from './styled/TableContainer';
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowScreeningTreatments from './rows/RowScreening';
 import { IconButton } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
 
-const useStyles = makeStyles(() => ({
-    tableCollapes: {
-        borderCollapse: 'collapse'
+const useStyles = makeStyles((theme) => ({
+    cont: {
+        position: 'relative'
     },
     root: {
-        border: '1px solid #F3F3F3',
-        maxHeight: '55vh',
+        borderTop: '1px solid rgba(224, 224, 224, 1)',
+        padding: '0 20px 0 20px',
+        background: theme.palette.background.table,
         overflowX: 'hidden'
+    },
+    header: {
+        position: 'absolute',
+        top: '1px',
+        left: '0',
+        width: '100%',
+        height: '57px',
+        backgroundColor: 'white',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-1px',
+            height: '1px',
+            width: '100%',
+            backgroundColor: 'rgba(224, 224, 224, 1)'
+        }
+    },
+    headerToTreat: {
+        height: '81px'
+    },
+    table: {
+        zIndex: 10
     }
 }));
 
@@ -107,14 +130,16 @@ const TableScreening = ({ requests, treated, selectAll }) => {
     );
 
     return (
-        <TableContainer className={classes.root}>
-            <Table stickyHeader aria-label="sticky table" className={classes.tableCollapes}>
+        <TableContainer height={!treated ? 81 : 57}>
+            <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
                         {columns.map((column) =>
                             !treated && column.id === 'action' ? (
                                 <>
-                                    <CustomTableCellHeader key={column.id} align={column.align}>
+                                    <CustomTableCellHeader
+                                        key={`${treated ? 'treated' : ''}_${column.id}`}
+                                        align={column.align}>
                                         {column.label || ''}
                                         <IconButton
                                             aria-label="options"
@@ -134,7 +159,10 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                                             setAnchorEl(null);
                                         }}
                                         PaperProps={{
-                                            style: { maxHeight: ITEM_HEIGHT * 4.5, width: '20ch' }
+                                            style: {
+                                                maxHeight: ITEM_HEIGHT * 4.5,
+                                                width: '20ch'
+                                            }
                                         }}>
                                         {choices.map((choice) => (
                                             <MenuItem
@@ -149,24 +177,25 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                                     </Menu>
                                 </>
                             ) : (
-                                <CustomTableCellHeader key={column.id} align={column.align}>
+                                <CustomTableCellHeader
+                                    key={`${treated ? 'treated' : ''}_${column.id}`}
+                                    align={column.align}>
                                     {column.label || ''}
                                 </CustomTableCellHeader>
                             )
                         )}
                     </TableRow>
                 </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
+                {rows.map((row) => (
+                    <TableBody key={`${treated ? 'treated' : ''}_${row.id}`}>
                         <RowScreeningTreatments
-                            key={`${treated ? 'treated' : ''}_${row.id}`}
                             choices={choices}
                             row={row}
                             columns={columns}
                             treated={treated}
                         />
-                    ))}
-                </TableBody>
+                    </TableBody>
+                ))}
             </Table>
         </TableContainer>
     );

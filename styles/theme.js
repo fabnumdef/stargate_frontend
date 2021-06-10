@@ -10,7 +10,7 @@ const palette = {
         light: '#799aff'
     },
     secondary: {
-        main: '#FBBB33'
+        main: '#0C09CA'
     },
     success: {
         main: '#28a745'
@@ -57,16 +57,58 @@ const theme = createMuiTheme(
                     ul: {
                         padding: 0,
                         margin: 0
+                    },
+                    table: {
+                        backgroundColor: palette.background.table
+                    },
+                    tbody: {
+                        '&::before': {
+                            content: '""',
+                            display: 'block',
+                            height: '20px'
+                        }
+                    },
+                    'table tbody:last-child': {
+                        '&::after': {
+                            content: '""',
+                            display: 'block',
+                            height: '20px'
+                        }
+                    },
+                    th: {
+                        borderBottom: 'none !important'
+                    },
+                    'thead tr': {
+                        backgroundColor: 'white'
+                    },
+                    'tbody tr': {
+                        backgroundColor: 'white'
+                    },
+                    'tr td:last-child': {
+                        borderTopRightRadius: '10px',
+                        borderBottomRightRadius: '10px'
+                    },
+                    'tr td:first-child': {
+                        borderTopLeftRadius: '10px',
+                        borderBottomLeftRadius: '10px'
                     }
                 }
             },
             MuiTable: {
                 stickyHeader: {
-                    borderCollapse: 'ihnerit'
+                    borderCollapse: 'unset'
+                }
+            },
+            MuiTableRow: {
+                root: {
+                    '&.MuiTableRow-hover:hover': {
+                        backgroundColor: 'white'
+                    }
                 }
             },
             MuiFilledInput: {
                 root: {
+                    fontSize: '0.75rem',
                     borderRadius: '4px',
                     backgroundColor: '#F9F9F9'
                 },

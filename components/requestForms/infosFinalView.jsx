@@ -13,8 +13,8 @@ import { format } from 'date-fns';
 import ButtonsFooterContainer from '../styled/common/ButtonsFooterContainer';
 import RoundButton from '../styled/common/roundButton';
 import { useSnackBar } from '../../lib/hooks/snackbar';
-
-import TabRecapRequest from '../tabs/tabRecapRequest';
+import AddIcon from '@material-ui/icons/Add';
+import TabRecapRequest from '../tables/TabRecapRequest';
 import { STATE_REQUEST } from '../../utils/constants/enums';
 import { makeStyles } from '@material-ui/core/styles';
 import { LIST_MY_REQUESTS } from '../../lib/apollo/fragments';
@@ -170,7 +170,7 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
         },
         onCompleted: (data) => {
             if (data.mutateCampus.shiftRequest.status === STATE_REQUEST.STATE_CREATED.state) {
-                router.push('/mes-demandes');
+                router.push('/demandes');
                 addAlert({
                     message: `La demande ${data.mutateCampus.shiftRequest.id} a bien été créée`,
                     severity: 'success'
@@ -185,18 +185,23 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
         }
     });
 
+    const handleAddVisitor = () => {
+        setSelectVisitor({});
+        handleBack();
+    };
+
     return (
         <Grid container spacing={4}>
             <Grid item sm={11}>
                 <Typography variant={'subtitle1'} className={classes.requestTitle}>
                     {formData.id}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <span className={classes.requestLabel}>Visite du :</span>{' '}
                     {formData.from && format(new Date(formData.from), 'dd/MM/yyyy')} au{' '}
                     {formData.to && format(new Date(formData.to), 'dd/MM/yyyy')}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <span className={classes.requestLabel}>Lieu(x) :</span>{' '}
                     {formData.places &&
                         formData.places.map((lieu, index) => {
@@ -204,7 +209,7 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
                             return `${lieu.label}, `;
                         })}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                     <span className={classes.requestLabel}>Motif :</span>{' '}
                     {formData.reason && formData.reason}
                 </Typography>
@@ -224,14 +229,23 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
             </Grid>
 
             <ButtonsFooterContainer>
-                {group && (
-                    <RoundButton variant="outlined" color="primary" onClick={handleBack}>
+                {group ? (
+                    <RoundButton variant="outlined" color="secondary" onClick={handleBack}>
                         Retour
                     </RoundButton>
+                ) : (
+                    <RoundButton
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleAddVisitor}
+                        startIcon={<AddIcon />}>
+                        Ajouter
+                    </RoundButton>
                 )}
+
                 <RoundButton
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     onClick={() =>
                         createRequest({
                             variables: { idRequest: formData.id, transition: 'CREATE' }

@@ -3,6 +3,7 @@ import TableBody from '@material-ui/core/TableBody';
 
 import RowProcess from '../../../../components/tables/rows/RowProcess';
 import { render, screen } from '../../../../utils/tests/renderApollo';
+import { ROLES } from '../../../../utils/constants/enums';
 
 const mockColumns = [
     {
@@ -52,7 +53,7 @@ describe('Component: rowProcess', () => {
             </Table>
         );
         expect(screen.queryByText(/expandables/i)).toBeInTheDocument();
-        expect(screen.queryByText(/cu/i)).toBeInTheDocument();
-        expect(screen.queryByText(/ba/i)).toBeInTheDocument();
+        expect(screen.queryByText(ROLES.ROLE_UNIT_CORRESPONDENT.shortLabel)).toBeInTheDocument();
+        expect(screen.queryByText(ROLES.ROLE_ACCESS_OFFICE.shortLabel)).toBeInTheDocument();
     });
 });

@@ -30,7 +30,7 @@ export default function DetailsInfosRequest({ request }) {
                 {request.id}
             </Typography>
             <div className={classes.row}>
-                <Typography variant="body1" display="inline" className={classes.categorie}>
+                <Typography variant="body2" display="inline" className={classes.categorie}>
                     Demandeur :{' '}
                 </Typography>
                 <Typography variant="body2" display="inline">
@@ -39,7 +39,7 @@ export default function DetailsInfosRequest({ request }) {
             </div>
 
             <div className={classes.row}>
-                <Typography variant="body1" display="inline" className={classes.categorie}>
+                <Typography variant="body2" display="inline" className={classes.categorie}>
                     Période :{' '}
                 </Typography>
                 <Typography variant="body2" display="inline">
@@ -49,7 +49,7 @@ export default function DetailsInfosRequest({ request }) {
             </div>
 
             <div className={classes.row}>
-                <Typography variant="body1" display="inline" className={classes.categorie}>
+                <Typography variant="body2" display="inline" className={classes.categorie}>
                     Lieux :{' '}
                 </Typography>
                 <Typography variant="body2" display="inline">
@@ -62,7 +62,7 @@ export default function DetailsInfosRequest({ request }) {
             </div>
 
             <div className={classes.row}>
-                <Typography variant="body1" display="inline" className={classes.categorie}>
+                <Typography variant="body2" display="inline" className={classes.categorie}>
                     Motif :{' '}
                 </Typography>
                 <Typography variant="body2" display="inline">

@@ -24,7 +24,7 @@ export default function SeeMoreOrLess({ children }) {
             <>
                 {children}
                 <Typography
-                    variant="body2"
+                    variant="caption"
                     display="inline"
                     tabIndex="0"
                     className={classes.more}

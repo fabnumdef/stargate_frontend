@@ -3,23 +3,10 @@ import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client';
 import TablePagination from '@material-ui/core/TablePagination';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
 import PageTitle from '../styled/common/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
-
-const useStyles = makeStyles({
-    root: {
-        width: '100%'
-    },
-    searchInput: {
-        height: '29px',
-        fontSize: '0.9rem'
-    }
-});
+import SearchField from '../styled/common/SearchField';
 
 function IndexAdministration({
     fetchMore,
@@ -34,7 +21,6 @@ function IndexAdministration({
     columns,
     subtitles
 }) {
-    const classes = useStyles();
     const { addAlert } = useSnackBar();
 
     const [page, setPage] = useState(0);
@@ -94,22 +80,16 @@ function IndexAdministration({
         <>
             <PageTitle subtitles={subtitles}>Administration</PageTitle>
             <Grid container spacing={1} justify="space-between" style={{ margin: '20px 0' }}>
-                <Grid item sm={12} xs={12} md={12} lg={12}>
-                    <TextField
-                        style={{ float: 'right' }}
-                        InputProps={{
-                            className: classes.searchInput,
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            )
-                        }}
-                        value={searchInput}
-                        onChange={handleChangeFilter}
-                        placeholder="Rechercher un nom..."
-                        variant="outlined"
-                    />
+                <Grid
+                    item
+                    sm={12}
+                    xs={12}
+                    md={12}
+                    lg={12}
+                    style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <SearchField value={searchInput} onChange={handleChangeFilter}>
+                        Rechercher...
+                    </SearchField>
                 </Grid>
                 <Grid item sm={12}>
                     <TabAdmin

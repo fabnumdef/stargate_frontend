@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { format } from 'date-fns';
 import CustomTableCellHeader from './cells/TableCellHeader';
+import TableContainer from './styled/TableContainer';
 import RowRequests from './rows/RowRequests';
 import DeleteModal from '../styled/common/DeleteDialogs';
 import LoadMore from '../styled/common/LoadMore';
@@ -54,13 +54,11 @@ function createData({ id, from, to, places, reason, status }) {
     };
 }
 
-const useStyles = makeStyles({
-    root: {
-        border: '1px solid #F3F3F3',
-        maxHeight: '63vh',
-        overflowX: 'hidden'
+const useStyles = makeStyles(() => ({
+    table: {
+        zIndex: 10
     }
-});
+}));
 
 export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMore }) {
     const classes = useStyles();
@@ -77,8 +75,8 @@ export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMor
     );
 
     return (
-        <TableContainer className={classes.root}>
-            <Table stickyHeader aria-label="sticky table">
+        <TableContainer height={57}>
+            <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
@@ -89,16 +87,15 @@ export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMor
                     </TableRow>
                 </TableHead>
 
-                <TableBody>
-                    {rows.map((row) => (
+                {rows.map((row) => (
+                    <TableBody key={row.id}>
                         <RowRequests
-                            key={row.id}
                             row={row}
                             columns={columns}
                             onDelete={() => setToDeleteID(row.id)}
                         />
-                    ))}
-                </TableBody>
+                    </TableBody>
+                ))}
             </Table>
             <LoadMore onLoadMore={onLoadMore} display={load} />
             <DeleteModal

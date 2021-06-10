@@ -6,12 +6,9 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-
 import TablePagination from '@material-ui/core/TablePagination';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
 
+import SearchField from '../components/styled/common/SearchField';
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
 const useStyles = makeStyles(() => ({
@@ -133,22 +130,9 @@ export default function GatekeeperManagement() {
                     </Box>
                 </Grid>
                 <Grid item sm={12} xs={12} className={classes.searchField}>
-                    <TextField
-                        style={{ float: 'right', width: '300px' }}
-                        margin="dense"
-                        variant="outlined"
-                        value={search}
-                        onChange={(event) => setSearch(event.target.value)}
-                        placeholder="Rechercher..."
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                            inputProps: { 'data-testid': 'searchField' }
-                        }}
-                    />
+                    <SearchField value={search} onChange={(event) => setSearch(event.target.value)}>
+                        Rechercher...
+                    </SearchField>
                 </Grid>
 
                 <Grid item sm={12}>

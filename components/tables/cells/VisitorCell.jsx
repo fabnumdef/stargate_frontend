@@ -8,7 +8,8 @@ const useStyle = makeStyles(() => ({
         fontWeight: 'bold'
     },
     widthCell: {
-        maxWidth: '220px'
+        maxWidth: '220px',
+        verticalAlign: 'baseline'
     }
 }));
 
@@ -17,34 +18,34 @@ export default function VisitorCell({ visitor }) {
     return (
         <TableCell className={classes.widthCell}>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Visiteur :
                 </Typography>
-                <Typography display="inline" variant="body1">
+                <Typography display="inline" variant="caption">
                     {` ${visitor.firstname} ${visitor.lastname}`}
                 </Typography>
             </div>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Origine :
                 </Typography>
-                <Typography display="inline" variant="body1">
+                <Typography display="inline" variant="caption">
                     {` ${visitor.isInternal}`}
                 </Typography>
             </div>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Unité / Société :
                 </Typography>
-                <Typography display="inline" variant="body1">{` ${visitor.company}`}</Typography>
+                <Typography display="inline" variant="caption">{` ${visitor.company}`}</Typography>
             </div>
             <div>
-                <Typography display="inline" variant="body1" className={classes.subtitles}>
+                <Typography display="inline" variant="body2" className={classes.subtitles}>
                     Type d&apos;employé :
                 </Typography>
                 <Typography
                     display="inline"
-                    variant="body1">{` ${visitor.employeeType}`}</Typography>
+                    variant="caption">{` ${visitor.employeeType}`}</Typography>
             </div>
         </TableCell>
     );

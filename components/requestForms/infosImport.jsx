@@ -6,6 +6,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { Publish, GetApp } from '@material-ui/icons';
 import SelectedBadge from '../../components/styled/common/TabBadge';
+import RoundButton from '../styled/common/roundButton';
 
 import red from '@material-ui/core/colors/red';
 
@@ -302,23 +303,23 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
             <Grid item sm={12}>
                 <Grid container justify="flex-end">
                     <div>
-                        <Button
+                        <RoundButton
                             variant="outlined"
-                            color="primary"
+                            color="secondary"
                             style={{ marginRight: '5px' }}
                             onClick={handleClickCancel}>
                             Retour
-                        </Button>
+                        </RoundButton>
                     </div>
                     <div>
-                        <Button
+                        <RoundButton
                             type="submit"
                             variant="contained"
-                            color="primary"
+                            color="secondary"
                             disabled={formData.visitors.length <= 0 || errorStatement === true}
                             onClick={handleNext}>
                             Valider
-                        </Button>
+                        </RoundButton>
                     </div>
                 </Grid>
             </Grid>

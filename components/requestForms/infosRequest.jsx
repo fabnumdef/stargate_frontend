@@ -291,7 +291,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             <Grid container>
                                 {/* Item 1 */}
                                 <Grid item md={2} sm={12}>
-                                    <Typography variant="body1" className={classes.fieldLabel}>
+                                    <Typography variant="body2" className={classes.fieldLabel}>
                                         Responsable visite :
                                     </Typography>
                                 </Grid>
@@ -427,7 +427,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             spacing={2}>
                             {/* Item 1 */}
                             <Grid item xs={12} sm={12} md={3}>
-                                <Typography variant="body1" className={classes.fieldLabel}>
+                                <Typography variant="body2" className={classes.fieldLabel}>
                                     Nature de la visite* :
                                 </Typography>
                             </Grid>
@@ -443,14 +443,22 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                                 <FormControlLabel
                                                     value={REQUEST_OBJECT.PROFESSIONAL}
                                                     control={<Radio color="primary" />}
-                                                    label="Professionnelle"
+                                                    label={
+                                                        <Typography variant="caption">
+                                                            Professionnelle
+                                                        </Typography>
+                                                    }
                                                     labelPlacement="end"
                                                     className={classes.radioLabel}
                                                 />
                                                 <FormControlLabel
                                                     value={REQUEST_OBJECT.PRIVATE}
                                                     control={<Radio color="primary" />}
-                                                    label="Privée"
+                                                    label={
+                                                        <Typography variant="caption">
+                                                            Privée
+                                                        </Typography>
+                                                    }
                                                     labelPlacement="end"
                                                 />
                                             </RadioGroup>
@@ -471,7 +479,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             {/* Item 4: Selections des dates */}
 
                             <Grid item xs={12} sm={12} md={3}>
-                                <Typography variant="body1" className={classes.fieldLabel}>
+                                <Typography variant="body2" className={classes.fieldLabel}>
                                     Période d&apos;accès* :
                                 </Typography>
                             </Grid>
@@ -564,26 +572,26 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                     <ErrorOutlineIcon className={classes.infoIcon} />
                                 </Grid>
                                 <Grid item md={11}>
-                                    <Typography variant="body2" className={classes.infoTimeTitle}>
+                                    <Typography variant="caption" className={classes.infoTimeTitle}>
                                         Informations délais de traitement avant la date de visite
                                     </Typography>
                                     <List>
                                         <ListItem className={classes.infoTimeItem}>
                                             <ListItemText
                                                 primary="• Français: 2 jours ouvrés"
-                                                primaryTypographyProps={{ variant: 'body2' }}
+                                                primaryTypographyProps={{ variant: 'caption' }}
                                             />
                                         </ListItem>
                                         <ListItem className={classes.infoTimeItem}>
                                             <ListItemText
                                                 primary="• UE: 15 jours ouvrés"
-                                                primaryTypographyProps={{ variant: 'body2' }}
+                                                primaryTypographyProps={{ variant: 'caption' }}
                                             />
                                         </ListItem>
                                         <ListItem className={classes.infoTimeItem}>
                                             <ListItemText
                                                 primary="• Hors UE: 30 jours ouvrés"
-                                                primaryTypographyProps={{ variant: 'body2' }}
+                                                primaryTypographyProps={{ variant: 'caption' }}
                                             />
                                         </ListItem>
                                     </List>
@@ -595,7 +603,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                     {/* Item 6: Motif */}
                     <Grid item container>
                         <Grid container item alignItems="center" xs={12} sm={12} md={2}>
-                            <Typography variant="body1" className={classes.fieldLabel}>
+                            <Typography variant="body2" className={classes.fieldLabel}>
                                 Motif de la visite* :
                             </Typography>
                         </Grid>
@@ -628,7 +636,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             xs={12}
                             sm={12}
                             md={2}>
-                            <Typography variant="body1" className={classes.fieldLabel} gutterBottom>
+                            <Typography variant="body2" className={classes.fieldLabel} gutterBottom>
                                 Accès lieux* :
                             </Typography>
                         </Grid>
@@ -668,11 +676,11 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                     <ButtonsFooterContainer>
                         <Link href="/">
-                            <RoundButton variant="outlined" color="primary">
+                            <RoundButton variant="outlined" color="secondary">
                                 Annuler
                             </RoundButton>
                         </Link>
-                        <RoundButton type="submit" variant="contained" color="primary">
+                        <RoundButton type="submit" variant="contained" color="secondary">
                             Continuer
                         </RoundButton>
                     </ButtonsFooterContainer>

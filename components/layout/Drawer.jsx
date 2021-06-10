@@ -85,7 +85,7 @@ const menu = [
     { label: 'index', permission: '/', icon: TreatmentsIcon },
     {
         label: 'Mes demandes',
-        permission: '/mes-demandes',
+        permission: '/demandes',
         icon: MyRequestsIcon
     },
     {
