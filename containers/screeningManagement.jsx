@@ -119,7 +119,7 @@ function ScreeningManagement() {
         fetchData({
             variables: {
                 cursor: {
-                    first: 30,
+                    first: 50,
                     offset: 0
                 }
             }
@@ -135,7 +135,7 @@ function ScreeningManagement() {
         fetchData({
             variables: {
                 cursor: {
-                    first: 30,
+                    first: 50,
                     offset: 0
                 },
                 search: event.target.value !== '' ? event.target.value : ''

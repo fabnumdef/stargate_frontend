@@ -96,7 +96,7 @@ const mocks = [
             variables: {
                 campusId: 'NAVAL-BASE',
                 as: { role: 'ROLE_UNIT_CORRESPONDENT', unit: '60111c31878c3e1190920895' },
-                cursor: { offset: 0, first: 30 },
+                cursor: { offset: 0, first: 50 },
                 filterCreated: { status: STATE_REQUEST.STATE_CREATED.state },
                 filterTreated: {
                     status: [
