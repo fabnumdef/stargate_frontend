@@ -252,14 +252,14 @@ function MyTreatments() {
                         <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 type="reset"
                                 onClick={resetDecision}>
                                 Annuler
                             </RoundButton>
                             <RoundButton
                                 variant="contained"
-                                color="primary"
+                                color="secondary"
                                 type="submit"
                                 onClick={handleSubmit}
                                 disabled={submitDecisionNumber === 0}>
@@ -286,7 +286,7 @@ function MyTreatments() {
                                         <ButtonsFooterContainer>
                                             <RoundButton
                                                 variant="contained"
-                                                color="primary"
+                                                color="secondary"
                                                 type="submit"
                                                 onClick={handleExportMany}>
                                                 {`Exporter (${exportData.getCampus.export.list.length})`}
@@ -321,7 +321,7 @@ function MyTreatments() {
                             <ButtonsFooterContainer>
                                 <RoundButton
                                     variant="contained"
-                                    color="primary"
+                                    color="secondary"
                                     type="submit"
                                     disabled={visitorsNumber === 0}
                                     onClick={handleExportSelected}>

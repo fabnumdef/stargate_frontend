@@ -959,10 +959,13 @@ export default function FormInfoVisitor({
                     </Grid>
 
                     <ButtonsFooterContainer>
-                        <RoundButton variant="outlined" color="primary" onClick={handleClickCancel}>
+                        <RoundButton
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleClickCancel}>
                             Retour
                         </RoundButton>
-                        <RoundButton type="submit" variant="contained" color="primary">
+                        <RoundButton type="submit" variant="contained" color="secondary">
                             Envoyer
                         </RoundButton>
                     </ButtonsFooterContainer>

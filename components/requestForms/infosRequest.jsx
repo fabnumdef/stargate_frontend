@@ -673,11 +673,11 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                     <ButtonsFooterContainer>
                         <Link href="/">
-                            <RoundButton variant="outlined" color="primary">
+                            <RoundButton variant="outlined" color="secondary">
                                 Annuler
                             </RoundButton>
                         </Link>
-                        <RoundButton type="submit" variant="contained" color="primary">
+                        <RoundButton type="submit" variant="contained" color="secondary">
                             Continuer
                         </RoundButton>
                     </ButtonsFooterContainer>

@@ -7,8 +7,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 
 import CustomTableCellHeader from './cells/TableCellHeader';
 
@@ -92,11 +90,6 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
     //   setPage(0);
     // };
 
-    const handleAddVisitor = () => {
-        setSelectVisitor({});
-        handleBack();
-    };
-
     const handleUpdate = (index) => {
         setSelectVisitor(visitors[index]);
         handleBack();
@@ -114,19 +107,7 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
                         <TableRow>
                             {columns.map((column) => (
                                 <CustomTableCellHeader key={column.id}>
-                                    {column.id === 'action' ? (
-                                        <Button
-                                            size="small"
-                                            variant="outlined"
-                                            color="primary"
-                                            onClick={handleAddVisitor}
-                                            startIcon={<AddIcon />}
-                                            style={{ float: 'right' }}>
-                                            Ajouter
-                                        </Button>
-                                    ) : (
-                                        column.label
-                                    )}
+                                    {column.label}
                                 </CustomTableCellHeader>
                             ))}
                         </TableRow>

@@ -230,7 +230,7 @@ function ScreeningManagement() {
                             <CSVLink data={csvData} separator=";" filename={csvName()}>
                                 <RoundButton
                                     variant="outlined"
-                                    color="primary"
+                                    color="secondary"
                                     disabled={data?.getCampus?.progress?.meta?.total <= 0}>
                                     Export CSV
                                 </RoundButton>
@@ -246,14 +246,14 @@ function ScreeningManagement() {
                         <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 type="reset"
                                 onClick={resetDecision}>
                                 Annuler
                             </RoundButton>
                             <RoundButton
                                 variant="contained"
-                                color="primary"
+                                color="secondary"
                                 type="submit"
                                 onClick={handleSubmit}
                                 disabled={submitDecisionNumber === 0}>

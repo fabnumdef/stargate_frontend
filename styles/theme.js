@@ -10,7 +10,7 @@ const palette = {
         light: '#799aff'
     },
     secondary: {
-        main: '#FBBB33'
+        main: '#0C09CA'
     },
     success: {
         main: '#28a745'
