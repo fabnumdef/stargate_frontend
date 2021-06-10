@@ -24,15 +24,19 @@ import useVisitors from '../lib/hooks/useVisitors';
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 
 const CSV_REGEX = /[êëîïç\- ]/gi;
-
-function csvName() {
-    const date = new Date(Date.now());
+const convertCSVDate = (date) => {
+    const dateToConvert = new Date(date);
     const options = {
         year: '2-digit',
         month: '2-digit',
         day: '2-digit'
     };
-    return `criblage du ${date.toLocaleString('fr-FR', options)}.csv`;
+    return dateToConvert.toLocaleString('fr-FR', options);
+};
+
+function csvName() {
+    const date = Date.now();
+    return `criblage du ${convertCSVDate(date)}.csv`;
 }
 
 const formatCsvData = (value) => {
@@ -145,7 +149,7 @@ function ScreeningManagement() {
         return data.getCampus.progress.list.map((visitor) => [
             visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
             visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
-            visitor.birthday.trim()
+            convertCSVDate(visitor.birthday.trim())
         ]);
     }, [data]);
 
