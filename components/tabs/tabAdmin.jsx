@@ -16,6 +16,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import { useRouter } from 'next/router';
 import CustomTableCellHeader from '../tables/cells/TableCellHeader';
 import { useLogin } from '../../lib/loginContext';
@@ -112,8 +113,13 @@ export default function TabAdmin({ rows, columns, deleteItem, tabData }) {
                             align="right"
                             style={{
                                 minWidth: '130px'
-                            }}
-                        />
+                            }}>
+                            <Link href={tabData().createPath}>
+                                <Button type="button" variant="contained" color="primary">
+                                    Ajouter
+                                </Button>
+                            </Link>
+                        </CustomTableCellHeader>
                     </TableRow>
                 </TableHead>
                 {rows.map((row, index) => {

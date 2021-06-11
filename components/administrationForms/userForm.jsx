@@ -82,21 +82,12 @@ const radioDisplay = (userRole) => {
         return [ROLES.ROLE_HOST];
     }
     if (isAdmin(userRole.role)) {
-        return [
-            ROLES.ROLE_OBSERVER,
-            ROLES.ROLE_HOST,
-            ROLES.ROLE_SCREENING,
-            ROLES.ROLE_ACCESS_OFFICE,
-            ROLES.ROLE_ADMIN,
-            ROLES.ROLE_GATEKEEPER
-        ];
+        return [ROLES.ROLE_OBSERVER, ROLES.ROLE_HOST, ROLES.ROLE_ADMIN, ROLES.ROLE_GATEKEEPER];
     }
     if (isSuperAdmin(userRole.role)) {
         return [
             ROLES.ROLE_OBSERVER,
             ROLES.ROLE_HOST,
-            ROLES.ROLE_SCREENING,
-            ROLES.ROLE_ACCESS_OFFICE,
             ROLES.ROLE_ADMIN,
             ROLES.ROLE_SUPERADMIN,
             ROLES.ROLE_GATEKEEPER
@@ -120,8 +111,6 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
         ROLES.ROLE_OBSERVER.role,
         ROLES.ROLE_ADMIN.role,
         ROLES.ROLE_SUPERADMIN.role,
-        ROLES.ROLE_ACCESS_OFFICE.role,
-        ROLES.ROLE_SCREENING.role,
         ROLES.ROLE_GATEKEEPER.role
     ];
 

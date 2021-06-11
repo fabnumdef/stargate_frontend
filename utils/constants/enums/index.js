@@ -48,7 +48,8 @@ export const ROLES = {
             '/administration',
             '/administration/base',
             '/administration/base/creation',
-            '/administration/utilisateurs'
+            '/administration/utilisateurs',
+            '/administration/utilisateurs/creation'
         ]
     },
     ROLE_ADMIN: {
@@ -62,7 +63,8 @@ export const ROLES = {
             '/compte',
             '/administration',
             '/administration/base',
-            '/administration/utilisateurs'
+            '/administration/utilisateurs',
+            '/administration/utilisateurs/creation'
         ]
     },
     ROLE_UNIT_CORRESPONDENT: {
