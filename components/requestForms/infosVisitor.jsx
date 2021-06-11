@@ -86,7 +86,8 @@ function getKindControl(nationality, kind) {
     if (nationality === 'Française') {
         switch (kind) {
             case ID_DOCUMENT.IDCARD:
-                return /^\d{12}$/;
+                //@todo check the new idCard format
+                return /^[a-z0-9]+$/gi;
             case ID_DOCUMENT.PASSPORT:
                 return /^\d{2}[A-Za-z]{2}\d{5}$/;
             case ID_DOCUMENT.CIMSCARD:
