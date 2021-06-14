@@ -6,12 +6,11 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import TablePagination from '@material-ui/core/TablePagination';
 
 import SearchField from '../components/styled/common/SearchField';
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%'
     },
@@ -23,6 +22,10 @@ const useStyles = makeStyles(() => ({
     searchField: {
         display: 'flex',
         justifyContent: 'center'
+    },
+    list: {
+        padding: 20,
+        backgroundColor: theme.palette.background.layout
     }
 }));
 
@@ -30,6 +33,7 @@ export const LIST_VISITOR_REQUESTS = gql`
     query ListVisitorsRequestQuery($campusId: String!, $search: String, $cursor: OffsetCursor!) {
         campusId @client @export(as: "campusId")
         getCampus(id: $campusId) {
+            id
             listVisitors(search: $search, cursor: $cursor) {
                 list {
                     id
@@ -39,6 +43,17 @@ export const LIST_VISITOR_REQUESTS = gql`
                     birthplace
                     birthLastname
                     usageLastname
+                    company
+                    identityDocuments {
+                        kind
+                        reference
+                        file {
+                            id
+                        }
+                    }
+                    generateIdentityFileExportLink {
+                        link
+                    }
                     units {
                         id
                         label
@@ -77,47 +92,13 @@ export const LIST_VISITOR_REQUESTS = gql`
 export default function GatekeeperManagement() {
     const classes = useStyles();
     // filters
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(1);
-    const [list, setList] = useState(null);
 
     const [search, setSearch] = useState(null);
-    const { data, fetchMore } = useQuery(LIST_VISITOR_REQUESTS, {
+    const { data, loading, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
         variables: {
-            cursor: { first: rowsPerPage, offset: 0 },
-            search
-        },
-        fetchPolicy: 'cache-and-network',
-        onCompleted: (d) => (list ? null : setList(d))
+            cursor: { first: 30, offset: 0 }
+        }
     });
-
-    const handleFetchMore = (selectedPage) => {
-        fetchMore({
-            variables: {
-                cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage }
-            },
-            updateQuery: (prev, { fetchMoreResult }) => {
-                if (!fetchMoreResult) return prev;
-                setList(fetchMoreResult);
-                return fetchMoreResult;
-            }
-        });
-    };
-
-    const handlePageSize = () => {
-        if (!data) return 0;
-        return data.getCampus.listVisitors.meta.total;
-    };
-
-    const handleChangePage = async (event, newPage) => {
-        setPage(newPage);
-        handleFetchMore(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
 
     return (
         <>
@@ -130,32 +111,33 @@ export default function GatekeeperManagement() {
                     </Box>
                 </Grid>
                 <Grid item sm={12} xs={12} className={classes.searchField}>
-                    <SearchField value={search} onChange={(event) => setSearch(event.target.value)}>
+                    <SearchField
+                        value={search}
+                        onChange={(event) => {
+                            setSearch(event.target.value);
+                            refetch({
+                                cursor: {
+                                    first: 30,
+                                    offset: 0
+                                },
+                                search: event.target.value.trim().toLowerCase()
+                            });
+                        }}>
                         Rechercher...
                     </SearchField>
                 </Grid>
 
                 <Grid item sm={12}>
-                    <List>
-                        {list &&
-                            list.getCampus.listVisitors.list.map((visitorRequest) => (
+                    <List className={classes.list}>
+                        {!loading &&
+                            data &&
+                            data.getCampus.listVisitors.list.map((visitorRequest) => (
                                 <ListItemVisitors
                                     key={visitorRequest.id}
                                     requestVisitor={visitorRequest}
                                 />
                             ))}
                     </List>
-                </Grid>
-                <Grid item sm={12}>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                        component="div"
-                        count={handlePageSize()}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onChangePage={handleChangePage}
-                        onChangeRowsPerPage={handleChangeRowsPerPage}
-                    />
                 </Grid>
             </Grid>
         </>

@@ -10,20 +10,81 @@ import { makeStyles } from '@material-ui/core/styles';
 import { format } from 'date-fns';
 import findValidationStep from '../../../utils/mappers/findValidationStep';
 import findVisitorStatus from '../../../utils/mappers/findVisitorStatus';
+import { ID_DOCUMENT } from '../../../utils/constants/enums';
+import { IconButton } from '@material-ui/core';
+import { AttachFile } from '@material-ui/icons';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+    listItem: {
+        backgroundColor: theme.palette.common.white,
+        marginBottom: 20,
+        borderRadius: 4
+    },
+    title: {
+        marginBottom: 20,
+        '& h5': {
+            fontWeight: 'bold'
+        }
+    },
     subtitles: {
         fontWeight: 'bold'
     },
-    gridFlex: {
-        display: 'flex'
-    },
     information: {
-        marginLeft: '4px',
-        marginBottom: '2%'
+        marginLeft: '4px'
     }
 }));
 
+const createItem = (data, status) => ({
+    title: { label: '#Demande', value: data.request.id },
+    visitor: [
+        {
+            label: 'Nom de naissance (usage), Prénom',
+            value: `${data.birthLastname.toUpperCase()} (${data.usageLastname}) ,${data.firstname}`
+        },
+        {
+            label: 'Date de venue',
+            value: `Du
+                ${format(new Date(data.request.from), 'dd/MM/yyyy')} au
+                ${format(new Date(data.request.to), 'dd/MM/yyyy')} inclus`
+        },
+        {
+            label: 'Né le',
+            value: format(new Date(data.birthday), 'dd/MM/yyyy')
+        },
+        {
+            label: 'Status de la demande',
+            value: status
+        },
+        {
+            label: 'Ville de naissance',
+            value: data.birthplace
+        },
+        {
+            label: 'Unité/Société',
+            value: data.company
+        },
+        {
+            label: 'Nationalité',
+            value: data.nationality
+        },
+        {
+            label: 'Demandeur',
+            value: `${data.request.owner.rank || ''}
+                  ${data.request.owner.lastname.toUpperCase()}
+                  ${data.request.owner.firstname}`
+        },
+        {
+            label: "Pièce d'identité",
+            value: `${ID_DOCUMENT[data.identityDocuments[0].kind].label} n° ${
+                data.identityDocuments[0].reference
+            }`,
+            fileLink:
+                data.identityDocuments[0].file && data.identityDocuments[0].file.id
+                    ? data.generateIdentityFileExportLink.link
+                    : null
+        }
+    ]
+});
 export default function RequestVisitorItem({ requestVisitor }) {
     const status = useMemo(
         () =>
@@ -33,145 +94,41 @@ export default function RequestVisitorItem({ requestVisitor }) {
         [requestVisitor.units]
     );
 
+    const item = createItem(requestVisitor, status);
+
     const classes = useStyles();
 
     return (
-        <ListItem divider>
-            <ListItemText
-                primary={
-                    <Grid container>
-                        <Grid item sm={12} className={classes.gridFlex}>
-                            <Typography variant="h5" color="primary">
-                                # Demande :
-                            </Typography>
-                            <Typography
-                                variant="subtitle2"
-                                color="primary"
-                                className={classes.information}>
-                                {requestVisitor.request.id}
-                            </Typography>
-                        </Grid>
+        <ListItem className={classes.listItem}>
+            <ListItemText>
+                <Grid container>
+                    <Grid container item sm={12} className={classes.title}>
+                        <Typography variant="h5">{item.title.label} : </Typography>
+                        <Typography variant="h5" color="primary" className={classes.information}>
+                            {item.title.value}
+                        </Typography>
                     </Grid>
-                }
-                secondary={
-                    <Grid container>
-                        <Grid item sm={6}>
-                            <Grid item sm={12} className={classes.gridFlex}>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.subtitles}>
-                                    Nom de naissance(usage), Prénom :
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.information}>
-                                    {`${requestVisitor.birthLastname.toUpperCase()} (${
-                                        requestVisitor.usageLastname
-                                    }) ,${requestVisitor.firstname}`}
-                                </Typography>
-                            </Grid>
-                            <Grid item sm={12} className={classes.gridFlex}>
-                                <Grid item sm={12} className={classes.gridFlex}>
-                                    <Typography
-                                        variant="body1"
-                                        color="primary"
-                                        className={classes.subtitles}>
-                                        Née le :
-                                    </Typography>
-                                    <Typography
-                                        variant="body1"
-                                        color="primary"
-                                        className={classes.information}>
-                                        {format(new Date(requestVisitor.birthday), 'dd/MM/yyyy')}
-                                    </Typography>
-                                </Grid>
-                                <Grid item sm={12} className={classes.gridFlex}>
-                                    <Typography
-                                        variant="body1"
-                                        color="primary"
-                                        className={classes.subtitles}>
-                                        à :
-                                    </Typography>
-                                    <Typography
-                                        variant="body1"
-                                        color="primary"
-                                        className={classes.information}>
-                                        {requestVisitor.birthplace}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-
-                            <Grid item sm={12} className={classes.gridFlex}>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.subtitles}>
-                                    Nationalité :
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.information}>
-                                    {requestVisitor.nationality.toUpperCase()}
-                                </Typography>
-                            </Grid>
+                </Grid>
+                <Grid container>
+                    {item.visitor.map((v) => (
+                        <Grid container key={v.label} sm={6}>
+                            <Typography variant="body1" className={classes.subtitles}>
+                                {v.label} :
+                            </Typography>
+                            <Typography variant="body1" className={classes.information}>
+                                {v.value}{' '}
+                                {v.fileLink && (
+                                    <a href={v.fileLink} download>
+                                        <IconButton aria-label="AttachFileIcon">
+                                            <AttachFile />
+                                        </IconButton>
+                                    </a>
+                                )}
+                            </Typography>
                         </Grid>
-                        <Grid item sm={6}>
-                            <Grid item sm={12} className={classes.gridFlex}>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.subtitles}>
-                                    Date venue :
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.information}>
-                                    {`Du
-                ${format(new Date(requestVisitor.request.from), 'dd/MM/yyyy')} au
-                ${format(new Date(requestVisitor.request.to), 'dd/MM/yyyy')} inclus`}
-                                </Typography>
-                            </Grid>
-                            <Grid item sm={12} className={classes.gridFlex}>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.subtitles}>
-                                    Status de la demande :
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.information}>
-                                    {status}
-                                </Typography>
-                            </Grid>
-                            <Grid item sm={12} className={classes.gridFlex}>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.subtitles}>
-                                    Demandeur :
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    className={classes.information}>
-                                    {
-                                        `${requestVisitor.request.owner.rank || ''}
-                  ${requestVisitor.request.owner.lastname.toUpperCase()}
-                  ${requestVisitor.request.owner.firstname}`
-                                        /* @todo tel */
-                                    }
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                }
-            />
+                    ))}
+                </Grid>
+            </ListItemText>
         </ListItem>
     );
 }
@@ -179,7 +136,6 @@ export default function RequestVisitorItem({ requestVisitor }) {
 RequestVisitorItem.propTypes = {
     requestVisitor: PropTypes.shape({
         units: PropTypes.array.isRequired,
-        status: PropTypes.string.isRequired,
         request: PropTypes.shape({
             id: PropTypes.string.isRequired,
             from: PropTypes.instanceOf(Date).isRequired,
@@ -195,6 +151,10 @@ RequestVisitorItem.propTypes = {
         firstname: PropTypes.string.isRequired,
         birthday: PropTypes.instanceOf(Date).isRequired,
         birthplace: PropTypes.string.isRequired,
-        nationality: PropTypes.string.isRequired
+        nationality: PropTypes.string.isRequired,
+        identityDocuments: PropTypes.shape({
+            kind: PropTypes.string,
+            reference: PropTypes.string
+        })
     }).isRequired
 };
