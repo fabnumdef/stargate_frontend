@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { gql, useLazyQuery } from '@apollo/client';
 import { fade, makeStyles } from '@material-ui/core/styles';
 // Material Import
 import Grid from '@material-ui/core/Grid';
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
     resultTotal: {
         fontWeight: 'bold',
-        fontSize: '1.35rem',
+        fontSize: '1.2rem',
         marginLeft: 8
     }
 }));
@@ -106,15 +106,25 @@ export default function GatekeeperManagement() {
 
     const [search, setSearch] = useState(null);
     const [list, setList] = useState(null);
-    const { refetch } = useQuery(LIST_VISITOR_REQUESTS, {
-        variables: {
-            cursor: { first: 30, offset: 0 }
-        },
+    const [fetchVisitors] = useLazyQuery(LIST_VISITOR_REQUESTS, {
         notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'no-cache',
         onCompleted: (data) => {
             setList(data.getCampus.listVisitors.list);
         }
     });
+
+    useEffect(() => {
+        fetchVisitors({
+            variables: {
+                cursor: {
+                    first: 30,
+                    offset: 0
+                },
+                search
+            }
+        });
+    }, [search]);
 
     return (
         <Grid container spacing={2} className={classes.root}>
@@ -128,18 +138,11 @@ export default function GatekeeperManagement() {
                     endAdornment={<SearchIcon />}
                     onChange={(event) => {
                         setSearch(event.target.value);
-                        refetch({
-                            cursor: {
-                                first: 50,
-                                offset: 0
-                            },
-                            search: event.target.value.trim().toLowerCase()
-                        });
                     }}
                 />
             </Grid>
             {list && (
-                <Typography color="primary" className={classes.resultTotal}>
+                <Typography variant="body1" color="primary" className={classes.resultTotal}>
                     {list.length} résultats trouvés
                 </Typography>
             )}

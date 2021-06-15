@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
     title: {
         marginBottom: 20,
         '& h5': {
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            fontSize: '1.2rem'
         }
     },
     subtitles: {
@@ -39,67 +40,71 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const createItem = (data, status) => ({
-    title: { label: '#Demande', value: data.request.id },
+const createItem = ({
+    request,
+    units,
+    birthLastname,
+    usageLastname,
+    firstname,
+    birthday,
+    birthplace,
+    company,
+    nationality,
+    identityDocuments,
+    generateIdentityFileExportLink
+}) => ({
+    title: { label: '#Demande', value: request.id },
     visitor: [
         {
             label: 'Nom de naissance (usage), Prénom',
-            value: `${data.birthLastname.toUpperCase()} (${data.usageLastname}) ,${data.firstname}`
+            value: `${birthLastname.toUpperCase()} (${usageLastname}), ${firstname}`
         },
         {
             label: 'Date de venue',
             value: `Du
-                ${format(new Date(data.request.from), 'dd/MM/yyyy')} au
-                ${format(new Date(data.request.to), 'dd/MM/yyyy')} inclus`
+                ${format(new Date(request.from), 'dd/MM/yyyy')} au
+                ${format(new Date(request.to), 'dd/MM/yyyy')} inclus`
         },
         {
             label: 'Né le',
-            value: format(new Date(data.birthday), 'dd/MM/yyyy')
+            value: format(new Date(birthday), 'dd/MM/yyyy')
         },
         {
             label: 'Status de la demande',
-            value: status
+            value: findVisitorStatus(units) ? findVisitorStatus(units) : findValidationStep(units)
         },
         {
             label: 'Ville de naissance',
-            value: data.birthplace
+            value: birthplace
         },
         {
             label: 'Unité/Société',
-            value: data.company
+            value: company
         },
         {
             label: 'Nationalité',
-            value: data.nationality
+            value: nationality
         },
         {
             label: 'Demandeur',
-            value: `${data.request.owner.rank || ''}
-                  ${data.request.owner.lastname.toUpperCase()}
-                  ${data.request.owner.firstname}`
+            value: `${request.owner.rank || ''}
+                  ${request.owner.lastname.toUpperCase()}
+                  ${request.owner.firstname}`
         },
         {
             label: "Pièce d'identité",
-            value: `${ID_DOCUMENT[data.identityDocuments[0].kind].label} n° ${
-                data.identityDocuments[0].reference
+            value: `${ID_DOCUMENT[identityDocuments[0].kind].label} n° ${
+                identityDocuments[0].reference
             }`,
             fileLink:
-                data.identityDocuments[0].file && data.identityDocuments[0].file.id
-                    ? data.generateIdentityFileExportLink.link
+                identityDocuments[0].file && identityDocuments[0].file.id
+                    ? generateIdentityFileExportLink.link
                     : null
         }
     ]
 });
 export default function RequestVisitorItem({ requestVisitor }) {
-    const status = useMemo(
-        () =>
-            findVisitorStatus(requestVisitor.units)
-                ? findVisitorStatus(requestVisitor.units)
-                : findValidationStep(requestVisitor.units),
-        [requestVisitor.units]
-    );
-
-    const item = createItem(requestVisitor, status);
+    const item = createItem(requestVisitor);
 
     const classes = useStyles();
 
@@ -117,10 +122,10 @@ export default function RequestVisitorItem({ requestVisitor }) {
                 <Grid container>
                     {item.visitor.map((v) => (
                         <Grid container key={v.label} sm={6}>
-                            <Typography variant="body1" className={classes.subtitles}>
+                            <Typography variant="body2" className={classes.subtitles}>
                                 {v.label} :
                             </Typography>
-                            <Typography variant="body1" className={classes.information}>
+                            <Typography variant="body2" className={classes.information}>
                                 {v.value}{' '}
                                 {v.fileLink && (
                                     <a href={v.fileLink} download>
