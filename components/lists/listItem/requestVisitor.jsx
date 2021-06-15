@@ -31,6 +31,11 @@ const useStyles = makeStyles((theme) => ({
     },
     information: {
         marginLeft: '4px'
+    },
+    iconButton: {
+        position: 'relative',
+        bottom: 3,
+        padding: 0
     }
 }));
 
@@ -119,7 +124,9 @@ export default function RequestVisitorItem({ requestVisitor }) {
                                 {v.value}{' '}
                                 {v.fileLink && (
                                     <a href={v.fileLink} download>
-                                        <IconButton aria-label="AttachFileIcon">
+                                        <IconButton
+                                            className={classes.iconButton}
+                                            aria-label="AttachFileIcon">
                                             <AttachFile />
                                         </IconButton>
                                     </a>

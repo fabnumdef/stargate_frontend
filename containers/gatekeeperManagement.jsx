@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 // Material Import
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
 
-import SearchField from '../components/styled/common/SearchField';
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
+import PageTitle from '../components/styled/common/pageTitle';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,12 +21,22 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold'
     },
     searchField: {
-        display: 'flex',
-        justifyContent: 'center'
+        borderRadius: '25px',
+        paddingLeft: '20px !important',
+        backgroundColor: fade(theme.palette.common.black, 0.05),
+        '&:hover': {
+            backgroundColor: fade(theme.palette.common.black, 0.1)
+        },
+        marginBottom: 40
     },
     list: {
-        padding: 20,
+        padding: '20px 20px 1px 20px',
         backgroundColor: theme.palette.background.layout
+    },
+    resultTotal: {
+        fontWeight: 'bold',
+        fontSize: '1.35rem',
+        marginLeft: 8
     }
 }));
 
@@ -94,52 +105,55 @@ export default function GatekeeperManagement() {
     // filters
 
     const [search, setSearch] = useState(null);
-    const { data, loading, refetch } = useQuery(LIST_VISITOR_REQUESTS, {
+    const [list, setList] = useState(null);
+    const { refetch } = useQuery(LIST_VISITOR_REQUESTS, {
         variables: {
             cursor: { first: 30, offset: 0 }
+        },
+        notifyOnNetworkStatusChange: true,
+        onCompleted: (data) => {
+            setList(data.getCampus.listVisitors.list);
         }
     });
 
     return (
-        <>
-            <Grid container spacing={2} className={classes.root}>
-                <Grid item sm={12} xs={12}>
-                    <Box display="flex" alignItems="center">
-                        <Typography variant="h5" className={classes.pageTitle}>
-                            Demandes de contrôle
-                        </Typography>
-                    </Box>
-                </Grid>
-                <Grid item sm={12} xs={12} className={classes.searchField}>
-                    <SearchField
-                        value={search}
-                        onChange={(event) => {
-                            setSearch(event.target.value);
-                            refetch({
-                                cursor: {
-                                    first: 30,
-                                    offset: 0
-                                },
-                                search: event.target.value.trim().toLowerCase()
-                            });
-                        }}>
-                        Rechercher...
-                    </SearchField>
-                </Grid>
-
-                <Grid item sm={12}>
-                    <List className={classes.list}>
-                        {!loading &&
-                            data &&
-                            data.getCampus.listVisitors.list.map((visitorRequest) => (
-                                <ListItemVisitors
-                                    key={visitorRequest.id}
-                                    requestVisitor={visitorRequest}
-                                />
-                            ))}
-                    </List>
-                </Grid>
+        <Grid container spacing={2} className={classes.root}>
+            <PageTitle>Recherche</PageTitle>
+            <Grid item sm={12} xs={12} className={classes.searchField}>
+                <InputBase
+                    value={search}
+                    variant="outlined"
+                    fullWidth
+                    placeholder="Nom ou prénom du visiteur"
+                    endAdornment={<SearchIcon />}
+                    onChange={(event) => {
+                        setSearch(event.target.value);
+                        refetch({
+                            cursor: {
+                                first: 50,
+                                offset: 0
+                            },
+                            search: event.target.value.trim().toLowerCase()
+                        });
+                    }}
+                />
             </Grid>
-        </>
+            {list && (
+                <Typography color="primary" className={classes.resultTotal}>
+                    {list.length} résultats trouvés
+                </Typography>
+            )}
+            <Grid item sm={12}>
+                <List className={classes.list}>
+                    {list &&
+                        list.map((visitorRequest) => (
+                            <ListItemVisitors
+                                key={visitorRequest.id}
+                                requestVisitor={visitorRequest}
+                            />
+                        ))}
+                </List>
+            </Grid>
+        </Grid>
     );
 }
