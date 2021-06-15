@@ -114,12 +114,13 @@ const menu = [
 
 function rootNameByRole(role) {
     switch (role) {
+        case ROLES.ROLE_GATEKEEPER.role:
+            return 'Recherche';
         case ROLES.ROLE_HOST.role:
         case ROLES.ROLE_ADMIN.role:
         case ROLES.ROLE_SUPERADMIN.role:
             return 'Accueil';
         case ROLES.ROLE_SCREENING.role:
-        case ROLES.ROLE_GATEKEEPER.role:
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
         default:
             return 'Mes traitements';
