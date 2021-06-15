@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { LoginForm, ForgotPassForm } from '../components';
+import { LoginForm, ForgotPassForm, OpenIdForm } from '../components';
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Paper from '@material-ui/core/Paper';
@@ -49,6 +49,11 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             color: theme.palette.primary.dark
         }
+    },
+    openIdSection: {
+        marginTop: 60,
+        height: 100,
+        width: 250
     }
 }));
 
@@ -73,6 +78,9 @@ function LoginPage() {
                     <img src="/img/logo.svg" alt="STARGATE" className={classes.appName} />
                     <PageTitle className={classes.connection}>Connexion</PageTitle>
                     <RenderLogin />
+                    <Paper className={classes.openIdSection}>
+                        <OpenIdForm />
+                    </Paper>
                     <div className={classes.gridLogos}>
                         <img
                             src="/img/logo-fabrique-numerique.svg"
