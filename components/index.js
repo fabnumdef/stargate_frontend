@@ -30,6 +30,6 @@ export { default as TabRequestVisitorsToTreatAcces } from './tabs/detailsRequest
 export { default as TabRequestVisitorsProgress } from './tabs/detailsRequest/tabRequestVisitorsProgress';
 export { default as TabRequestVisitorsTreated } from './tabs/detailsRequest/tabRequestVisitorsTreated';
 // Login Forms
-export { default as LoginForm } from './loginForms/LoginForm';
-export { default as ForgotPassForm } from './loginForms/ForgotPassForm';
-export { default as OpenIdForm } from './loginForms/openIdForm';
+export { default as LoginForm } from './login/LoginForm';
+export { default as ForgotPassForm } from './login/ForgotPassForm';
+export { default as OpenIdForm } from './login/openIdForm';

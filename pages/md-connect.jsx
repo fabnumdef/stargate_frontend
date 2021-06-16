@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
-import LoginLayout from '../components/loginForms/loginLayout';
+import LoginLayout from '../components/login/loginLayout';
 import Fade from '@material-ui/core/Fade';
 import { useLogin } from '../lib/loginContext';
 

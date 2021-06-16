@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import PageTitle from '../components/styled/common/pageTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import LoginLayout from '../components/loginForms/loginLayout';
+import LoginLayout from '../components/login/loginLayout';
 
 const useStyles = makeStyles((theme) => ({
     fieldsStyle: {
