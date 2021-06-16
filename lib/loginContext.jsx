@@ -174,9 +174,9 @@ export function LoginContextProvider({ children }) {
         return true;
     }, []);
 
-    const setUserConnection = (token) => {
+    const setUserConnection = async (token) => {
         setToken(token);
-        getUserData();
+        await getUserData();
     };
 
     const [login, { error, loading }] = useMutation(LOGIN, {
