@@ -51,12 +51,12 @@ const useStyles = makeStyles(() => ({
 function MdConnect() {
     const router = useRouter();
     const classes = useStyles();
-    const setUserConnection = useLogin();
+    const { setUserConnection } = useLogin();
 
     const redirect = () =>
         setTimeout(() => {
             router.push('/');
-        }, 2000);
+        }, 1000);
 
     const [authenticationResult, setAuthenticationResult] = useState(null);
     const [openIDLogin, { data, error }] = useMutation(OPEN_ID_LOGIN, {

@@ -220,7 +220,7 @@ export function LoginContextProvider({ children }) {
     }, [isLoggedIn]);
 
     const selectLandingComponent = () => {
-        if (isLoggedIn) {
+        if (isLoggedIn && router.pathname !== '/md-connect') {
             return children;
         }
         if (router.pathname === '/md-connect') {
