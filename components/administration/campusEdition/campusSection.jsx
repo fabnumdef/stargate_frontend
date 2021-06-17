@@ -42,7 +42,7 @@ function CampusSection({ campusData, usersTotalByRole }) {
     const validatorsRoles = Object.values(ROLES).filter((r) => r.workflow);
 
     return (
-        <Grid sm={12}>
+        <Grid item sm={12}>
             <Grid container className={classes.globalContainer}>
                 <Grid item sm={8} md={4}>
                     <Paper elevation={3} className={classes.textInfos}>

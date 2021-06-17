@@ -20,25 +20,19 @@ export const mapUserData = (data, dataCampuses, dataUnits) => {
     } = dataUnits;
 
     return {
-        roles: [
-            {
-                role: data.role,
-                campuses: [
-                    {
-                        id: data.campus,
-                        label: campuses.find((campus) => campus.id === data.campus).label
-                    }
-                ],
-                units: data.unit
-                    ? [
-                          {
-                              id: data.unit,
-                              label: units.find((unit) => unit.id === data.unit).label
-                          }
-                      ]
-                    : []
-            }
-        ],
+        roles: {
+            role: data.role,
+            campus: {
+                id: data.campus,
+                label: campuses.find((campus) => campus.id === data.campus).label
+            },
+            unit: data.unit
+                ? {
+                      id: data.unit,
+                      label: units.find((unit) => unit.id === data.unit).label
+                  }
+                : null
+        },
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email

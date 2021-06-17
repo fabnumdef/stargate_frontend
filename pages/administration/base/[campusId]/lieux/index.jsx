@@ -3,10 +3,10 @@ import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core';
 import PageTitle from '../../../../../components/styled/common/pageTitle';
-import LinkBack from '../../../../../components/styled/common/Link';
 import AddPlace from '../../../../../components/administration/placesEdition/AddPlace';
 import { GET_CAMPUS } from '../../../../../lib/apollo/queries';
 import ListPlaces from '../../../../../components/administration/placesEdition/ListPlaces';
+import HeaderPageBackBtn from '../../../../../components/styled/headerPageBackBtn';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -53,14 +53,16 @@ function CreatePlace() {
     if (loading || !data) return '';
 
     return (
-        <div className={classes.root}>
-            <LinkBack onClick={() => router.back()} />
-            <PageTitle subtitles={[data.getCampus.label, 'Lieux']}>Base</PageTitle>
-            <section>
-                <AddPlace campusId={campusId} />
-            </section>
-            <ListPlaces campusId={campusId} />
-        </div>
+        <>
+            <HeaderPageBackBtn>Retour administration de base</HeaderPageBackBtn>
+            <div className={classes.root}>
+                <PageTitle subtitles={[data.getCampus.label, 'Lieux']}>Base</PageTitle>
+                <section>
+                    <AddPlace campusId={campusId} />
+                </section>
+                <ListPlaces campusId={campusId} />
+            </div>
+        </>
     );
 }
 

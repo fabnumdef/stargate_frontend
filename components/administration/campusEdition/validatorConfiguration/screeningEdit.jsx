@@ -38,7 +38,7 @@ function ScreeningEdit({ roleData, screeningUsers }) {
 }
 
 ScreeningEdit.propTypes = {
-    roleData: PropTypes.objectOf({
+    roleData: PropTypes.shape({
         role: PropTypes.string,
         campus: PropTypes.objectOf(PropTypes.string).isRequired
     }).isRequired,

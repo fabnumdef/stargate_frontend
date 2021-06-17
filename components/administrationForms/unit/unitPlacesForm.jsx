@@ -56,7 +56,7 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces, loadValidate
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container className={classes.placesForm}>
-                <Grid container sm={editPlaces ? 9 : 11}>
+                <Grid item container sm={editPlaces ? 9 : 11}>
                     <Grid item sm={12}>
                         <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                             Lieux
@@ -97,7 +97,7 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces, loadValidate
                         </Grid>
                     )}
                 </Grid>
-                <Grid sm={editPlaces ? 3 : 1} className={classes.buttonsContainer}>
+                <Grid item sm={editPlaces ? 3 : 1} className={classes.buttonsContainer}>
                     {editPlaces ? (
                         <Grid>
                             <RoundButton
@@ -129,8 +129,8 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces, loadValidate
 };
 
 UnitPlacesForm.propTypes = {
-    placesList: PropTypes.objectOf(PropTypes.shape).isRequired,
-    unitPlacesList: PropTypes.objectOf(PropTypes.shape).isRequired,
+    placesList: PropTypes.array.isRequired,
+    unitPlacesList: PropTypes.array.isRequired,
     updatePlaces: PropTypes.func.isRequired,
     loadValidateForm: PropTypes.bool.isRequired
 };
