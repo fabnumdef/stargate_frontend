@@ -23,6 +23,9 @@ const useStyles = makeStyles((theme) => ({
     },
     warningIcon: {
         width: 30
+    },
+    addIcon: {
+        height: '100%'
     }
 }));
 
@@ -41,12 +44,12 @@ function UnitSection({ listUnits, campusId }) {
     return (
         <Grid container alignItems="center" className={classes.globalContainer}>
             <Grid container item>
-                {!listUnits.list.length && (
-                    <Grid item className={classes.warningIcon}>
-                        <WarningIcon />
-                    </Grid>
-                )}
                 <Grid container>
+                    {!listUnits.list.length && (
+                        <Grid item className={classes.warningIcon}>
+                            <WarningIcon />
+                        </Grid>
+                    )}
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                         Unités
                     </Typography>
@@ -68,7 +71,7 @@ function UnitSection({ listUnits, campusId }) {
                 ))}
                 <Grid item onClick={handleCreateUnit}>
                     <ItemCard style={{ cursor: 'pointer', justifyContent: 'center', width: 45 }}>
-                        <AddIcon />
+                        <AddIcon className={classes.addIcon} />
                     </ItemCard>
                 </Grid>
             </Grid>

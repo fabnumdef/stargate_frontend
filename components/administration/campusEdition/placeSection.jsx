@@ -27,10 +27,8 @@ function PlaceSection({ listPlaces, campusId }) {
     return (
         <Grid container alignItems="center" justify="space-between" className={classes.root}>
             <Grid container sm={11}>
-                <Grid item>
-                    {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
-                </Grid>
                 <Grid container>
+                    {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                         Lieux
                     </Typography>

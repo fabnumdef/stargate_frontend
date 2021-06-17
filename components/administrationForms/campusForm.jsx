@@ -136,6 +136,7 @@ const CampusForm = ({ submitForm, defaultValues }) => {
                                         variant="filled"
                                         className={classes.mainInput}
                                         placeholder={'Ex: BNV'}
+                                        disabled={defaultValues.id.length}
                                     />
                                 }
                                 rules={{
