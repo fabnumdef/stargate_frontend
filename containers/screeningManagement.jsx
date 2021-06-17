@@ -166,8 +166,6 @@ function ScreeningManagement() {
                 }
             })
         );
-
-        console.log(data);
     }, [data]);
 
     const handleSelectAll = useCallback(
