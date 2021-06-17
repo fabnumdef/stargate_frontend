@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,11 +34,10 @@ export default function ButtonsFooterContainer({ children }) {
     return (
         <div className={classes.buttonsFooter}>
             <div
-                className={`${classes.divButtons} ${
-                    children.filter((child) => React.isValidElement(child)).length > 1
-                        ? classes.moreButtons
-                        : classes.oneButton
-                }`}>
+                className={classNames(classes.divButtons, {
+                    [classes.moreButtons]: Array.isArray(children),
+                    [classes.oneButton]: !Array.isArray(children)
+                })}>
                 {children}
             </div>
         </div>
