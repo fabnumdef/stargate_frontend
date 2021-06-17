@@ -1,5 +1,6 @@
 import TableCell from '@material-ui/core/TableCell';
 import Typography from '@material-ui/core/Typography';
+import classNames from 'classnames';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -39,11 +40,16 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
         color: theme.palette.primary.dark,
         cursor: 'pointer'
+    },
+    baseline: {
+        verticalAlign: 'baseline'
     }
 }));
 export default function DecisionsCell({ visitor: { units }, modalOpen }) {
     const classes = useStyles();
     const screeningDecision = getScreeningDecision(units);
+
+    const isAccessOffice = activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role;
 
     function screeningDisplay() {
         if (screeningDecision === WORKFLOW_BEHAVIOR.ADVISEMENT.RESPONSE.negative)
@@ -92,8 +98,11 @@ export default function DecisionsCell({ visitor: { units }, modalOpen }) {
             );
     }
     return (
-        <TableCell>
-            {activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role ? (
+        <TableCell
+            className={classNames({
+                [classes.baseline]: isAccessOffice
+            })}>
+            {isAccessOffice ? (
                 <>
                     <div style={{ display: 'block' }}>
                         {units.map((unit) =>
