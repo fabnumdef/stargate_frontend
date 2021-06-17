@@ -11,7 +11,6 @@ import { CSVLink } from 'react-csv';
 import { TabPanel } from '../components';
 
 import TableScreening from '../components/tables/TableScreening';
-
 import AntTab from '../components/styled/common/Tab';
 import { LIST_TREATMENTS_SCREENING } from '../lib/apollo/queries';
 import EmptyArray from '../components/styled/common/emptyArray';
@@ -20,6 +19,7 @@ import PageTitle from '../components/styled/common/pageTitle';
 import { useDecisions, withDecisionsProvider } from '../lib/hooks/useDecisions';
 import SearchField from '../components/styled/common/SearchField';
 import useVisitors from '../lib/hooks/useVisitors';
+import { campusIdVar } from '../lib/apollo/cache';
 
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 
@@ -69,6 +69,7 @@ const tabList = [
 
 const useStyles = makeStyles(() => ({
     root: {
+        height: '100%',
         '& section': {
             display: 'flex',
             flexDirection: 'row',
@@ -99,32 +100,55 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'baseline'
+    },
+    divLoadMore: {
+        display: 'flex',
+        justifyContent: 'center',
+        paddingTop: 10
     }
 }));
 
 function ScreeningManagement() {
     const classes = useStyles();
-
+    const MAX_FIRST = 50;
     const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
     const { shiftVisitors } = useVisitors();
     // submit values
     const [value, setValue] = useState(0);
+    const [first, setFirst] = useState(10);
+    /** loading management */
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [search, setSearch] = React.useState('');
 
-    const [fetchData, { data, networkStatus }] = useLazyQuery(LIST_TREATMENTS_SCREENING, {
-        notifyOnNetworkStatusChange: true
-    });
+    const [fetchData, { data, networkStatus, fetchMore }] = useLazyQuery(
+        LIST_TREATMENTS_SCREENING,
+        {
+            notifyOnNetworkStatusChange: true
+        }
+    );
 
     useEffect(() => {
         fetchData({
             variables: {
                 cursor: {
-                    first: 50,
+                    first,
                     offset: 0
                 }
             }
         });
     }, []);
+
+    const mapRequestsToTreat = (requestsToTreat) =>
+        requestsToTreat?.getCampus?.progress?.list ?? [];
+    const mapRequestsTreated = (requestsTreated) => requestsTreated?.getCampus?.treated?.list ?? [];
+
+    // check if buttons fetchmore have to be displayed
+    const hasMoreToTreat = () =>
+        mapRequestsToTreat(data).length < data.getCampus.progress.meta.total &&
+        mapRequestsToTreat(data).length < MAX_FIRST;
+    const hasMoreTreated = () =>
+        mapRequestsTreated(data).length < data.getCampus.treated.meta.total &&
+        mapRequestsTreated(data).length < MAX_FIRST;
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -135,7 +159,7 @@ function ScreeningManagement() {
         fetchData({
             variables: {
                 cursor: {
-                    first: 50,
+                    first,
                     offset: 0
                 },
                 search: event.target.value !== '' ? event.target.value : ''
@@ -179,6 +203,21 @@ function ScreeningManagement() {
             ),
         [data]
     );
+
+    const handleFetchMore = async () => {
+        setIsLoadingMore(true);
+        await fetchMore({
+            variables: {
+                cursor: {
+                    first: first + 10,
+                    offset: 0
+                },
+                campusId: campusIdVar()
+            }
+        });
+        setFirst(first + 10);
+        setIsLoadingMore(false);
+    };
 
     const handleSubmit = () => {
         const visitors = Object.values(decisions).filter(
@@ -241,6 +280,19 @@ function ScreeningManagement() {
                             requests={data.getCampus.progress.list}
                             selectAll={handleSelectAll}
                         />
+                        <div className={classes.divLoadMore}>
+                            {hasMoreToTreat() &&
+                                (isLoadingMore ? (
+                                    'Chargement...'
+                                ) : (
+                                    <RoundButton
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleFetchMore()}>
+                                        Voir plus de visiteurs
+                                    </RoundButton>
+                                ))}
+                        </div>
                         <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
@@ -277,6 +329,19 @@ function ScreeningManagement() {
                             requests={data.getCampus.treated.list}
                             selectAll={() => {}}
                         />
+                        <div className={classes.divLoadMore}>
+                            {hasMoreTreated() &&
+                                (isLoadingMore ? (
+                                    'Chargement...'
+                                ) : (
+                                    <RoundButton
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleFetchMore()}>
+                                        Voir plus de visiteurs
+                                    </RoundButton>
+                                ))}
+                        </div>
                     </>
                 ) : (
                     <EmptyArray type={'à traiter'} />

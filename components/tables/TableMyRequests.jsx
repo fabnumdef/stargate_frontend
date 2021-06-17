@@ -12,7 +12,6 @@ import CustomTableCellHeader from './cells/TableCellHeader';
 import TableContainer from './styled/TableContainer';
 import RowRequests from './rows/RowRequests';
 import DeleteModal from '../styled/common/DeleteDialogs';
-import LoadMore from '../styled/common/LoadMore';
 
 const columns = [
     {
@@ -60,7 +59,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMore }) {
+export default function TabMyRequestToTreat({ request, onDelete }) {
     const classes = useStyles();
 
     const [toDeleteID, setToDeleteID] = useState();
@@ -75,7 +74,7 @@ export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMor
     );
 
     return (
-        <TableContainer height={57}>
+        <TableContainer height={55}>
             <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -97,7 +96,6 @@ export default function TabMyRequestToTreat({ request, onDelete, load, onLoadMor
                     </TableBody>
                 ))}
             </Table>
-            <LoadMore onLoadMore={onLoadMore} display={load} />
             <DeleteModal
                 isOpen={toDeleteID}
                 title="Supression demande"

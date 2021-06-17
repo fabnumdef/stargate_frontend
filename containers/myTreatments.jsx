@@ -21,7 +21,7 @@ import RoundButton from '../components/styled/common/roundButton';
 import LoadingCircle from '../components/styled/animations/loadingCircle';
 import EmptyArray from '../components/styled/common/emptyArray';
 import AlertMessage from '../components/styled/common/sticker';
-import { activeRoleCacheVar } from '../lib/apollo/cache';
+import { activeRoleCacheVar, campusIdVar } from '../lib/apollo/cache';
 import { ROLES, WORKFLOW_BEHAVIOR } from '../utils/constants/enums/index';
 import ButtonsFooterContainer from '../components/styled/common/ButtonsFooterContainer';
 import { getMyDecision } from '../utils/mappers/getDecisions';
@@ -56,6 +56,11 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'baseline'
+    },
+    divLoadMore: {
+        display: 'flex',
+        justifyContent: 'center',
+        paddingTop: 10
     }
 }));
 
@@ -98,9 +103,19 @@ const STATUS = [
     { shortLabel: 'VIP', label: 'Autorité' }
 ];
 
+/**
+ * Mapper to transform query response
+ * @param {Object} requestData data
+ */
+const mapRequestsToTreat = (requestsToTreat) => requestsToTreat?.getCampus?.progress?.list ?? [];
+const mapRequestsToExport = (requestsToExport) => requestsToExport?.getCampus?.export?.list ?? [];
+const mapRequestsTreated = (requestsTreated) => requestsTreated?.getCampus?.treated?.list ?? [];
+
 function MyTreatments() {
     const classes = useStyles();
     const router = useRouter();
+    const UP_FIRST = 10;
+    const MAX_FIRST = 50;
 
     const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
     const { visitors, exportVisitors, visitorsNumber } = useExport();
@@ -113,41 +128,79 @@ function MyTreatments() {
     /** tab engine */
     const [value, setValue] = useState(0);
 
+    /** loading management */
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    const { data, loading } = useQuery(LIST_TREATMENTS, {
+    const [first, setFirst] = useState(10);
+    const [firstExport, setFirstExport] = useState(10);
+
+    const { data, loading, error, fetchMore, refetch } = useQuery(LIST_TREATMENTS, {
         variables: {
             cursor: {
-                first: 50,
+                first,
                 offset: 0
             }
         },
         onCompleted: (d) =>
             d.getCampus.progress.list.forEach((visitor) =>
-                addDecision({
-                    id: visitor.id,
-                    request: { id: visitor.request.id },
-                    choice: {
-                        label: '',
-                        validation: '',
-                        tags: []
-                    }
-                })
+                visitorsWithDecision.forEach((decision) =>
+                    decision.id === visitor.id
+                        ? addDecision({
+                              id: visitor.id,
+                              request: { id: visitor.request.id },
+                              choice: {
+                                  label: decision.label,
+                                  validation: decision.validation,
+                                  tags: [decision.tags]
+                              }
+                          })
+                        : addDecision({
+                              id: visitor.id,
+                              request: { id: visitor.request.id },
+                              choice: {
+                                  label: '',
+                                  validation: '',
+                                  tags: []
+                              }
+                          })
+                )
             )
     });
 
-    const { data: exportData, loading: exportLoading } = useQuery(LIST_EXPORTS, {
+    const visitorsWithDecision = Object.values(decisions).filter(
+        (visitor) => visitor.choice.validation !== ''
+    );
+
+    const {
+        data: exportData,
+        loading: exportLoading,
+        refetch: exportRefetch,
+        fetchMore: exportFetchMore
+    } = useQuery(LIST_EXPORTS, {
         variables: {
             cursor: {
-                first: 50,
+                first: firstExport,
                 offset: 0
             },
             filters: { exportDate: null }
         },
         skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
     });
+
+    // check if buttons fetchmore have to be displayed
+    const hasMoreToTreat = () =>
+        mapRequestsToTreat(data).length < data?.getCampus.progress.meta.total &&
+        mapRequestsToTreat(data).length < MAX_FIRST;
+    const hasMoreToExport = () =>
+        mapRequestsToExport(exportData).length < exportData?.getCampus.export.meta.total &&
+        mapRequestsToExport(exportData).length < MAX_FIRST;
+    const hasMoreTreated = () =>
+        mapRequestsTreated(data).length < data?.getCampus.treated.meta.total &&
+        mapRequestsTreated(data).length < MAX_FIRST;
 
     /** Ba's controllers */
     const treatedArrayBA = useMemo(() => {
@@ -172,17 +225,35 @@ function MyTreatments() {
         );
         shiftVisitors(visitors);
         resetDecision();
+        refetch();
     };
 
     const handleExportMany = () => {
         exportVisitors(exportData.getCampus.export.list.map((visitor) => visitor.id));
+        exportRefetch();
     };
 
     const handleExportSelected = () => {
         exportVisitors(visitors);
     };
 
+    const handleFetchMore = async () => {
+        setIsLoadingMore(true);
+        await fetchMore({
+            variables: {
+                cursor: {
+                    first: first + UP_FIRST,
+                    offset: 0
+                },
+                campusId: campusIdVar()
+            }
+        });
+        setIsLoadingMore(false);
+        setFirst(first + UP_FIRST);
+    };
+
     if (loading || exportLoading || !data) return <LoadingCircle />;
+    if (error) return 'Error';
 
     return (
         <div className={classes.paper}>
@@ -248,7 +319,22 @@ function MyTreatments() {
             <TabPanel value={value} index={0} classes={{ root: classes.tab }}>
                 {data.getCampus.progress.meta.total > 0 ? (
                     <>
-                        <TableTreatmentsToTreat requests={data.getCampus.progress?.list} />
+                        <TableTreatmentsToTreat requests={mapRequestsToTreat(data)} />
+                        <div className={classes.divLoadMore}>
+                            {hasMoreToTreat() &&
+                                (isLoadingMore ? (
+                                    'Chargement...'
+                                ) : (
+                                    <RoundButton
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => {
+                                            handleFetchMore();
+                                        }}>
+                                        Voir plus de visiteurs
+                                    </RoundButton>
+                                ))}
+                        </div>
                         <ButtonsFooterContainer>
                             <RoundButton
                                 variant="outlined"
@@ -280,16 +366,45 @@ function MyTreatments() {
                                 {exportData?.getCampus?.export?.meta?.total > 0 ? (
                                     <>
                                         <TableTreatmentsToTreat
-                                            requests={exportData.getCampus.export.list}
+                                            requests={mapRequestsToExport(exportData)}
                                             treated
                                         />
+                                        <div className={classes.divLoadMore}>
+                                            {hasMoreToExport() &&
+                                                (isLoadingMore ? (
+                                                    'Chargement...'
+                                                ) : (
+                                                    <RoundButton
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={async () => {
+                                                            setIsLoadingMore(true);
+                                                            await exportFetchMore({
+                                                                variables: {
+                                                                    cursor: {
+                                                                        first:
+                                                                            firstExport + UP_FIRST,
+                                                                        offset: 0
+                                                                    },
+                                                                    campusId: campusIdVar()
+                                                                }
+                                                            });
+                                                            setIsLoadingMore(false);
+                                                            setFirstExport(firstExport + UP_FIRST);
+                                                        }}>
+                                                        Voir plus d&apos;export
+                                                    </RoundButton>
+                                                ))}
+                                        </div>
                                         <ButtonsFooterContainer>
                                             <RoundButton
                                                 variant="contained"
                                                 color="secondary"
                                                 type="submit"
                                                 onClick={handleExportMany}>
-                                                {`Exporter (${exportData.getCampus.export.list.length})`}
+                                                {`Exporter (${
+                                                    mapRequestsToExport(exportData).length
+                                                })`}
                                             </RoundButton>
                                         </ButtonsFooterContainer>
                                     </>
@@ -301,10 +416,27 @@ function MyTreatments() {
                     return (
                         <>
                             {data.getCampus.treated.meta.total > 0 ? (
-                                <TableTreatmentsToTreat
-                                    requests={data.getCampus.treated?.list}
-                                    treated
-                                />
+                                <>
+                                    <TableTreatmentsToTreat
+                                        requests={mapRequestsTreated(data)}
+                                        treated
+                                    />
+                                    <div className={classes.divLoadMore}>
+                                        {hasMoreTreated() &&
+                                            (isLoadingMore ? (
+                                                'Chargement...'
+                                            ) : (
+                                                <RoundButton
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => {
+                                                        handleFetchMore();
+                                                    }}>
+                                                    Voir plus de visiteur
+                                                </RoundButton>
+                                            ))}
+                                    </div>
+                                </>
                             ) : (
                                 <EmptyArray type={'finalisé'} />
                             )}
