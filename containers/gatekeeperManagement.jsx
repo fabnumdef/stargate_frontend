@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { gql, useLazyQuery } from '@apollo/client';
+import { fade, makeStyles } from '@material-ui/core/styles';
 // Material Import
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import TablePagination from '@material-ui/core/TablePagination';
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
 
-import SearchField from '../components/styled/common/SearchField';
 import ListItemVisitors from '../components/lists/listItem/requestVisitor';
+import PageTitle from '../components/styled/common/pageTitle';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%'
     },
@@ -21,8 +21,22 @@ const useStyles = makeStyles(() => ({
         fontWeight: 'bold'
     },
     searchField: {
-        display: 'flex',
-        justifyContent: 'center'
+        borderRadius: '25px',
+        paddingLeft: '20px !important',
+        backgroundColor: fade(theme.palette.common.black, 0.05),
+        '&:hover': {
+            backgroundColor: fade(theme.palette.common.black, 0.1)
+        },
+        marginBottom: 40
+    },
+    list: {
+        padding: '20px 20px 1px 20px',
+        backgroundColor: theme.palette.background.layout
+    },
+    resultTotal: {
+        fontWeight: 'bold',
+        fontSize: '1.2rem',
+        marginLeft: 8
     }
 }));
 
@@ -40,6 +54,17 @@ export const LIST_VISITOR_REQUESTS = gql`
                     birthplace
                     birthLastname
                     usageLastname
+                    company
+                    identityDocuments {
+                        kind
+                        reference
+                        file {
+                            id
+                        }
+                    }
+                    generateIdentityFileExportLink {
+                        link
+                    }
                     units {
                         id
                         label
@@ -78,87 +103,63 @@ export const LIST_VISITOR_REQUESTS = gql`
 export default function GatekeeperManagement() {
     const classes = useStyles();
     // filters
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(1);
-    const [list, setList] = useState(null);
 
     const [search, setSearch] = useState(null);
-    const { data, fetchMore } = useQuery(LIST_VISITOR_REQUESTS, {
-        variables: {
-            cursor: { first: rowsPerPage, offset: 0 },
-            search
-        },
-        fetchPolicy: 'cache-and-network',
-        onCompleted: (d) => (list ? null : setList(d))
+    const [list, setList] = useState(null);
+    const [fetchVisitors] = useLazyQuery(LIST_VISITOR_REQUESTS, {
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'no-cache',
+        onCompleted: (data) => {
+            setList(data.getCampus.listVisitors.list);
+        }
     });
 
-    const handleFetchMore = (selectedPage) => {
-        fetchMore({
+    useEffect(() => {
+        fetchVisitors({
             variables: {
-                cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage }
-            },
-            updateQuery: (prev, { fetchMoreResult }) => {
-                if (!fetchMoreResult) return prev;
-                setList(fetchMoreResult);
-                return fetchMoreResult;
+                cursor: {
+                    first: 30,
+                    offset: 0
+                },
+                search
             }
         });
-    };
-
-    const handlePageSize = () => {
-        if (!data) return 0;
-        return data.getCampus.listVisitors.meta.total;
-    };
-
-    const handleChangePage = async (event, newPage) => {
-        setPage(newPage);
-        handleFetchMore(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+    }, [search]);
 
     return (
-        <>
-            <Grid container spacing={2} className={classes.root}>
-                <Grid item sm={12} xs={12}>
-                    <Box display="flex" alignItems="center">
-                        <Typography variant="h5" className={classes.pageTitle}>
-                            Demandes de contrôle
-                        </Typography>
-                    </Box>
-                </Grid>
-                <Grid item sm={12} xs={12} className={classes.searchField}>
-                    <SearchField value={search} onChange={(event) => setSearch(event.target.value)}>
-                        Rechercher...
-                    </SearchField>
-                </Grid>
-
-                <Grid item sm={12}>
-                    <List>
-                        {list &&
-                            list.getCampus.listVisitors.list.map((visitorRequest) => (
-                                <ListItemVisitors
-                                    key={visitorRequest.id}
-                                    requestVisitor={visitorRequest}
-                                />
-                            ))}
-                    </List>
-                </Grid>
-                <Grid item sm={12}>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 20, 30, 40, 50]}
-                        component="div"
-                        count={handlePageSize()}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onChangePage={handleChangePage}
-                        onChangeRowsPerPage={handleChangeRowsPerPage}
-                    />
-                </Grid>
+        <Grid container spacing={2} className={classes.root}>
+            <PageTitle>Recherche</PageTitle>
+            <Grid item sm={12} xs={12} className={classes.searchField}>
+                <InputBase
+                    value={search}
+                    variant="outlined"
+                    fullWidth
+                    placeholder="Nom ou prénom du visiteur"
+                    endAdornment={<SearchIcon />}
+                    onChange={(event) => {
+                        setSearch(event.target.value);
+                    }}
+                />
             </Grid>
-        </>
+            {list && (
+                <Typography variant="body1" color="primary" className={classes.resultTotal}>
+                    {list.length > 1
+                        ? `${list.length} résultats trouvés`
+                        : `${list.length} résultat trouvé`}
+                </Typography>
+            )}
+            <Grid item sm={12}>
+                {list && list.length > 0 && (
+                    <List className={classes.list}>
+                        {list.map((visitorRequest) => (
+                            <ListItemVisitors
+                                key={visitorRequest.id}
+                                requestVisitor={visitorRequest}
+                            />
+                        ))}
+                    </List>
+                )}
+            </Grid>
+        </Grid>
     );
 }

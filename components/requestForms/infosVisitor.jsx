@@ -84,34 +84,17 @@ const useStyles = makeStyles((theme) => ({
 
 function getKindControl(nationality, kind) {
     if (nationality === 'Française') {
-        switch (kind) {
-            case ID_DOCUMENT.IDCARD:
-                //@todo check the new idCard format
-                return /^[a-z0-9]+$/gi;
-            case ID_DOCUMENT.PASSPORT:
-                return /^\d{2}[A-Za-z]{2}\d{5}$/;
-            case ID_DOCUMENT.CIMSCARD:
-                return /^\d{10}$/;
-            default:
-                return '';
-        }
+        return ID_DOCUMENT[kind].regex;
     } else return '';
 }
 
 function getTypeDocument(isInternal) {
     // TODO Check if MINARM or not
+    const documents = Object.entries(ID_DOCUMENT).map(([value, { label }]) => ({ value, label }));
     if (isInternal === 'MINARM') {
-        return [
-            { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
-            { value: ID_DOCUMENT.PASSPORT, label: 'Passeport' },
-            { value: ID_DOCUMENT.CIMSCARD, label: 'Carte CIMS' }
-        ];
+        return documents;
     }
-
-    return [
-        { value: ID_DOCUMENT.IDCARD, label: "Carte d'identité" },
-        { value: ID_DOCUMENT.PASSPORT, label: 'Passeport' }
-    ];
+    return documents.filter((doc) => doc.label !== ID_DOCUMENT.CIMSCard.label);
 }
 
 function getNationality() {
