@@ -148,8 +148,6 @@ export const ROLES = {
         role: 'ROLE_OBSERVER',
         label: 'Observateur',
         shortLabel: 'OBS.',
-        workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
         permission: ['/', '/compte', '/a-propos', '/contactez-nous']
     }
 };

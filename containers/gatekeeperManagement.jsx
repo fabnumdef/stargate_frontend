@@ -143,19 +143,22 @@ export default function GatekeeperManagement() {
             </Grid>
             {list && (
                 <Typography variant="body1" color="primary" className={classes.resultTotal}>
-                    {list.length} résultats trouvés
+                    {list.length > 1
+                        ? `${list.length} résultats trouvés`
+                        : `${list.length} résultat trouvé`}
                 </Typography>
             )}
             <Grid item sm={12}>
-                <List className={classes.list}>
-                    {list &&
-                        list.map((visitorRequest) => (
+                {list && list.length > 0 && (
+                    <List className={classes.list}>
+                        {list.map((visitorRequest) => (
                             <ListItemVisitors
                                 key={visitorRequest.id}
                                 requestVisitor={visitorRequest}
                             />
                         ))}
-                </List>
+                    </List>
+                )}
             </Grid>
         </Grid>
     );
