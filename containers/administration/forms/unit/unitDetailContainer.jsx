@@ -7,7 +7,7 @@ const UnitDetailContainer = ({ defaultValues, toggleEditUnit }) => {
 };
 
 UnitDetailContainer.propTypes = {
-    defaultValues: PropTypes.objectOf({
+    defaultValues: PropTypes.shape({
         name: PropTypes.string.isRequired,
         trigram: PropTypes.string.isRequired,
         cards: PropTypes.array.isRequired

@@ -105,23 +105,11 @@ const useStyles = makeStyles((theme) => ({
     },
     fieldLabel: {
         fontWeight: 'bold'
+    },
+    placesTitle: {
+        maxHeight: 55
     }
 }));
-
-// eslint-disable-next-line no-unused-vars
-function getTypeEmploie() {
-    return [
-        'Consultant',
-        'Interimaire',
-        'Stagiare',
-        'Livreur',
-        'Militaire actif',
-        'Réserviste',
-        'Civil de la Defense',
-        'Famille',
-        'Autorité'
-    ];
-}
 
 // is not a business day
 function isDeadlineRespected(value) {
@@ -313,7 +301,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                             as={
                                                 <TextField
                                                     label="Email"
-                                                    variant="outlined"
+                                                    variant="filled"
                                                     error={Object.prototype.hasOwnProperty.call(
                                                         errors,
                                                         'refEmail'
@@ -363,7 +351,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                         <TextField
                                             label="Nom"
                                             fullWidth
-                                            variant="outlined"
+                                            variant="filled"
                                             name="refName"
                                             error={Object.prototype.hasOwnProperty.call(
                                                 errors,
@@ -380,7 +368,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                         <TextField
                                             label="Prénom"
                                             fullWidth
-                                            variant="outlined"
+                                            variant="filled"
                                             name="refFirstName"
                                             error={Object.prototype.hasOwnProperty.call(
                                                 errors,
@@ -403,7 +391,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                                     label="Téléphone"
                                                     type="tel"
                                                     fullWidth
-                                                    variant="outlined"
+                                                    variant="filled"
                                                     error={Object.prototype.hasOwnProperty.call(
                                                         errors,
                                                         'refPhone'
@@ -495,75 +483,83 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                     Période d&apos;accès* :
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={9}>
-                                <Grid container spacing={6}>
-                                    <Grid item sm={5} xs={5}>
-                                        <Controller
-                                            as={
-                                                <DatePicker
-                                                    minDate={fromMinDate()}
-                                                    label="du"
-                                                    error={Object.prototype.hasOwnProperty.call(
-                                                        errors,
-                                                        'from'
-                                                    )}
-                                                    disablePast
-                                                    helperText={errors.from && errors.from.message}
-                                                    fullWidth
-                                                    inputProps={{
-                                                        'data-testid': 'datedebut-visite'
-                                                    }}
-                                                />
+                            <Grid
+                                container
+                                alignItems="flex-end"
+                                spacing={6}
+                                item
+                                xs={12}
+                                sm={12}
+                                md={9}>
+                                <Grid item sm={5} xs={5}>
+                                    <Controller
+                                        as={
+                                            <DatePicker
+                                                minDate={fromMinDate()}
+                                                label="du"
+                                                error={Object.prototype.hasOwnProperty.call(
+                                                    errors,
+                                                    'from'
+                                                )}
+                                                disablePast
+                                                helperText={errors.from && errors.from.message}
+                                                fullWidth
+                                                inputProps={{
+                                                    'data-testid': 'datedebut-visite'
+                                                }}
+                                            />
+                                        }
+                                        control={control}
+                                        name="from"
+                                        rules={{
+                                            required: 'La date de début est obligatoire.',
+                                            validate: {
+                                                format: (value) =>
+                                                    isValid(value) || 'Format invalide',
+                                                valide: (value) =>
+                                                    isDeadlineRespected(value) ||
+                                                    'Le délai minimum avant visite est de 2 jours ouvrés'
                                             }
-                                            control={control}
-                                            name="from"
-                                            rules={{
-                                                required: 'La date de début est obligatoire.',
-                                                validate: {
-                                                    format: (value) =>
-                                                        isValid(value) || 'Format invalide',
-                                                    valide: (value) =>
-                                                        isDeadlineRespected(value) ||
-                                                        'Le délai minimum avant visite est de 2 jours ouvrés'
-                                                }
-                                            }}
-                                            defaultValue={null}
-                                        />
-                                    </Grid>
-                                    <Grid item sm={5} xs={5}>
-                                        <Controller
-                                            as={
-                                                <DatePicker
-                                                    minDate={watch('from')}
-                                                    label="au (inclus)"
-                                                    error={Object.prototype.hasOwnProperty.call(
-                                                        errors,
-                                                        'to'
-                                                    )}
-                                                    helperText={errors.to && errors.to.message}
-                                                    disablePast
-                                                    disabled={!watch('from')}
-                                                    fullWidth
-                                                    inputProps={{
-                                                        'data-testid': 'datefin-visite'
-                                                    }}
-                                                />
+                                        }}
+                                        defaultValue={null}
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    <Typography>au</Typography>
+                                </Grid>
+                                <Grid item sm={5} xs={5}>
+                                    <Controller
+                                        as={
+                                            <DatePicker
+                                                minDate={watch('from')}
+                                                label="(inclus)"
+                                                error={Object.prototype.hasOwnProperty.call(
+                                                    errors,
+                                                    'to'
+                                                )}
+                                                helperText={errors.to && errors.to.message}
+                                                disablePast
+                                                disabled={!watch('from')}
+                                                fullWidth
+                                                inputProps={{
+                                                    'data-testid': 'datefin-visite'
+                                                }}
+                                            />
+                                        }
+                                        control={control}
+                                        name="to"
+                                        rules={{
+                                            required: 'La date de fin est obligatoire',
+                                            validate: {
+                                                format: (value) =>
+                                                    isValid(value) || 'Format invalide',
+                                                valide: (value) =>
+                                                    !isBefore(value, watch('from')) ||
+                                                    'Date éronnée'
                                             }
-                                            control={control}
-                                            name="to"
-                                            rules={{
-                                                required: 'La date de fin est obligatoire',
-                                                validate: {
-                                                    format: (value) =>
-                                                        isValid(value) || 'Format invalide',
-                                                    valide: (value) =>
-                                                        !isBefore(value, watch('from')) ||
-                                                        'Date éronnée'
-                                                }
-                                            }}
-                                            defaultValue={null}
-                                        />
-                                    </Grid>
+                                        }}
+                                        defaultValue={null}
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -632,7 +628,14 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                     {/* Item 1: Liste des lieux */}
                     <Grid item container>
-                        <Grid container item alignItems="center" xs={12} sm={12} md={2}>
+                        <Grid
+                            container
+                            item
+                            alignItems="center"
+                            className={classes.placesTitle}
+                            xs={12}
+                            sm={12}
+                            md={2}>
                             <Typography variant="body2" className={classes.fieldLabel} gutterBottom>
                                 Accès lieux* :
                             </Typography>

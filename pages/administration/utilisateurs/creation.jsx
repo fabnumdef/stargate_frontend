@@ -162,7 +162,7 @@ function CreateUser() {
 
     return (
         <>
-            <PageTitle title="Administration" subtitles={['Utilisateur', 'Nouvel utilisateur']} />
+            <PageTitle subtitles={['Utilisateur', 'Nouvel utilisateur']}>Administration</PageTitle>
             {userData && (
                 <UserForm
                     submitForm={submitCreateUser}

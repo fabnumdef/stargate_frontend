@@ -59,13 +59,19 @@ export default function MenuIcon() {
         return '';
     }
 
+    const transformLabel = () => {
+        const label = ROLES[data.activeRoleCache.role].shortLabel;
+        if (label.length <= 3) return label;
+        return label.match(/\b(\w)/g).join('');
+    };
+
     return (
         <Card elevation={0}>
             <CardHeader
                 avatar={
                     <Avatar className={classes.avatar}>
                         <Typography component="h6" variant="subtitle2">
-                            {ROLES[data.activeRoleCache.role].shortLabel}
+                            {transformLabel()}
                         </Typography>
                     </Avatar>
                 }

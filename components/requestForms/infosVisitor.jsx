@@ -452,7 +452,7 @@ export default function FormInfoVisitor({
                                 Civilité du visiteur* :
                             </Typography>
                         </Grid>
-                        <Grid container md={10} xs={12} sm={12} justify="space-between">
+                        <Grid item container md={10} xs={12} sm={12} justify="space-between">
                             <Grid item container spacing={3} md={6} sm={12} xs={12}>
                                 <Grid item md={12} sm={12} xs={12}>
                                     <Controller
@@ -563,7 +563,6 @@ export default function FormInfoVisitor({
                                                 )}
                                                 helperText={errors.nid && errors.nid.message}
                                                 fullWidth
-                                                disable={watch('isInternal') !== 'MINARM'}
                                             />
                                         }
                                         control={control}
@@ -592,7 +591,6 @@ export default function FormInfoVisitor({
                                         control={control}
                                         name="rank"
                                         defaultValue=""
-                                        disable={watch('isInternal') !== 'MINARM'}
                                     />
                                 </Grid>
                                 <Grid item md={12} sm={12} xs={12}>
@@ -759,7 +757,7 @@ export default function FormInfoVisitor({
                                 </Grid>
                             </Grid>
                             <Grid item xs={12} sm={12} md={6}>
-                                <Grid xs={12} sm={12} md={12} style={{ marginBottom: 20 }}>
+                                <Grid item xs={12} sm={12} md={12} style={{ marginBottom: 20 }}>
                                     <FormControl
                                         variant="outlined"
                                         error={Object.prototype.hasOwnProperty.call(errors, 'kind')}
@@ -974,18 +972,18 @@ FormInfoVisitor.propTypes = {
     handleBack: PropTypes.func.isRequired,
     setSelectVisitor: PropTypes.func,
     selectVisitor: PropTypes.shape({
-        id: PropTypes.string.isRequired,
+        id: PropTypes.string,
         nid: PropTypes.string,
-        firstname: PropTypes.string.isRequired,
-        birthLastname: PropTypes.string.isRequired,
+        firstname: PropTypes.string,
+        birthLastname: PropTypes.string,
         usageLastname: PropTypes.string,
         rank: PropTypes.string,
-        company: PropTypes.string.isRequired,
-        email: PropTypes.string.isRequired,
-        vip: PropTypes.bool.isRequired,
+        company: PropTypes.string,
+        email: PropTypes.string,
+        vip: PropTypes.bool,
         vipReason: PropTypes.string,
-        nationality: PropTypes.string.isRequired,
-        fileDefaultValue: PropTypes.string.isRequired,
+        nationality: PropTypes.string,
+        fileDefaultValue: PropTypes.string,
         identityDocuments: PropTypes.arrayOf(
             PropTypes.shape({
                 reference: PropTypes.string.isRequired
