@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     divRelative: {
-        position: 'relative'
+        position: 'relative',
+        maxHeight: 32
     }
 }));
 
@@ -198,7 +199,7 @@ export function ActionCell({ choices, decision }) {
                             );
                         }
                         return (
-                            <Grid item sm={12} key={choice.label}>
+                            <Grid item sm={12} key={choice.label} className={classes.divRelative}>
                                 <FormControlLabel
                                     key={choice.label}
                                     label={

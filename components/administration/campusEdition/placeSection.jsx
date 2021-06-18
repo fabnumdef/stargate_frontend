@@ -26,7 +26,7 @@ function PlaceSection({ listPlaces, campusId }) {
 
     return (
         <Grid container alignItems="center" justify="space-between" className={classes.root}>
-            <Grid container sm={11}>
+            <Grid item container sm={11}>
                 <Grid item>
                     {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
                 </Grid>
@@ -49,8 +49,8 @@ function PlaceSection({ listPlaces, campusId }) {
 
 PlaceSection.propTypes = {
     campusId: PropTypes.string.isRequired,
-    listPlaces: PropTypes.objectOf({
-        meta: PropTypes.objectOf(PropTypes.string).isRequired,
+    listPlaces: PropTypes.shape({
+        meta: PropTypes.object.isRequired,
         list: PropTypes.array.isRequired
     }).isRequired
 };

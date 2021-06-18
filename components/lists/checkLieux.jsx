@@ -139,9 +139,8 @@ export default function ListLieux({
                     {options.map((place) => {
                         const labelId = `checkbox-list-label-${place.id}`;
                         return (
-                            <>
+                            <div key={place.id}>
                                 <ListItem
-                                    key={place.id}
                                     disableRipple
                                     button
                                     onClick={handleToggle(place)}
@@ -159,7 +158,7 @@ export default function ListLieux({
                                     <ListItemText id={place.id} primary={place.label} />
                                 </ListItem>
                                 <Divider light variant="middle" />
-                            </>
+                            </div>
                         );
                     })}
                 </ListStyled>

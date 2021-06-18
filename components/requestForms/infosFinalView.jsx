@@ -145,6 +145,9 @@ export default function InfosFinalView({ formData, setForm, handleBack, setSelec
                     filters: { status: STATE_REQUEST.STATE_CREATED.state }
                 }
             });
+            if (!campus) {
+                return;
+            }
 
             const updatedList = {
                 ...campus,

@@ -63,13 +63,10 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 5,
         padding: '10px 27px 10px 26px',
         borderRadius: 25
-    },
-    disabledField: {
-        opacity: '0.6'
     }
 }));
 
-const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable }) => {
+const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
     const classes = useStyles();
     const { addAlert } = useSnackBar();
     const client = useApolloClient();
@@ -267,12 +264,12 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
     return (
         <Grid className={classes.root}>
             <form onSubmit={handleSubmit(handleCreateUserWithRole)}>
-                <Grid className={{ [classes.disabledField]: disable }}>
+                <Grid>
                     <Grid container className={classes.fieldTitle}>
                         {!usersList.length && <WarningIcon className={classes.warningIcon} />}
                         {children}
                     </Grid>
-                    <Grid container item className={classes.noWarningBlock}>
+                    <Grid container item>
                         <Grid item className={classes.fieldSection}>
                             <Controller
                                 as={
@@ -280,7 +277,6 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
                                         label="Adresse mail"
                                         variant="outlined"
                                         fullWidth
-                                        disabled={disable}
                                         className={classes.fieldInput}
                                         error={Object.prototype.hasOwnProperty.call(
                                             errors,
@@ -311,7 +307,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
                                                         {displayEmail(user.email.original)}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item className={classes.iconContainer}>
+                                                <Grid item>
                                                     <SquareButton
                                                         aria-label="deleteAdmin"
                                                         onClick={() => handleDeleteUser(user.id)}
@@ -329,7 +325,6 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children, disable })
                         </Grid>
                         <Grid item>
                             <Button
-                                disabled={disable}
                                 type="submit"
                                 variant="outlined"
                                 color="primary"
@@ -352,11 +347,12 @@ CreateRoleField.defaultProps = {
 CreateRoleField.propTypes = {
     mailDomain: PropTypes.string.isRequired,
     usersList: PropTypes.array,
-    roleData: PropTypes.objectOf({
-        role: PropTypes.string.isRequired
+    roleData: PropTypes.shape({
+        role: PropTypes.string.isRequired,
+        unit: PropTypes.objectOf(PropTypes.string),
+        campus: PropTypes.objectOf(PropTypes.string)
     }).isRequired,
-    children: PropTypes.node.isRequired,
-    disable: PropTypes.bool
+    children: PropTypes.node.isRequired
 };
 
 export default CreateRoleField;

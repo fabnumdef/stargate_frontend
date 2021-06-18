@@ -9,6 +9,7 @@ import { useSnackBar } from '../../../../lib/hooks/snackbar';
 const GET_UNIT_PLACES = gql`
     query ListPlacesQuery($campusId: String!, $hasUnit: HasUnitFilter) {
         getCampus(id: $campusId) {
+            id
             listPlaces(hasUnit: $hasUnit) {
                 list {
                     id
