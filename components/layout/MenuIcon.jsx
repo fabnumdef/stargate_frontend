@@ -10,6 +10,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
 import MenuArrow from './MenuArrow';
 import MenuRole from './MenuRole';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
     avatar: {
@@ -76,10 +77,10 @@ export default function MenuIcon() {
                     </Avatar>
                 }
                 action={
-                    <>
-                        <MenuArrow />
+                    <Grid container>
                         {data.me.roles.length > 1 && <MenuRole roles={data.me.roles} />}
-                    </>
+                        <MenuArrow />
+                    </Grid>
                 }
                 title={
                     <Typography component="h6" variant="subtitle2">

@@ -28,7 +28,7 @@ function CampusEditionPage() {
     const classes = useStyles();
 
     if (!campusId) {
-        return null;
+        return '';
     }
 
     return (
