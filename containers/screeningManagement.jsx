@@ -110,6 +110,7 @@ const useStyles = makeStyles(() => ({
 
 function ScreeningManagement() {
     const classes = useStyles();
+    const UP_FIRST = 10;
     const MAX_FIRST = 50;
     const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
     const { shiftVisitors } = useVisitors();
@@ -120,7 +121,7 @@ function ScreeningManagement() {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [search, setSearch] = React.useState('');
 
-    const [fetchData, { data, networkStatus, fetchMore }] = useLazyQuery(
+    const [fetchData, { data, networkStatus, fetchMore, refetch }] = useLazyQuery(
         LIST_TREATMENTS_SCREENING,
         {
             notifyOnNetworkStatusChange: true
@@ -177,21 +178,6 @@ function ScreeningManagement() {
         ]);
     }, [data]);
 
-    useEffect(() => {
-        if (!data) return;
-        data.getCampus.progress.list.forEach((visitor) =>
-            addDecision({
-                id: visitor.id,
-                request: { id: visitor.request.id },
-                choice: {
-                    label: '',
-                    validation: '',
-                    tags: []
-                }
-            })
-        );
-    }, [data]);
-
     const handleSelectAll = useCallback(
         (choice) =>
             data.getCampus.progress.list.forEach((visitor) =>
@@ -209,13 +195,13 @@ function ScreeningManagement() {
         await fetchMore({
             variables: {
                 cursor: {
-                    first: first + 10,
+                    first: first + UP_FIRST,
                     offset: 0
                 },
                 campusId: campusIdVar()
             }
         });
-        setFirst(first + 10);
+        setFirst(first + UP_FIRST);
         setIsLoadingMore(false);
     };
 
@@ -225,6 +211,7 @@ function ScreeningManagement() {
         );
         shiftVisitors(visitors);
         resetDecision();
+        refetch();
     };
 
     if (!data || networkStatus === 1) return '';
@@ -277,7 +264,7 @@ function ScreeningManagement() {
                             </SearchField>
                         </section>
                         <TableScreening
-                            requests={data.getCampus.progress.list}
+                            requests={mapRequestsToTreat(data)}
                             selectAll={handleSelectAll}
                         />
                         <div className={classes.divLoadMore}>
@@ -326,7 +313,7 @@ function ScreeningManagement() {
                         </section>
                         <TableScreening
                             treated
-                            requests={data.getCampus.treated.list}
+                            requests={mapRequestsTreated(data)}
                             selectAll={() => {}}
                         />
                         <div className={classes.divLoadMore}>

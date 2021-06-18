@@ -117,7 +117,7 @@ function MyTreatments() {
     const UP_FIRST = 10;
     const MAX_FIRST = 50;
 
-    const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
+    const { decisions, resetDecision, submitDecisionNumber } = useDecisions();
     const { visitors, exportVisitors, visitorsNumber } = useExport();
     const { shiftVisitors } = useVisitors();
 
@@ -144,36 +144,8 @@ function MyTreatments() {
                 first,
                 offset: 0
             }
-        },
-        onCompleted: (d) =>
-            d.getCampus.progress.list.forEach((visitor) =>
-                visitorsWithDecision.forEach((decision) =>
-                    decision.id === visitor.id
-                        ? addDecision({
-                              id: visitor.id,
-                              request: { id: visitor.request.id },
-                              choice: {
-                                  label: decision.label,
-                                  validation: decision.validation,
-                                  tags: [decision.tags]
-                              }
-                          })
-                        : addDecision({
-                              id: visitor.id,
-                              request: { id: visitor.request.id },
-                              choice: {
-                                  label: '',
-                                  validation: '',
-                                  tags: []
-                              }
-                          })
-                )
-            )
+        }
     });
-
-    const visitorsWithDecision = Object.values(decisions).filter(
-        (visitor) => visitor.choice.validation !== ''
-    );
 
     const {
         data: exportData,
