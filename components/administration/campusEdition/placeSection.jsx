@@ -47,8 +47,8 @@ function PlaceSection({ listPlaces, campusId }) {
 
 PlaceSection.propTypes = {
     campusId: PropTypes.string.isRequired,
-    listPlaces: PropTypes.objectOf({
-        meta: PropTypes.objectOf(PropTypes.string).isRequired,
+    listPlaces: PropTypes.shape({
+        meta: PropTypes.object.isRequired,
         list: PropTypes.array.isRequired
     }).isRequired
 };

@@ -48,7 +48,8 @@ export const ROLES = {
             '/administration',
             '/administration/base',
             '/administration/base/creation',
-            '/administration/utilisateurs'
+            '/administration/utilisateurs',
+            '/administration/utilisateurs/creation'
         ]
     },
     ROLE_ADMIN: {
@@ -62,7 +63,8 @@ export const ROLES = {
             '/compte',
             '/administration',
             '/administration/base',
-            '/administration/utilisateurs'
+            '/administration/utilisateurs',
+            '/administration/utilisateurs/creation'
         ]
     },
     ROLE_UNIT_CORRESPONDENT: {
@@ -146,8 +148,6 @@ export const ROLES = {
         role: 'ROLE_OBSERVER',
         label: 'Observateur',
         shortLabel: 'OBS.',
-        workflow: WORKFLOW_BEHAVIOR.INFORMATION.RESPONSE,
-        behavior: WORKFLOW_BEHAVIOR.INFORMATION.value,
         permission: ['/', '/compte', '/a-propos', '/contactez-nous']
     }
 };
@@ -163,9 +163,9 @@ export const STATE_REQUEST = {
 };
 
 export const ID_DOCUMENT = {
-    IDCARD: 'IDCard',
-    PASSPORT: 'Passport',
-    CIMSCARD: 'CIMSCard'
+    IDCard: { label: "Carte d'identité", regex: /^[a-z0-9]+$/gi },
+    Passport: { label: 'Passeport', regex: /^\d{2}[A-Za-z]{2}\d{5}$/ },
+    CIMSCard: { label: 'Carte CIMS', regex: /^\d{10}$/ }
 };
 
 export const EMPLOYEE_TYPE = {

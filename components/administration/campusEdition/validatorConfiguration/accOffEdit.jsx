@@ -77,7 +77,7 @@ function AccOffEdit({ roleData, accOffUsers }) {
 }
 
 AccOffEdit.propTypes = {
-    roleData: PropTypes.objectOf({
+    roleData: PropTypes.shape({
         role: PropTypes.string,
         campus: PropTypes.objectOf(PropTypes.string).isRequired
     }).isRequired,

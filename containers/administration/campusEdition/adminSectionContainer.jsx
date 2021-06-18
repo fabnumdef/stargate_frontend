@@ -26,7 +26,7 @@ function AdminSectionContainer({ campusId }) {
         !loading &&
         !loadCampus && (
             <AdminSection
-                listAdmins={data?.listUsers || []}
+                listAdmins={data?.listUsers?.list || []}
                 roleData={roleData(campusData.getCampus)}
             />
         )
