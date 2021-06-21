@@ -58,19 +58,14 @@ function UnitSection({ listUnits, campusId }) {
             </Grid>
             <Grid container item sm={12} md={12} className={classes.listUnits}>
                 {listUnits.list.map((unit) => (
-                    <Grid item key={unit.id} onClick={() => handleEditUnit(unit.id)}>
-                        <ItemCard
-                            style={{
-                                cursor: 'pointer',
-                                justifyContent: 'center',
-                                opacity: 1
-                            }}>
+                    <Grid key={unit.id} onClick={() => handleEditUnit(unit.id)}>
+                        <ItemCard clickable>
                             <Typography variant="body1">{unit.trigram}</Typography>
                         </ItemCard>
                     </Grid>
                 ))}
                 <Grid item onClick={handleCreateUnit}>
-                    <ItemCard style={{ cursor: 'pointer', justifyContent: 'center', width: 45 }}>
+                    <ItemCard clickable style={{ width: 45 }}>
                         <AddIcon className={classes.addIcon} />
                     </ItemCard>
                 </Grid>
