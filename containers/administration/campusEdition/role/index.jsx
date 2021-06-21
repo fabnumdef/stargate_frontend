@@ -27,7 +27,7 @@ const selectRoleComponent = (role, campus) => {
 
 const ValidatorConfiguration = ({ campusId }) => {
     const { data } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
-    const validatorsRoles = Object.values(ROLES).filter((r) => r.workflow);
+    const validatorsRoles = Object.values(ROLES).filter((r) => r.editable);
     const [selectedRole, setSelectedRole] = useState(
         validatorsRoles.find((r) => r.editable).role || null
     );

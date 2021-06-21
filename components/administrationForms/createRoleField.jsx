@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
+const CreateRoleField = ({ mailDomain, usersList, roleData, canDelete, children }) => {
     const classes = useStyles();
     const { addAlert } = useSnackBar();
     const client = useApolloClient();
@@ -307,16 +307,20 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
                                                         {displayEmail(user.email.original)}
                                                     </Typography>
                                                 </Grid>
-                                                <Grid item>
-                                                    <SquareButton
-                                                        aria-label="deleteAdmin"
-                                                        onClick={() => handleDeleteUser(user.id)}
-                                                        classes={{ root: classes.icon }}>
-                                                        <PersonAddDisabledIcon
-                                                            classes={{ root: classes.iconSvg }}
-                                                        />
-                                                    </SquareButton>
-                                                </Grid>
+                                                {canDelete && (
+                                                    <Grid item>
+                                                        <SquareButton
+                                                            aria-label="deleteUser"
+                                                            onClick={() =>
+                                                                handleDeleteUser(user.id)
+                                                            }
+                                                            classes={{ root: classes.icon }}>
+                                                            <PersonAddDisabledIcon
+                                                                classes={{ root: classes.iconSvg }}
+                                                            />
+                                                        </SquareButton>
+                                                    </Grid>
+                                                )}
                                             </Grid>
                                         </GridListTile>
                                     ))}
@@ -341,7 +345,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, children }) => {
 
 CreateRoleField.defaultProps = {
     usersList: [],
-    disable: false
+    canDelete: true
 };
 
 CreateRoleField.propTypes = {
@@ -352,6 +356,7 @@ CreateRoleField.propTypes = {
         unit: PropTypes.objectOf(PropTypes.string),
         campus: PropTypes.objectOf(PropTypes.string)
     }).isRequired,
+    canDelete: PropTypes.bool,
     children: PropTypes.node.isRequired
 };
 

@@ -28,7 +28,8 @@ function ScreeningEdit({ roleData, screeningUsers }) {
             <CreateRoleField
                 roleData={roleData}
                 usersList={screeningUsers}
-                mailDomain={SCREENING_DOMAIN_MAIL}>
+                mailDomain={SCREENING_DOMAIN_MAIL}
+                canDelete={screeningUsers.length > 1}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Responsable(s)
                 </Typography>

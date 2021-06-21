@@ -18,8 +18,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList }) => {
+const UnitRoleForm = ({ unit, campus, unitCorrespondantList, securityOfficerList }) => {
     const classes = useStyles();
+    const isRoleInWorkflow = (role) => unit.workflow.steps.find((step) => step.role === role);
 
     return (
         <Grid className={classes.root}>
@@ -30,8 +31,9 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList
                     unit: { id: unit.id, label: unit.label },
                     campus: { id: campus.id, label: campus.label }
                 }}
-                usersList={unitCorrespondandList}
-                mailDomain={GOUV_DOMAIN_MAIL}>
+                usersList={unitCorrespondantList}
+                mailDomain={GOUV_DOMAIN_MAIL}
+                canDelete={unitCorrespondantList.length > 1}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Correspondant Unité
                 </Typography>
@@ -43,7 +45,12 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList
                     campus: { id: campus.id, label: campus.label }
                 }}
                 usersList={securityOfficerList}
-                mailDomain={GOUV_DOMAIN_MAIL}>
+                mailDomain={GOUV_DOMAIN_MAIL}
+                canDelete={
+                    !isRoleInWorkflow(ROLES.ROLE_SECURITY_OFFICER.role) ||
+                    (isRoleInWorkflow(ROLES.ROLE_SECURITY_OFFICER.role) &&
+                        securityOfficerList.length > 1)
+                }>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Officier Sécurité
                 </Typography>
@@ -55,7 +62,7 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondandList, securityOfficerList
 UnitRoleForm.propTypes = {
     unit: PropTypes.object.isRequired,
     campus: PropTypes.object.isRequired,
-    unitCorrespondandList: PropTypes.array.isRequired,
+    unitCorrespondantList: PropTypes.array.isRequired,
     securityOfficerList: PropTypes.array.isRequired
 };
 
