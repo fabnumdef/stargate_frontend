@@ -117,6 +117,7 @@ function rootNameByRole(role) {
         case ROLES.ROLE_GATEKEEPER.role:
             return 'Recherche';
         case ROLES.ROLE_HOST.role:
+            return null;
         case ROLES.ROLE_ADMIN.role:
         case ROLES.ROLE_SUPERADMIN.role:
             return 'Accueil';
@@ -157,6 +158,11 @@ export default function DrawerTemplate({ drawerWidth }) {
         return '';
     }
 
+    let menuModified = menu.map(function (item) {
+        if (item.label === 'index' && data.activeRoleCache.role === 'ROLE_HOST') return false;
+        else return item;
+    });
+
     return (
         <Drawer
             className={classes.drawer}
@@ -177,7 +183,7 @@ export default function DrawerTemplate({ drawerWidth }) {
             </div>
             <List>
                 {data?.activeRoleCache &&
-                    menu.map(
+                    menuModified.map(
                         (item) =>
                             ROLES[data.activeRoleCache.role].permission.includes(
                                 item.permission
