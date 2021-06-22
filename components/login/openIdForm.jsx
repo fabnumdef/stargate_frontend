@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
+import { MINDEF_CONNECT_REDIRECT_PAGE } from '../../utils/constants/appUrls';
 
 const OPEN_ID_REQUEST = gql`
     mutation openIDRequest($redirectURI: String!) {
@@ -27,7 +28,9 @@ const useStyles = makeStyles(() => ({
 const OpenIdForm = () => {
     const classes = useStyles();
     const [connectId] = useMutation(OPEN_ID_REQUEST, {
-        variables: { redirectURI: 'http://localhost:4200' },
+        variables: {
+            redirectURI: `${window.location.origin.toString()}${MINDEF_CONNECT_REDIRECT_PAGE}`
+        },
         onCompleted: ({ openIDRequest }) => {
             window.location.assign(openIDRequest.URL);
         }

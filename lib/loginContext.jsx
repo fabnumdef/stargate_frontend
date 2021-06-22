@@ -10,6 +10,7 @@ import { activeRoleCacheVar, campusIdVar, isLoggedInVar } from './apollo/cache';
 import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
 import MdConnect from '../pages/md-connect';
+import { MINDEF_CONNECT_REDIRECT_PAGE } from '../utils/constants/appUrls';
 
 export const LOGIN = gql`
     mutation login($email: EmailAddress!, $password: String, $token: String) {
@@ -220,10 +221,10 @@ export function LoginContextProvider({ children }) {
     }, [isLoggedIn]);
 
     const selectLandingComponent = () => {
-        if (isLoggedIn && router.pathname !== '/md-connect') {
+        if (isLoggedIn && router.pathname !== MINDEF_CONNECT_REDIRECT_PAGE) {
             return children;
         }
-        if (router.pathname === '/md-connect') {
+        if (router.pathname === MINDEF_CONNECT_REDIRECT_PAGE) {
             return <MdConnect />;
         }
         return <Login />;

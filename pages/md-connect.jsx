@@ -13,6 +13,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import LoginLayout from '../components/login/loginLayout';
 import Fade from '@material-ui/core/Fade';
 import { useLogin } from '../lib/loginContext';
+import { MINDEF_CONNECT_REDIRECT_PAGE } from '../utils/constants/appUrls';
 
 const AUTHENTICATION_SUCCESS = 'AUTHENTICATION_SUCCESS';
 const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
@@ -59,20 +60,20 @@ function MdConnect() {
         }, 1000);
 
     const [authenticationResult, setAuthenticationResult] = useState(null);
-    const [openIDLogin, { data, error }] = useMutation(OPEN_ID_LOGIN, {
+    const [openIDLogin] = useMutation(OPEN_ID_LOGIN, {
         variables: {
-            redirectURI: 'http://localhost/md-connect',
+            redirectURI: `${window.location.origin.toString()}${MINDEF_CONNECT_REDIRECT_PAGE}`,
             state: router.query.state,
             authorizationCode: router.query.code
         },
-        onCompleted: async ({ jwt }) => {
+        onCompleted: async (data) => {
             setAuthenticationResult(AUTHENTICATION_SUCCESS);
-            await setUserConnection(jwt);
+            await setUserConnection(data.openIDLogin.jwt);
             redirect();
         },
         onError: () => {
             setAuthenticationResult(AUTHENTICATION_ERROR);
-            redirect();
+            //redirect();
         }
     });
 
@@ -82,10 +83,10 @@ function MdConnect() {
     }
 
     useEffect(() => {
-        if (!data || !error) {
+        if (!authenticationResult) {
             openIDLogin();
         }
-    }, [data]);
+    }, [authenticationResult]);
     return (
         <LoginLayout>
             <Grid container justify="center" className={classes.root}>
