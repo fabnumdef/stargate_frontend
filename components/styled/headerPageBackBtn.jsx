@@ -14,20 +14,25 @@ const useStyles = makeStyles({
     }
 });
 
-const HeaderPageBackBtn = ({ children }) => {
+const HeaderPageBackBtn = ({ to, children }) => {
     const router = useRouter();
     const classes = useStyles();
 
     return (
-        <Button onClick={() => router.back()} className={classes.backButton}>
+        <Button onClick={() => router.push(to)} className={classes.backButton}>
             <KeyboardBackspaceIcon />
             {children}
         </Button>
     );
 };
 
+HeaderPageBackBtn.defaultsProps = {
+    to: '/'
+};
+
 HeaderPageBackBtn.propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
+    to: PropTypes.string
 };
 
 export default HeaderPageBackBtn;

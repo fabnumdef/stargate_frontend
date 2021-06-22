@@ -7,6 +7,7 @@ import AddPlace from '../../../../../components/administration/placesEdition/Add
 import { GET_CAMPUS } from '../../../../../lib/apollo/queries';
 import ListPlaces from '../../../../../components/administration/placesEdition/ListPlaces';
 import HeaderPageBackBtn from '../../../../../components/styled/headerPageBackBtn';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../../../utils/constants/appUrls';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -54,7 +55,9 @@ function CreatePlace() {
 
     return (
         <>
-            <HeaderPageBackBtn>Retour administration de base</HeaderPageBackBtn>
+            <HeaderPageBackBtn to={ADMIN_CAMPUS_MANAGEMENT(campusId)}>
+                Retour administration de base
+            </HeaderPageBackBtn>
             <div className={classes.root}>
                 <PageTitle subtitles={[data.getCampus.label, 'Lieux']}>Base</PageTitle>
                 <section>

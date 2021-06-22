@@ -10,6 +10,7 @@ import ScreeningEditContainer from './screeningEditContainer';
 import { GET_CAMPUS } from '../../../../lib/apollo/queries';
 import { useQuery } from '@apollo/client';
 import HeaderPageBackBtn from '../../../../components/styled/headerPageBackBtn';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../../utils/constants/appUrls';
 
 const subtitles = ['Configuration validateurs'];
 
@@ -34,7 +35,9 @@ const ValidatorConfiguration = ({ campusId }) => {
 
     return (
         <Grid>
-            <HeaderPageBackBtn>Retour administration de base</HeaderPageBackBtn>
+            <HeaderPageBackBtn to={ADMIN_CAMPUS_MANAGEMENT(campusId)}>
+                Retour administration de base
+            </HeaderPageBackBtn>
             <PageTitle subtitles={subtitles}>Administration bases</PageTitle>
             <Paper>
                 <HeaderConfigurationValidator
