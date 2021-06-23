@@ -1,3 +1,4 @@
+export const ADMIN_CAMPUS_ADMINISTRATION = '/administration/base';
 export const ADMIN_CAMPUS_EDITION = (id) => `/administration/base/${id}/edition`;
 export const ADMIN_CAMPUS_MANAGEMENT = (id) => `/administration/base/${id}`;
 export const ADMIN_CAMPUS_ROLE_EDITION = (campusId) => `/administration/base/${campusId}/role`;

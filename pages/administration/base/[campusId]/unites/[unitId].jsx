@@ -143,7 +143,9 @@ function EditUnit() {
     if (!unitData || !campusData) return <LoadingCircle />;
     return (
         <>
-            <HeaderPageBackBtn>Retour administration de base</HeaderPageBackBtn>
+            <HeaderPageBackBtn to={ADMIN_CAMPUS_MANAGEMENT(campusId)}>
+                Retour administration de base
+            </HeaderPageBackBtn>
             <PageTitle subtitles={['Unité', 'Editer unité']}>Administration</PageTitle>
             <Paper elevation={2} className={classes.manageUnitContainer}>
                 {editUnitSection ? (

@@ -7,7 +7,7 @@ import { Typography } from '@material-ui/core';
 import Link from 'next/link';
 
 import AlertMessage from '../../components/styled/common/sticker';
-import RoundedButton from '../../components/styled/common/roundButton';
+import RoundButton from '../../components/styled/common/roundButton';
 import AddVisitorIcon from '../../components/icons/AddVisitorIcon';
 import GroupVisitorsIcon from '../../components/icons/GroupVisitorsIcon';
 import PermanentIcon from '../../components/icons/PermanentIcon';
@@ -78,9 +78,9 @@ function TypeDemand({ icon, title, subtitle, link }) {
                 {subtitle && <Typography variant="subtitle1">{subtitle}</Typography>}
             </div>
             <Link href={link}>
-                <RoundedButton className={classes.button} color="primary" variant="outlined">
+                <RoundButton className={classes.button} color="primary" variant="outlined">
                     Y accéder
-                </RoundedButton>
+                </RoundButton>
             </Link>
         </Paper>
     );
@@ -110,9 +110,9 @@ function TypeDemandGroup({ icon, title, subtitle, link }) {
                 {subtitle && <Typography variant="subtitle1">{subtitle}</Typography>}
             </div>
             <Link href={link}>
-                <RoundedButton className={classes.button} color="primary" variant="outlined">
+                <RoundButton className={classes.button} color="primary" variant="outlined">
                     Y accéder
-                </RoundedButton>
+                </RoundButton>
             </Link>
             {hover && (
                 <AlertMessage

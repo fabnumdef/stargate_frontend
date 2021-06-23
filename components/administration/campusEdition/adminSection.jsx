@@ -21,7 +21,8 @@ function AdminSection({ listAdmins, roleData }) {
             <CreateRoleField
                 roleData={roleData}
                 usersList={listAdmins}
-                mailDomain={GOUV_DOMAIN_MAIL}>
+                mailDomain={GOUV_DOMAIN_MAIL}
+                canDelete={listAdmins.length > 1}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Administrateur(s) fonctionnel(s)
                 </Typography>

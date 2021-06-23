@@ -12,6 +12,7 @@ import { useLogin } from '../../../../lib/loginContext';
 import HeaderPageBackBtn from '../../../../components/styled/headerPageBackBtn';
 import { ROLES } from '../../../../utils/constants/enums';
 import PageTitle from '../../../../components/styled/common/pageTitle';
+import { ADMIN_CAMPUS_ADMINISTRATION } from '../../../../utils/constants/appUrls';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -28,13 +29,13 @@ function CampusEditionPage() {
     const classes = useStyles();
 
     if (!campusId) {
-        return null;
+        return '';
     }
 
     return (
         <Grid className={classes.root}>
             {activeRole.role === ROLES.ROLE_SUPERADMIN.role && (
-                <HeaderPageBackBtn>Retour bases</HeaderPageBackBtn>
+                <HeaderPageBackBtn to={ADMIN_CAMPUS_ADMINISTRATION}>Retour bases</HeaderPageBackBtn>
             )}
             <PageTitle>Administration Base</PageTitle>
             <CampusSectionContainer campusId={campusId} />

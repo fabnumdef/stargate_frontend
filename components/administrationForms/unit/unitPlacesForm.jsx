@@ -8,7 +8,6 @@ import { Controller, useForm } from 'react-hook-form';
 
 import ListLieux from '../../lists/checkLieux';
 import ItemCard from '../../styled/itemCard';
-import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
 import RoundButton from '../../styled/common/roundButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -116,10 +115,12 @@ const UnitPlacesForm = ({ unitPlacesList, placesList, updatePlaces, loadValidate
                         </Grid>
                     ) : (
                         <Grid>
-                            <RoundedIconButton
+                            <RoundButton
                                 onClick={() => setEditPlaces(true)}
-                                type={ROUNDED_BUTTON_TYPE.EDIT}
-                            />
+                                variant="outlined"
+                                color="primary">
+                                Modifier
+                            </RoundButton>
                         </Grid>
                     )}
                 </Grid>

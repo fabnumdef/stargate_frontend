@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { Typography } from '@material-ui/core';
-import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
 import ItemCard from '../../styled/itemCard';
 import { makeStyles } from '@material-ui/core/styles';
+import RoundButton from '../../styled/common/roundButton';
 
 const useStyles = makeStyles((theme) => ({
     createUnitDetail: {
@@ -55,10 +55,12 @@ const UnitDetail = ({ defaultValues, toggleEditUnit }) => {
                     </Grid>
                 </Grid>
                 <Grid>
-                    <RoundedIconButton
+                    <RoundButton
                         onClick={() => toggleEditUnit()}
-                        type={ROUNDED_BUTTON_TYPE.EDIT}
-                    />
+                        variant="outlined"
+                        color="primary">
+                        Modifer
+                    </RoundButton>
                 </Grid>
             </Grid>
         </Paper>

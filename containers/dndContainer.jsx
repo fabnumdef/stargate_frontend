@@ -7,7 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import PropTypes from 'prop-types';
 import DndCard from '../components/styled/dndCard';
-import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../components/styled/RoundedIconButton';
+import RoundButton from '../components/styled/common/roundButton';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
@@ -72,10 +72,12 @@ const DndContainer = ({ cards, setCards, allCards }) => {
                 {cards.length < allCards.length && (
                     <FormControl>
                         <div id="selectWorkflow" className={classes.addButton}>
-                            <RoundedIconButton
+                            <RoundButton
                                 onClick={() => toggleMenu(!openMenu)}
-                                type={ROUNDED_BUTTON_TYPE.ADD}
-                            />
+                                variant="outlined"
+                                color="primay">
+                                Modifier
+                            </RoundButton>
                         </div>
                         <Select
                             variant="outlined"

@@ -10,6 +10,7 @@ import ScreeningEditContainer from './screeningEditContainer';
 import { GET_CAMPUS } from '../../../../lib/apollo/queries';
 import { useQuery } from '@apollo/client';
 import HeaderPageBackBtn from '../../../../components/styled/headerPageBackBtn';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../../../utils/constants/appUrls';
 
 const subtitles = ['Configuration validateurs'];
 
@@ -27,14 +28,16 @@ const selectRoleComponent = (role, campus) => {
 
 const ValidatorConfiguration = ({ campusId }) => {
     const { data } = useQuery(GET_CAMPUS, { variables: { id: campusId } });
-    const validatorsRoles = Object.values(ROLES).filter((r) => r.workflow);
+    const validatorsRoles = Object.values(ROLES).filter((r) => r.editable);
     const [selectedRole, setSelectedRole] = useState(
         validatorsRoles.find((r) => r.editable).role || null
     );
 
     return (
         <Grid>
-            <HeaderPageBackBtn>Retour administration de base</HeaderPageBackBtn>
+            <HeaderPageBackBtn to={ADMIN_CAMPUS_MANAGEMENT(campusId)}>
+                Retour administration de base
+            </HeaderPageBackBtn>
             <PageTitle subtitles={subtitles}>Administration bases</PageTitle>
             <Paper>
                 <HeaderConfigurationValidator

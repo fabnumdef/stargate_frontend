@@ -10,7 +10,7 @@ import { ROLES } from '../../../utils/constants/enums';
 import ItemCard from '../../styled/itemCard';
 import { ADMIN_CAMPUS_EDITION, ADMIN_CAMPUS_ROLE_EDITION } from '../../../utils/constants/appUrls';
 import WarningIcon from '@material-ui/icons/Warning';
-import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
+import RoundButton from '../../styled/common/roundButton';
 
 const useStyles = makeStyles((theme) => ({
     globalContainer: {
@@ -58,10 +58,12 @@ function CampusSection({ campusData, usersTotalByRole }) {
                                 </Typography>
                             </Grid>
                             <Grid item>
-                                <RoundedIconButton
+                                <RoundButton
                                     onClick={() => router.push(ADMIN_CAMPUS_EDITION(campusData.id))}
-                                    type={ROUNDED_BUTTON_TYPE.EDIT}
-                                />
+                                    variant="outlined"
+                                    color="primary">
+                                    Modifier
+                                </RoundButton>
                             </Grid>
                         </Grid>
                     </Paper>
@@ -91,10 +93,12 @@ function CampusSection({ campusData, usersTotalByRole }) {
                     </Grid>
                 </Grid>
                 <Grid>
-                    <RoundedIconButton
+                    <RoundButton
                         onClick={() => router.push(ADMIN_CAMPUS_ROLE_EDITION(campusData.id))}
-                        type={ROUNDED_BUTTON_TYPE.EDIT}
-                    />
+                        variant="outlined"
+                        color="primary">
+                        Modifier
+                    </RoundButton>
                 </Grid>
             </Grid>
         </Grid>

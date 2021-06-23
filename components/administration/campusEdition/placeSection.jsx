@@ -6,7 +6,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import { ADMIN_CAMPUS_PLACES_EDITION } from '../../../utils/constants/appUrls';
 import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
-import RoundedIconButton, { ROUNDED_BUTTON_TYPE } from '../../styled/RoundedIconButton';
+import RoundButton from '../../styled/common/roundButton';
 import SelectedBadge from '../../styled/common/TabBadge';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,11 +26,9 @@ function PlaceSection({ listPlaces, campusId }) {
 
     return (
         <Grid container alignItems="center" justify="space-between" className={classes.root}>
-            <Grid item container sm={11}>
-                <Grid item>
-                    {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
-                </Grid>
+            <Grid container sm={11}>
                 <Grid container>
+                    {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                         Lieux
                     </Typography>
@@ -38,10 +36,12 @@ function PlaceSection({ listPlaces, campusId }) {
                 </Grid>
             </Grid>
             <Grid>
-                <RoundedIconButton
+                <RoundButton
                     onClick={() => router.push(ADMIN_CAMPUS_PLACES_EDITION(campusId))}
-                    type={ROUNDED_BUTTON_TYPE.EDIT}
-                />
+                    variant="outlined"
+                    color="primary">
+                    Modifier
+                </RoundButton>
             </Grid>
         </Grid>
     );

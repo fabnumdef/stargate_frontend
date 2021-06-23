@@ -28,7 +28,7 @@ const UnitRoleFormContainer = ({ unit, campus }) => {
         <UnitRoleForm
             unit={unit}
             campus={campus}
-            unitCorrespondandList={unitCorrespondantData.listUsers.list}
+            unitCorrespondantList={unitCorrespondantData.listUsers.list}
             securityOfficerList={securityOfficerData.listUsers.list}
         />
     );

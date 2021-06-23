@@ -17,7 +17,7 @@ function CampusSectionContainer({ campusId }) {
                 [ROLES.ROLE_ACCESS_OFFICE.role, ROLES.ROLE_SCREENING.role].map(async (role) => {
                     const users = await client.query({
                         query: LIST_USERS,
-                        variables: { hasRole: { role }, campusId }
+                        variables: { hasRole: { role }, campus: campusId }
                     });
                     usersTotal = {
                         ...usersTotal,
