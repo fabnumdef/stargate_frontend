@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -6,6 +6,7 @@ import { Button, TextField } from '@material-ui/core';
 import { gql, useMutation } from '@apollo/client';
 
 import { GET_PLACES_LIST } from '../../../lib/apollo/fragments';
+import { makeStyles } from '@material-ui/core/styles';
 
 export const CREATE_PLACE = gql`
     mutation createPlace($campusId: String!, $place: PlaceInput!) {
@@ -22,8 +23,19 @@ export const CREATE_PLACE = gql`
     }
 `;
 
+const useStyles = makeStyles(() => ({
+    addButton: {
+        width: 109,
+        height: 50,
+        marginTop: 5,
+        padding: '10px 27px 10px 26px',
+        borderRadius: 25
+    }
+}));
+
 export default function AddPlace({ campusId }) {
-    const labelInput = useRef(null);
+    const [placeValue, setPlaceValue] = useState('');
+    const classes = useStyles();
     const [createPlace] = useMutation(CREATE_PLACE);
 
     // Create method
@@ -31,7 +43,7 @@ export default function AddPlace({ campusId }) {
         createPlace({
             variables: {
                 campusId,
-                place: { label: labelInput.current.value }
+                place: { label: placeValue }
             },
             update: (cache, { data: { mutateCampus: createPlace } }) => {
                 const campus = cache.readFragment({
@@ -55,6 +67,7 @@ export default function AddPlace({ campusId }) {
                     fragmentName: 'getPlacesList',
                     data: updateList
                 });
+                setPlaceValue('');
             }
         });
     };
@@ -64,12 +77,17 @@ export default function AddPlace({ campusId }) {
             <TextField
                 label="Nouveau lieu"
                 variant="outlined"
-                inputRef={labelInput}
+                value={placeValue}
                 onKeyPress={(event) => {
                     if (event.key === 'Enter') handleCreatePlace();
                 }}
+                onChange={(event) => setPlaceValue(event.target.value)}
             />
-            <Button variant="outlined" color="primary" onClick={handleCreatePlace}>
+            <Button
+                variant="outlined"
+                color="primary"
+                className={classes.addButton}
+                onClick={handleCreatePlace}>
                 Ajouter
             </Button>
         </div>
