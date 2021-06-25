@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { LoginForm, ForgotPassForm, OpenIdForm } from '../components';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import PageTitle from '../components/styled/common/pageTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -42,9 +41,9 @@ function LoginPage() {
         <LoginLayout>
             <PageTitle className={classes.connection}>Connexion</PageTitle>
             <RenderLogin />
-            <Paper className={classes.openIdSection}>
+            <div className={classes.openIdSection}>
                 <OpenIdForm />
-            </Paper>
+            </div>
         </LoginLayout>
     );
 }
