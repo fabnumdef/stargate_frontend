@@ -55,7 +55,7 @@ describe('Container: Drawer', () => {
             expect(screen.getByText(/base navale/i)).toBeInTheDocument();
             userEvent.click(
                 screen.getByRole('button', {
-                    name: /administration/i
+                    name: /Utilisateurs/i
                 })
             );
         });
