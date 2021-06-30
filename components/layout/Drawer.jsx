@@ -94,21 +94,14 @@ const menu = [
         icon: NewDemandIcon
     },
     {
-        label: 'Administration',
-        subItems: [
-            {
-                label: 'Base',
-                permission: '/administration/base',
-                icon: DescriptionIcon
-            },
-            {
-                label: 'Utilisateurs',
-                permission: '/administration/utilisateurs',
-                icon: PeopleIcon
-            }
-        ],
-        permission: '/administration',
+        label: 'Base',
+        permission: '/administration/base',
         icon: DescriptionIcon
+    },
+    {
+        label: 'Utilisateurs',
+        permission: '/administration/utilisateurs',
+        icon: PeopleIcon
     }
 ];
 
@@ -117,10 +110,10 @@ function rootNameByRole(role) {
         case ROLES.ROLE_GATEKEEPER.role:
             return 'Recherche';
         case ROLES.ROLE_HOST.role:
-            return null;
+            return 'Mes demandes';
         case ROLES.ROLE_ADMIN.role:
         case ROLES.ROLE_SUPERADMIN.role:
-            return 'Accueil';
+            return 'Utilisateurs';
         case ROLES.ROLE_SCREENING.role:
         case ROLES.ROLE_UNIT_CORRESPONDENT.role:
         default:
@@ -160,6 +153,12 @@ export default function DrawerTemplate({ drawerWidth }) {
 
     let menuModified = menu.map(function (item) {
         if (item.label === 'index' && data.activeRoleCache.role === 'ROLE_HOST') return false;
+        if (
+            item.label === 'index' &&
+            (data.activeRoleCache.role === 'ROLE_ADMIN' ||
+                data.activeRoleCache.role === 'ROLE_SUPERADMIN')
+        )
+            return false;
         else return item;
     });
 
@@ -193,6 +192,7 @@ export default function DrawerTemplate({ drawerWidth }) {
                                     item={item}
                                     action={(permission) => router.push(permission)}
                                     label={
+                                        item.label === rootNameByRole(data.activeRoleCache.role) ||
                                         item.label === 'index'
                                             ? rootNameByRole(data.activeRoleCache.role)
                                             : null
