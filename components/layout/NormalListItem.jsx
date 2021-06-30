@@ -56,8 +56,19 @@ export default function NormalListItem({ item, action, pathname, label, child })
     const classes = useStyles();
     const isSelected = React.useMemo(() => {
         if (item.permission === '/') return pathname === item.permission;
+
+        if (
+            (activeRoleCacheVar().role === ROLES.ROLE_SUPERADMIN.role && pathname === '/') ||
+            (activeRoleCacheVar().role === ROLES.ROLE_ADMIN.role && pathname === '/')
+        )
+            return item.permission === '/administration/utilisateurs';
+
+        if (activeRoleCacheVar().role === ROLES.ROLE_HOST.role && pathname === '/')
+            return item.permission === '/demandes';
+
         return pathname.includes(item.permission);
     }, [pathname]);
+
     const [open, setOpen] = React.useState(isSelected);
 
     const handleClick = () => {
