@@ -94,14 +94,14 @@ const menu = [
         icon: NewDemandIcon
     },
     {
-        label: 'Base',
-        permission: '/administration/base',
-        icon: DescriptionIcon
-    },
-    {
         label: 'Utilisateurs',
         permission: '/administration/utilisateurs',
         icon: PeopleIcon
+    },
+    {
+        label: 'Base',
+        permission: '/administration/base',
+        icon: DescriptionIcon
     }
 ];
 
