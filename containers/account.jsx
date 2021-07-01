@@ -49,22 +49,15 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export const CHECK_ACTUAL_PASS = gql`
-    mutation checkActualPass($email: EmailAddress!, $password: String) {
-        me @client {
-            email {
-                original @export(as: "email")
-            }
-        }
-        login(email: $email, password: $password) {
-            jwt
-        }
+export const RESET_PASSWORD = gql`
+    mutation resetPassword($email: EmailAddress!, $token: String!, $password: String!) {
+        resetPassword(email: $email, token: $token, password: $password)
     }
 `;
 
 export const EDIT_PASSWORD = gql`
-    mutation editPassword($user: OwnUserInput!) {
-        editMe(user: $user) {
+    mutation editPassword($user: OwnUserInput!, $currentPassword: String!) {
+        editMe(user: $user, currentPassword: $currentPassword) {
             id
         }
     }
@@ -73,8 +66,8 @@ export const EDIT_PASSWORD = gql`
 export default function Account() {
     const classes = useStyles();
     const router = useRouter();
-    const [checkActualPass] = useMutation(CHECK_ACTUAL_PASS);
     const [submitEditPassword] = useMutation(EDIT_PASSWORD);
+    const [submitResetPassword] = useMutation(RESET_PASSWORD);
     const { addAlert } = useSnackBar();
     const [resetPass, setResetPass] = useState(() => {
         if (router.query.token && router.query.email) {
@@ -92,9 +85,29 @@ export default function Account() {
         }
     });
 
-    const changePasswordReq = async (password) => {
+    const resetPasswordReq = async (password) => {
         try {
-            await submitEditPassword({ variables: { user: { password } } });
+            await submitResetPassword({
+                variables: { email: resetPass.email, token: resetPass.token, password }
+            });
+            reset({ password: '', confirmPassword: '' });
+            setResetPass(null);
+            return addAlert({
+                message: 'Votre mot de passe a bien été enregistré',
+                severity: 'success'
+            });
+        } catch (e) {
+            console.log({ e });
+            return addAlert({
+                message: 'Erreur réseau',
+                severity: 'warning'
+            });
+        }
+    };
+
+    const changePasswordReq = async (password, currentPassword) => {
+        try {
+            await submitEditPassword({ variables: { user: { password }, currentPassword } });
             reset({ password: '', confirmPassword: '' });
             if (resetPass) {
                 setResetPass(null);
@@ -104,29 +117,26 @@ export default function Account() {
                 severity: 'success'
             });
         } catch (e) {
-            return e;
+            switch (e.message) {
+                case 'Invalid password':
+                    return addAlert({
+                        message: 'Merci de vérifier votre mot de passe actuel',
+                        severity: 'warning'
+                    });
+                default:
+                    return addAlert({
+                        message: 'Erreur réseau',
+                        severity: 'warning'
+                    });
+            }
         }
     };
 
-    const onSubmit = async ({ password, actualPassword }) => {
+    const onSubmit = async ({ password, currentPassword }) => {
         if (resetPass) {
-            return changePasswordReq(password);
+            return resetPasswordReq(password);
         }
-        try {
-            const { data } = await checkActualPass({ variables: { password: actualPassword } });
-            if (data.login.jwt) {
-                return changePasswordReq(password);
-            }
-            return addAlert({
-                message: 'Merci de vérifier votre mot de passe actuel',
-                severity: 'warning'
-            });
-        } catch (e) {
-            return addAlert({
-                message: 'Merci de vérifier votre mot de passe actuel',
-                severity: 'warning'
-            });
-        }
+        return changePasswordReq(password, currentPassword);
     };
 
     return (
@@ -160,7 +170,7 @@ export default function Account() {
                                             }}
                                             error={Object.prototype.hasOwnProperty.call(
                                                 errors,
-                                                'actualPassword'
+                                                'currentPassword'
                                             )}
                                             helperText={errors.password && errors.password.message}
                                             fullWidth
@@ -168,7 +178,7 @@ export default function Account() {
                                     }
                                     rules={{ minLength: 8, required: true }}
                                     control={control}
-                                    name="actualPassword"
+                                    name="currentPassword"
                                     defaultValue=""
                                 />
                             )}

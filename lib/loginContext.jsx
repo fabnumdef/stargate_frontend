@@ -11,8 +11,8 @@ import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
 
 export const LOGIN = gql`
-    mutation login($email: EmailAddress!, $password: String, $token: String) {
-        login(email: $email, password: $password, token: $token) {
+    mutation login($email: EmailAddress!, $password: String!) {
+        login(email: $email, password: $password) {
             jwt
         }
     }
@@ -196,12 +196,11 @@ export function LoginContextProvider({ children }) {
      * Login method to signIn
      * @param email
      * @param password
-     * @param resetToken
      */
-    const signIn = (email, password, resetToken = null) => {
+    const signIn = (email, password) => {
         return new Promise((resolve, reject) => {
             try {
-                login({ variables: { email, password, token: resetToken } });
+                login({ variables: { email, password } });
             } catch {
                 reject();
             }
