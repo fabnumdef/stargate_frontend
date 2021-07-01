@@ -26,7 +26,7 @@ const UnitDetail = ({ defaultValues, toggleEditUnit }) => {
     return (
         <Paper className={classes.createUnitDetail}>
             <Grid container justify="space-between">
-                <Grid item sm={11}>
+                <Grid item xs={10}>
                     <Grid>
                         <Typography variant="body1" className={classes.fieldTitle}>
                             Unité
