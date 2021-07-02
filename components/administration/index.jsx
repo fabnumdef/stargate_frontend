@@ -32,7 +32,8 @@ function IndexAdministration({
         }
     });
 
-    const handleFetchMore = (selectedPage) => {
+    const handleChangePage = (event, selectedPage) => {
+        setPage(selectedPage);
         fetchMore({
             variables: {
                 cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage }
@@ -42,14 +43,17 @@ function IndexAdministration({
         });
     };
 
-    const handleChangePage = (event, selectedPage) => {
-        setPage(selectedPage);
-        handleFetchMore(selectedPage);
-    };
-
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        const rows = parseInt(event.target.value, 10);
+        setRowsPerPage(rows);
         setPage(0);
+        fetchMore({
+            variables: {
+                cursor: { first: rows, offset: 0 }
+            }
+        }).then((res) => {
+            onCompletedQuery(res.data);
+        });
     };
 
     const handleChangeFilter = (e) => {
