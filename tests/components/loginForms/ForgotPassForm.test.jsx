@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 
-import ForgotPassForm, { SEND_RESET_PASSWORD } from '../../../components/loginForms/ForgotPassForm';
+import ForgotPassForm, { SEND_RESET_PASSWORD } from '../../../components/login/ForgotPassForm';
 import { render, screen, waitFor } from '../../../utils/tests/renderApollo';
 
 const mocks = [

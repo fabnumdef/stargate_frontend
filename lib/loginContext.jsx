@@ -1,7 +1,7 @@
 import { gql, useApolloClient, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
-import { createContext, useCallback, useContext, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { tokenDuration } from '../utils';
@@ -9,6 +9,8 @@ import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
 import { activeRoleCacheVar, campusIdVar, isLoggedInVar } from './apollo/cache';
 import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
+import MdConnect from '../pages/md-connect';
+import { MINDEF_CONNECT_REDIRECT_PAGE } from '../utils/constants/appUrls';
 
 export const LOGIN = gql`
     mutation login($email: EmailAddress!, $password: String!) {
@@ -173,6 +175,11 @@ export function LoginContextProvider({ children }) {
         return true;
     }, []);
 
+    const setUserConnection = async (token) => {
+        setToken(token);
+        await getUserData();
+    };
+
     const [login, { error, loading }] = useMutation(LOGIN, {
         onCompleted: (d) => {
             /**
@@ -180,8 +187,7 @@ export function LoginContextProvider({ children }) {
              *  Execute authRenew to refresh token management
              *  Get user data
              */
-            setToken(d.login.jwt);
-            getUserData();
+            setUserConnection(d.login.jwt);
         },
         onError: () => {
             addAlert({
@@ -213,6 +219,16 @@ export function LoginContextProvider({ children }) {
         }
     }, [isLoggedIn]);
 
+    const selectLandingComponent = () => {
+        if (isLoggedIn && router.pathname !== MINDEF_CONNECT_REDIRECT_PAGE) {
+            return children;
+        }
+        if (router.pathname === MINDEF_CONNECT_REDIRECT_PAGE) {
+            return <MdConnect />;
+        }
+        return <Login />;
+    };
+
     return (
         <LoginContext.Provider
             value={{
@@ -220,9 +236,10 @@ export function LoginContextProvider({ children }) {
                 loading,
                 signIn,
                 signOut,
-                activeRole: activeRoleCacheVar()
+                activeRole: activeRoleCacheVar(),
+                setUserConnection
             }}>
-            {isLoggedIn ? children : <Login />}
+            {selectLandingComponent()}
         </LoginContext.Provider>
     );
 }

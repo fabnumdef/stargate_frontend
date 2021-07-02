@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 
-import LoginForm from '../../../components/loginForms/LoginForm';
+import LoginForm from '../../../components/login/LoginForm';
 import { render, screen, waitFor } from '../../../utils/tests/renderApollo';
 
 const mockSignIn = jest.fn();

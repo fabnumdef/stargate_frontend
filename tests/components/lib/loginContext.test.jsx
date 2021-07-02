@@ -2,7 +2,7 @@ import { InMemoryCache } from '@apollo/client/core';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 
-import { SEND_RESET_PASSWORD } from '../../../components/loginForms/ForgotPassForm';
+import { SEND_RESET_PASSWORD } from '../../../components/login/ForgotPassForm';
 import { activeRoleCacheVar, isLoggedInVar, typePolicies } from '../../../lib/apollo/cache';
 import { INIT_CACHE } from '../../../lib/apollo/queries';
 import { LOGIN, LoginContextProvider } from '../../../lib/loginContext';

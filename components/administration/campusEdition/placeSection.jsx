@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
 import RoundButton from '../../styled/common/roundButton';
 import SelectedBadge from '../../styled/common/TabBadge';
+import ItemCard from '../../styled/itemCard';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
 function PlaceSection({ listPlaces, campusId }) {
     const router = useRouter();
     const classes = useStyles();
-
     return (
         <Grid container alignItems="center" justify="space-between" className={classes.root}>
             <Grid container sm={11}>
@@ -33,6 +33,20 @@ function PlaceSection({ listPlaces, campusId }) {
                         Lieux
                     </Typography>
                     <SelectedBadge small>{listPlaces.meta.total}</SelectedBadge>
+                    <Grid container>
+                        {listPlaces.list.map((place) => (
+                            <Grid item key={place.id}>
+                                <ItemCard
+                                    style={{
+                                        justifyContent: 'center'
+                                    }}>
+                                    <Grid container justify="center">
+                                        <Typography variant="body1">{place.label}</Typography>
+                                    </Grid>
+                                </ItemCard>
+                            </Grid>
+                        ))}
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid>
