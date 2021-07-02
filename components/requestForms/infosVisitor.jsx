@@ -82,12 +82,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function getKindControl(nationality, kind) {
-    if (nationality === 'Française') {
-        return ID_DOCUMENT[kind].regex;
-    } else return '';
-}
-
 function getTypeDocument(isInternal) {
     // TODO Check if MINARM or not
     const documents = Object.entries(ID_DOCUMENT).map(([value, { label }]) => ({ value, label }));
@@ -819,16 +813,7 @@ export default function FormInfoVisitor({
                                         name="reference"
                                         defaultValue=""
                                         rules={{
-                                            required: 'Le numéro de document est obligatoire',
-
-                                            validate: (value) =>
-                                                validator.matches(
-                                                    value,
-                                                    getKindControl(
-                                                        watch('nationality'),
-                                                        watch('kind')
-                                                    )
-                                                ) || 'format invalide'
+                                            required: 'Le numéro de document est obligatoire'
                                         }}
                                     />
                                 </Grid>
