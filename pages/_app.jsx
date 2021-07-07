@@ -16,6 +16,8 @@ import { SnackBarProvider } from '../lib/hooks/snackbar';
 import theme from '../styles/theme';
 import { tokenDuration } from '../utils';
 import Layout from '../components/layout';
+import { useRouter } from 'next/router';
+import { UNAUTH_PERMISSIONS } from '../utils/constants/enums';
 
 /**
  * @component
@@ -26,6 +28,7 @@ import Layout from '../components/layout';
 export default function App({ Component, pageProps }) {
     /** Keep the apollo cache in localStorage to avoid data loss. */
     const apolloClient = useApollo(pageProps);
+    const router = useRouter();
 
     const [ready, setReady] = useState(false);
 
@@ -62,7 +65,7 @@ export default function App({ Component, pageProps }) {
                     <LoginContextProvider>
                         <PermissionsContext>
                             <CssBaseline />
-                            <Layout>
+                            <Layout disableLayout={UNAUTH_PERMISSIONS.includes(router.pathname)}>
                                 <Component {...pageProps} />
                             </Layout>
                         </PermissionsContext>

@@ -9,9 +9,6 @@ import { ROLES, STATE_REQUEST, UNAUTH_PERMISSIONS } from '../utils/constants/enu
 import { activeRoleCacheVar, campusIdVar, isLoggedInVar } from './apollo/cache';
 import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
-import MdConnect from '../pages/md-connect';
-import ResetPass from '../pages/reset-pass';
-import { MINDEF_CONNECT_REDIRECT_PAGE, RESET_PASS_PAGE } from '../utils/constants/appUrls';
 
 export const LOGIN = gql`
     mutation login($email: EmailAddress!, $password: String!) {
@@ -221,16 +218,7 @@ export function LoginContextProvider({ children }) {
     }, [isLoggedIn]);
 
     const selectLandingComponent = () => {
-        if (isLoggedIn && !UNAUTH_PERMISSIONS.includes(router.pathname)) {
-            return children;
-        }
-        if (router.pathname === MINDEF_CONNECT_REDIRECT_PAGE) {
-            return <MdConnect />;
-        }
-        if (router.pathname === RESET_PASS_PAGE) {
-            return <ResetPass />;
-        }
-        return <Login />;
+        return isLoggedIn || UNAUTH_PERMISSIONS.includes(router.pathname) ? children : <Login />;
     };
 
     return (

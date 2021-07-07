@@ -20,9 +20,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DRAWER_WIDTH = 260;
-export default function LayoutTemplate({ children }) {
+export default function LayoutTemplate({ children, disableLayout }) {
     const classes = useStyles();
-    return (
+    return disableLayout ? (
+        <>{children}</>
+    ) : (
         <div className={classes.root}>
             <AppBar drawerWidth={DRAWER_WIDTH} />
             <Drawer drawerWidth={DRAWER_WIDTH} />
@@ -35,5 +37,6 @@ export default function LayoutTemplate({ children }) {
 }
 
 LayoutTemplate.propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
+    disableLayout: PropTypes.bool.isRequired
 };
