@@ -13,7 +13,6 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Link from 'next/link';
-import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import classNames from 'classnames';
@@ -21,6 +20,8 @@ import { mapUserData } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 import { ROLES } from '../../utils/constants/enums';
+import { ADMIN_USER_ADMINISTRATION } from '../../utils/constants/appUrls';
+import RoundButton from '../styled/common/roundButton';
 
 const useStyles = makeStyles((theme) => ({
     createUserForm: {
@@ -115,13 +116,11 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
     ];
 
     const onSubmit = (data) => {
-        const formData = { ...data };
-        if (noUnitRoles.includes(formData.role)) {
-            delete formData.unit;
+        if (noUnitRoles.includes(data.role)) {
+            delete data.unit;
         }
-
-        const mappedUser = mapUserData(formData, dataCampuses, dataUnits);
-        submitForm(mappedUser);
+        const mappedUser = mapUserData(data);
+        return submitForm(mappedUser);
     };
 
     const getListUnits = async (campusId) => {
@@ -138,7 +137,7 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
     useEffect(() => {
         if (inputLabel.current) setLabelWidth(inputLabel.current.offsetWidth);
         if (defaultValues.campus) {
-            getListUnits(defaultValues.campus);
+            getListUnits(defaultValues.campus.id);
         }
     }, [inputLabel, defaultValues]);
 
@@ -298,7 +297,7 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
                                     Base
                                 </InputLabel>
 
-                                {dataCampuses && (
+                                {(dataCampuses || defaultValues.campus) && (
                                     <Controller
                                         as={
                                             <Select
@@ -307,16 +306,22 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
                                                 id="campus"
                                                 disabled={!isSuperAdmin(userRole.role)}
                                                 labelWidth={labelWidth}>
-                                                {dataCampuses.listCampuses.list.map((campus) => (
-                                                    <MenuItem key={campus.id} value={campus.id}>
-                                                        {campus.label}
+                                                {isSuperAdmin(userRole.role) ? (
+                                                    dataCampuses.listCampuses.list.map((campus) => (
+                                                        <MenuItem key={campus.id} value={campus}>
+                                                            {campus.label}
+                                                        </MenuItem>
+                                                    ))
+                                                ) : (
+                                                    <MenuItem value={defaultValues.campus}>
+                                                        {defaultValues.campus.label}
                                                     </MenuItem>
-                                                ))}
+                                                )}
                                             </Select>
                                         }
                                         control={control}
                                         onChange={([selected]) => {
-                                            getListUnits(selected.target.value);
+                                            getListUnits(selected.target.value.id);
                                             return selected;
                                         }}
                                         name="campus"
@@ -354,22 +359,25 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
                                                 }
                                                 labelWidth={labelWidth}>
                                                 {dataUnits &&
+                                                userRole.role !==
+                                                    ROLES.ROLE_UNIT_CORRESPONDENT.role ? (
                                                     dataUnits.getCampus.listUnits.list.map(
                                                         (unit) => (
-                                                            <MenuItem key={unit.id} value={unit.id}>
+                                                            <MenuItem key={unit.id} value={unit}>
                                                                 {unit.label}
                                                             </MenuItem>
                                                         )
-                                                    )}
+                                                    )
+                                                ) : (
+                                                    <MenuItem value={defaultValues.unit}>
+                                                        {defaultValues.unit.label}
+                                                    </MenuItem>
+                                                )}
                                             </Select>
                                         }
                                         control={control}
                                         name="unit"
-                                        defaultValue={
-                                            isSuperAdmin(userRole.role) && type === 'create'
-                                                ? defaultValues.unit
-                                                : ''
-                                        }
+                                        defaultValue={defaultValues.unit ? defaultValues.unit : ''}
                                         rules={{ required: true }}
                                     />
                                     {errors.unit && (
@@ -384,14 +392,14 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
                 </Grid>
             </Grid>
             <Grid item sm={12} xs={12} className={classes.buttonsContainer}>
-                <Link href="/administration/utilisateurs">
-                    <Button variant="outlined" color="primary" className={classes.buttonCancel}>
+                <Link href={ADMIN_USER_ADMINISTRATION}>
+                    <RoundButton variant="outlined" color="primary">
                         Annuler
-                    </Button>
+                    </RoundButton>
                 </Link>
-                <Button type="submit" variant="contained" color="primary">
+                <RoundButton type="submit" variant="contained" color="primary">
                     {type === 'create' ? 'Créer' : 'Modifier'}
-                </Button>
+                </RoundButton>
             </Grid>
         </form>
     );
@@ -404,8 +412,8 @@ UserForm.propTypes = {
         firstname: PropTypes.string,
         email: PropTypes.string,
         role: PropTypes.string,
-        campus: PropTypes.string,
-        unit: PropTypes.string.isRequired
+        campus: PropTypes.objectOf(PropTypes.string),
+        unit: PropTypes.objectOf(PropTypes.string)
     }).isRequired,
     userRole: PropTypes.shape({
         role: PropTypes.string.isRequired

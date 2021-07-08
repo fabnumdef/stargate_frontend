@@ -13,7 +13,7 @@ const columns = [
     { id: 'role', label: 'Rôle' }
 ];
 
-const GET_USERS_LIST = gql`
+export const GET_USERS_LIST = gql`
     query listUsers(
         $cursor: OffsetCursor
         $filters: UserFilters
@@ -88,7 +88,7 @@ function UserAdministration() {
             query: GET_USERS_LIST,
             variables: {
                 cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-                search: searchInput,
+                search: '',
                 hasRole:
                     isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
                         ? {}

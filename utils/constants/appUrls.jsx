@@ -7,4 +7,5 @@ export const ADMIN_CAMPUS_UNITS_EDITION = (campusId, id) =>
     `/administration/base/${campusId}/unites/${id}`;
 export const ADMIN_CAMPUS_UNIT_CREATE = (campusId) =>
     `/administration/base/${campusId}/unites/creation`;
+export const ADMIN_USER_ADMINISTRATION = '/administration/utilisateurs';
 export const MINDEF_CONNECT_REDIRECT_PAGE = '/md-connect';
