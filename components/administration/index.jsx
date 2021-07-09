@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import TablePagination from '@material-ui/core/TablePagination';
 import Grid from '@material-ui/core/Grid';
 import PageTitle from '../styled/common/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 import SearchField from '../styled/common/SearchField';
+import { GET_ME } from '../../lib/apollo/queries';
+import { isAdmin, isSuperAdmin } from '../../utils/permissions';
+import { GET_USERS_LIST } from '../../containers/administration/userAdministration';
+import { useLogin } from '../../lib/loginContext';
+
+const DELETE_USER = gql`
+    mutation deleteUser($id: ObjectID!) {
+        deleteUser(id: $id) {
+            id
+        }
+    }
+`;
 
 function IndexAdministration({
     fetchMore,
@@ -15,20 +27,64 @@ function IndexAdministration({
     onCompletedQuery,
     searchInput,
     setSearchInput,
-    deleteMutation,
-    updateFunction,
     tabData,
     columns,
     subtitles
 }) {
     const { addAlert } = useSnackBar();
+    const { activeRole } = useLogin();
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const [deleteItemReq] = useMutation(deleteMutation, {
-        update(cache, { data }) {
-            updateFunction(cache, data, page, rowsPerPage);
+    const [deleteItemReq] = useMutation(DELETE_USER, {
+        update: (cache, { data }) => {
+            const deletedUser = data.deleteUser;
+            const { me } = cache.readQuery({ query: GET_ME });
+            const selectedRole = me.roles.find((role) => role.role === activeRole.role);
+            const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : null;
+            console.log(campus);
+            const currentUsers = cache.readQuery({
+                query: GET_USERS_LIST,
+                variables: {
+                    campus,
+                    cursor: { first: rowsPerPage, offset: page * rowsPerPage },
+                    search: '',
+                    hasRole:
+                        isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
+                            ? {}
+                            : { unit: activeRole.unit }
+                }
+            });
+            const newList = currentUsers.listUsers.list.filter(
+                (user) => user.id !== deletedUser.id
+            );
+            const updatedTotal = currentUsers.listUsers.meta.total - 1;
+            const updatedUsers = {
+                ...currentUsers,
+                listUsers: {
+                    ...currentUsers.listUsers,
+                    ...(updatedTotal < 10 && { list: newList }),
+                    meta: {
+                        ...currentUsers.listUsers.meta,
+                        total: updatedTotal
+                    }
+                }
+            };
+            console.log(updatedUsers);
+            cache.writeQuery({
+                query: GET_USERS_LIST,
+                variables: {
+                    campus,
+                    cursor: { first: 10, offset: 0 },
+                    search: '',
+                    hasRole:
+                        isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
+                            ? {}
+                            : { unit: activeRole.unit }
+                },
+                data: updatedUsers
+            });
         }
     });
 
@@ -66,14 +122,12 @@ function IndexAdministration({
             await deleteItemReq({ variables: { id } });
             setSearchInput('');
             addAlert({ message: tabData(deleteLabel).deletedText, severity: 'success' });
-            let updatedPage = page;
             if (result.list.length === 1 && page > 0) {
-                updatedPage = page - 1;
                 setPage(page - 1);
+                refetch({
+                    cursor: { first: rowsPerPage, offset: (page - 1) * rowsPerPage }
+                });
             }
-            return refetch({
-                cursor: { first: rowsPerPage, offset: updatedPage * rowsPerPage }
-            });
         } catch (e) {
             addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
             return e;
@@ -129,8 +183,6 @@ IndexAdministration.propTypes = {
     }).isRequired,
     searchInput: PropTypes.string,
     setSearchInput: PropTypes.func.isRequired,
-    deleteMutation: PropTypes.objectOf(PropTypes.shape).isRequired,
-    updateFunction: PropTypes.func.isRequired,
     tabData: PropTypes.func.isRequired,
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     subtitles: PropTypes.arrayOf(PropTypes.string).isRequired,

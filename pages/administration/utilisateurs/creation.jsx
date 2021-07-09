@@ -58,9 +58,12 @@ function CreateUser() {
     const { activeRole } = useLogin();
     const [createUser] = useMutation(CREATE_USER, {
         update: (cache, { data: { createUser: createdUser } }) => {
+            const selectedRole = userData.me.roles.find((role) => role.role === activeRole.role);
+            const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : null;
             const currentUsers = cache.readQuery({
                 query: GET_USERS_LIST,
                 variables: {
+                    campus,
                     cursor: { first: 10, offset: 0 },
                     search: '',
                     hasRole:
@@ -75,7 +78,10 @@ function CreateUser() {
                 listUsers: {
                     ...currentUsers.listUsers,
                     ...(updatedTotal < 10 && {
-                        list: [...currentUsers.listUsers.list, createdUser]
+                        list: [
+                            ...currentUsers.listUsers.list,
+                            { ...createdUser, __typename: 'User' }
+                        ]
                     }),
                     meta: {
                         ...currentUsers.listUsers.meta,
@@ -86,8 +92,9 @@ function CreateUser() {
             cache.writeQuery({
                 query: GET_USERS_LIST,
                 variables: {
+                    campus,
                     cursor: { first: 10, offset: 0 },
-                    search: null,
+                    search: '',
                     hasRole:
                         isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
                             ? {}

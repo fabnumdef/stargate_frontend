@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
 import { useLogin } from '../../lib/loginContext';
+import { GET_ME } from '../../lib/apollo/queries';
 
 const columns = [
     { id: 'lastname', label: 'Nom' },
@@ -57,14 +58,6 @@ export const GET_USERS_LIST = gql`
     }
 `;
 
-const DELETE_USER = gql`
-    mutation deleteUser($id: ObjectID!) {
-        deleteUser(id: $id) {
-            id
-        }
-    }
-`;
-
 const createUserData = (data) => ({
     createPath: '/administration/utilisateurs/creation',
     confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cet utilisateur: ${data} ?`,
@@ -84,9 +77,13 @@ function UserAdministration() {
 
     const updateDeleteMutation = (cache, data, page, rowsPerPage) => {
         const deletedUser = data.deleteUser;
+        const { me } = cache.readQuery({ query: GET_ME });
+        const selectedRole = me.roles.find((role) => role.role === activeRole.role);
+        const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : null;
         const currentUsers = cache.readQuery({
             query: GET_USERS_LIST,
             variables: {
+                campus,
                 cursor: { first: rowsPerPage, offset: page * rowsPerPage },
                 search: '',
                 hasRole:
@@ -108,11 +105,13 @@ function UserAdministration() {
                 }
             }
         };
+
         cache.writeQuery({
             query: GET_USERS_LIST,
             variables: {
-                cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-                search: searchInput,
+                campus,
+                cursor: { first: 10, offset: 0 },
+                search: '',
                 hasRole:
                     isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
                         ? {}
@@ -122,7 +121,7 @@ function UserAdministration() {
         });
     };
 
-    const { data, refetch, fetchMore } = useQuery(GET_USERS_LIST, {
+    const { refetch, fetchMore } = useQuery(GET_USERS_LIST, {
         variables: {
             cursor: { first: 10, offset: 0 },
             search: searchInput,
@@ -130,14 +129,14 @@ function UserAdministration() {
                 isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
                     ? {}
                     : { unit: activeRole.unit }
+        },
+        onCompleted: (data) => {
+            setUsersList({
+                list: mapUsersList(data.listUsers.list),
+                total: data.listUsers.meta.total
+            });
         }
     });
-
-    useEffect(() => {
-        if (data) {
-            onCompletedQuery(data);
-        }
-    }, [data]);
 
     return (
         <IndexAdministration
@@ -147,7 +146,6 @@ function UserAdministration() {
             onCompletedQuery={onCompletedQuery}
             searchInput={searchInput}
             setSearchInput={setSearchInput}
-            deleteMutation={DELETE_USER}
             updateFunction={updateDeleteMutation}
             tabData={createUserData}
             columns={columns}
