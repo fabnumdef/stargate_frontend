@@ -14,23 +14,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const RESET_PASSWORD = gql`
-    mutation resetPassword($email: EmailAddress!) {
-        resetPassword(email: $email)
+export const SEND_RESET_PASSWORD = gql`
+    mutation sendResetPassword($email: EmailAddress!) {
+        sendResetPassword(email: $email)
     }
 `;
 
 export default function ForgotPassForm() {
     const { register, handleSubmit, errors } = useForm();
 
-    const [resetPassword] = useMutation(RESET_PASSWORD);
+    const [sendResetPassword] = useMutation(SEND_RESET_PASSWORD);
     const { addAlert } = useSnackBar();
 
     const classes = useStyles();
 
     const onSubmit = ({ email }) => {
         try {
-            resetPassword({ variables: { email } });
+            sendResetPassword({ variables: { email } });
             addAlert({ message: 'Demande enregistrée', severity: 'success' });
         } catch (e) {
             addAlert({ message: 'Une erreur est survenue', severity: 'warning' });

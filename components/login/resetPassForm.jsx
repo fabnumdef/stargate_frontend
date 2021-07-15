@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -10,8 +11,9 @@ import { useMutation } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Button from '@material-ui/core/Button';
-import { useSnackBar } from '../lib/hooks/snackbar';
+import { useSnackBar } from '../../lib/hooks/snackbar';
+import { useRouter } from 'next/router';
+import RoundButton from '../styled/common/roundButton';
 
 const useStyles = makeStyles(() => ({
     account: {
@@ -22,8 +24,8 @@ const useStyles = makeStyles(() => ({
     },
     pageTitle: {
         margin: '16px 0',
-        color: '#0d40a0',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
     },
     pageTitleHolder: {
         borderBottom: '1px solid #e5e5e5',
@@ -43,22 +45,20 @@ const useStyles = makeStyles(() => ({
         color: 'red'
     },
     submitButton: {
-        height: '50px',
         marginTop: '20px'
     }
 }));
 
-export const EDIT_PASSWORD = gql`
-    mutation editPassword($user: OwnUserInput!, $currentPassword: String!) {
-        editMe(user: $user, currentPassword: $currentPassword) {
-            id
-        }
+export const RESET_PASSWORD = gql`
+    mutation resetPassword($email: EmailAddress!, $token: String!, $password: String!) {
+        resetPassword(email: $email, token: $token, password: $password)
     }
 `;
 
-export default function Account() {
+const ResetPassForm = ({ resetPass, setResetPass }) => {
     const classes = useStyles();
-    const [submitEditPassword] = useMutation(EDIT_PASSWORD);
+    const router = useRouter();
+    const [submitResetPassword] = useMutation(RESET_PASSWORD);
     const { addAlert } = useSnackBar();
 
     const { handleSubmit, errors, control, reset, watch } = useForm({
@@ -68,21 +68,27 @@ export default function Account() {
         }
     });
 
-    const changePasswordReq = async (password, currentPassword) => {
+    const resetPasswordReq = async (password) => {
         try {
-            await submitEditPassword({ variables: { user: { password }, currentPassword } });
+            await submitResetPassword({
+                variables: { email: resetPass.email, token: resetPass.token, password }
+            });
             reset({ password: '', confirmPassword: '' });
-            return addAlert({
+            setResetPass(null);
+            addAlert({
                 message: 'Votre mot de passe a bien été enregistré',
                 severity: 'success'
             });
+            return router.push('/');
         } catch (e) {
+            console.log({ e });
             switch (e.message) {
-                case 'Invalid password':
-                    return addAlert({
-                        message: 'Merci de vérifier votre mot de passe actuel',
+                case 'Expired link':
+                    addAlert({
+                        message: 'Lien expiré, merci de refaire une demande de réinitialisation',
                         severity: 'warning'
                     });
+                    return router.push('/');
                 default:
                     return addAlert({
                         message: 'Erreur réseau',
@@ -92,8 +98,8 @@ export default function Account() {
         }
     };
 
-    const onSubmit = async ({ password, currentPassword }) => {
-        return changePasswordReq(password, currentPassword);
+    const onSubmit = async ({ password }) => {
+        return resetPasswordReq(password);
     };
 
     return (
@@ -102,39 +108,13 @@ export default function Account() {
                 <Grid item sm={12} xs={12}>
                     <Box display="flex" alignItems="center" className={classes.pageTitleHolder}>
                         <Typography variant="h5" className={classes.pageTitle}>
-                            Mon Compte
+                            Réinitialisation du mot de passe Stargate
                         </Typography>
                     </Box>
-                </Grid>
-                <Grid item xs={3} sm={3} className={classes.subtitleContainer}>
-                    <Typography variant="subtitle2" gutterBottom>
-                        Changement de mot de passe:
-                    </Typography>
                 </Grid>
                 <form onSubmit={handleSubmit(onSubmit)} className={classes.formPassword}>
                     <Grid container spacing={2}>
                         <Grid item md={6} sm={6} xs={12}>
-                            <Controller
-                                as={
-                                    <TextField
-                                        label="Mot de passe actuel"
-                                        inputProps={{
-                                            'data-testid': 'form-old-password',
-                                            type: 'password'
-                                        }}
-                                        error={Object.prototype.hasOwnProperty.call(
-                                            errors,
-                                            'currentPassword'
-                                        )}
-                                        helperText={errors.password && errors.password.message}
-                                        fullWidth
-                                    />
-                                }
-                                rules={{ minLength: 8, required: true }}
-                                control={control}
-                                name="currentPassword"
-                                defaultValue=""
-                            />
                             <Controller
                                 as={
                                     <TextField
@@ -195,15 +175,22 @@ export default function Account() {
                             )}
                         </Grid>
                     </Grid>
-                    <Button
+                    <RoundButton
                         type="submit"
                         variant="contained"
                         color="primary"
                         className={classes.submitButton}>
                         Envoyer
-                    </Button>
+                    </RoundButton>
                 </form>
             </Grid>
         </>
     );
-}
+};
+
+ResetPassForm.propTypes = {
+    resetPass: PropTypes.objectOf(PropTypes.string),
+    setResetPass: PropTypes.func.isRequired
+};
+
+export default ResetPassForm;

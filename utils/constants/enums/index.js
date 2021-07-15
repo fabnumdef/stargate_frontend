@@ -1,3 +1,5 @@
+import { MINDEF_CONNECT_REDIRECT_PAGE, RESET_PASS_PAGE } from '../appUrls';
+
 export const REQUEST_OBJECT = {
     PRIVATE: 'PRIVATE',
     PROFESSIONAL: 'PROFESSIONAL'
@@ -34,6 +36,8 @@ export const VISITOR_STATUS = {
     CREATED: 'En cours',
     CANCELED: 'Annulé'
 };
+
+export const UNAUTH_PERMISSIONS = [MINDEF_CONNECT_REDIRECT_PAGE, RESET_PASS_PAGE];
 
 export const ROLES = {
     ROLE_SUPERADMIN: {
