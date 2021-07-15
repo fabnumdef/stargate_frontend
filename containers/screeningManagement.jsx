@@ -170,12 +170,18 @@ function ScreeningManagement() {
     };
 
     const csvData = useMemo(() => {
-        if (!data) return [];
-        return data.getCampus.progress.list.map((visitor) => [
-            visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
-            visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
-            convertCSVDate(visitor.birthday.trim())
-        ]);
+        const csv = [['Nom de N.', 'Prénom', 'Date de N.', 'Lieu de N.', 'Nationalité']];
+        if (!data) return csv;
+        data.getCampus.progress.list.map((visitor) =>
+            csv.push([
+                visitor.birthLastname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+                visitor.firstname.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+                convertCSVDate(visitor.birthday.trim()),
+                visitor.birthplace.replace(CSV_REGEX, formatCsvData).trim().toUpperCase(),
+                visitor.nationality.replace(CSV_REGEX, formatCsvData).trim().toUpperCase()
+            ])
+        );
+        return csv;
     }, [data]);
 
     const handleSelectAll = useCallback(
