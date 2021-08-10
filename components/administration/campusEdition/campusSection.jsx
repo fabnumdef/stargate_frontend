@@ -70,7 +70,7 @@ function CampusSection({ campusData, usersTotalByRole }) {
                 </Grid>
             </Grid>
             <Grid container justify="space-between" className={classes.validators}>
-                <Grid>
+                <Grid container sm={9} md={10} lg={11}>
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                         Configurations validateurs
                     </Typography>
@@ -92,7 +92,7 @@ function CampusSection({ campusData, usersTotalByRole }) {
                         ))}
                     </Grid>
                 </Grid>
-                <Grid>
+                <Grid container sm={3} md={2} lg={1} alignItems="center">
                     <RoundButton
                         onClick={() => router.push(ADMIN_CAMPUS_ROLE_EDITION(campusData.id))}
                         variant="outlined"
