@@ -71,12 +71,12 @@ function mapCreateRow({
     units,
     request
 }) {
+    const fromDate = format(new Date(request.from), 'dd/MM/yyyy');
+    const toDate = format(new Date(request.to), 'dd/MM/yyyy');
     return {
         request: {
             id: request.id,
-            period: `${format(new Date(request.from), 'dd/MM/yyyy')}
-          au
-          ${format(new Date(request.to), 'dd/MM/yyyy')}`,
+            period: `${fromDate === toDate ? fromDate : `${fromDate} au ${toDate}`}`,
             owner: request.owner
                 ? `
           ${request.owner.rank || ''} 
