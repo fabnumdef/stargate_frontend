@@ -5,16 +5,14 @@ import React, { createContext, useCallback, useContext, useEffect } from 'react'
 import { useRouter } from 'next/router';
 
 import { tokenDuration } from '../utils';
-import { ROLES, STATE_REQUEST } from '../utils/constants/enums';
+import { ROLES, STATE_REQUEST, UNAUTH_PERMISSIONS } from '../utils/constants/enums';
 import { activeRoleCacheVar, campusIdVar, isLoggedInVar } from './apollo/cache';
 import { GET_ME, INIT_CACHE, IS_LOGGED_IN } from './apollo/queries';
 import { useSnackBar } from './hooks/snackbar';
-import MdConnect from '../pages/md-connect';
-import { MINDEF_CONNECT_REDIRECT_PAGE } from '../utils/constants/appUrls';
 
 export const LOGIN = gql`
-    mutation login($email: EmailAddress!, $password: String, $token: String) {
-        login(email: $email, password: $password, token: $token) {
+    mutation login($email: EmailAddress!, $password: String!) {
+        login(email: $email, password: $password) {
             jwt
         }
     }
@@ -202,12 +200,11 @@ export function LoginContextProvider({ children }) {
      * Login method to signIn
      * @param email
      * @param password
-     * @param resetToken
      */
-    const signIn = (email, password, resetToken = null) => {
+    const signIn = (email, password) => {
         return new Promise((resolve, reject) => {
             try {
-                login({ variables: { email, password, token: resetToken } });
+                login({ variables: { email, password } });
             } catch {
                 reject();
             }
@@ -221,13 +218,7 @@ export function LoginContextProvider({ children }) {
     }, [isLoggedIn]);
 
     const selectLandingComponent = () => {
-        if (isLoggedIn && router.pathname !== MINDEF_CONNECT_REDIRECT_PAGE) {
-            return children;
-        }
-        if (router.pathname === MINDEF_CONNECT_REDIRECT_PAGE) {
-            return <MdConnect />;
-        }
-        return <Login />;
+        return isLoggedIn || UNAUTH_PERMISSIONS.includes(router.pathname) ? children : <Login />;
     };
 
     return (

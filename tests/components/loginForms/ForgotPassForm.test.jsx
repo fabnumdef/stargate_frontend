@@ -1,12 +1,12 @@
 import userEvent from '@testing-library/user-event';
 
-import ForgotPassForm, { RESET_PASSWORD } from '../../../components/login/ForgotPassForm';
+import ForgotPassForm, { SEND_RESET_PASSWORD } from '../../../components/login/ForgotPassForm';
 import { render, screen, waitFor } from '../../../utils/tests/renderApollo';
 
 const mocks = [
     {
         request: {
-            query: RESET_PASSWORD,
+            query: SEND_RESET_PASSWORD,
             variables: {
                 email: 'IAmAnEmail@mail.fr'
             }

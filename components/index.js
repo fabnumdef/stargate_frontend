@@ -33,3 +33,4 @@ export { default as TabRequestVisitorsTreated } from './tabs/detailsRequest/tabR
 export { default as LoginForm } from './login/LoginForm';
 export { default as ForgotPassForm } from './login/ForgotPassForm';
 export { default as OpenIdForm } from './login/openIdForm';
+export { default as ResetPassForm } from './login/resetPassForm';

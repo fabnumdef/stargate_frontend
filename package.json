@@ -108,5 +108,6 @@
             "npm run format",
             "npm run test:staged"
         ]
-    }
+    },
+    "version": "0.0.1"
 }

@@ -222,7 +222,7 @@ export default function InfosImport({ formData, setForm, handleNext, handleBack 
                         Importer
                         <input
                             type="file"
-                            accept=".csv"
+                            accept=".xlsx"
                             onChange={(event) => {
                                 handleChange(event || null);
                             }}

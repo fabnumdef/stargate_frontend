@@ -2,7 +2,7 @@ import { InMemoryCache } from '@apollo/client/core';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 
-import { RESET_PASSWORD } from '../../../components/login/ForgotPassForm';
+import { SEND_RESET_PASSWORD } from '../../../components/login/ForgotPassForm';
 import { activeRoleCacheVar, isLoggedInVar, typePolicies } from '../../../lib/apollo/cache';
 import { INIT_CACHE } from '../../../lib/apollo/queries';
 import { LOGIN, LoginContextProvider } from '../../../lib/loginContext';
@@ -28,8 +28,7 @@ const mocks = [
             query: LOGIN,
             variables: {
                 email: 'IAmAnEmail',
-                password: 'IAmAPassword',
-                token: null
+                password: 'IAmAPassword'
             }
         },
         result: jest.fn(() => ({
@@ -81,7 +80,7 @@ const mocks = [
     },
     {
         request: {
-            query: RESET_PASSWORD,
+            query: SEND_RESET_PASSWORD,
             variables: {
                 email: 'IAmAnEmail@mail.fr'
             }
