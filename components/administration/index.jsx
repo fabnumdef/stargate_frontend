@@ -7,10 +7,6 @@ import PageTitle from '../styled/common/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 import SearchField from '../styled/common/SearchField';
-import { GET_ME } from '../../lib/apollo/queries';
-import { isAdmin, isSuperAdmin } from '../../utils/permissions';
-import { GET_USERS_LIST } from '../../containers/administration/userAdministration';
-import { useLogin } from '../../lib/loginContext';
 
 const DELETE_USER = gql`
     mutation deleteUser($id: ObjectID!) {
@@ -32,66 +28,17 @@ function IndexAdministration({
     subtitles
 }) {
     const { addAlert } = useSnackBar();
-    const { activeRole } = useLogin();
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const [deleteItemReq] = useMutation(DELETE_USER, {
-        update: (cache, { data }) => {
-            const deletedUser = data.deleteUser;
-            const { me } = cache.readQuery({ query: GET_ME });
-            const selectedRole = me.roles.find((role) => role.role === activeRole.role);
-            const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : null;
-            console.log(campus);
-            const currentUsers = cache.readQuery({
-                query: GET_USERS_LIST,
-                variables: {
-                    campus,
-                    cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-                    search: '',
-                    hasRole:
-                        isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
-                            ? {}
-                            : { unit: activeRole.unit }
-                }
-            });
-            const newList = currentUsers.listUsers.list.filter(
-                (user) => user.id !== deletedUser.id
-            );
-            const updatedTotal = currentUsers.listUsers.meta.total - 1;
-            const updatedUsers = {
-                ...currentUsers,
-                listUsers: {
-                    ...currentUsers.listUsers,
-                    ...(updatedTotal < 10 && { list: newList }),
-                    meta: {
-                        ...currentUsers.listUsers.meta,
-                        total: updatedTotal
-                    }
-                }
-            };
-            console.log(updatedUsers);
-            cache.writeQuery({
-                query: GET_USERS_LIST,
-                variables: {
-                    campus,
-                    cursor: { first: 10, offset: 0 },
-                    search: '',
-                    hasRole:
-                        isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
-                            ? {}
-                            : { unit: activeRole.unit }
-                },
-                data: updatedUsers
-            });
-        }
-    });
+    const [deleteItemReq] = useMutation(DELETE_USER);
 
     const handleChangePage = (event, selectedPage) => {
         setPage(selectedPage);
         fetchMore({
             variables: {
+                campus: '',
                 cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage }
             }
         }).then((res) => {
@@ -105,6 +52,7 @@ function IndexAdministration({
         setPage(0);
         fetchMore({
             variables: {
+                campus: '',
                 cursor: { first: rows, offset: 0 }
             }
         }).then((res) => {
@@ -126,6 +74,10 @@ function IndexAdministration({
                 setPage(page - 1);
                 refetch({
                     cursor: { first: rowsPerPage, offset: (page - 1) * rowsPerPage }
+                });
+            } else {
+                refetch({
+                    cursor: { first: rowsPerPage, offset: page * rowsPerPage }
                 });
             }
         } catch (e) {

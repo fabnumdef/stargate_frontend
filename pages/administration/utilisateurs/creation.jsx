@@ -57,14 +57,13 @@ function CreateUser() {
     const { data: userData } = useQuery(GET_ME);
     const { activeRole } = useLogin();
     const [createUser] = useMutation(CREATE_USER, {
-        update: (cache, { data: { createUser: createdUser } }) => {
+        update: async (cache, { data: { createUser: createdUser } }) => {
             const selectedRole = userData.me.roles.find((role) => role.role === activeRole.role);
-            const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : null;
-            const currentUsers = cache.readQuery({
+            const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : '';
+            const currentUsers = await cache.readQuery({
                 query: GET_USERS_LIST,
                 variables: {
                     campus,
-                    cursor: { first: 10, offset: 0 },
                     search: '',
                     hasRole:
                         isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
@@ -89,11 +88,10 @@ function CreateUser() {
                     }
                 }
             };
-            cache.writeQuery({
+            await cache.writeQuery({
                 query: GET_USERS_LIST,
                 variables: {
                     campus,
-                    cursor: { first: 10, offset: 0 },
                     search: '',
                     hasRole:
                         isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)

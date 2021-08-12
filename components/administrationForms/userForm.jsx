@@ -359,20 +359,19 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
                                                 }
                                                 labelWidth={labelWidth}>
                                                 {dataUnits &&
-                                                userRole.role !==
-                                                    ROLES.ROLE_UNIT_CORRESPONDENT.role ? (
-                                                    dataUnits.getCampus.listUnits.list.map(
-                                                        (unit) => (
-                                                            <MenuItem key={unit.id} value={unit}>
-                                                                {unit.label}
-                                                            </MenuItem>
-                                                        )
-                                                    )
-                                                ) : (
-                                                    <MenuItem value={defaultValues.unit}>
-                                                        {defaultValues.unit.label}
-                                                    </MenuItem>
-                                                )}
+                                                userRole.role !== ROLES.ROLE_UNIT_CORRESPONDENT.role
+                                                    ? dataUnits.getCampus.listUnits.list.map(
+                                                          (unit) => (
+                                                              <MenuItem key={unit.id} value={unit}>
+                                                                  {unit.label}
+                                                              </MenuItem>
+                                                          )
+                                                      )
+                                                    : defaultValues.unit && (
+                                                          <MenuItem value={defaultValues.unit}>
+                                                              {defaultValues.unit.label}
+                                                          </MenuItem>
+                                                      )}
                                             </Select>
                                         }
                                         control={control}
