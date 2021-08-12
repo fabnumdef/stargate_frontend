@@ -65,14 +65,10 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
         [status]
     );
 
-    const rows = useMemo(
-        () =>
-            list.reduce((acc, dem) => {
-                acc.push(createData(dem));
-                return acc;
-            }, []),
-        [list]
-    );
+    const rows = list.reduce((acc, dem) => {
+        acc.push(createData(dem));
+        return acc;
+    }, []);
 
     return (
         <TableContainer height={57}>

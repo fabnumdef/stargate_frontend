@@ -27,8 +27,10 @@ export const ACCEPTED_STATUS = 'POSITIVE';
 export const PROGRESS_STEP_STATUS = 'IN_PROGRESS';
 
 export function checkScreenedVisitor(units) {
-    const isScreeningDone = units.find((u) =>
-        u.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role && step.state.value)
+    const isScreeningDone = units.find(
+        (u) =>
+            u.steps &&
+            u.steps.find((step) => step.role === ROLES.ROLE_SCREENING.role && step.state.value)
     );
     return isScreeningDone
         ? isScreeningDone.steps.find((s) => s.role === ROLES.ROLE_SCREENING.role).state.value

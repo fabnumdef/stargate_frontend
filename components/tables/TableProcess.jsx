@@ -39,14 +39,10 @@ const useStyles = makeStyles({
 export default function TabProcess({ units }) {
     const classes = useStyles();
 
-    const rows = React.useMemo(
-        () =>
-            units?.reduce((acc, dem) => {
-                acc.push(createData(dem));
-                return acc;
-            }, []),
-        [units]
-    );
+    const rows = units?.reduce((acc, dem) => {
+        acc.push(createData(dem));
+        return acc;
+    }, []);
 
     return (
         <TableContainer height={36}>

@@ -172,14 +172,10 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
     const [toViewVisitor, setToViewVisitor] = useState(null);
 
     const classes = useStyles();
-    const rows = useMemo(
-        () =>
-            requests.reduce((acc, dem) => {
-                acc.push(mapCreateRow(dem));
-                return acc;
-            }, []),
-        [requests]
-    );
+    const rows = requests.reduce((acc, dem) => {
+        acc.push(mapCreateRow(dem));
+        return acc;
+    }, []);
 
     const choices = useMemo(() => choicesArray(activeRoleCacheVar().role, treated), [
         activeRoleCacheVar()
@@ -205,7 +201,9 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
 
                 {rows.map((row) => (
                     <TableBody
-                        key={`${treated ? 'treated' : ''}_${row.request.id}_${row.visitor.id}`}>
+                        key={`${treated ? 'treated' : 'notTreated'}_${row.request.id}_${
+                            row.visitor.id
+                        }`}>
                         <RowTreatment
                             choices={choices}
                             row={row}

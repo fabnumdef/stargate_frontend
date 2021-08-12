@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState, Fragment } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -120,14 +120,10 @@ const TableScreening = ({ requests, treated, selectAll }) => {
     const open = Boolean(anchorEl);
 
     const classes = useStyles();
-    const rows = useMemo(
-        () =>
-            requests.reduce((acc, dem) => {
-                acc.push(createData(dem));
-                return acc;
-            }, []),
-        [requests]
-    );
+    const rows = requests.reduce((acc, dem) => {
+        acc.push(createData(dem));
+        return acc;
+    }, []);
 
     return (
         <TableContainer height={!treated ? 81 : 57}>
@@ -136,10 +132,8 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                     <TableRow>
                         {columns.map((column) =>
                             !treated && column.id === 'action' ? (
-                                <>
-                                    <CustomTableCellHeader
-                                        key={`${treated ? 'treated' : ''}_${column.id}`}
-                                        align={column.align}>
+                                <Fragment key={`${treated ? 'treated' : ''}_${column.id}`}>
+                                    <CustomTableCellHeader align={column.align}>
                                         {column.label || ''}
                                         <IconButton
                                             aria-label="options"
@@ -175,7 +169,7 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                                             </MenuItem>
                                         ))}
                                     </Menu>
-                                </>
+                                </Fragment>
                             ) : (
                                 <CustomTableCellHeader
                                     key={`${treated ? 'treated' : ''}_${column.id}`}

@@ -7,7 +7,7 @@ import { GET_REQUEST, LIST_MY_REQUESTS } from '../apollo/queries';
 import { LIST_MY_REQUESTS as FRAGMENT_LIST_MY_REQUESTS } from '../apollo/fragments';
 import { useSnackBar } from './snackbar';
 
-import { STATE_REQUEST, VISITOR_STATUS } from '../../utils/constants/enums';
+import { STATE_REQUEST } from '../../utils/constants/enums';
 
 export default function useRequest() {
     const { addAlert } = useSnackBar();
@@ -48,16 +48,6 @@ export default function useRequest() {
     const deleteRequest = useCallback((id) => {
         cancelRequest({
             variables: { requestId: id, transition: 'CANCEL' },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                mutateCampus: {
-                    __typename: 'CampusMutation',
-                    shiftRequest: {
-                        __typename: 'Request ',
-                        id
-                    }
-                }
-            },
             update: (cache) => {
                 const campus = cache.readFragment({
                     id: `Campus:${campusIdVar()}`,
@@ -98,20 +88,6 @@ export default function useRequest() {
     const deleteRequestVisitor = useCallback((requestId, visitorId) => {
         cancelVisitor({
             variables: { requestId, visitorId },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                mutateCampus: {
-                    __typename: 'CampusMutation',
-                    mutateRequest: {
-                        __typename: 'Request',
-                        cancelVisitor: {
-                            __typename: 'RequestVisitor',
-                            id: visitorId,
-                            status: VISITOR_STATUS.CANCELED
-                        }
-                    }
-                }
-            },
             refetchQueries: [
                 {
                     query: GET_REQUEST,

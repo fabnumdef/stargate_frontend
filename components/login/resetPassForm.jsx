@@ -81,7 +81,6 @@ const ResetPassForm = ({ resetPass, setResetPass }) => {
             });
             return router.push('/');
         } catch (e) {
-            console.log({ e });
             switch (e.message) {
                 case 'Expired link':
                     addAlert({

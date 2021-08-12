@@ -64,14 +64,10 @@ export default function TabMyRequestToTreat({ request, onDelete }) {
 
     const [toDeleteID, setToDeleteID] = useState();
 
-    const rows = React.useMemo(
-        () =>
-            request.reduce((acc, dem) => {
-                acc.push(createData(dem));
-                return acc;
-            }, []),
-        [request]
-    );
+    const rows = request.reduce((acc, dem) => {
+        acc.push(createData(dem));
+        return acc;
+    }, []);
 
     return (
         <TableContainer height={55}>
@@ -110,7 +106,5 @@ export default function TabMyRequestToTreat({ request, onDelete }) {
 
 TabMyRequestToTreat.propTypes = {
     request: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    load: PropTypes.bool.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onLoadMore: PropTypes.func.isRequired
+    onDelete: PropTypes.func.isRequired
 };

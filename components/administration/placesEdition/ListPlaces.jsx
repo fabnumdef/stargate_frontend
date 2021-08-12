@@ -64,17 +64,6 @@ export default function ListPlaces({ campusId }) {
                 campusId,
                 id: editId,
                 place: { label: editValue }
-            },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                mutateCampus: {
-                    __typename: 'CampusMutation',
-                    editPlace: {
-                        __typename: 'Place',
-                        id: editId,
-                        label: editValue
-                    }
-                }
             }
         });
     };
@@ -84,16 +73,6 @@ export default function ListPlaces({ campusId }) {
             variables: {
                 campusId,
                 id: delId
-            },
-            optimisticResponse: {
-                __typename: 'Mutation',
-                mutateCampus: {
-                    __typename: 'CampusMutation',
-                    deletePlace: {
-                        __typename: 'Place',
-                        delId
-                    }
-                }
             },
             update: (cache, { data: { mutateCampus: deletePlace } }) => {
                 const campus = cache.readFragment({

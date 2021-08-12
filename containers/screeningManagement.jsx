@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useQuery } from '@apollo/client';
 
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -108,10 +108,15 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
+const UP_FIRST = 10;
+const MAX_FIRST = 50;
+
+const mapRequestsToTreat = (requestsToTreat) => requestsToTreat?.getCampus?.progress?.list ?? [];
+const mapRequestsTreated = (requestsTreated) => requestsTreated?.getCampus?.treated?.list ?? [];
+
 function ScreeningManagement() {
     const classes = useStyles();
-    const UP_FIRST = 10;
-    const MAX_FIRST = 50;
+
     const { decisions, addDecision, resetDecision, submitDecisionNumber } = useDecisions();
     const { shiftVisitors } = useVisitors();
     // submit values
@@ -119,30 +124,17 @@ function ScreeningManagement() {
     const [first, setFirst] = useState(10);
     /** loading management */
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [search, setSearch] = React.useState('');
+    const [search, setSearch] = useState('');
 
-    const [fetchData, { data, networkStatus, fetchMore, refetch }] = useLazyQuery(
-        LIST_TREATMENTS_SCREENING,
-        {
-            notifyOnNetworkStatusChange: true
+    const { data, fetchMore, refetch } = useQuery(LIST_TREATMENTS_SCREENING, {
+        variables: {
+            cursor: {
+                first,
+                offset: 0
+            },
+            search
         }
-    );
-
-    useEffect(() => {
-        fetchData({
-            variables: {
-                cursor: {
-                    first,
-                    offset: 0
-                }
-            }
-        });
-    }, []);
-
-    const mapRequestsToTreat = (requestsToTreat) =>
-        requestsToTreat?.getCampus?.progress?.list ?? [];
-    const mapRequestsTreated = (requestsTreated) => requestsTreated?.getCampus?.treated?.list ?? [];
-
+    });
     // check if buttons fetchmore have to be displayed
     const hasMoreToTreat = () =>
         mapRequestsToTreat(data).length < data.getCampus.progress.meta.total &&
@@ -156,16 +148,6 @@ function ScreeningManagement() {
     };
 
     const handleSearchChange = (event) => {
-        event.preventDefault();
-        fetchData({
-            variables: {
-                cursor: {
-                    first,
-                    offset: 0
-                },
-                search: event.target.value !== '' ? event.target.value : ''
-            }
-        });
         setSearch(event.target.value);
     };
 
@@ -220,7 +202,7 @@ function ScreeningManagement() {
         refetch();
     };
 
-    if (!data || networkStatus === 1) return '';
+    if (!data) return '';
 
     return (
         <div className={classes.root}>

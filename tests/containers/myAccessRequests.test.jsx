@@ -141,17 +141,23 @@ describe('Container: MyAccessRequests', () => {
 
         render(<MyAccessRequests />, { mocks, cache, resolvers: {}, addTypename: false });
 
+        let deleteButton;
+
         await waitFor(() => {
-            userEvent.click(screen.getByLabelText(/delete/i));
+            deleteButton = screen.getByLabelText(/delete/i);
         });
+
+        userEvent.click(deleteButton);
+
+        userEvent.click(
+            screen.getByRole('button', {
+                name: /supprimer/i
+            })
+        );
+
         await waitFor(() => {
-            userEvent.click(
-                screen.getByRole('button', {
-                    name: /supprimer/i
-                })
-            );
+            expect(mockMutation).toHaveBeenCalled();
         });
-        expect(mockMutation).toHaveBeenCalled();
     });
 
     it('change of table', async () => {

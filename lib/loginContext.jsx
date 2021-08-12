@@ -176,6 +176,9 @@ export function LoginContextProvider({ children }) {
     const setUserConnection = async (token) => {
         setToken(token);
         await getUserData();
+        await client.refetchQueries({
+            include: 'active'
+        });
     };
 
     const [login, { error, loading }] = useMutation(LOGIN, {
