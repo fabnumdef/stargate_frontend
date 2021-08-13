@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 // Material Import
 import { makeStyles } from '@material-ui/core/styles';
@@ -121,7 +121,7 @@ function MyTreatments() {
     const { visitors, exportVisitors, visitorsNumber } = useExport();
     const { shiftVisitors } = useVisitors();
 
-    React.useEffect(() => {
+    useEffect(() => {
         router.replace(router.pathname, '/mes-traitements', { shallow: true });
     }, []);
 
@@ -138,7 +138,7 @@ function MyTreatments() {
     const [first, setFirst] = useState(10);
     const [firstExport, setFirstExport] = useState(10);
 
-    const { data, loading, error, fetchMore } = useQuery(LIST_TREATMENTS, {
+    const { client, data, loading, error, fetchMore } = useQuery(LIST_TREATMENTS, {
         variables: {
             cursor: {
                 first,
@@ -147,21 +147,48 @@ function MyTreatments() {
         }
     });
 
-    const {
-        data: exportData,
-        loading: exportLoading,
-        refetch: exportRefetch,
-        fetchMore: exportFetchMore
-    } = useQuery(LIST_EXPORTS, {
-        variables: {
-            cursor: {
-                first: firstExport,
-                offset: 0
+    useEffect(() => {
+        if (!data) return;
+        // prefetch data
+        client.query({
+            query: LIST_TREATMENTS,
+            variables: {
+                cursor: {
+                    first: first + 10,
+                    offset: 0
+                }
+            }
+        });
+    }, [data]);
+
+    const { data: exportData, loading: exportLoading, fetchMore: exportFetchMore } = useQuery(
+        LIST_EXPORTS,
+        {
+            variables: {
+                cursor: {
+                    first: firstExport,
+                    offset: 0
+                },
+                filters: { exportDate: null }
             },
-            filters: { exportDate: null }
-        },
-        skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
-    });
+            skip: activeRoleCacheVar().role !== ROLES.ROLE_ACCESS_OFFICE.role
+        }
+    );
+
+    useEffect(() => {
+        if (!exportData) return;
+        // prefetch data
+        client.query({
+            query: LIST_EXPORTS,
+            variables: {
+                cursor: {
+                    first: firstExport + 10,
+                    offset: 0
+                },
+                filters: { exportDate: null }
+            }
+        });
+    }, [exportData]);
 
     // check if buttons fetchmore have to be displayed
     const hasMoreToTreat = () =>
@@ -201,7 +228,6 @@ function MyTreatments() {
 
     const handleExportMany = () => {
         exportVisitors(exportData.getCampus.export.list.map((visitor) => visitor.id));
-        exportRefetch();
     };
 
     const handleExportSelected = () => {
@@ -221,6 +247,21 @@ function MyTreatments() {
         });
         setIsLoadingMore(false);
         setFirst(first + UP_FIRST);
+    };
+
+    const handleFecthMoreExport = async () => {
+        setIsLoadingMore(true);
+        await exportFetchMore({
+            variables: {
+                cursor: {
+                    first: firstExport + UP_FIRST,
+                    offset: 0
+                },
+                campusId: campusIdVar()
+            }
+        });
+        setIsLoadingMore(false);
+        setFirstExport(firstExport + UP_FIRST);
     };
 
     if (loading || exportLoading || !data) return <LoadingCircle />;
@@ -348,21 +389,7 @@ function MyTreatments() {
                                                     <RoundButton
                                                         variant="contained"
                                                         color="primary"
-                                                        onClick={async () => {
-                                                            setIsLoadingMore(true);
-                                                            await exportFetchMore({
-                                                                variables: {
-                                                                    cursor: {
-                                                                        first:
-                                                                            firstExport + UP_FIRST,
-                                                                        offset: 0
-                                                                    },
-                                                                    campusId: campusIdVar()
-                                                                }
-                                                            });
-                                                            setIsLoadingMore(false);
-                                                            setFirstExport(firstExport + UP_FIRST);
-                                                        }}>
+                                                        onClick={handleFecthMoreExport}>
                                                         Voir plus d&apos;export
                                                     </RoundButton>
                                                 ))}
