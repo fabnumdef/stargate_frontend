@@ -31,7 +31,7 @@ describe('Container: LoginForm', () => {
     });
 
     it('validate empty user inputs, and provides error messages', async () => {
-        userEvent.type(screen.getByRole('textbox', { name: /Email/i }), '');
+        userEvent.type(screen.getByRole('textbox', { name: /email/i }), '');
         userEvent.type(screen.getByLabelText('Mot de passe'), '');
         await waitFor(() =>
             userEvent.click(

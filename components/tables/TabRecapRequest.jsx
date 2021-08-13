@@ -12,10 +12,10 @@ import CustomTableCellHeader from './cells/TableCellHeader';
 
 import { EMPLOYEE_TYPE } from '../../utils/constants/enums';
 import TableContainer from './styled/TableContainer';
-import SquareButton from '../styled/common/squareButton';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import DeleteModal from '../styled/common/DeleteDialogs';
+import { IconButton } from '@material-ui/core';
 
 const createColumns = (visitors) => [
     {
@@ -55,7 +55,8 @@ const useStyles = makeStyles((theme) => ({
     row: {
         '& td:last-child': {
             display: 'flex',
-            justifyContent: 'flex-end'
+            justifyContent: 'flex-end',
+            alignItems: 'center'
         }
     },
     icon: {
@@ -119,18 +120,18 @@ export default function TabRecapRequest({ visitors, onDelete, handleBack, setSel
                                 <TableCell>{row.unite}</TableCell>
                                 <TableCell>{row.type}</TableCell>
                                 <TableCell>
-                                    <SquareButton
+                                    <IconButton
                                         aria-label="details"
                                         onClick={() => handleUpdate(index)}
                                         classes={{ root: classes.icon }}>
                                         <DescriptionOutlinedIcon />
-                                    </SquareButton>
-                                    <SquareButton
+                                    </IconButton>
+                                    <IconButton
                                         aria-label="delete"
                                         onClick={() => setToDeleteID(row)}
                                         classes={{ root: classes.icon }}>
                                         <DeleteOutlineIcon />
-                                    </SquareButton>
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

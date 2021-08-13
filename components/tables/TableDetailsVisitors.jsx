@@ -1,13 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Table from '@material-ui/core/Table';
-import TableContainer from '@material-ui/core/TableContainer';
 
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+
+import TableContainer from './styled/TableContainer';
 
 import CustomTableCellHeader from './cells/TableCellHeader';
 import RowRequestsVisitors from './rows/RowRequestsVisitors';
@@ -21,9 +22,9 @@ const columns = [
     },
     {
         id: 'company',
-        label: 'Unité / Société'
+        label: 'Unité/Société'
     },
-    { id: 'type', label: 'Type de visiteurs' },
+    { id: 'type', label: 'Type visiteur' },
     {
         id: 'status',
         label: 'Statut'
@@ -51,7 +52,21 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
 
     const [toDeleteID, setToDeleteID] = useState();
 
-    /** Suppress action depends on status */
+    const [matches, setMatches] = useState(() => window.innerWidth < 1037);
+
+    useEffect(() => {
+        function handleResize() {
+            if (window.innerWidth < 1037) {
+                setMatches(true);
+                return;
+            }
+            setMatches(false);
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const columnStatus = useMemo(
         () =>
             status === STATE_REQUEST.STATE_CREATED.state
@@ -71,7 +86,7 @@ export default function TabDetailVisitors({ list, status, onDelete }) {
     }, []);
 
     return (
-        <TableContainer height={57}>
+        <TableContainer height={matches ? 80 : 57}>
             <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>

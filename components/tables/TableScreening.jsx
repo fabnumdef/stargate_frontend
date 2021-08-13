@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useState, Fragment } from 'react';
+import { memo, useState, Fragment, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -119,14 +119,34 @@ const TableScreening = ({ requests, treated, selectAll }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
+    const [matches, setMatches] = useState(() => window.innerWidth < (!treated ? 1292 : 1260));
+
     const classes = useStyles();
     const rows = requests.reduce((acc, dem) => {
         acc.push(createData(dem));
         return acc;
     }, []);
 
+    useEffect(() => {
+        function handleResize() {
+            if (window.innerWidth < (!treated ? 1292 : 1260)) {
+                setMatches(true);
+                return;
+            }
+            setMatches(false);
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const height = () => {
+        if (matches) return !treated ? 104 : 80;
+        return !treated ? 81 : 57;
+    };
+
     return (
-        <TableContainer height={!treated ? 81 : 57}>
+        <TableContainer height={height()}>
             <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -180,8 +200,8 @@ const TableScreening = ({ requests, treated, selectAll }) => {
                         )}
                     </TableRow>
                 </TableHead>
-                {rows.map((row) => (
-                    <TableBody key={`${treated ? 'treated' : ''}_${row.id}`}>
+                {rows.map((row, index) => (
+                    <TableBody key={`${treated ? 'treated' : ''}_${row.id}_${index}`}>
                         <RowScreeningTreatments
                             choices={choices}
                             row={row}

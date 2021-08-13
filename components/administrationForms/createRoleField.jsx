@@ -7,10 +7,9 @@ import { checkMailFormat, createUserData } from '../../utils/mappers/createUserF
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import WarningIcon from '@material-ui/icons/Warning';
-import { Typography } from '@material-ui/core';
+import { IconButton, Typography } from '@material-ui/core';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import SquareButton from '../styled/common/squareButton';
 import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { ADD_USER_ROLE, CREATE_USER, DELETE_ROLE } from '../../lib/apollo/mutations';
@@ -309,7 +308,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, canDelete, children 
                                                 </Grid>
                                                 {canDelete && (
                                                     <Grid item>
-                                                        <SquareButton
+                                                        <IconButton
                                                             aria-label="deleteUser"
                                                             onClick={() =>
                                                                 handleDeleteUser(user.id)
@@ -318,7 +317,7 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, canDelete, children 
                                                             <PersonAddDisabledIcon
                                                                 classes={{ root: classes.iconSvg }}
                                                             />
-                                                        </SquareButton>
+                                                        </IconButton>
                                                     </Grid>
                                                 )}
                                             </Grid>

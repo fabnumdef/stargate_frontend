@@ -138,7 +138,7 @@ function MyTreatments() {
     const [first, setFirst] = useState(10);
     const [firstExport, setFirstExport] = useState(10);
 
-    const { data, loading, error, fetchMore, refetch } = useQuery(LIST_TREATMENTS, {
+    const { data, loading, error, fetchMore } = useQuery(LIST_TREATMENTS, {
         variables: {
             cursor: {
                 first,
@@ -197,7 +197,6 @@ function MyTreatments() {
         );
         shiftVisitors(visitors);
         resetDecision();
-        refetch();
     };
 
     const handleExportMany = () => {
