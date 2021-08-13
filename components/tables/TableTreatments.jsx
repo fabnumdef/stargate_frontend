@@ -199,11 +199,8 @@ const TableTreatmentsToTreat = ({ requests, treated, exported }) => {
                     </TableRow>
                 </TableHead>
 
-                {rows.map((row) => (
-                    <TableBody
-                        key={`${treated ? 'treated' : 'notTreated'}_${row.request.id}_${
-                            row.visitor.id
-                        }`}>
+                {rows.map((row, index) => (
+                    <TableBody key={`${treated ? 'treated' : ''}_${row.request.id}_${index}`}>
                         <RowTreatment
                             choices={choices}
                             row={row}

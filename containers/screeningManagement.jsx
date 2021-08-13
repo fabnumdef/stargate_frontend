@@ -126,7 +126,7 @@ function ScreeningManagement() {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [search, setSearch] = useState('');
 
-    const { data, fetchMore, refetch } = useQuery(LIST_TREATMENTS_SCREENING, {
+    const { data, fetchMore } = useQuery(LIST_TREATMENTS_SCREENING, {
         variables: {
             cursor: {
                 first,
@@ -199,7 +199,6 @@ function ScreeningManagement() {
         );
         shiftVisitors(visitors);
         resetDecision();
-        refetch();
     };
 
     if (!data) return '';
