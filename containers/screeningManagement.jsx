@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 
 // Material Import
@@ -126,7 +126,7 @@ function ScreeningManagement() {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [search, setSearch] = useState('');
 
-    const { data, fetchMore } = useQuery(LIST_TREATMENTS_SCREENING, {
+    const { client, data, fetchMore } = useQuery(LIST_TREATMENTS_SCREENING, {
         variables: {
             cursor: {
                 first,
@@ -135,6 +135,22 @@ function ScreeningManagement() {
             search
         }
     });
+
+    useEffect(() => {
+        if (!data) return;
+        // prefect Data
+        client.query({
+            query: LIST_TREATMENTS_SCREENING,
+            variables: {
+                cursor: {
+                    first: first + 10,
+                    offset: 0
+                },
+                search
+            }
+        });
+    }, [data]);
+
     // check if buttons fetchmore have to be displayed
     const hasMoreToTreat = () =>
         mapRequestsToTreat(data).length < data.getCampus.progress.meta.total &&
