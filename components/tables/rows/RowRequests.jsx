@@ -7,10 +7,10 @@ import TableCell from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import SquareButton from '../../styled/common/squareButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import SeeMoreOrLess from '../../styled/common/SeeMoreOrLess';
 import { STATE_REQUEST } from '../../../utils/constants/enums';
+import { IconButton } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     cells: {
@@ -18,8 +18,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'inherit',
         fontWeight: 'inherit',
         '&:last-child': {
-            display: 'flex',
-            justifyContent: 'flex-end'
+            textAlign: 'right'
         }
     },
     icon: {
@@ -43,19 +42,19 @@ function RowTreatments({ columns, row, onDelete }) {
                     case 'action':
                         return (
                             <TableCell className={classes.cells} key={`${row.id} action`}>
-                                <SquareButton
+                                <IconButton
                                     aria-label="details"
                                     onClick={() => router.push(`/demandes/${row.id}`)}
                                     classes={{ root: classes.icon }}>
                                     <DescriptionOutlinedIcon />
-                                </SquareButton>
+                                </IconButton>
                                 {row.status === STATE_REQUEST.STATE_CREATED.state && (
-                                    <SquareButton
+                                    <IconButton
                                         aria-label="delete"
                                         onClick={onDelete}
                                         classes={{ root: classes.icon }}>
                                         <DeleteOutlineIcon />
-                                    </SquareButton>
+                                    </IconButton>
                                 )}
                             </TableCell>
                         );

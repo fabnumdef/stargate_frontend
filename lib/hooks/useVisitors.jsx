@@ -30,37 +30,27 @@ export default function useVisitors() {
                         decision: visitor.choice.validation,
                         tags: visitor.choice.tags
                     },
-                    optimisticResponse: {
-                        __typename: 'Mutation',
-                        mutateCampus: {
-                            __typename: 'CampusMutation',
-                            mutateRequest: {
-                                __typename: 'RequestMutation',
-                                validateVisitorStep: {
-                                    __typename: 'RequestVisitor',
-                                    id: visitor.id
-                                }
-                            }
-                        }
-                    },
                     update: (cache) => {
                         // check if BA behavior or not
+
+                        const campusId = campusIdVar();
+                        const activeRole = activeRoleCacheVar();
                         const variables =
-                            activeRoleCacheVar().role === ROLES.ROLE_ACCESS_OFFICE.role &&
+                            activeRole.role === ROLES.ROLE_ACCESS_OFFICE.role &&
                             visitor.choice.validation ===
                                 WORKFLOW_BEHAVIOR.VALIDATION.RESPONSE.positive
                                 ? {
-                                      role: activeRoleCacheVar().role,
-                                      unit: activeRoleCacheVar().unit,
+                                      role: activeRole.role,
+                                      unit: activeRole.unit,
                                       filters
                                   }
                                 : {
-                                      role: activeRoleCacheVar().role,
-                                      unit: activeRoleCacheVar().unit
+                                      role: activeRole.role,
+                                      unit: activeRole.unit
                                   };
 
                         const campus = cache.readFragment({
-                            id: `Campus:${campusIdVar()}`,
+                            id: `Campus:${campusId}`,
                             fragment: LIST_VISITORS_DATA,
                             fragmentName: 'ListVisitor',
                             variables
@@ -96,7 +86,7 @@ export default function useVisitors() {
 
                         // Update cache
                         cache.writeFragment({
-                            id: `Campus:${campusIdVar()}`,
+                            id: `Campus:${campusId}`,
                             fragment: LIST_VISITORS_DATA,
                             fragmentName: 'ListVisitor',
                             data: updatedList,

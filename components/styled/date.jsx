@@ -10,17 +10,20 @@ class LocalizedUtils extends DateFnsUtils {
     }
 }
 
-export default function DatePicker(props) {
-    return (
-        <MuiPickersUtilsProvider utils={LocalizedUtils} locale={frLocale}>
-            <KeyboardDatePicker
-                autoOk
-                variant="inline"
-                format="dd/MM/yyyy"
-                // All props are needed by Material-Ui, and never the same, depending on the import
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...props}
-            />
-        </MuiPickersUtilsProvider>
-    );
-}
+const DatePicker = React.forwardRef((props, ref) => (
+    <MuiPickersUtilsProvider utils={LocalizedUtils} locale={frLocale}>
+        <KeyboardDatePicker
+            autoOk
+            ref={ref}
+            variant="inline"
+            format="dd/MM/yyyy"
+            // All props are needed by Material-Ui, and never the same, depending on the import
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+        />
+    </MuiPickersUtilsProvider>
+));
+
+DatePicker.displayName = 'CustomDatePicker';
+
+export default DatePicker;
