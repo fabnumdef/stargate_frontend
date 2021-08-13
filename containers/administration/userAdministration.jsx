@@ -83,7 +83,6 @@ function UserAdministration() {
                     ? {}
                     : { unit: activeRole.unit }
         },
-        notifyOnNetworkStatusChange: true,
         onCompleted: (data) => {
             setUsersList({
                 list: mapUsersList(data.listUsers.list),

@@ -7,6 +7,7 @@ import PageTitle from '../styled/common/pageTitle';
 import TabAdmin from '../tabs/tabAdmin';
 import { useSnackBar } from '../../lib/hooks/snackbar';
 import SearchField from '../styled/common/SearchField';
+import { campusIdVar } from '../../lib/apollo/cache';
 
 const DELETE_USER = gql`
     mutation deleteUser($id: ObjectID!) {
@@ -18,7 +19,6 @@ const DELETE_USER = gql`
 
 function IndexAdministration({
     fetchMore,
-    refetch,
     result,
     onCompletedQuery,
     searchInput,
@@ -38,7 +38,7 @@ function IndexAdministration({
         setPage(selectedPage);
         fetchMore({
             variables: {
-                campus: '',
+                campus: campusIdVar(),
                 cursor: { first: rowsPerPage, offset: selectedPage * rowsPerPage }
             }
         }).then((res) => {
@@ -52,7 +52,7 @@ function IndexAdministration({
         setPage(0);
         fetchMore({
             variables: {
-                campus: '',
+                campus: campusIdVar(),
                 cursor: { first: rows, offset: 0 }
             }
         }).then((res) => {
@@ -70,16 +70,17 @@ function IndexAdministration({
             await deleteItemReq({ variables: { id } });
             setSearchInput('');
             addAlert({ message: tabData(deleteLabel).deletedText, severity: 'success' });
+            const refreshPage = result.list.length === 1 && page > 0 ? page - 1 : page;
             if (result.list.length === 1 && page > 0) {
                 setPage(page - 1);
-                refetch({
-                    cursor: { first: rowsPerPage, offset: (page - 1) * rowsPerPage }
-                });
-            } else {
-                refetch({
-                    cursor: { first: rowsPerPage, offset: page * rowsPerPage }
-                });
             }
+            const { data } = await fetchMore({
+                variables: {
+                    campus: campusIdVar(),
+                    cursor: { first: rowsPerPage, offset: refreshPage * rowsPerPage }
+                }
+            });
+            onCompletedQuery(data);
         } catch (e) {
             addAlert({ message: 'Une erreur est survenue', severity: 'warning' });
             return e;

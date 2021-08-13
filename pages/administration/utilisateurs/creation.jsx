@@ -8,6 +8,7 @@ import { useLogin } from '../../../lib/loginContext';
 import { isAdmin, isSuperAdmin } from '../../../utils/permissions';
 import { ADMIN_USER_ADMINISTRATION } from '../../../utils/constants/appUrls';
 import { GET_USERS_LIST } from '../../../containers/administration/userAdministration';
+import { campusIdVar } from '../../../lib/apollo/cache';
 
 const GET_ME = gql`
     query getMe {
@@ -58,8 +59,7 @@ function CreateUser() {
     const { activeRole } = useLogin();
     const [createUser] = useMutation(CREATE_USER, {
         update: async (cache, { data: { createUser: createdUser } }) => {
-            const selectedRole = userData.me.roles.find((role) => role.role === activeRole.role);
-            const campus = selectedRole.campuses[0] ? selectedRole.campuses[0].id : '';
+            const campus = campusIdVar();
             const currentUsers = await cache.readQuery({
                 query: GET_USERS_LIST,
                 variables: {
