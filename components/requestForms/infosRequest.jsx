@@ -39,7 +39,7 @@ import CheckAnimation from '../styled/animations/checked';
 import { REQUEST_OBJECT } from '../../utils/constants/enums';
 import ListLieux from '../lists/checkLieux';
 import DatePicker from '../styled/date';
-import { useLogin } from '../../lib/loginContext';
+import { activeRoleCacheVar } from '../../lib/apollo/cache';
 
 const useStyles = makeStyles((theme) => ({
     radioGroup: {
@@ -73,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         marginLeft: '2%'
     },
+    infos: {
+        color: 'rgba(0, 0, 0,0.25)'
+    },
     infoTime: {
         backgroundColor: theme.palette.background.layout,
         borderLeft: `3px solid ${theme.palette.primary.light}`,
@@ -89,6 +92,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '0px'
     },
     infoIcon: {
+        marginLeft: '10px',
         color: theme.palette.primary.light
     },
     error: {
@@ -201,7 +205,6 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
     const client = useApolloClient();
 
     const { data: placesList } = useQuery(GET_PLACES_LIST);
-    const { activeRole } = useLogin();
 
     const checkSelection = async (value) => {
         const { data } = await client.query({ query: GET_PLACES_LIST });
@@ -209,7 +212,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
             value.find(
                 (p) =>
                     p.id === place.id &&
-                    (place.unitInCharge.id === activeRole.unit || !place.unitInCharge.id)
+                    (place.unitInCharge.id === activeRoleCacheVar().unit || !place.unitInCharge.id)
             )
         );
         return (
@@ -220,6 +223,8 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
     const [createRequest] = useMutation(CREATE_REQUEST, {
         onCompleted: (data) => {
+            console.log('data');
+            console.log(data);
             setForm({ ...data.mutateCampus.createRequest, visitors: formData.visitors });
             handleNext();
         },
@@ -246,7 +251,13 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
         }
     });
 
-    const { register, control, handleSubmit, watch, errors, setValue } = useForm();
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: { errors },
+        setValue
+    } = useForm();
 
     useEffect(() => {
         if (formData.id) {
@@ -283,13 +294,19 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
     return (
         <div>
-            <form data-testid="form-demandeur" onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Debut Main principal Layout */}
                 <Grid container spacing={6}>
+                    <Typography
+                        variant="body2"
+                        className={`${classes.instruction} ${classes.infos}`}>
+                        Tous les champs sont obligatoire.
+                    </Typography>
                     {group && (
                         <Grid item sm={12} xs={12} md={12}>
                             <Grid container>
                                 {/* Item 1 */}
+
                                 <Grid item md={2} sm={12}>
                                     <Typography variant="body2" className={classes.fieldLabel}>
                                         Responsable visite :
@@ -298,8 +315,10 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                 <Grid container item md={10} sm={12} xs={12} spacing={3}>
                                     <Grid item md={6} sm={6} xs={6}>
                                         <Controller
-                                            as={
+                                            render={({ field }) => (
                                                 <TextField
+                                                    id={'refEmail'}
+                                                    {...field}
                                                     label="Email"
                                                     variant="filled"
                                                     error={Object.prototype.hasOwnProperty.call(
@@ -308,35 +327,21 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                                     )}
                                                     InputProps={
                                                         watch('refEmail') &&
-                                                        validator.isEmail(watch('refEmail'))
-                                                            ? {
-                                                                  endAdornment: (
-                                                                      <InputAdornment
-                                                                          position="end"
-                                                                          className={
-                                                                              classes.checkPos
-                                                                          }>
-                                                                          <CheckAnimation />
-                                                                      </InputAdornment>
-                                                                  ),
-                                                                  inputProps: {
-                                                                      'data-testid':
-                                                                          'visiteur-email'
-                                                                  }
-                                                              }
-                                                            : {
-                                                                  inputProps: {
-                                                                      'data-testid':
-                                                                          'visiteur-email'
-                                                                  }
-                                                              }
+                                                        validator.isEmail(watch('refEmail')) && {
+                                                            endAdornment: (
+                                                                <InputAdornment
+                                                                    position="end"
+                                                                    className={classes.checkPos}>
+                                                                    <CheckAnimation />
+                                                                </InputAdornment>
+                                                            )
+                                                        }
                                                     }
-                                                    helperText={
-                                                        errors.refEmail && errors.refEmail.message
-                                                    }
+                                                    InputLabelProps={{ htmlFor: 'refEmail' }}
+                                                    helperText={errors.refEmail?.message}
                                                     fullWidth
                                                 />
-                                            }
+                                            )}
                                             control={control}
                                             name="refEmail"
                                             defaultValue=""
@@ -348,62 +353,78 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                         />
                                     </Grid>
                                     <Grid item md={6} sm={6} xs={6}>
-                                        <TextField
-                                            label="Nom"
-                                            fullWidth
-                                            variant="filled"
+                                        <Controller
                                             name="refName"
-                                            error={Object.prototype.hasOwnProperty.call(
-                                                errors,
-                                                'refName'
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    id={'refName'}
+                                                    {...field}
+                                                    label="Nom"
+                                                    fullWidth
+                                                    variant="filled"
+                                                    InputLabelProps={{ htmlFor: 'refName' }}
+                                                    error={Object.prototype.hasOwnProperty.call(
+                                                        errors,
+                                                        'refName'
+                                                    )}
+                                                    helperText={errors.refName?.message}
+                                                />
                                             )}
-                                            helperText={errors.refName && errors.refName.message}
-                                            inputRef={register({
+                                            defaultValue=""
+                                            rules={{
                                                 validate: (value) =>
                                                     value.trim() !== '' || 'Le nom est obligatoire'
-                                            })}
-                                        />
-                                    </Grid>
-                                    <Grid item md={6} sm={6} xs={6}>
-                                        <TextField
-                                            label="Prénom"
-                                            fullWidth
-                                            variant="filled"
-                                            name="refFirstName"
-                                            error={Object.prototype.hasOwnProperty.call(
-                                                errors,
-                                                'refFirstName'
-                                            )}
-                                            helperText={
-                                                errors.refFirstName && errors.refFirstName.message
-                                            }
-                                            inputRef={register({
-                                                validate: (value) =>
-                                                    value.trim() !== '' ||
-                                                    'Le prénom est obligatoire'
-                                            })}
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item md={6} sm={6} xs={6}>
                                         <Controller
-                                            as={
+                                            name="refFirstName"
+                                            control={control}
+                                            render={({ field }) => (
                                                 <TextField
+                                                    id={'refFirstName'}
+                                                    {...field}
+                                                    label="Prénom"
+                                                    fullWidth
+                                                    variant="filled"
+                                                    InputLabelProps={{ htmlFor: 'refFirstName' }}
+                                                    error={Object.prototype.hasOwnProperty.call(
+                                                        errors,
+                                                        'refFirstName'
+                                                    )}
+                                                    helperText={errors.refFirstName?.message}
+                                                />
+                                            )}
+                                            defaultValue=""
+                                            rules={{
+                                                validate: (value) =>
+                                                    value.trim() !== '' ||
+                                                    'Le prénom est obligatoire'
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item md={6} sm={6} xs={6}>
+                                        <Controller
+                                            name="refPhone"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    id={'refPhone'}
+                                                    {...field}
                                                     label="Téléphone"
                                                     type="tel"
                                                     fullWidth
                                                     variant="filled"
+                                                    InputLabelProps={{ htmlFor: 'refPhone' }}
                                                     error={Object.prototype.hasOwnProperty.call(
                                                         errors,
                                                         'refPhone'
                                                     )}
-                                                    helperText={
-                                                        errors.refPhone && errors.refPhone.message
-                                                    }
-                                                    inputRef={register()}
+                                                    helperText={errors.refPhone?.message}
                                                 />
-                                            }
-                                            control={control}
-                                            name="refPhone"
+                                            )}
                                             defaultValue=""
                                         />
                                         <FormHelperText className={classes.instruction}>
@@ -428,7 +449,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             {/* Item 1 */}
                             <Grid item xs={12} sm={12} md={3}>
                                 <Typography variant="body2" className={classes.fieldLabel}>
-                                    Nature de la visite* :
+                                    Nature de la visite:
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={12} md={9}>
@@ -436,8 +457,9 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                     error={Object.prototype.hasOwnProperty.call(errors, 'object')}
                                     component="div">
                                     <Controller
-                                        as={
+                                        render={({ field }) => (
                                             <RadioGroup
+                                                {...field}
                                                 className={classes.radioNature}
                                                 aria-label="object">
                                                 <FormControlLabel
@@ -462,7 +484,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                                     labelPlacement="end"
                                                 />
                                             </RadioGroup>
-                                        }
+                                        )}
                                         control={control}
                                         rules={{
                                             required: 'La nature de la visite est obligatoire.'
@@ -480,7 +502,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                             <Grid item xs={12} sm={12} md={3}>
                                 <Typography variant="body2" className={classes.fieldLabel}>
-                                    Période d&apos;accès* :
+                                    Période d&apos;accès :
                                 </Typography>
                             </Grid>
                             <Grid
@@ -493,8 +515,11 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                 md={9}>
                                 <Grid item sm={5} xs={5}>
                                     <Controller
-                                        as={
+                                        render={({ field: { value, onChange } }) => (
                                             <DatePicker
+                                                id={'from'}
+                                                value={value}
+                                                onChange={onChange}
                                                 minDate={fromMinDate()}
                                                 label="du"
                                                 error={Object.prototype.hasOwnProperty.call(
@@ -502,20 +527,19 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                                     'from'
                                                 )}
                                                 disablePast
-                                                helperText={errors.from && errors.from.message}
+                                                helperText={errors.from?.message}
                                                 fullWidth
-                                                inputProps={{
-                                                    'data-testid': 'datedebut-visite'
-                                                }}
+                                                InputLabelProps={{ htmlFor: 'from' }}
                                             />
-                                        }
+                                        )}
                                         control={control}
                                         name="from"
                                         rules={{
                                             required: 'La date de début est obligatoire.',
                                             validate: {
                                                 format: (value) =>
-                                                    isValid(value) || 'Format invalide',
+                                                    isValid(value) ||
+                                                    'Le format de date ne correspond pas',
                                                 valide: (value) =>
                                                     isDeadlineRespected(value) ||
                                                     'Le délai minimum avant visite est de 2 jours ouvrés'
@@ -529,23 +553,24 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                                 </Grid>
                                 <Grid item sm={5} xs={5}>
                                     <Controller
-                                        as={
+                                        render={({ field: { value, onChange } }) => (
                                             <DatePicker
+                                                id={'to'}
+                                                value={value}
+                                                onChange={onChange}
                                                 minDate={watch('from')}
                                                 label="(inclus)"
                                                 error={Object.prototype.hasOwnProperty.call(
                                                     errors,
                                                     'to'
                                                 )}
-                                                helperText={errors.to && errors.to.message}
+                                                helperText={errors.to?.message}
+                                                InputLabelProps={{ htmlFor: 'to' }}
                                                 disablePast
                                                 disabled={!watch('from')}
                                                 fullWidth
-                                                inputProps={{
-                                                    'data-testid': 'datefin-visite'
-                                                }}
                                             />
-                                        }
+                                        )}
                                         control={control}
                                         name="to"
                                         rules={{
@@ -604,24 +629,35 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                     <Grid item container>
                         <Grid container item alignItems="center" xs={12} sm={12} md={2}>
                             <Typography variant="body2" className={classes.fieldLabel}>
-                                Motif de la visite* :
+                                Motif de la visite :
                             </Typography>
                         </Grid>
                         <Grid item sm={12} xs={12} md={10}>
-                            <TextField
+                            <Controller
                                 name="reason"
-                                error={Object.prototype.hasOwnProperty.call(errors, 'reason')}
-                                helperText={errors.reason && errors.reason.message}
-                                variant="filled"
-                                fullWidth
-                                multiline
-                                inputRef={register({
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        id={'reason'}
+                                        {...field}
+                                        error={Object.prototype.hasOwnProperty.call(
+                                            errors,
+                                            'reason'
+                                        )}
+                                        helperText={errors.reason?.message}
+                                        variant="filled"
+                                        fullWidth
+                                        multiline
+                                        InputLabelProps={{
+                                            htmlFor: 'reason'
+                                        }}
+                                    />
+                                )}
+                                rules={{
                                     validate: (value) =>
-                                        value.trim() !== '' || 'Le motif est obligatoire'
-                                })}
-                                inputProps={{
-                                    'data-testid': 'motif-visite'
+                                        value?.trim() !== '' || 'Le motif est obligatoire'
                                 }}
+                                defaultValue={''}
                             />
                         </Grid>
                     </Grid>
@@ -637,23 +673,23 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             sm={12}
                             md={2}>
                             <Typography variant="body2" className={classes.fieldLabel} gutterBottom>
-                                Accès lieux* :
+                                Accès lieux:
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={12} md={10}>
                             <Controller
-                                as={
+                                render={({ field: { onChange } }) => (
                                     <ListLieux
+                                        onChange={onChange}
                                         options={
                                             placesList ? placesList.getCampus.listPlaces.list : []
                                         }
                                         expanded={expanded}
                                         setExpanded={setExpanded}
                                         defaultChecked={formData.places}
-                                        onChange={(checked) => checked}
                                         label="Lieux"
                                     />
-                                }
+                                )}
                                 rules={{
                                     validate: {
                                         valide: (value) =>

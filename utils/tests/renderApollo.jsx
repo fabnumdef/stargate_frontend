@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
+
 import React from 'react';
 
 import { MockedProvider, MockLink } from '@apollo/client/testing';
@@ -95,8 +96,8 @@ const renderApollo = (
     { mocks, defaultOptions, cache, addTypename, resolvers, ...options } = {}
 ) => {
     const mockLink = new MyMockLink(mocks);
-    return {
-        ...render(
+    return (
+        render(
             <MockedProvider
                 addTypename={addTypename || false}
                 link={mockLink}
@@ -109,7 +110,7 @@ const renderApollo = (
             </MockedProvider>
         ),
         options
-    };
+    );
 };
 export * from '@testing-library/react';
 export { renderApollo as render };

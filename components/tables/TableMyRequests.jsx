@@ -70,7 +70,7 @@ export default function TabMyRequestToTreat({ request, onDelete }) {
     }, []);
 
     return (
-        <TableContainer height={55}>
+        <TableContainer height={56}>
             <Table stickyHeader aria-label="sticky table" className={classes.table}>
                 <TableHead>
                     <TableRow>

@@ -7,12 +7,12 @@ import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
-import SquareButton from '../../styled/common/squareButton';
 import { VISITOR_STATUS } from '../../../utils/constants/enums';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import { IconButton } from '@material-ui/core';
 
 /** @todo Put layout Dark et main to hover and border effect */
 
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'inherit',
         fontWeight: 'inherit',
         '&:last-child': {
-            display: 'flex'
+            textAlign: 'right'
         }
     },
     icon: {
@@ -94,12 +94,12 @@ function RowRequestsVisitors({ columns, row, onDelete }) {
                                 className={`${classes.cells} ${classes.flexEnd}`}
                                 key={`${row.id} action`}>
                                 {row.status === 'CREATED' && (
-                                    <SquareButton
+                                    <IconButton
                                         aria-label="delete"
                                         onClick={onDelete}
                                         classes={{ root: classes.icon }}>
                                         <DeleteOutlineIcon />
-                                    </SquareButton>
+                                    </IconButton>
                                 )}
                             </TableCell>
                         );
