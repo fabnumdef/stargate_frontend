@@ -5,7 +5,7 @@ import SnackBar from '../../components/styled/snackbar';
 
 export const SnackBarContext = React.createContext();
 
-const AUTO_DISMISS = 5000;
+const AUTO_DISMISS = 4000;
 
 export function SnackBarProvider({ children }) {
     const [alerts, setAlerts] = useState([]);
@@ -33,8 +33,8 @@ export function SnackBarProvider({ children }) {
     return (
         <SnackBarContext.Provider value={value}>
             {children}
-            {alerts.map((alert) => (
-                <SnackBar key={alert} alert={alert} open />
+            {alerts.map((alert, index) => (
+                <SnackBar key={`${alert}_${index}`} alert={alert} open />
             ))}
         </SnackBarContext.Provider>
     );

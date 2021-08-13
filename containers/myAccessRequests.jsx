@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -82,7 +82,7 @@ export default function MyRequestAccess() {
     /** loading management */
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    const { data, loading, fetchMore } = useQuery(LIST_MY_REQUESTS, {
+    const { client, data, loading, fetchMore } = useQuery(LIST_MY_REQUESTS, {
         variables: {
             filtersP,
             filtersT,
@@ -92,6 +92,22 @@ export default function MyRequestAccess() {
             }
         }
     });
+
+    useEffect(() => {
+        if (!data) return;
+        // prefetch data
+        client.query({
+            query: LIST_MY_REQUESTS,
+            variables: {
+                filtersP,
+                filtersT,
+                cursor: {
+                    first: first + 10,
+                    offset: 0
+                }
+            }
+        });
+    }, [data]);
 
     const mapRequestsInProgress = (requestsInProgress) =>
         requestsInProgress?.getCampus?.progress?.list ?? [];
