@@ -216,7 +216,10 @@ export function ActionCell({ choices, decision }) {
                                                 checked: classes.checked
                                             }}
                                             checked={choice.label === decisionChoice.label}
-                                            onClick={() => handleRadioClick(choice)}
+                                            onClick={() => {
+                                                handleRadioClick(choice);
+                                                setOtherChoice(initChoice);
+                                            }}
                                         />
                                     }
                                 />
