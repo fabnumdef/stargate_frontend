@@ -1,15 +1,19 @@
 # Contexte
 
-# Cas d'usage
 
-# User story
+# Objectifs
 
-**En tant que**
+- 
+
+# Exemple de cas d'usage
+
+
+# User Story
+**En tant que** , **quand**
 
 **Je veux**
 
-**Afin de**
+**Afin** 
 
 # Acceptance
 
--
