@@ -39,11 +39,12 @@ const columns = [
 ];
 
 function createData({ id, from, to, places, reason, status }) {
+    const fromDate = format(new Date(from), 'dd/MM/yyyy');
+    const toDate = format(new Date(to), 'dd/MM/yyyy');
+
     return {
         id,
-        period: `${format(new Date(from), 'dd/MM/yyyy')}
-        \n
-        ${format(new Date(to), 'dd/MM/yyyy')}`,
+        period: `${fromDate === toDate ? fromDate : `${fromDate} \n ${toDate}`}`,
         places: places.map((place, index) => {
             if (index === places.length - 1) return `${place.label}.`;
             return `${place.label}, `;
