@@ -26,7 +26,7 @@ function PlaceSection({ listPlaces, campusId }) {
     const classes = useStyles();
     return (
         <Grid container alignItems="center" justify="space-between" className={classes.root}>
-            <Grid container sm={11}>
+            <Grid container sm={9} md={10} lg={11}>
                 <Grid container>
                     {!listPlaces.list.length && <WarningIcon className={classes.warningIcon} />}
                     <Typography variant="body1" style={{ fontWeight: 'bold' }}>
@@ -49,7 +49,7 @@ function PlaceSection({ listPlaces, campusId }) {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid>
+            <Grid container sm={3} md={2} lg={1}>
                 <RoundButton
                     onClick={() => router.push(ADMIN_CAMPUS_PLACES_EDITION(campusId))}
                     variant="outlined"
