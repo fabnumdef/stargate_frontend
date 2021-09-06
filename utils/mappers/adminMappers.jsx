@@ -9,29 +9,12 @@ export const workflowCards = Object.values(ROLES)
         behavior: role.behavior
     }));
 
-export const mapUserData = (data, dataCampuses, dataUnits) => {
-    const {
-        listCampuses: { list: campuses }
-    } = dataCampuses;
-    const {
-        getCampus: {
-            listUnits: { list: units }
-        }
-    } = dataUnits;
-
+export const mapUserData = (data) => {
     return {
         roles: {
             role: data.role,
-            campus: {
-                id: data.campus,
-                label: campuses.find((campus) => campus.id === data.campus).label
-            },
-            unit: data.unit
-                ? {
-                      id: data.unit,
-                      label: units.find((unit) => unit.id === data.unit).label
-                  }
-                : null
+            campus: { id: data.campus.id, label: data.campus.label },
+            unit: data.unit ? { id: data.unit.id, label: data.unit.label } : null
         },
         firstname: data.firstname,
         lastname: data.lastname,

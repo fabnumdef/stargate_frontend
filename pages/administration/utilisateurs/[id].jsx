@@ -5,6 +5,7 @@ import PageTitle from '../../../components/styled/common/pageTitle';
 import UserForm from '../../../components/administrationForms/userForm';
 import { useSnackBar } from '../../../lib/hooks/snackbar';
 import { useLogin } from '../../../lib/loginContext';
+import { ADMIN_USER_ADMINISTRATION } from '../../../utils/constants/appUrls';
 
 const GET_USER = gql`
     query getUser($id: ObjectID!) {
@@ -66,16 +67,9 @@ function EditUser() {
 
     const submitEditUser = async (user) => {
         try {
-            const {
-                data: {
-                    editUser: { id: userId }
-                }
-            } = await editUser({ variables: { user, id } });
-            if (userId) {
-                addAlert({ message: "L'utilisateur a bien été modifié", severity: 'success' });
-                router.push('/index');
-            }
-            return null;
+            await editUser({ variables: { user, id } });
+            addAlert({ message: "L'utilisateur a bien été modifié", severity: 'success' });
+            return router.push(ADMIN_USER_ADMINISTRATION);
         } catch (e) {
             switch (true) {
                 case e.message === 'GraphQL error: User already exists':
@@ -102,8 +96,8 @@ function EditUser() {
     const mapEditUser = (data) => ({
         ...data,
         email: data.email.original,
-        campus: data.roles[0] && data.roles[0].campuses[0] ? data.roles[0].campuses[0].id : null,
-        unit: data.roles[0] && data.roles[0].units[0] ? data.roles[0].units[0].id : null,
+        campus: data.roles[0] && data.roles[0].campuses[0] ? data.roles[0].campuses[0] : null,
+        unit: data.roles[0] && data.roles[0].units[0] ? data.roles[0].units[0] : null,
         role: data.roles[0] ? data.roles[0].role : null
     });
 

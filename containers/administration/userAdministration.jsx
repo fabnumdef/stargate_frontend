@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
@@ -13,7 +13,7 @@ const columns = [
     { id: 'role', label: 'Rôle' }
 ];
 
-const GET_USERS_LIST = gql`
+export const GET_USERS_LIST = gql`
     query listUsers(
         $cursor: OffsetCursor
         $filters: UserFilters
@@ -57,14 +57,6 @@ const GET_USERS_LIST = gql`
     }
 `;
 
-const DELETE_USER = gql`
-    mutation deleteUser($id: ObjectID!) {
-        deleteUser(id: $id) {
-            id
-        }
-    }
-`;
-
 const createUserData = (data) => ({
     createPath: '/administration/utilisateurs/creation',
     confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cet utilisateur: ${data} ?`,
@@ -82,47 +74,7 @@ function UserAdministration() {
             total: data.listUsers.meta.total
         });
 
-    const updateDeleteMutation = (cache, data, page, rowsPerPage) => {
-        const deletedUser = data.deleteUser;
-        const currentUsers = cache.readQuery({
-            query: GET_USERS_LIST,
-            variables: {
-                cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-                search: searchInput,
-                hasRole:
-                    isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
-                        ? {}
-                        : { unit: activeRole.unit }
-            }
-        });
-        const newList = currentUsers.listUsers.list.filter((user) => user.id !== deletedUser.id);
-        const updatedTotal = currentUsers.listUsers.meta.total - 1;
-        const updatedUsers = {
-            ...currentUsers,
-            listUsers: {
-                ...currentUsers.listUsers,
-                ...(updatedTotal < 10 && { list: newList }),
-                meta: {
-                    ...currentUsers.listUsers.meta,
-                    total: updatedTotal
-                }
-            }
-        };
-        cache.writeQuery({
-            query: GET_USERS_LIST,
-            variables: {
-                cursor: { first: rowsPerPage, offset: page * rowsPerPage },
-                search: searchInput,
-                hasRole:
-                    isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
-                        ? {}
-                        : { unit: activeRole.unit }
-            },
-            data: updatedUsers
-        });
-    };
-
-    const { data, refetch, fetchMore } = useQuery(GET_USERS_LIST, {
+    const { refetch, fetchMore } = useQuery(GET_USERS_LIST, {
         variables: {
             cursor: { first: 10, offset: 0 },
             search: searchInput,
@@ -130,14 +82,14 @@ function UserAdministration() {
                 isAdmin(activeRole.role) || isSuperAdmin(activeRole.role)
                     ? {}
                     : { unit: activeRole.unit }
+        },
+        onCompleted: (data) => {
+            setUsersList({
+                list: mapUsersList(data.listUsers.list),
+                total: data.listUsers.meta.total
+            });
         }
     });
-
-    useEffect(() => {
-        if (data) {
-            onCompletedQuery(data);
-        }
-    }, [data]);
 
     return (
         <IndexAdministration
@@ -147,8 +99,6 @@ function UserAdministration() {
             onCompletedQuery={onCompletedQuery}
             searchInput={searchInput}
             setSearchInput={setSearchInput}
-            deleteMutation={DELETE_USER}
-            updateFunction={updateDeleteMutation}
             tabData={createUserData}
             columns={columns}
             subtitles={['Utilisateurs']}

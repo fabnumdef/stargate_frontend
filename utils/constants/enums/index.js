@@ -88,7 +88,8 @@ export const ROLES = {
             '/nouvelle-demande/simple',
             '/nouvelle-demande/groupe',
             '/administration',
-            '/administration/utilisateurs'
+            '/administration/utilisateurs',
+            '/administration/utilisateurs/creation'
         ]
     },
     ROLE_SCREENING: {
