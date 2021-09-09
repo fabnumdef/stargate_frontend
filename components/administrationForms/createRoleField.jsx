@@ -290,7 +290,9 @@ const CreateRoleField = ({ mailDomain, usersList, roleData, canDelete, children 
                                 rules={{
                                     validate: (value) =>
                                         checkMailFormat(value, mailDomain) ||
-                                        `L'email doit être au format nom.prenom@${mailDomain}`
+                                        `L'email doit être au format nom.prenom@domain (${mailDomain.join(
+                                            ', '
+                                        )})`
                                 }}
                             />
                             <Grid item className={classes.listUsers}>
@@ -348,7 +350,7 @@ CreateRoleField.defaultProps = {
 };
 
 CreateRoleField.propTypes = {
-    mailDomain: PropTypes.string.isRequired,
+    mailDomain: PropTypes.arrayOf(PropTypes.string).isRequired,
     usersList: PropTypes.array,
     roleData: PropTypes.shape({
         role: PropTypes.string.isRequired,

@@ -32,7 +32,7 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondantList, securityOfficerList
                     campus: { id: campus.id, label: campus.label }
                 }}
                 usersList={unitCorrespondantList}
-                mailDomain={GOUV_DOMAIN_MAIL}
+                mailDomain={[GOUV_DOMAIN_MAIL]}
                 canDelete={unitCorrespondantList.length > 1}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Correspondant Unité
@@ -45,7 +45,7 @@ const UnitRoleForm = ({ unit, campus, unitCorrespondantList, securityOfficerList
                     campus: { id: campus.id, label: campus.label }
                 }}
                 usersList={securityOfficerList}
-                mailDomain={GOUV_DOMAIN_MAIL}
+                mailDomain={[GOUV_DOMAIN_MAIL]}
                 canDelete={
                     !isRoleInWorkflow(ROLES.ROLE_SECURITY_OFFICER.role) ||
                     (isRoleInWorkflow(ROLES.ROLE_SECURITY_OFFICER.role) &&

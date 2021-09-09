@@ -39,7 +39,7 @@ function AccOffEdit({ roleData, accOffUsers }) {
             <CreateRoleField
                 roleData={roleData}
                 usersList={accOffUsers}
-                mailDomain={GOUV_DOMAIN_MAIL}
+                mailDomain={[GOUV_DOMAIN_MAIL]}
                 canDelete={accOffUsers.length > 1}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Responsable(s)

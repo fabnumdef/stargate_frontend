@@ -18,5 +18,5 @@ export const createUserData = (email, roles) => {
 
 export const checkMailFormat = (value, domain) => {
     const [username, mail] = value.split('@');
-    return username.split('.').length === 2 && mail === domain;
+    return username.split('.').length === 2 && domain.includes(mail);
 };
