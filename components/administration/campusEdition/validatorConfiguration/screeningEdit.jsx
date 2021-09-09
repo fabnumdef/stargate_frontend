@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import { SCREENING_DOMAIN_MAIL } from '../../../../utils/mappers/createUserFromMail';
+import {
+    GOUV_DOMAIN_MAIL,
+    SCREENING_DOMAIN_MAIL
+} from '../../../../utils/mappers/createUserFromMail';
 import { Typography } from '@material-ui/core';
 import { CreateRoleField } from '../../../index';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,7 +31,7 @@ function ScreeningEdit({ roleData, screeningUsers }) {
             <CreateRoleField
                 roleData={roleData}
                 usersList={screeningUsers}
-                mailDomain={SCREENING_DOMAIN_MAIL}
+                mailDomain={[SCREENING_DOMAIN_MAIL, GOUV_DOMAIN_MAIL]}
                 canDelete={screeningUsers.length > 1}>
                 <Typography variant="body1" style={{ fontWeight: 'bold' }}>
                     Responsable(s)
