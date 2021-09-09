@@ -297,7 +297,8 @@ const UserForm = ({ submitForm, defaultValues, userRole, type }) => {
                                     Base
                                 </InputLabel>
 
-                                {(dataCampuses || defaultValues.campus) && (
+                                {(dataCampuses ||
+                                    (defaultValues.campus && !isSuperAdmin(userRole.role))) && (
                                     <Controller
                                         as={
                                             <Select

@@ -4,6 +4,7 @@ import IndexAdministration from '../../components/administration';
 import { mapUsersList } from '../../utils/mappers/adminMappers';
 import { isAdmin, isSuperAdmin } from '../../utils/permissions';
 import { useLogin } from '../../lib/loginContext';
+import { ADMIN_USER_EDITION } from '../../utils/constants/appUrls';
 
 const columns = [
     { id: 'lastname', label: 'Nom' },
@@ -59,6 +60,7 @@ export const GET_USERS_LIST = gql`
 
 const createUserData = (data) => ({
     createPath: '/administration/utilisateurs/creation',
+    editPath: ADMIN_USER_EDITION(data),
     confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cet utilisateur: ${data} ?`,
     deletedText: `L'utilisateur ${data} a bien été supprimé`
 });

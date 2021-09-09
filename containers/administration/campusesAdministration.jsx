@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import IndexAdministration from '../../components/administration';
+import { ADMIN_CAMPUS_MANAGEMENT } from '../../utils/constants/appUrls';
 
 const columns = [
     { id: 'label', label: 'Nom' },
@@ -34,6 +35,7 @@ const DELETE_CAMPUS = gql`
 
 const createCampusData = (data) => ({
     createPath: '/administration/base/creation',
+    editPath: ADMIN_CAMPUS_MANAGEMENT(data),
     confirmDeleteText: `Êtes-vous sûr de vouloir supprimer cette base: ${data} ?`,
     deletedText: `La base ${data} a bien été supprimée`
 });

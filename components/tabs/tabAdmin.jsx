@@ -17,7 +17,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { useRouter } from 'next/router';
 import CustomTableCellHeader from '../tables/cells/TableCellHeader';
 import { useLogin } from '../../lib/loginContext';
 import { ROLES } from '../../utils/constants/enums';
@@ -50,7 +49,6 @@ const useStyles = makeStyles({
 export default function TabAdmin({ rows, columns, deleteItem, tabData }) {
     const classes = useStyles();
     const { activeRole } = useLogin();
-    const router = useRouter();
 
     const [del, setDel] = useState({});
 
@@ -189,7 +187,7 @@ export default function TabAdmin({ rows, columns, deleteItem, tabData }) {
                                 <TableCell align="right">
                                     {hover[index] && editAuth(row) && (
                                         <>
-                                            <Link href={`${router.pathname}/${row.id}`}>
+                                            <Link href={tabData(row.id).editPath}>
                                                 <IconButton
                                                     aria-label="modifier"
                                                     color="primary"
