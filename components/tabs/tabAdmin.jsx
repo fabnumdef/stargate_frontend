@@ -187,7 +187,7 @@ export default function TabAdmin({ rows, columns, deleteItem, tabData }) {
                                 <TableCell align="right">
                                     {hover[index] && editAuth(row) && (
                                         <>
-                                            {!ROLES[row.userRole].workflow && (
+                                            {(!row.userRole || !ROLES[row.userRole].workflow) && (
                                                 <Link href={tabData(row.id).editPath}>
                                                     <IconButton
                                                         aria-label="modifier"
