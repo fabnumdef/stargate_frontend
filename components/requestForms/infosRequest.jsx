@@ -428,7 +428,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             {/* Item 1 */}
                             <Grid item xs={12} sm={12} md={3}>
                                 <Typography variant="body2" className={classes.fieldLabel}>
-                                    Nature de la visite* :
+                                    Nature de la visite*&nbsp;:
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={12} md={9}>
@@ -480,7 +480,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
 
                             <Grid item xs={12} sm={12} md={3}>
                                 <Typography variant="body2" className={classes.fieldLabel}>
-                                    Période d&apos;accès* :
+                                    Période d&apos;accès*&nbsp;:
                                 </Typography>
                             </Grid>
                             <Grid
@@ -604,7 +604,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                     <Grid item container>
                         <Grid container item alignItems="center" xs={12} sm={12} md={2}>
                             <Typography variant="body2" className={classes.fieldLabel}>
-                                Motif de la visite* :
+                                Motif de la visite*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item sm={12} xs={12} md={10}>
@@ -637,7 +637,7 @@ export default function FormInfosClaimant({ formData, setForm, handleNext, group
                             sm={12}
                             md={2}>
                             <Typography variant="body2" className={classes.fieldLabel} gutterBottom>
-                                Accès lieux* :
+                                Accès lieux*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={12} md={10}>

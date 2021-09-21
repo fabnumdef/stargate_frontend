@@ -343,7 +343,7 @@ export default function FormInfoVisitor({
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
                             <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
-                                Origine visiteurs* :
+                                Origine visiteurs*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item md={10} xs={12} sm={12}>
@@ -396,7 +396,7 @@ export default function FormInfoVisitor({
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
                             <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
-                                Type d&apos;employé* :
+                                Type d&apos;employé*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item md={10} xs={12} sm={12}>
@@ -443,7 +443,7 @@ export default function FormInfoVisitor({
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
                             <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
-                                Civilité du visiteur* :
+                                Civilité du visiteur*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item container md={10} xs={12} sm={12} justify="space-between">
@@ -640,7 +640,7 @@ export default function FormInfoVisitor({
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item xs={12} sm={12} md={2}>
                             <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
-                                Identité* :
+                                Identité*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item container xs={12} sm={12} md={10} justify="space-between">
@@ -856,7 +856,7 @@ export default function FormInfoVisitor({
                     <Grid container item sm={12} xs={12} md={12}>
                         <Grid item md={2} xs={12} sm={12}>
                             <Typography variant="body2" gutterBottom className={classes.fieldLabel}>
-                                VIP* :
+                                VIP*&nbsp;:
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={12} md={10}>
