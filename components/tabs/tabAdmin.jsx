@@ -122,7 +122,7 @@ export default function TabAdmin({ rows, columns, deleteItem, tabData }) {
                 </TableHead>
                 {rows.map((row, index) => {
                     if (del[index]) {
-                        const label = row.name ? row.name : row.lastname;
+                        const label = row.label ? row.label : row.lastname;
                         return (
                             <TableBody key={row.id}>
                                 <TableRow tabIndex={-1}>

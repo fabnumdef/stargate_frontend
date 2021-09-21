@@ -6,6 +6,14 @@ import { isAdmin, isSuperAdmin } from '../../utils/permissions';
 import { useLogin } from '../../lib/loginContext';
 import { ADMIN_USER_EDITION } from '../../utils/constants/appUrls';
 
+const DELETE_USER = gql`
+    mutation deleteUser($id: ObjectID!) {
+        deleteUser(id: $id) {
+            id
+        }
+    }
+`;
+
 const columns = [
     { id: 'lastname', label: 'Nom' },
     { id: 'firstname', label: 'Prénom' },
@@ -98,6 +106,7 @@ function UserAdministration() {
             fetchMore={fetchMore}
             refetch={refetch}
             result={usersList}
+            deleteMutation={DELETE_USER}
             onCompletedQuery={onCompletedQuery}
             searchInput={searchInput}
             setSearchInput={setSearchInput}

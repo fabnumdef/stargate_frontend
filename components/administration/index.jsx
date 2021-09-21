@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import TablePagination from '@material-ui/core/TablePagination';
 import Grid from '@material-ui/core/Grid';
 import PageTitle from '../styled/common/pageTitle';
@@ -9,18 +9,11 @@ import { useSnackBar } from '../../lib/hooks/snackbar';
 import SearchField from '../styled/common/SearchField';
 import { campusIdVar } from '../../lib/apollo/cache';
 
-const DELETE_USER = gql`
-    mutation deleteUser($id: ObjectID!) {
-        deleteUser(id: $id) {
-            id
-        }
-    }
-`;
-
 function IndexAdministration({
     fetchMore,
     result,
     onCompletedQuery,
+    deleteMutation,
     searchInput,
     setSearchInput,
     tabData,
@@ -32,7 +25,7 @@ function IndexAdministration({
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const [deleteItemReq] = useMutation(DELETE_USER);
+    const [deleteItemReq] = useMutation(deleteMutation);
 
     const handleChangePage = (event, selectedPage) => {
         setPage(selectedPage);
@@ -128,6 +121,7 @@ function IndexAdministration({
 
 IndexAdministration.propTypes = {
     fetchMore: PropTypes.func.isRequired,
+    deleteMutation: PropTypes.func.isRequired,
     refetch: PropTypes.func.isRequired,
     onCompletedQuery: PropTypes.func.isRequired,
     result: PropTypes.shape({
