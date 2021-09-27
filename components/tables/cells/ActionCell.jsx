@@ -95,6 +95,12 @@ export function ActionCell({ choices, decision }) {
         return choice;
     }, [decisionQuery]);
 
+    const radioColor = (label) => {
+        if (label === 'REFUSER') return classes.radioRejected;
+        if (label === 'RES') return classes.radioWarning;
+        return classes.radio;
+    };
+
     const [otherChoice, setOtherChoice] = useState(initChoice);
 
     /**
@@ -209,10 +215,7 @@ export function ActionCell({ choices, decision }) {
                                     control={
                                         <Radio
                                             classes={{
-                                                root:
-                                                    choice.label !== 'REFUSER'
-                                                        ? classes.radio
-                                                        : classes.radioRejected,
+                                                root: radioColor(choice.label),
                                                 checked: classes.checked
                                             }}
                                             checked={choice.label === decisionChoice.label}
