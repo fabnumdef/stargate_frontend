@@ -76,6 +76,11 @@ jobs:
               targetPort: 3000
             envVars:
               API_URL: ${{secrets.API_URL}}
+            monitoring:
+              exporter:
+                enabled: true
+              dashboard:
+                deploy: true
           # Warning, internet dependency here
           repository: https://fabnum-minarm.gitlab.io/igloo/helm-charts/stable
         env:
