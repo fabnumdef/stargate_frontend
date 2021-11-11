@@ -46,9 +46,10 @@ jobs:
           image-name: ${{ steps.meta.outputs.tags }}
 
       - run: docker push ${{ steps.meta.outputs.tags }}
-
+        if: github.ref == 'refs/heads/develop'
       - name: Deploy
         uses: deliverybot/helm@v1
+        if: github.ref == 'refs/heads/develop'
         with:
           token: ${{ github.token }}
           chart: nodejs
@@ -57,6 +58,7 @@ jobs:
           namespace: stargate
           helm: helm3
           values: |
+            replicaCount: 1
             image:
               tag: ${{ steps.meta.outputs.version }}
               repository: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
