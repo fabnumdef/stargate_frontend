@@ -1,0 +1,13 @@
+general:
+  vulnerabilities:
+    - CVE-2020-28469
+    - CVE-2021-23337
+    - CVE-2021-33574
+    - CVE-2021-3765
+    - CVE-2021-3807
+    - CVE-2021-43396
+  bestPracticeViolations:
+    - CIS-DI-0005
+    - CIS-DI-0006
+    - DKL-LI-0001
+    - DKL-LI-0003
